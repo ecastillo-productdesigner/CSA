@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#faf9f9">
+    <meta name="description" content="Your next idea starts here. Bring a link, a search, or your own material into a CSA workspace.">
+    <title>CSA — Your creative workspace</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./app.js" type="module"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <symbol id="icon-plus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M12 7v10M7 12h10" stroke="white" stroke-width="2" stroke-linecap="round"/></symbol>
+      <symbol id="icon-history" viewBox="0 0 24 24"><path d="M4.5 8A8.3 8.3 0 1 1 4 15M4 3.5V8h4.5M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h13M12 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+      <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-file" viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8Zm0 0v5h5M9 13h6M9 17h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-link" viewBox="0 0 24 24"><path d="m10 13 4-4m-5 7-2 2a3.5 3.5 0 0 1-5-5l4-4a3.5 3.5 0 0 1 5 0m2 0 2-2a3.5 3.5 0 1 1 5 5l-4 4a3.5 3.5 0 0 1-5 0" transform="translate(1 -1)" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+      <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+      <symbol id="icon-collapse" viewBox="0 0 24 24"><path d="M20 9V4h-5M4 15v5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter"/></symbol>
+      <symbol id="icon-filters" viewBox="0 0 24 24"><path d="M5 8h14M5 16h14" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 4h5v8H8zm4 8h5v8h-5z" fill="currentColor"/></symbol>
+      <symbol id="icon-archive" viewBox="0 0 24 24"><path d="M4 8h16v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z" fill="currentColor"/><path d="M3 3h18v5H3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12h6" stroke="white" stroke-width="1.7"/></symbol>
+      <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M6 6h12l-1 15H7z" fill="currentColor"/><path d="M4 5h16M9 3h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10 9v8m4-8v8" stroke="white" stroke-width="1.2"/></symbol>
+      <symbol id="icon-restore" viewBox="0 0 24 24"><path d="M4 9a8 8 0 1 1 0 6M4 4v5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-tools" viewBox="0 0 24 24"><path d="m14 5 5-2-1 5-3 1-9 11-3-3L14 8ZM4 3l4 4m2 3 10 10M3 4l2-2 4 4-2 2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-outputs" viewBox="0 0 24 24"><path d="M8 3v2m0 8v2M2 9h2m8 0h2M4 5l1.5 1.5m5 5L12 13M4 13l1.5-1.5m5-5L12 5m5 6v2m0 8v2m-6-6h2m8 0h2m-10-4 1.5 1.5m5 5L21 21m-8 0 1.5-1.5m5-5L21 13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="9" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    </svg>
+
+    <aside class="sidebar" aria-label="Main navigation">
+      <div class="sidebar-header">
+        <button class="brand" type="button" aria-label="Expand sidebar" aria-expanded="false" aria-controls="workspace-navigation">CSA</button>
+        <button class="icon-button collapse-sidebar" id="collapse-sidebar" type="button" aria-label="Collapse sidebar" hidden><svg><use href="#icon-collapse"/></svg></button>
+      </div>
+      <nav class="navigation" id="workspace-navigation" aria-label="Workspace">
+        <button class="icon-button nav-button" id="new-project" type="button" aria-label="New project" data-tooltip="New project"><svg><use href="#icon-plus"/></svg><span class="nav-label" aria-hidden="true">New Project</span></button>
+        <div class="recents-group">
+          <button class="icon-button nav-button" id="show-history" type="button" aria-label="Recent projects" aria-controls="recent-projects" aria-expanded="false" data-tooltip="Recent projects"><svg><use href="#icon-history"/></svg><span class="nav-label" aria-hidden="true">Recents</span></button>
+          <div class="recents-panel" id="recent-projects" role="region" aria-label="Recent projects" hidden>
+            <div id="history-content"></div>
+          </div>
+        </div>
+      </nav>
+      <button class="profile-button" id="show-profile" type="button" aria-label="Julia's profile" aria-controls="profile-menu" aria-expanded="false" data-tooltip="Julia">
+        <img src="./avatar.svg" alt="" width="32" height="32">
+      </button>
+    </aside>
+    <button class="sidebar-backdrop" id="sidebar-backdrop" type="button" tabindex="-1" aria-label="Collapse sidebar" hidden></button>
+
+    <main id="main" tabindex="-1">
+      <section class="home" id="home" aria-labelledby="greeting">
+        <h1 id="greeting">Hello Julia, what are you making today?</h1>
+        <div class="dashboard-collections" id="dashboard-collections" role="group" aria-label="Project collection" hidden></div>
+        <div class="dashboard-grid" id="dashboard-grid"></div>
+      </section>
+
+      <section class="composer" id="composer" aria-labelledby="composer-heading" hidden>
+        <h1 class="visually-hidden" id="composer-heading">New project</h1>
+        <div class="composer-canvas" role="region" aria-label="Project canvas"></div>
+        <aside class="composer-rail" aria-label="Project tools and outputs">
+          <section class="composer-panel composer-tools" aria-labelledby="composer-tools-heading">
+            <h2 id="composer-tools-heading"><svg aria-hidden="true"><use href="#icon-tools"/></svg>Tools</h2>
+            <div class="composer-fields">
+              <label class="composer-field" for="composer-format">Content Formats
+                <select id="composer-format"><option value="">None Selected</option><option value="what-to-know">What to know</option><option value="listicle">Listicle</option><option value="news-story">News story</option><option value="social-post">Social post</option></select>
+              </label>
+              <label class="composer-field" for="composer-audience">Target Audiences
+                <select id="composer-audience"><option value="">None Selected</option><option value="general">General audience</option><option value="entertainment">Entertainment fans</option><option value="young-adults">Young adults</option><option value="local">Local readers</option></select>
+              </label>
+              <label class="composer-field" for="composer-voice">Publication Voice
+                <select id="composer-voice"><option value="">None Selected</option><option value="neutral">Neutral</option><option value="conversational">Conversational</option><option value="professional">Professional</option><option value="playful">Playful</option></select>
+              </label>
+            </div>
+            <div class="composer-actions">
+              <button class="create-variant" type="button" disabled title="Select content to create a variant">Create Variant</button>
+              <button class="variant-settings" type="button" disabled aria-label="Variant settings" title="Select content to enable variant settings"><svg aria-hidden="true"><use href="#icon-filters"/></svg></button>
+            </div>
+          </section>
+          <section class="composer-panel composer-outputs" aria-labelledby="composer-outputs-heading">
+            <h2 id="composer-outputs-heading"><svg aria-hidden="true"><use href="#icon-outputs"/></svg>Outputs</h2>
+            <div class="composer-empty" role="status"><p>Outputs will appear here once<br>content is selected</p></div>
+          </section>
+        </aside>
+      </section>
+
+      <section class="project-start" id="project-start" aria-labelledby="project-start-heading" hidden>
+        <button class="text-button starter-back" id="back-dashboard" type="button">← Home</button>
+        <h1 id="project-start-heading">Hello Julia, what are you making today?</h1>
+        <form class="search-form" id="start-form" role="search">
+          <label class="visually-hidden" for="source-input">Search or paste URLs to start</label>
+          <input id="source-input" name="source" type="text" placeholder="Search or paste URLs to start" autocomplete="off" maxlength="4000" required>
+          <button class="submit-button" id="start-button" type="submit" aria-label="Start a project" disabled><svg><use href="#icon-arrow"/></svg></button>
+        </form>
+        <p class="divider">Or</p>
+        <div class="material-options">
+          <button class="material-card" type="button" data-material="upload" aria-label="Start from your own material: choose files"><span>Start from your<br>own material</span></button>
+          <button class="material-card" type="button" data-material="paste" aria-label="Start from your own material: paste text"><span>Start from your<br>own material</span></button>
+        </div>
+      </section>
+
+      <section class="search-results" id="search-results" aria-labelledby="results-heading" hidden>
+        <h1 class="visually-hidden" id="results-heading">Search results</h1>
+        <form class="search-form results-search-form" id="results-search-form" role="search">
+          <label class="visually-hidden" for="results-query">Search articles</label>
+          <input id="results-query" type="text" placeholder="Search or paste URLs to start" autocomplete="off" maxlength="4000" required>
+          <button class="submit-button" id="results-search-button" type="submit" aria-label="Search again"><svg><use href="#icon-arrow"/></svg></button>
+        </form>
+        <div class="results-toolbar">
+          <label class="results-sort">Sort by: <select id="results-sort" aria-label="Sort articles"><option value="newest">Newest</option><option value="oldest">Oldest</option></select></label>
+          <span class="demo-results-label">Sample results</span>
+        </div>
+        <div class="results-filter-panel" id="results-filter-panel" hidden>
+          <label>Source<select id="results-source"><option value="all">All sources</option></select></label>
+          <label>Published on or after<input id="results-after" type="date"></label>
+          <button class="text-button" id="results-reset-filters" type="button">Reset filters</button>
+        </div>
+        <p class="visually-hidden" id="results-help">Click articles to select them, or choose Draft to use all currently visible articles.</p>
+        <ul class="result-list" id="result-list" aria-describedby="results-help"></ul>
+        <p class="results-empty" id="results-empty" role="status" hidden>No articles match these filters. Try another source or date.</p>
+        <button class="load-more" id="load-more" type="button">Load more</button>
+        <div class="results-actions">
+          <button class="filter-button" id="results-filter-button" type="button" aria-label="Filter articles" aria-controls="results-filter-panel" aria-expanded="false"><svg><use href="#icon-filters"/></svg></button>
+          <button class="draft-button" id="create-draft" type="button">Draft</button>
+        </div>
+        <p class="results-selection" id="results-selection" role="status" hidden></p>
+      </section>
+
+      <section class="workspace" id="workspace" aria-labelledby="workspace-heading" hidden>
+        <button class="text-button back-button" id="back-home" type="button">← Home</button>
+        <p class="eyebrow">YOUR WORKSPACE</p>
+        <h1 id="workspace-heading">Untitled project</h1>
+        <p class="workspace-intro">A little space for your next idea.</p>
+        <div class="draft-editor" id="draft-editor" hidden>
+          <label class="field-label" for="draft-text">Your draft</label>
+          <textarea id="draft-text" rows="12" spellcheck="true"></textarea>
+          <p class="material-hint">Editable starter assembled from sample article excerpts. Changes are saved on this device.</p>
+        </div>
+        <div class="sources-heading"><h2>Your material</h2><button class="text-button" id="add-material" type="button">+ Add material</button></div>
+        <ul class="source-list" id="source-list"></ul>
+        <p class="workspace-note">Your project is saved on this device. Search entries and links are collected here for now; content processing is coming next.</p>
+      </section>
+    </main>
+
+    <div class="profile-menu" id="profile-menu" hidden><img src="./avatar.svg" alt="" width="38" height="38"><div><strong>Julia</strong><span>Personal workspace</span><button class="text-button profile-navigation" id="profile-home" type="button">Home</button><button class="text-button profile-navigation" id="profile-materials" type="button">Search &amp; materials</button></div></div>
+
+    <dialog class="new-project-dialog" id="new-project-dialog" aria-labelledby="new-project-dialog-title">
+      <h2 class="visually-hidden" id="new-project-dialog-title">Start a new project</h2>
+      <button class="icon-button new-project-close" type="button" data-close="new-project-dialog" aria-label="Close new project modal"><svg aria-hidden="true"><use href="#icon-close"/></svg></button>
+      <form class="search-form new-project-search" id="new-project-search-form" role="search">
+        <label class="visually-hidden" for="new-project-query">Search or paste URLs to start</label>
+        <input id="new-project-query" type="text" placeholder="Search or paste URLs to start" autocomplete="off" maxlength="4000" required autofocus>
+        <button class="submit-button" id="new-project-submit" type="submit" aria-label="Start a project" disabled><svg aria-hidden="true"><use href="#icon-arrow"/></svg></button>
+      </form>
+      <button class="new-project-material" id="new-project-material" type="button">Start from your own material</button>
+    </dialog>
+
+    <dialog class="material-dialog" id="material-dialog" aria-labelledby="material-title">
+      <div class="panel-heading"><div><p class="eyebrow">A PLACE TO BEGIN</p><h2 id="material-title">Start with your material</h2></div><button class="icon-button" type="button" data-close="material-dialog" aria-label="Close material dialog"><svg><use href="#icon-close"/></svg></button></div>
+      <div class="material-tabs" role="tablist" aria-label="Material type">
+        <button id="upload-tab" type="button" role="tab" aria-selected="true" aria-controls="upload-panel" data-tab="upload">Choose files</button>
+        <button id="paste-tab" type="button" role="tab" aria-selected="false" aria-controls="paste-panel" tabindex="-1" data-tab="paste">Paste text</button>
+      </div>
+      <div id="upload-panel" role="tabpanel" aria-labelledby="upload-tab">
+        <label class="drop-zone" id="drop-zone" for="file-input"><svg><use href="#icon-upload"/></svg><strong>Drop your files here</strong><span>or <span class="browse-label">browse files</span></span><small>PDF, Word, PowerPoint, text or Markdown · Up to 10 MB each</small><input class="visually-hidden" id="file-input" type="file" multiple accept=".pdf,.docx,.pptx,.txt,.md"></label>
+        <ul class="selected-files" id="selected-files"></ul>
+        <p class="material-hint">Files are selected locally. This prototype saves their names; text files also save their content.</p>
+      </div>
+      <div id="paste-panel" role="tabpanel" aria-labelledby="paste-tab" hidden>
+        <label class="field-label" for="material-text">What are you working with?</label>
+        <textarea id="material-text" rows="7" maxlength="100000" placeholder="Paste notes, an article, or an idea…"></textarea>
+      </div>
+      <p class="form-error" id="material-error" role="alert" hidden></p>
+      <div class="dialog-footer"><button class="secondary-button" type="button" data-close="material-dialog">Cancel</button><button class="primary-button" id="use-material" type="button" disabled>Start creating <span aria-hidden="true">→</span></button></div>
+    </dialog>
+    <div class="toast" id="toast" role="status" hidden><span id="toast-message"></span><button id="toast-undo" type="button" hidden>Undo</button></div>
+  </body>
+</html>

@@ -2,6 +2,10 @@
 
 A responsive implementation of the supplied CSA homepage. Plain HTML, CSS, and JavaScript, with no dependencies or build step.
 
+## Published website
+
+Open [CSA](https://ecastillo-productdesigner.github.io/CSA/). Changes pushed to `main` automatically deploy the `dist` folder through GitHub Pages.
+
 ## Run locally
 
 With Node.js 20 or newer installed:

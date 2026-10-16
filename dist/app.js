@@ -583,8 +583,6 @@ $('.brand').addEventListener('click', () => showHome());
 $('#new-project').addEventListener('click', showProjectStart);
 $('#back-home').addEventListener('click', () => showHome());
 $('#back-dashboard').addEventListener('click', () => showHome());
-$('#profile-home').addEventListener('click', () => showHome());
-$('#profile-materials').addEventListener('click', showSourceStart);
 
 function renderRecentProjects() {
   recentProjectsPanel.render(projects, activeProjectId);

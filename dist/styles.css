@@ -499,7 +499,6 @@ select:focus-visible { outline: 3px solid #99abc6; outline-offset: 3px; }
 .results-direction label, .composer-direction label { display: block; margin-bottom: 10px; font-size: 14px; font-weight: 650; }
 .results-direction label span, .composer-direction label span { color: var(--muted); font-weight: 500; }
 .results-direction textarea, .composer-direction textarea { display: block; width: 100%; min-height: 72px; max-height: 280px; resize: vertical; padding: 10px 14px; border: 1px solid #dce3ed; border-radius: 10px; background: white; color: var(--ink); font: inherit; font-size: 14px; line-height: 1.6; }
-.composer-direction textarea { min-height: 90px; }
 .results-actions { display: flex; justify-content: center; margin: 22px auto 0; width: min(375px, 100%); }
 .draft-button { display: grid; place-items: center; flex: 1; height: var(--button-height); border: 1px solid #a8b6c9; border-radius: 11px; background: white; color: var(--ink); font-size: 16px; font-weight: 700; }
 .draft-button:hover:not(:disabled) { background: #f6f7f9; }

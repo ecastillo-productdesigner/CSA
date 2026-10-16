@@ -1,6 +1,6 @@
 # CSA
 
-A responsive implementation of the supplied CSA homepage. Plain HTML, CSS, and JavaScript, with no dependencies or build step.
+A responsive implementation of the supplied CSA designs. Plain HTML, CSS, and JavaScript with a locally bundled Quill editor and no build step.
 
 ## Published website
 
@@ -24,9 +24,11 @@ Open http://localhost:4173. Set `PORT` to change the port.
 - Project dashboard matching the updated homepage reference, including a New Project tile and a sample Kelly Clarkson project with a Draft badge, Today, three sources, and Open/archive/delete controls. New material projects and drafts appear on the dashboard; existing prototype records remain available in Recents.
 - Archive and Trash collections support restoring projects. Delete moves a project to Trash, and both archive and delete offer Undo. No permanent deletion is performed.
 - Search entry opens a results page matching the supplied design, with four article cards, Newest/Oldest sorting, source/date filters, and Load more. URL entry starts a material workspace.
-- Article selection and a Draft action that creates an editable starter from selected stories, or from the visible results when nothing is selected. Draft edits and article selections persist in the current browser.
+- Article selection and a Draft action that creates an editable starter from selected stories, or from the visible results when nothing is selected. Drafts open in the rich text workspace, and edits and article selections persist in the current browser.
 - The New Project tile and sidebar plus open the blank workspace from the latest reference, with Tools and Outputs panels on the right. Content Formats, Target Audiences, and Publication Voice each start at None Selected. Create Variant and its settings button remain disabled while no content is selected.
-- Both plus controls also open the reference-matched project modal over that workspace, with search/URL entry and a single Start from your own material action. Closing the modal leaves the blank workspace visible. Material selection provides file and paste tabs; Cancel returns to the project modal.
+- Both plus controls open the chosen Quick Start modal, headed **Start your next story**, with search/URL entry, Continue, and a single **Start from your own material** action. It has no upload option, NEW PROJECT label, or introductory tagline. Closing the modal leaves the workspace visible.
+- **Start from your own material** closes the overlay and opens a full rich text editor in the underlying workspace alongside Tools and Outputs. Drafts include an editable title; headings, fonts, sizes, bold, italic, underline, strikethrough, text color, highlighting, links, lists, alignment, indentation, and clear formatting; undo/redo; browser spellcheck; word/character counts and reading time; Find and Replace; source links and author/tags metadata; HTML/text downloads, copy, and print/Save as PDF.
+- Rich text and title/metadata changes automatically save to the current browser. Leaving the editor flushes pending edits, saved projects reopen from the dashboard, and refresh restores the open draft in the current tab. Existing plain text drafts migrate into the editor when opened. Save failures are shown in the editor, and downloads provide a local copy.
 - The profile menu provides Home and Search & materials navigation, preserving the search/upload/paste starter alongside the new blank workspace.
 - File selection, drag and drop, and pasted text.
 - Recent projects saved in the current browser and shown as a list that expands downward under Recents in the sidebar. Click Recents again or press Escape to collapse the list. Long titles are truncated with an ellipsis; selecting a title reopens that project.
@@ -48,9 +50,14 @@ The result portrait uses the user's supplied `Frame 109.png` as a local CSS imag
 - `dist/demo-access.js` — browser-only demo password screen and tab session
 - `dist/styles.css` — layout, design tokens, and responsive styles
 - `dist/app.js` — browser interactions and project storage
+- `dist/editor.js` — rich text editor, formatting, autosave, metadata, sources, search/replace, and export
 - `dist/search.js` — sample search results, selection, sorting, filters, and draft handoff
 - `dist/dashboard.js` — project tiles, badges, archive/Trash collections, and card actions
 - `scripts/serve.mjs` — local static preview server
 - `.openai/hosting.json` — private Sites deployment configuration
 
 Run `npm run check` for JavaScript syntax checks. Static hosting serves the `dist` folder directly.
+
+## Editor dependency
+
+Quill 2.0.3 is bundled under `dist/vendor/` from the official npm package. The editor works without runtime CDN requests. Quill's BSD license and its bundled dependency notices are retained alongside the assets. The upstream editor documentation is at https://quilljs.com/docs/quickstart.

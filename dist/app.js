@@ -1,5 +1,6 @@
 import { createSearchExperience } from './search.js';
 import { createDashboard } from './dashboard.js?v=20261015-draft';
+import { createMaterialEditor } from './editor.js?v=20261015-editor';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -54,10 +55,19 @@ let activeProjectId = null;
 let materialMode = 'upload';
 let selectedFiles = [];
 let addingToProject = false;
-let materialReturnToStart = false;
 let toastTimer;
 let toastAction = null;
 let dashboard = null;
+const richEditor = createMaterialEditor({
+  onHome: () => showHome(),
+  notify,
+  onSave(snapshot) {
+    const project = projects.find(entry => entry.id === snapshot.id);
+    if (!project) return false;
+    Object.assign(project, snapshot);
+    return saveProjects();
+  },
+});
 
 function loadProjects() {
   try {
@@ -70,13 +80,16 @@ function loadProjects() {
 }
 
 function saveProjects() {
+  let saved = true;
   try {
     localStorage.setItem(storageKey, JSON.stringify(projects));
   } catch {
+    saved = false;
     notify('Browser storage is unavailable or full. This project will last for this session.');
   }
   renderRecentProjects();
   dashboard?.render(projects);
+  return saved;
 }
 
 function notify(message, action = null) {
@@ -124,10 +137,10 @@ function createProject(sources, options = {}) {
   const first = sources[0];
   const project = {
     id: crypto.randomUUID(),
-    title: options.title || (first.type === 'link' ? new URL(first.url).hostname.replace(/^www\./, '') : titleFrom(first.title)),
+    title: options.title || (first?.type === 'link' ? new URL(first.url).hostname.replace(/^www\./, '') : first ? titleFrom(first.title) : 'Untitled story'),
     createdAt: Date.now(),
     sources,
-    dashboard: first.type !== 'search',
+    dashboard: first?.type !== 'search',
     ...(options.kind ? { kind: options.kind } : {}),
     ...(options.draftText !== undefined ? { draftText: options.draftText } : {}),
   };
@@ -174,12 +187,16 @@ function showSourceStart() {
 }
 
 function closeComposer() {
+  richEditor.close();
+  try { sessionStorage.removeItem('csa.editor.active.v1'); } catch { /* Navigation still works without storage. */ }
   if ($('#new-project-dialog').open) $('#new-project-dialog').close();
   $('#composer').hidden = true;
-  document.body.classList.remove('showing-composer');
+  $('#composer').classList.remove('has-editor');
+  document.body.classList.remove('showing-composer', 'editing-material');
 }
 
 function showProjectStart() {
+  closeComposer();
   activeProjectId = null;
   setSidebarExpanded(false);
   searchExperience.hide();
@@ -189,6 +206,7 @@ function showProjectStart() {
   $('#workspace').hidden = true;
   $('#project-start').hidden = true;
   $('#composer').hidden = false;
+  $('#composer-heading').textContent = 'New project';
   for (const select of document.querySelectorAll('.composer-field select')) select.value = '';
   closeProfile();
   renderRecentProjects();
@@ -208,6 +226,7 @@ function openProjectDialog(reset = true) {
 function showProject(id) {
   const project = projects.find((entry) => entry.id === id);
   if (!project || project.deletedAt) return;
+  if (project.kind === 'draft') { showEditorProject(project); return; }
   closeComposer();
   if (sidebarOverlayQuery.matches) setSidebarExpanded(false);
   activeProjectId = id;
@@ -262,6 +281,25 @@ function showProject(id) {
   window.scrollTo({ top: 0 });
 }
 
+function showEditorProject(project) {
+  closeComposer();
+  setSidebarExpanded(false);
+  activeProjectId = project.id;
+  searchExperience.hide();
+  document.body.classList.remove('showing-results');
+  document.body.classList.add('showing-composer', 'editing-material');
+  for (const section of ['home', 'workspace', 'project-start']) $(`#${section}`).hidden = true;
+  $('#composer').hidden = false;
+  $('#composer').classList.add('has-editor');
+  $('#composer-heading').textContent = 'Story editor';
+  richEditor.open(project);
+  closeProfile();
+  renderRecentProjects();
+  document.title = `${project.title} — CSA`;
+  try { sessionStorage.setItem('csa.editor.active.v1', project.id); } catch { /* Drafts still save to local project storage. */ }
+  window.scrollTo({ top: 0 });
+}
+
 function closeProfile() {
   $('#profile-menu').hidden = true;
   $('#show-profile').setAttribute('aria-expanded', 'false');
@@ -297,13 +335,7 @@ $('#new-project-search-form').addEventListener('submit', (event) => {
 });
 $('#new-project-material').addEventListener('click', () => {
   $('#new-project-dialog').close();
-  materialReturnToStart = true;
-  openMaterial('upload');
-});
-$('#material-dialog').addEventListener('close', () => {
-  const returnToStart = materialReturnToStart;
-  materialReturnToStart = false;
-  if (returnToStart && document.body.classList.contains('showing-composer')) openProjectDialog(false);
+  createProject([], { title: 'Untitled story', kind: 'draft', draftText: '' });
 });
 
 function startSearch(query) {
@@ -596,3 +628,7 @@ dashboard = createDashboard({
   onRestore: restoreProject,
 });
 dashboard.render(projects);
+try {
+  const savedEditor = sessionStorage.getItem('csa.editor.active.v1');
+  if (savedEditor && projects.some(project => project.id === savedEditor && !project.deletedAt && !project.archivedAt)) showProject(savedEditor);
+} catch { /* Start on the dashboard when session storage is unavailable. */ }

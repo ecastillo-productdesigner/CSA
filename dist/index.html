@@ -7,8 +7,9 @@
     <meta name="description" content="Your next idea starts here. Bring a link, a search, or your own material into a CSA workspace.">
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="./styles.css?v=20261015-draft">
-    <script src="./demo-access.js?v=20261015-draft" type="module"></script>
+    <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
+    <link rel="stylesheet" href="./styles.css?v=20261015-editor">
+    <script src="./demo-access.js?v=20261015-editor" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -36,6 +37,8 @@
       <symbol id="icon-history" viewBox="0 0 24 24"><path d="M4.5 8A8.3 8.3 0 1 1 4 15M4 3.5V8h4.5M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h13M12 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+      <symbol id="icon-undo" viewBox="0 0 24 24"><path d="m9 4-5 5 5 5M4 9h9a6 6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-redo" viewBox="0 0 24 24"><path d="m15 4 5 5-5 5m5-5h-9a6 6 0 0 0 0 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-file" viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8Zm0 0v5h5M9 13h6M9 17h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-link" viewBox="0 0 24 24"><path d="m10 13 4-4m-5 7-2 2a3.5 3.5 0 0 1-5-5l4-4a3.5 3.5 0 0 1 5 0m2 0 2-2a3.5 3.5 0 1 1 5 5l-4 4a3.5 3.5 0 0 1-5 0" transform="translate(1 -1)" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
@@ -78,7 +81,48 @@
 
       <section class="composer" id="composer" aria-labelledby="composer-heading" hidden>
         <h1 class="visually-hidden" id="composer-heading">New project</h1>
-        <div class="composer-canvas" role="region" aria-label="Project canvas"></div>
+        <div class="composer-canvas" role="region" aria-label="Project canvas">
+          <section class="material-editor" id="material-editor" aria-label="Story editor" hidden>
+            <div class="editor-topbar">
+              <div class="editor-navigation">
+                <button class="editor-nav-button" id="editor-home" type="button" aria-label="Back to projects">← <span>Projects</span></button>
+                <button class="editor-nav-button" id="editor-sources-button" type="button" aria-expanded="false" aria-controls="editor-sources"><svg aria-hidden="true"><use href="#icon-link"/></svg>Sources <span class="editor-source-count" id="editor-source-count">0</span></button>
+                <button class="editor-nav-button" id="editor-metadata-button" type="button" aria-expanded="false" aria-controls="editor-metadata"><svg aria-hidden="true"><use href="#icon-file"/></svg>Metadata</button>
+              </div>
+              <div class="editor-document-actions">
+                <button class="editor-nav-button" id="editor-find-button" type="button" aria-label="Find and replace" aria-expanded="false" aria-controls="editor-find"><svg aria-hidden="true"><use href="#icon-search"/></svg></button>
+                <details class="editor-download" id="editor-download"><summary>Download <span aria-hidden="true">⌄</span></summary><div><button type="button" data-export="html">Formatted document (.html)</button><button type="button" data-export="text">Plain text (.txt)</button><button type="button" id="editor-copy">Copy text</button><button type="button" id="editor-print">Print / Save as PDF</button></div></details>
+              </div>
+            </div>
+            <div class="editor-context-panel" id="editor-sources" hidden>
+              <div class="editor-panel-heading"><h2>Sources</h2><button class="text-button" type="button" data-editor-close="sources">Close</button></div>
+              <ul id="editor-source-list"></ul>
+              <form class="editor-source-form" id="editor-add-source"><label for="editor-source-url">Add a source link</label><div><input id="editor-source-url" type="url" placeholder="https://" required><button class="secondary-button" type="submit">Add source</button></div></form>
+              <p class="form-error" id="editor-source-error" role="alert" hidden></p>
+            </div>
+            <div class="editor-context-panel" id="editor-metadata" hidden>
+              <div class="editor-panel-heading"><h2>Story details</h2><button class="text-button" type="button" data-editor-close="metadata">Close</button></div>
+              <div class="editor-metadata-fields"><label for="editor-author">Author<input id="editor-author" type="text" placeholder="Add an author" maxlength="120"></label><label for="editor-tags">Tags<input id="editor-tags" type="text" placeholder="e.g. entertainment, local" maxlength="300"></label></div>
+            </div>
+            <div class="editor-context-panel editor-find-panel" id="editor-find" hidden>
+              <div class="editor-panel-heading"><h2>Find and replace</h2><button class="text-button" type="button" data-editor-close="find">Close</button></div>
+              <div class="editor-find-fields"><label for="editor-find-text">Find<input id="editor-find-text" type="text" placeholder="Find in your story"></label><label for="editor-replace-text">Replace with<input id="editor-replace-text" type="text" placeholder="Replacement text"></label></div>
+              <div class="editor-find-actions"><span id="editor-find-count" role="status">Enter text to find</span><button class="secondary-button" id="editor-find-next" type="button">Next</button><button class="secondary-button" id="editor-replace-one" type="button">Replace</button><button class="secondary-button" id="editor-replace-all" type="button">Replace all</button></div>
+            </div>
+            <div class="editor-sheet">
+              <header class="editor-document-header"><div class="editor-document-status"><span class="editor-draft-badge">Draft</span><span id="editor-save-status" role="status">Saved on this device</span></div><label class="visually-hidden" for="editor-title">Story title</label><textarea id="editor-title" rows="1" maxlength="180" placeholder="Untitled story"></textarea></header>
+              <div class="editor-toolbar" id="editor-toolbar" role="toolbar" aria-label="Text formatting">
+                <div class="editor-toolbar-group"><button type="button" data-editor-action="undo" aria-label="Undo" title="Undo (⌘/Ctrl+Z)"><svg aria-hidden="true"><use href="#icon-undo"/></svg></button><button type="button" data-editor-action="redo" aria-label="Redo" title="Redo (⌘/Ctrl+Shift+Z)"><svg aria-hidden="true"><use href="#icon-redo"/></svg></button></div>
+                <div class="editor-toolbar-group"><select id="editor-block" aria-label="Text style"><option value="">Normal text</option><option value="1">Heading 1</option><option value="2">Heading 2</option><option value="3">Heading 3</option><option value="quote">Quote</option></select><select id="editor-font" aria-label="Font family"><option value="">Sans serif</option><option value="serif">Serif</option><option value="monospace">Monospace</option></select><select id="editor-size" aria-label="Text size"><option value="small">Small</option><option value="" selected>Normal</option><option value="large">Large</option><option value="huge">Huge</option></select></div>
+                <div class="editor-toolbar-group"><button type="button" data-format="bold" aria-label="Bold" aria-pressed="false" title="Bold (⌘/Ctrl+B)"><b>B</b></button><button type="button" data-format="italic" aria-label="Italic" aria-pressed="false" title="Italic (⌘/Ctrl+I)"><i>I</i></button><button type="button" data-format="underline" aria-label="Underline" aria-pressed="false" title="Underline (⌘/Ctrl+U)"><u>U</u></button><button type="button" data-format="strike" aria-label="Strikethrough" aria-pressed="false"><s>S</s></button></div>
+                <div class="editor-toolbar-group"><button type="button" data-editor-action="link" aria-label="Add or edit link" title="Add link (⌘/Ctrl+K)"><svg aria-hidden="true"><use href="#icon-link"/></svg></button><label class="editor-color-control" title="Text color"><span aria-hidden="true">A</span><input id="editor-color" type="color" value="#26344a" aria-label="Text color"></label><button type="button" data-editor-action="highlight" aria-label="Highlight text" aria-pressed="false" title="Highlight text"><mark>A</mark></button><button type="button" data-editor-action="clear" aria-label="Clear formatting" title="Clear formatting">T<span class="editor-clear-mark">×</span></button></div>
+                <div class="editor-toolbar-group"><button type="button" data-list="bullet" aria-label="Bulleted list" aria-pressed="false" title="Bulleted list">≡<span class="editor-list-dot">•</span></button><button type="button" data-list="ordered" aria-label="Numbered list" aria-pressed="false" title="Numbered list">1.</button><button type="button" data-editor-action="outdent" aria-label="Decrease indent" title="Decrease indent">⇤</button><button type="button" data-editor-action="indent" aria-label="Increase indent" title="Increase indent">⇥</button><select id="editor-align" aria-label="Text alignment"><option value="">Align left</option><option value="center">Center</option><option value="right">Align right</option><option value="justify">Justify</option></select></div>
+              </div>
+              <div id="rich-text-editor"></div>
+              <footer class="editor-footer"><span id="editor-word-count">0 words</span><span id="editor-character-count">0 characters</span><span id="editor-read-time">0 min read</span><span class="editor-spellcheck">Spellcheck on</span></footer>
+            </div>
+          </section>
+        </div>
         <aside class="composer-rail" aria-label="Project tools and outputs">
           <section class="composer-panel composer-tools" aria-labelledby="composer-tools-heading">
             <h2 id="composer-tools-heading"><svg aria-hidden="true"><use href="#icon-tools"/></svg>Tools</h2>
@@ -166,15 +210,18 @@
     <div class="profile-menu" id="profile-menu" hidden><img src="./avatar.svg" alt="" width="38" height="38"><div><strong>Julia</strong><span>Personal workspace</span><button class="text-button profile-navigation" id="profile-home" type="button">Home</button><button class="text-button profile-navigation" id="profile-materials" type="button">Search &amp; materials</button><button class="text-button profile-navigation" id="demo-lock" type="button">Lock demo</button></div></div>
 
     <dialog class="new-project-dialog" id="new-project-dialog" aria-labelledby="new-project-dialog-title">
-      <h2 class="visually-hidden" id="new-project-dialog-title">Start a new project</h2>
+      <h2 id="new-project-dialog-title">Start your next story</h2>
       <button class="icon-button new-project-close" type="button" data-close="new-project-dialog" aria-label="Close new project modal"><svg aria-hidden="true"><use href="#icon-close"/></svg></button>
-      <form class="search-form new-project-search" id="new-project-search-form" role="search">
-        <label class="visually-hidden" for="new-project-query">Search or paste URLs to start</label>
-        <input id="new-project-query" type="text" placeholder="Search or paste URLs to start" autocomplete="off" maxlength="4000" required autofocus>
-        <button class="submit-button" id="new-project-submit" type="submit" aria-label="Start a project" disabled><svg aria-hidden="true"><use href="#icon-arrow"/></svg></button>
+      <form class="new-project-search" id="new-project-search-form" role="search">
+        <label for="new-project-query">Find or add a source</label>
+        <div class="new-project-input"><svg aria-hidden="true"><use href="#icon-search"/></svg><input id="new-project-query" type="text" placeholder="Search a topic or paste a URL" autocomplete="off" maxlength="4000" required autofocus></div>
+        <button class="new-project-continue" id="new-project-submit" type="submit" disabled>Continue<svg aria-hidden="true"><use href="#icon-arrow"/></svg></button>
       </form>
-      <button class="new-project-material" id="new-project-material" type="button">Start from your own material</button>
+      <div class="new-project-divider"><span>Or use your own material</span></div>
+      <button class="new-project-material" id="new-project-material" type="button"><span class="new-project-material-icon"><svg aria-hidden="true"><use href="#icon-file"/></svg></span><span><strong>Start from your own material</strong><small>Bring your notes, an article, or a rough idea</small></span><span aria-hidden="true">›</span></button>
     </dialog>
+
+    <dialog class="editor-link-dialog" id="editor-link-dialog" aria-labelledby="editor-link-heading"><form id="editor-link-form"><div class="editor-panel-heading"><h2 id="editor-link-heading">Add a link</h2><button class="icon-button" type="button" data-close="editor-link-dialog" aria-label="Close link dialog"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></div><label for="editor-link-text">Link text<input id="editor-link-text" type="text" placeholder="Text to display" maxlength="2000"></label><label for="editor-link-url">URL<input id="editor-link-url" type="text" placeholder="https://" required></label><p class="form-error" id="editor-link-error" role="alert" hidden></p><div class="dialog-footer"><button class="secondary-button" id="editor-remove-link" type="button">Remove link</button><button class="primary-button" type="submit">Apply link</button></div></form></dialog>
 
     <dialog class="material-dialog" id="material-dialog" aria-labelledby="material-title">
       <div class="panel-heading"><div><p class="eyebrow">A PLACE TO BEGIN</p><h2 id="material-title">Start with your material</h2></div><button class="icon-button" type="button" data-close="material-dialog" aria-label="Close material dialog"><svg><use href="#icon-close"/></svg></button></div>

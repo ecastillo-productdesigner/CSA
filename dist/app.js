@@ -1,6 +1,7 @@
 import { createSearchExperience } from './search.js?v=20261015-output-workspace';
 import { createDashboard } from './dashboard.js?v=20261015-draft';
 import { createMaterialEditor } from './editor.js?v=20261015-editor';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261015-tools-menus';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -59,6 +60,7 @@ let addingToProject = false;
 let toastTimer;
 let toastAction = null;
 let dashboard = null;
+const toolDropdowns = createToolDropdowns();
 const richEditor = createMaterialEditor({
   onHome: () => showHome(),
   notify,
@@ -190,6 +192,7 @@ function showSourceStart() {
 }
 
 function closeComposer() {
+  toolDropdowns.close();
   richEditor.close();
   try { sessionStorage.removeItem('csa.editor.active.v1'); } catch { /* Navigation still works without storage. */ }
   if ($('#new-project-dialog').open) $('#new-project-dialog').close();
@@ -214,6 +217,7 @@ function showProjectStart() {
   $('#composer').hidden = false;
   $('#composer-heading').textContent = 'New project';
   for (const select of document.querySelectorAll('.composer-field select')) select.value = '';
+  toolDropdowns.refresh();
   closeProfile();
   renderRecentProjects();
   document.title = 'New project — CSA';
@@ -308,6 +312,7 @@ function showEditorProject(project) {
     $('#composer-heading').textContent = 'Story editor';
     richEditor.open(project);
   }
+  toolDropdowns.refresh();
   $('#composer-direction-button').disabled = false;
   $('#composer-direction-button').classList.toggle('has-direction', Boolean(project.editorialDirection));
   closeProfile();

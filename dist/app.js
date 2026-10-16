@@ -777,7 +777,10 @@ $('#new-project-use-material').addEventListener('click', useMaterial);
 
 for (const id of ['material-dialog', 'new-project-dialog']) $(`#${id}`).addEventListener('cancel', event => { if (materialBusy) event.preventDefault(); });
 
-for (const button of document.querySelectorAll('[data-close]')) button.addEventListener('click', () => $(`#${button.dataset.close}`).close());
+for (const button of document.querySelectorAll('[data-close]')) button.addEventListener('click', () => {
+  if (button.dataset.close === 'new-project-dialog') showHome();
+  else $(`#${button.dataset.close}`).close();
+});
 for (const dialog of document.querySelectorAll('dialog')) {
   dialog.addEventListener('click', (event) => {
     if (['material-dialog', 'new-project-dialog'].includes(dialog.id) && materialBusy) return;

@@ -67,7 +67,7 @@ export function createDashboard({ onNew, onOpen, onArchive, onTrash, onRestore }
       const card = node('article', 'dashboard-project');
       card.setAttribute('aria-label', project.title);
       const badges = node('div', 'project-badges');
-      for (const label of ['What to know', 'Listicle']) badges.append(node('span', 'project-badge', label));
+      badges.append(node('span', 'project-badge', 'Draft'));
       const title = node('h2', '', project.title);
       title.title = project.title;
       const meta = node('div', 'project-meta');

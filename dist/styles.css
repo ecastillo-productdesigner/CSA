@@ -259,7 +259,7 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
 
 .composer.has-editor .composer-rail { position: sticky; top: 10px; }
 .material-editor { display: flex; flex-direction: column; width: 100%; min-width: 0; min-height: 0; height: calc(100svh - 20px); max-width: 980px; margin: 0 auto; padding: 4px 8px 0; }
-.editor-topbar { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 0 0 24px; }
+.editor-topbar { position: relative; display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 0 0 24px; }
 .editor-navigation, .editor-document-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 .editor-nav-button, .editor-download summary { display: flex; align-items: center; justify-content: center; gap: 7px; height: var(--button-height); min-height: var(--button-height); padding: 8px 12px; border: 1px solid var(--line); border-radius: 9px; background: white; color: var(--ink); font-size: 12px; font-weight: 550; }
 .editor-nav-button:hover, .editor-download summary:hover, .editor-nav-button[aria-expanded="true"] { background: #f0f3f8; border-color: #cbd4e1; }
@@ -316,7 +316,10 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
 .editor-wordpress-button:disabled { background: #f5f7fa; border-color: #dfe3e9; color: #cfdaea; }
 .editor-spellcheck { margin-left: auto; }
 .editor-context-panel { flex-shrink: 0; min-width: 0; max-height: 30svh; overflow-y: auto; overscroll-behavior-y: contain; margin-bottom: 20px; padding: 22px; border: 1px solid var(--line); border-radius: 12px; background: white; }
-#editor-metadata { border-radius: 8px; }
+#editor-metadata { position: absolute; z-index: 12; width: min(620px, 100%); max-height: min(420px, 65svh); margin: 0; padding: 20px; border-radius: 8px; box-shadow: 0 10px 35px #2535501f; }
+#editor-metadata:focus { outline: none; }
+.editor-nav-button .editor-metadata-chevron { width: 12px; height: 12px; transition: transform .15s ease; }
+#editor-metadata-button[aria-expanded="true"] .editor-metadata-chevron { transform: rotate(180deg); }
 .editor-seo-metadata { display: grid; gap: 14px; margin: 0; color: #26344a; font-size: 14px; line-height: 1.65; overflow-wrap: anywhere; }
 .editor-seo-metadata dt { display: inline; color: var(--muted); font-weight: 700; }
 .editor-seo-metadata dd { display: inline; margin: 0; }

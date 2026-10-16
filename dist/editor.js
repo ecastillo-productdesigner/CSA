@@ -188,9 +188,27 @@ export function createMaterialEditor({ onSave, onDownloadSource, onSendToCms, on
       $(`#editor-${key}-button`).setAttribute('aria-expanded', String(active));
     }
     if (name === 'sources' && open) renderSources();
-    if (name === 'metadata' && open) updateMetadata();
+    if (name === 'metadata' && open) { updateMetadata(); positionMetadataDropdown(); $('#editor-download').open = false; $('#editor-metadata').focus({ preventScroll: true }); }
     if (name === 'find' && open) $('#editor-find-text').focus();
   }
+  function positionMetadataDropdown() {
+    const dropdown = $('#editor-metadata');
+    if (dropdown.hidden) return;
+    const trigger = $('#editor-metadata-button').getBoundingClientRect();
+    const bar = $('.editor-topbar').getBoundingClientRect();
+    dropdown.style.top = `${trigger.bottom - bar.top + 8}px`;
+    dropdown.style.left = `${Math.max(0, Math.min(trigger.left - bar.left, bar.width - dropdown.offsetWidth))}px`;
+  }
+  document.addEventListener('pointerdown', event => {
+    if (!$('#editor-metadata').hidden && !event.target.closest('#editor-metadata, #editor-metadata-button')) setPanel('metadata', false);
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape' || $('#editor-metadata').hidden || document.querySelector('dialog[open]')) return;
+    event.preventDefault();
+    setPanel('metadata', false);
+    $('#editor-metadata-button').focus();
+  });
+  window.addEventListener('resize', positionMetadataDropdown);
   for (const name of ['sources', 'metadata', 'find']) $(`#editor-${name}-button`).addEventListener('click', () => setPanel(name, $(`#editor-${name}`).hidden));
   for (const button of root.querySelectorAll('[data-editor-close]')) button.addEventListener('click', () => { setPanel(button.dataset.editorClose, false); $(`#editor-${button.dataset.editorClose}-button`).focus(); });
 

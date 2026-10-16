@@ -35,7 +35,7 @@ Open http://localhost:4173. Set `PORT` to change the port.
 - Recent projects saved in the current browser and shown as a list that expands downward under Recents in the sidebar. Click Recents again or press Escape to collapse the list. Long titles are truncated with an ellipsis; selecting a title reopens that project.
 - Four fictional celebrity sample stories appear in Recents alongside saved projects. Every title ends in `...`, including short titles. Opening a sample identifies its content as fictional.
 - New project navigation and a profile popover.
-- Hover anywhere on the collapsed sidebar to see a right-arrow cursor; click anywhere on the rail to expand it with New Project and Recents labels. The CSA logo stays unchanged. Use the corner control, logo, or Escape to collapse it. The expanded navigation buttons perform their usual actions; keyboard activation of the collapsed buttons also remains available. On narrow screens the panel overlays the page and closes when you start a project.
+- Hover over the collapsed sidebar to see a compact 20-pixel right-arrow cursor; click the rail to expand it with New Project and Recents labels. The CSA logo uses a pointer cursor and always returns to the homepage, from either sidebar state. Use the corner control or Escape to collapse the panel. The expanded navigation buttons perform their usual actions; keyboard activation of the collapsed buttons also remains available. On narrow screens the panel overlays the page and closes when you start a project.
 
 In the project starter, the two material cards retain the earlier reference label: the left opens file selection, and the right opens text entry. The reference photo is represented by a local illustrated avatar.
 

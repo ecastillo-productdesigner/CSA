@@ -400,8 +400,6 @@ function syncSidebarOverlay() {
 function setSidebarExpanded(expanded, restoreFocus = false) {
   if (!expanded) setRecentsExpanded(false);
   document.body.classList.toggle('sidebar-expanded', expanded);
-  $('.brand').setAttribute('aria-expanded', String(expanded));
-  $('.brand').setAttribute('aria-label', expanded ? 'Collapse sidebar' : 'Expand sidebar');
   $('#collapse-sidebar').hidden = !expanded;
   $('#sidebar-backdrop').hidden = !expanded;
   closeProfile();
@@ -411,12 +409,12 @@ function setSidebarExpanded(expanded, restoreFocus = false) {
 
 sidebarOverlayQuery.addEventListener('change', syncSidebarOverlay);
 $('.sidebar').addEventListener('click', (event) => {
-  if (event.detail === 0 || document.body.classList.contains('sidebar-expanded')) return;
+  if (event.target.closest('.brand') || event.detail === 0 || document.body.classList.contains('sidebar-expanded')) return;
   event.preventDefault();
   event.stopImmediatePropagation();
   setSidebarExpanded(true);
 }, true);
-$('.brand').addEventListener('click', () => setSidebarExpanded(!document.body.classList.contains('sidebar-expanded')));
+$('.brand').addEventListener('click', () => showHome());
 $('#collapse-sidebar').addEventListener('click', () => setSidebarExpanded(false, true));
 $('#sidebar-backdrop').addEventListener('click', () => setSidebarExpanded(false, true));
 $('#new-project').addEventListener('click', showProjectStart);

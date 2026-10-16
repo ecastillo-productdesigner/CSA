@@ -9,8 +9,8 @@
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0&amp;icon_names=left_panel_close">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="./styles.css?v=20261015-results-count">
-    <script src="./demo-access.js?v=20261015-results-count" type="module"></script>
+    <link rel="stylesheet" href="./styles.css?v=20261015-output-workspace">
+    <script src="./demo-access.js?v=20261015-output-workspace" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -42,6 +42,7 @@
       <symbol id="icon-redo" viewBox="0 0 24 24"><path d="m15 4 5 5-5 5m5-5h-9a6 6 0 0 0 0 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-file" viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8Zm0 0v5h5M9 13h6M9 17h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-document" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8h-4a2 2 0 0 1-2-2Zm2 0v4h4Z" fill="currentColor"/><path d="M9 14h6m-6 4h3" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"/></symbol>
       <symbol id="icon-link" viewBox="0 0 24 24"><path d="m10 13 4-4m-5 7-2 2a3.5 3.5 0 0 1-5-5l4-4a3.5 3.5 0 0 1 5 0m2 0 2-2a3.5 3.5 0 1 1 5 5l-4 4a3.5 3.5 0 0 1-5 0" transform="translate(1 -1)" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
       <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
       <symbol id="icon-filters" viewBox="0 0 24 24"><path d="M5 8h14M5 16h14" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 4h5v8H8zm4 8h5v8h-5z" fill="currentColor"/></symbol>
@@ -82,6 +83,7 @@
       <section class="composer" id="composer" aria-labelledby="composer-heading" hidden>
         <h1 class="visually-hidden" id="composer-heading">New project</h1>
         <div class="composer-canvas" role="region" aria-label="Project canvas">
+          <div class="output-placeholder" id="output-placeholder" role="status" hidden><svg aria-hidden="true"><use href="#icon-document"/></svg><p>Content will appear here<br>when you select an output</p></div>
           <section class="material-editor" id="material-editor" aria-label="Story editor" hidden>
             <div class="editor-topbar">
               <div class="editor-navigation">
@@ -139,7 +141,7 @@
             </div>
             <div class="composer-actions">
               <button class="create-variant" type="button" disabled title="Select content to create a variant">Create Variant</button>
-              <button class="variant-settings" type="button" disabled aria-label="Variant settings" title="Select content to enable variant settings"><svg aria-hidden="true"><use href="#icon-filters"/></svg></button>
+              <button class="variant-settings" id="composer-direction-button" type="button" disabled aria-label="Editorial direction" aria-haspopup="dialog" aria-controls="editorial-direction-dialog" title="Editorial direction"><svg aria-hidden="true"><use href="#icon-filters"/></svg></button>
             </div>
           </section>
           <section class="composer-panel composer-outputs" aria-labelledby="composer-outputs-heading">
@@ -173,7 +175,7 @@
         </form>
         <div class="results-toolbar">
           <label class="results-sort">Sort by: <select id="results-sort" aria-label="Sort articles"><option value="newest">Newest</option><option value="oldest">Oldest</option></select></label>
-          <span class="results-count" id="results-count" role="status" aria-live="polite"></span>
+          <div class="results-toolbar-actions"><span class="results-count" id="results-count" role="status" aria-live="polite"></span><button class="text-button" id="results-toggle-filters" type="button" aria-controls="results-filter-panel" aria-expanded="false">Filters</button></div>
         </div>
         <div class="results-filter-panel" id="results-filter-panel" hidden>
           <label>Source<select id="results-source"><option value="all">All sources</option></select></label>
@@ -185,7 +187,7 @@
         <p class="results-empty" id="results-empty" role="status" hidden>No articles match these filters. Try another source or date.</p>
         <button class="load-more" id="load-more" type="button">Load more</button>
         <div class="results-actions">
-          <button class="filter-button" id="results-filter-button" type="button" aria-label="Filter articles" aria-controls="results-filter-panel" aria-expanded="false"><svg><use href="#icon-filters"/></svg></button>
+          <button class="filter-button" id="results-filter-button" type="button" aria-label="Editorial direction" aria-haspopup="dialog" aria-controls="editorial-direction-dialog"><svg aria-hidden="true"><use href="#icon-filters"/></svg></button>
           <button class="draft-button" id="create-draft" type="button">Draft</button>
         </div>
         <p class="results-selection" id="results-selection" role="status" hidden></p>
@@ -219,6 +221,16 @@
       </form>
       <div class="new-project-divider"><span>Or use your own material</span></div>
       <button class="new-project-material" id="new-project-material" type="button"><span class="new-project-material-icon"><svg aria-hidden="true"><use href="#icon-file"/></svg></span><span><strong>Start from your own material</strong><small>Bring your notes, an article, or a rough idea</small></span><span aria-hidden="true">›</span></button>
+    </dialog>
+
+    <dialog class="editorial-direction-dialog" id="editorial-direction-dialog" aria-labelledby="editorial-direction-heading" aria-describedby="editorial-direction-help">
+      <form id="editorial-direction-form">
+        <div class="panel-heading"><h2 id="editorial-direction-heading">Editorial Direction <span>(optional)</span></h2><button class="icon-button" type="button" data-close="editorial-direction-dialog" aria-label="Close editorial direction"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></div>
+        <label class="visually-hidden" for="editorial-direction-text">Editorial direction</label>
+        <textarea id="editorial-direction-text" rows="5" maxlength="8000" placeholder="Guide the CSA: Add additional facts, give directions on framing, etc." aria-describedby="editorial-direction-help"></textarea>
+        <p id="editorial-direction-help">You can refine your direction here before continuing — it will guide every downstream step.</p>
+        <div class="dialog-footer"><button class="secondary-button" type="button" data-close="editorial-direction-dialog">Cancel</button><button class="primary-button" type="submit">Save direction</button></div>
+      </form>
     </dialog>
 
     <dialog class="editor-link-dialog" id="editor-link-dialog" aria-labelledby="editor-link-heading"><form id="editor-link-form"><div class="editor-panel-heading"><h2 id="editor-link-heading">Add a link</h2><button class="icon-button" type="button" data-close="editor-link-dialog" aria-label="Close link dialog"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></div><label for="editor-link-text">Link text<input id="editor-link-text" type="text" placeholder="Text to display" maxlength="2000"></label><label for="editor-link-url">URL<input id="editor-link-url" type="text" placeholder="https://" required></label><p class="form-error" id="editor-link-error" role="alert" hidden></p><div class="dialog-footer"><button class="secondary-button" id="editor-remove-link" type="button">Remove link</button><button class="primary-button" type="submit">Apply link</button></div></form></dialog>

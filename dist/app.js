@@ -1,4 +1,4 @@
-import { createSearchExperience } from './search.js?v=20261015-results-count';
+import { createSearchExperience } from './search.js?v=20261015-output-workspace';
 import { createDashboard } from './dashboard.js?v=20261015-draft';
 import { createMaterialEditor } from './editor.js?v=20261015-editor';
 
@@ -52,6 +52,7 @@ let projects = [
   ...savedProjects,
 ];
 let activeProjectId = null;
+let directionProjectId = null;
 let materialMode = 'upload';
 let selectedFiles = [];
 let addingToProject = false;
@@ -143,6 +144,8 @@ function createProject(sources, options = {}) {
     dashboard: first?.type !== 'search',
     ...(options.kind ? { kind: options.kind } : {}),
     ...(options.draftText !== undefined ? { draftText: options.draftText } : {}),
+    ...(options.awaitingOutput ? { awaitingOutput: true } : {}),
+    ...(typeof options.editorialDirection === 'string' ? { editorialDirection: options.editorialDirection } : {}),
   };
   projects.unshift(project);
   saveProjects();
@@ -191,7 +194,10 @@ function closeComposer() {
   try { sessionStorage.removeItem('csa.editor.active.v1'); } catch { /* Navigation still works without storage. */ }
   if ($('#new-project-dialog').open) $('#new-project-dialog').close();
   $('#composer').hidden = true;
-  $('#composer').classList.remove('has-editor');
+  $('#composer').classList.remove('has-editor', 'has-output');
+  $('#output-placeholder').hidden = true;
+  $('#composer-direction-button').disabled = true;
+  $('#composer-direction-button').classList.remove('has-direction');
   document.body.classList.remove('showing-composer', 'editing-material');
 }
 
@@ -287,12 +293,23 @@ function showEditorProject(project) {
   activeProjectId = project.id;
   searchExperience.hide();
   document.body.classList.remove('showing-results');
-  document.body.classList.add('showing-composer', 'editing-material');
+  document.body.classList.add('showing-composer');
   for (const section of ['home', 'workspace', 'project-start']) $(`#${section}`).hidden = true;
   $('#composer').hidden = false;
-  $('#composer').classList.add('has-editor');
-  $('#composer-heading').textContent = 'Story editor';
-  richEditor.open(project);
+  if (project.awaitingOutput) {
+    $('#composer').classList.add('has-output');
+    $('#composer-heading').textContent = 'Story workspace';
+    $('#output-placeholder').hidden = false;
+    for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = project.toolPreferences?.[key] || '';
+    $('#main').focus({ preventScroll: true });
+  } else {
+    document.body.classList.add('editing-material');
+    $('#composer').classList.add('has-editor');
+    $('#composer-heading').textContent = 'Story editor';
+    richEditor.open(project);
+  }
+  $('#composer-direction-button').disabled = false;
+  $('#composer-direction-button').classList.toggle('has-direction', Boolean(project.editorialDirection));
   closeProfile();
   renderRecentProjects();
   document.title = `${project.title} — CSA`;
@@ -304,6 +321,36 @@ function closeProfile() {
   $('#profile-menu').hidden = true;
   $('#show-profile').setAttribute('aria-expanded', 'false');
 }
+
+function openEditorialDirection(projectId) {
+  const project = projects.find(entry => entry.id === projectId);
+  if (!project) return;
+  directionProjectId = projectId;
+  $('#editorial-direction-text').value = typeof project.editorialDirection === 'string' ? project.editorialDirection : '';
+  $('#editorial-direction-dialog').showModal();
+  $('#editorial-direction-text').focus();
+}
+
+$('#composer-direction-button').addEventListener('click', () => openEditorialDirection(activeProjectId));
+$('#editorial-direction-dialog').addEventListener('close', () => { directionProjectId = null; });
+$('#editorial-direction-form').addEventListener('submit', event => {
+  event.preventDefault();
+  const project = projects.find(entry => entry.id === directionProjectId);
+  if (!project) return;
+  project.editorialDirection = $('#editorial-direction-text').value.trim();
+  project.updatedAt = Date.now();
+  const saved = saveProjects();
+  searchExperience.setEditorialDirection(project.id, project.editorialDirection);
+  $('#composer-direction-button').classList.toggle('has-direction', Boolean(project.editorialDirection));
+  $('#editorial-direction-dialog').close();
+  if (saved) notify(project.editorialDirection ? 'Editorial direction saved.' : 'Editorial direction cleared.');
+});
+for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).addEventListener('change', () => {
+  const project = projects.find(entry => entry.id === activeProjectId);
+  if (!project?.awaitingOutput) return;
+  project.toolPreferences = Object.fromEntries(['format', 'audience', 'voice'].map(name => [name, $(`#composer-${name}`).value]));
+  saveProjects();
+});
 
 $('#source-input').addEventListener('input', () => {
   $('#start-button').disabled = !$('#source-input').value.trim();
@@ -580,13 +627,13 @@ for (const dialog of document.querySelectorAll('dialog')) {
 
 const searchExperience = createSearchExperience({
   onSearch: startSearch,
+  onDirection: openEditorialDirection,
   onSelectionChange(id, selection) {
     const project = projects.find((entry) => entry.id === id);
     if (project) { project.selectedArticleIds = selection; saveProjects(); }
   },
-  onDraft({ query, articles }) {
-    const draftText = [query, '', ...articles.map((article) => `${article.title}\n\n${article.excerpt}\n\nSource: ${article.source} | ${article.date}\n`)].join('\n');
-    createProject(articles.map((article) => ({ type: 'text', title: article.title, text: `${article.excerpt}\n\nSample article · ${article.source} · ${article.date}` })), { title: `${titleFrom(query)} — Draft`, kind: 'draft', draftText });
+  onDraft({ query, articles, editorialDirection }) {
+    createProject(articles.map((article) => ({ type: 'text', title: article.title, text: `${article.excerpt}\n\nSample article · ${article.source} · ${article.date}` })), { title: `${titleFrom(query)} — Draft`, kind: 'draft', awaitingOutput: true, editorialDirection });
   },
 });
 

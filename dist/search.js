@@ -34,7 +34,7 @@ function dateLabel(value) {
   return new Date(`${value}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 }
 
-export function createSearchExperience({ onSearch, onSelectionChange, onDraft }) {
+export function createSearchExperience({ onSearch, onSelectionChange, onDirection, onDraft }) {
   const $ = (selector) => document.querySelector(selector);
   let state = null;
 
@@ -55,6 +55,8 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDraft })
     const filtered = filteredArticles();
     const visible = filtered.slice(0, state.visibleCount);
     $('#results-count').textContent = `${filtered.length.toLocaleString()} ${filtered.length === 1 ? 'story' : 'stories'} found`;
+    $('#results-filter-button').classList.toggle('has-direction', Boolean(state.editorialDirection));
+    $('#results-filter-button').title = state.editorialDirection ? 'Edit saved editorial direction' : 'Add editorial direction';
     const list = $('#result-list');
     list.replaceChildren(...visible.map((article) => {
       const item = node('li');
@@ -102,12 +104,13 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDraft })
     $('#results-source').value = 'all'; $('#results-after').value = '';
     render();
   });
-  $('#results-filter-button').addEventListener('click', () => {
+  $('#results-toggle-filters').addEventListener('click', () => {
     const expanded = $('#results-filter-panel').hidden;
     $('#results-filter-panel').hidden = !expanded;
-    $('#results-filter-button').setAttribute('aria-expanded', String(expanded));
+    $('#results-toggle-filters').setAttribute('aria-expanded', String(expanded));
     if (expanded) $('#results-source').focus();
   });
+  $('#results-filter-button').addEventListener('click', () => { if (state) onDirection(state.projectId); });
   $('#load-more').addEventListener('click', () => { if (state) { state.visibleCount += 4; render(); } });
   $('#result-list').addEventListener('click', (event) => {
     const card = event.target.closest('.result-card');
@@ -121,7 +124,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDraft })
   $('#create-draft').addEventListener('click', () => {
     if (!state) return;
     const articles = chosenArticles();
-    if (articles.length) onDraft({ query: state.query, articles });
+    if (articles.length) onDraft({ query: state.query, articles, editorialDirection: state.editorialDirection });
   });
 
   return {
@@ -129,7 +132,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDraft })
       const query = project.sources[0].title;
       const articles = sampleArticles(query);
       const savedSelection = Array.isArray(project.selectedArticleIds) ? project.selectedArticleIds : [];
-      state = { projectId: project.id, query, articles, sort: 'newest', source: 'all', after: '', visibleCount: 4, selected: new Set(savedSelection.filter((id) => articles.some((article) => article.id === id))) };
+      state = { projectId: project.id, query, articles, editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '', sort: 'newest', source: 'all', after: '', visibleCount: 4, selected: new Set(savedSelection.filter((id) => articles.some((article) => article.id === id))) };
       $('#search-results').hidden = false;
       $('#results-heading').textContent = `Search results for ${query}`;
       $('#results-query').value = query;
@@ -141,7 +144,12 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDraft })
       $('#results-source').options[0].value = 'all';
       $('#results-after').value = '';
       $('#results-filter-panel').hidden = true;
-      $('#results-filter-button').setAttribute('aria-expanded', 'false');
+      $('#results-toggle-filters').setAttribute('aria-expanded', 'false');
+      render();
+    },
+    setEditorialDirection(projectId, direction) {
+      if (state?.projectId !== projectId) return;
+      state.editorialDirection = direction;
       render();
     },
     hide() { state = null; $('#search-results').hidden = true; },

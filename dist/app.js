@@ -329,8 +329,15 @@ function showProject(id) {
 }
 
 function renderSourceStory(project) {
-  let story = project.sourceStory;
-  if (!story || typeof story.title !== 'string' || !Array.isArray(story.paragraphs) || !story.paragraphs.length || !story.paragraphs.every(paragraph => typeof paragraph === 'string')) {
+  const latestOutput = projectOutputs(project).filter(outputIsReady).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))[0];
+  let story;
+  if (latestOutput) {
+    if (populateOutputContent(latestOutput)) saveProjects();
+    const ops = Array.isArray(latestOutput.document?.ops) ? latestOutput.document.ops : [];
+    const text = ops.map(op => typeof op?.insert === 'string' ? op.insert : '').join('') || latestOutput.draftText || '';
+    story = { title: latestOutput.title, paragraphs: text.split(/\n+/).map(paragraph => paragraph.trim()).filter(Boolean) };
+  } else story = project.sourceStory;
+  if (!latestOutput && (!story || typeof story.title !== 'string' || !Array.isArray(story.paragraphs) || !story.paragraphs.length || !story.paragraphs.every(paragraph => typeof paragraph === 'string'))) {
     const sample = sampleVariant(project, []);
     populateOutputContent(sample);
     const paragraphs = sample.draftText.split(/\n\s*\n/);
@@ -443,6 +450,7 @@ function finishOutputProcessing(project) {
   delete project.outputProcessing;
   saveProjects();
   if (activeProjectId === project.id && !$('#composer').hidden) {
+    if (!$('#output-placeholder').hidden) renderSourceStory(project);
     renderOutputs(project);
     notify('Output ready. Select a solid card to open the editor.');
   }
@@ -476,13 +484,20 @@ function deleteOutput(project, id) {
   project.outputs = outputs.filter(output => output.id !== id);
   if (selected) delete project.selectedOutputId;
   saveProjects();
-  if (selected) showEditorProject(project); else renderOutputs(project);
+  if (selected) showEditorProject(project);
+  else {
+    renderOutputs(project);
+    if (!$('#output-placeholder').hidden) renderSourceStory(project);
+  }
   notify('Variant deleted.', () => {
     const current = projectOutputs(project);
     current.splice(Math.min(index, current.length), 0, removed);
     project.outputs = current;
     saveProjects();
-    if (activeProjectId === project.id) renderOutputs(project);
+    if (activeProjectId === project.id) {
+      renderOutputs(project);
+      if (!$('#output-placeholder').hidden) renderSourceStory(project);
+    }
     notify('Variant restored.');
   });
 }

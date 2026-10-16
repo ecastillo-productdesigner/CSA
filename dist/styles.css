@@ -30,6 +30,19 @@ svg { display: block; width: 24px; height: 24px; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 .skip-link { position: fixed; z-index: 20; top: -60px; left: 100px; padding: 12px 18px; border-radius: 8px; background: var(--surface); }
 .skip-link:focus { top: 14px; }
+.demo-access { display: grid; place-items: center; min-height: 100svh; padding: 24px; }
+.demo-access-card { width: min(100%, 420px); padding: 36px; border: 1px solid var(--line); border-radius: 21px; background: var(--surface); }
+.demo-access-brand { display: inline-grid; place-items: center; width: 52px; height: 52px; margin-bottom: 25px; border: 1px solid var(--line); border-radius: 11px; font-size: 15px; font-weight: 700; }
+.demo-access-card h1 { margin: 0 0 10px; font-size: 25px; line-height: 1.3; letter-spacing: -.35px; }
+.demo-access-intro { margin: 0 0 28px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.demo-password-field { display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--background); }
+.demo-password-field:focus-within { border-color: #a3afbf; box-shadow: 0 0 0 3px #4d5d7908; }
+.demo-password-field input { width: 100%; min-width: 0; height: 100%; padding: 0; border: 0; background: transparent; color: var(--ink); font-size: 16px; }
+.demo-password-field input:focus-visible { outline: none; }
+.demo-password-field button { flex-shrink: 0; padding: 7px 2px; border: 0; border-radius: 4px; background: transparent; font-size: 12px; font-weight: 650; }
+.demo-access-submit { width: 100%; min-height: 46px; margin-top: 22px; padding: 12px 16px; border: 1px solid var(--ink); border-radius: 10px; background: var(--ink); color: white; font-size: 14px; font-weight: 650; }
+.demo-access-submit:hover:not(:disabled) { background: #35445e; }
+.demo-access-submit:disabled { opacity: .7; }
 .sidebar { position: fixed; z-index: 5; top: 10px; bottom: 10px; left: var(--sidebar-left); width: var(--sidebar-width); display: flex; flex-direction: column; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 11px; transition: width .2s ease; }
 .sidebar-header { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 62px; flex-shrink: 0; border-bottom: 1px solid var(--line); }
 .brand { display: grid; place-items: center; flex-shrink: 0; width: 54px; height: 100%; padding: 0; border: 0; border-radius: 10px 10px 0 0; background: transparent; font-size: 15px; font-weight: 700; letter-spacing: -.3px; }

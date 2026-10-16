@@ -6,6 +6,8 @@ A responsive implementation of the supplied CSA homepage. Plain HTML, CSS, and J
 
 Open [CSA](https://ecastillo-productdesigner.github.io/CSA/). Changes pushed to `main` automatically deploy the `dist` folder through GitHub Pages.
 
+The site opens with a demo password screen. Access lasts for the current tab session, including refreshes. Choose **Lock demo** in the profile menu to require the password again. This browser-only gate is bypassable and does not protect the public repository, source files, or assets. It is only intended for casual demo sharing. The password digest is configured in `dist/demo-access.js`; no password is sent to a server.
+
 ## Run locally
 
 With Node.js 20 or newer installed:
@@ -43,6 +45,7 @@ The result portrait uses the user's supplied `Frame 109.png` as a local CSS imag
 ## Files
 
 - `dist/index.html` — page structure and dialogs
+- `dist/demo-access.js` — browser-only demo password screen and tab session
 - `dist/styles.css` — layout, design tokens, and responsive styles
 - `dist/app.js` — browser interactions and project storage
 - `dist/search.js` — sample search results, selection, sorting, filters, and draft handoff

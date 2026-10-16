@@ -8,9 +8,28 @@
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./styles.css">
-    <script src="./app.js" type="module"></script>
+    <script src="./demo-access.js" type="module"></script>
   </head>
   <body>
+    <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
+      <div class="demo-access-card">
+        <span class="demo-access-brand">CSA</span>
+        <h1 id="demo-access-title">Welcome to CSA</h1>
+        <p class="demo-access-intro">Enter the demo password to continue.</p>
+        <form id="demo-access-form">
+          <label class="field-label" for="demo-password">Password</label>
+          <div class="demo-password-field">
+            <input id="demo-password" name="password" type="password" autocomplete="current-password" aria-describedby="demo-password-error" required autofocus>
+            <button id="demo-password-visibility" type="button" aria-label="Show password" aria-pressed="false">Show</button>
+          </div>
+          <p class="form-error" id="demo-password-error" role="alert" hidden></p>
+          <button class="demo-access-submit" id="demo-access-submit" type="submit">Open workspace</button>
+        </form>
+        <noscript><p class="form-error">Enable JavaScript to open this demo.</p></noscript>
+      </div>
+    </section>
+
+    <div id="workspace-app" hidden inert>
     <a class="skip-link" href="#main">Skip to content</a>
     <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <symbol id="icon-plus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M12 7v10M7 12h10" stroke="white" stroke-width="2" stroke-linecap="round"/></symbol>
@@ -144,7 +163,7 @@
       </section>
     </main>
 
-    <div class="profile-menu" id="profile-menu" hidden><img src="./avatar.svg" alt="" width="38" height="38"><div><strong>Julia</strong><span>Personal workspace</span><button class="text-button profile-navigation" id="profile-home" type="button">Home</button><button class="text-button profile-navigation" id="profile-materials" type="button">Search &amp; materials</button></div></div>
+    <div class="profile-menu" id="profile-menu" hidden><img src="./avatar.svg" alt="" width="38" height="38"><div><strong>Julia</strong><span>Personal workspace</span><button class="text-button profile-navigation" id="profile-home" type="button">Home</button><button class="text-button profile-navigation" id="profile-materials" type="button">Search &amp; materials</button><button class="text-button profile-navigation" id="demo-lock" type="button">Lock demo</button></div></div>
 
     <dialog class="new-project-dialog" id="new-project-dialog" aria-labelledby="new-project-dialog-title">
       <h2 class="visually-hidden" id="new-project-dialog-title">Start a new project</h2>
@@ -176,5 +195,6 @@
       <div class="dialog-footer"><button class="secondary-button" type="button" data-close="material-dialog">Cancel</button><button class="primary-button" id="use-material" type="button" disabled>Start creating <span aria-hidden="true">→</span></button></div>
     </dialog>
     <div class="toast" id="toast" role="status" hidden><span id="toast-message"></span><button id="toast-undo" type="button" hidden>Undo</button></div>
+    </div>
   </body>
 </html>

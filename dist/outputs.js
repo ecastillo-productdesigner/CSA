@@ -17,9 +17,23 @@ export function outputIsReady(output) {
   return output.status === 'ready' || (!output.status && Boolean(output.document || output.draftText));
 }
 
+export function selectedOutputs(project) {
+  const legacyIds = [...(Array.isArray(project?.selectedPendingOutputIds) ? project.selectedPendingOutputIds : []), ...(project?.selectedOutputId ? [project.selectedOutputId] : [])];
+  const selectedIds = new Set(Array.isArray(project?.selectedOutputIds) ? project.selectedOutputIds : legacyIds);
+  return projectOutputs(project).filter(output => selectedIds.has(output.id));
+}
+
 export function selectedPendingOutputs(project) {
-  const selectedIds = new Set(Array.isArray(project?.selectedPendingOutputIds) ? project.selectedPendingOutputIds : []);
-  return projectOutputs(project).filter(output => !outputIsReady(output) && selectedIds.has(output.id));
+  return selectedOutputs(project).filter(output => !outputIsReady(output));
+}
+
+let badgeOverflowObserver;
+
+function updateBadgeOverflow(badges) {
+  const overflows = badges.scrollWidth > badges.clientWidth + 1;
+  badges.dataset.fadeStart = String(overflows && badges.scrollLeft > 1);
+  badges.dataset.fadeEnd = String(overflows && badges.scrollLeft + badges.clientWidth < badges.scrollWidth - 1);
+  badges.tabIndex = overflows ? 0 : -1;
 }
 
 function legacySampleContent(heading) {
@@ -179,7 +193,7 @@ export function renderOutputs(project) {
   const outputs = projectOutputs(project);
   const processing = Boolean(project?.outputProcessing);
   const selectedPending = selectedPendingOutputs(project);
-  const selectedIds = new Set(selectedPending.map(output => output.id));
+  const selectedIds = new Set(selectedOutputs(project).map(output => output.id));
   const list = document.querySelector('#output-list');
   document.querySelector('.composer-outputs').setAttribute('aria-busy', String(processing));
   const create = document.querySelector('#create-output');
@@ -194,7 +208,8 @@ export function renderOutputs(project) {
     const item = document.createElement('li');
     const card = document.createElement('article');
     const ready = outputIsReady(output);
-    const selected = ready ? project.selectedOutputId === output.id : selectedIds.has(output.id);
+    const selected = selectedIds.has(output.id);
+    const active = ready && project.selectedOutputId === output.id;
     card.className = 'output-card';
     card.dataset.selected = String(selected);
     card.dataset.ready = String(ready);
@@ -203,13 +218,32 @@ export function renderOutputs(project) {
     open.className = 'output-open';
     open.dataset.outputId = output.id;
     open.disabled = !ready && processing;
-    open.setAttribute('aria-label', `${!ready ? selected ? 'Deselect output' : 'Select output' : selected ? 'Return to workspace from' : 'Open variant'}: ${output.title}`);
-    open.setAttribute('aria-pressed', String(selected));
-    open.title = !ready ? selected ? 'Unselect this output' : 'Select this output to create it' : selected ? 'Return to your workspace' : 'Open this variant in the editor';
+    open.setAttribute('aria-label', `${!ready ? 'Pending output' : active ? 'Return to workspace from' : 'Open variant'}: ${output.title}`);
+    open.setAttribute('aria-pressed', String(ready ? active : selected));
+    open.title = !ready ? selected ? 'Unselect this output' : 'Select this output to create it' : active ? 'Return to your workspace' : 'Open this variant in the editor';
     const top = document.createElement('span');
     top.className = 'output-card-top';
     const badges = document.createElement('span');
     badges.className = 'output-badges';
+    badges.setAttribute('role', 'group');
+    badges.setAttribute('aria-label', 'Output settings');
+    badges.addEventListener('scroll', () => updateBadgeOverflow(badges), { passive: true });
+    let drag = null;
+    badges.addEventListener('pointerdown', event => {
+      if (event.pointerType !== 'mouse' || event.button !== 0 || badges.scrollWidth <= badges.clientWidth + 1) return;
+      drag = { pointerId: event.pointerId, x: event.clientX, scrollLeft: badges.scrollLeft };
+      badges.setPointerCapture(event.pointerId);
+      badges.dataset.dragging = 'true';
+      badges.focus({ preventScroll: true });
+      event.preventDefault();
+    });
+    badges.addEventListener('pointermove', event => {
+      if (drag?.pointerId === event.pointerId) badges.scrollLeft = drag.scrollLeft + drag.x - event.clientX;
+    });
+    for (const eventName of ['pointerup', 'pointercancel', 'lostpointercapture']) badges.addEventListener(eventName, () => {
+      drag = null;
+      delete badges.dataset.dragging;
+    });
     const labels = Array.isArray(output.labels) ? output.labels : [];
     for (const label of labels) {
       if (!label || !['format', 'audience', 'voice'].includes(label.key) || typeof label.label !== 'string') continue;
@@ -222,8 +256,14 @@ export function renderOutputs(project) {
     indicator.className = 'output-selection-indicator';
     indicator.setAttribute('aria-hidden', 'true');
     if (selected) indicator.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
-    top.append(indicator);
-    top.append(badges);
+    const selection = document.createElement('button');
+    selection.type = 'button';
+    selection.className = 'output-selection-button';
+    selection.dataset.selectOutput = output.id;
+    selection.disabled = !ready && processing;
+    selection.setAttribute('aria-label', `${selected ? 'Deselect output' : 'Select output'}: ${output.title}`);
+    selection.setAttribute('aria-pressed', String(selected));
+    selection.append(indicator);
     const heading = document.createElement('strong');
     heading.className = 'output-card-title';
     heading.textContent = output.title;
@@ -240,8 +280,17 @@ export function renderOutputs(project) {
     heart.setAttribute('aria-hidden', 'true');
     heart.textContent = 'favorite';
     favorite.append(heart);
-    card.append(open, favorite);
+    card.append(open, selection, badges, favorite);
     item.append(card);
     return item;
   }));
+  badgeOverflowObserver?.disconnect();
+  badgeOverflowObserver ||= new ResizeObserver(entries => {
+    for (const entry of entries) updateBadgeOverflow(entry.target.closest('.output-badges'));
+  });
+  for (const badges of list.querySelectorAll('.output-badges')) {
+    updateBadgeOverflow(badges);
+    badgeOverflowObserver.observe(badges);
+    for (const badge of badges.children) badgeOverflowObserver.observe(badge);
+  }
 }

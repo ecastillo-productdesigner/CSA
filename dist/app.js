@@ -1,13 +1,13 @@
 import { createSearchExperience } from './search.js?v=20261016-add-source';
-import { createDashboard } from './dashboard.js?v=20261016-output-selection';
+import { createDashboard } from './dashboard.js?v=20261016-multiple-outputs';
 import { createRecentProjects } from './recent-projects.js?v=20261016-project-actions';
-import { createMaterialEditor } from './editor.js?v=20261016-output-selection';
+import { createMaterialEditor } from './editor.js?v=20261016-multiple-outputs';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
 import { createRailNavigation } from './navigation.js?v=20261016-sidebar-sources';
 import { createProjectSources } from './sources.js?v=20261016-sidebar-sources';
-import { projectOutputs, sampleVariant, outputIsReady, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261016-output-selection';
-import { createOutputPresets } from './output-presets.js?v=20261016-output-selection';
+import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261016-multiple-outputs';
+import { createOutputPresets } from './output-presets.js?v=20261016-multiple-outputs';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -117,6 +117,7 @@ function openSavedOutput(projectId, outputId) {
   const project = projects.find(entry => entry.id === projectId && !entry.archivedAt && !entry.deletedAt);
   const output = projectOutputs(project).find(entry => entry.id === outputId && entry.isFavorite);
   if (!output) return;
+  project.selectedOutputIds = [...new Set([...selectedOutputs(project).map(entry => entry.id), output.id])];
   if (outputIsReady(output)) {
     project.selectedOutputId = output.id;
     saveProjects();
@@ -540,24 +541,30 @@ $('#output-list').addEventListener('click', event => {
     [...$('#output-list').querySelectorAll('[data-favorite-output]')].find(button => button.dataset.favoriteOutput === output.id)?.focus({ preventScroll: true });
     return;
   }
+  const selection = event.target.closest('[data-select-output]');
   const card = event.target.closest('[data-output-id]');
-  if (!card) return;
-  const output = projectOutputs(project).find(entry => entry.id === card.dataset.outputId);
+  if (!selection && !card) return;
+  const output = projectOutputs(project).find(entry => entry.id === (selection?.dataset.selectOutput || card.dataset.outputId));
   if (!output) return;
-  if (!outputIsReady(output)) {
-    if (project.outputProcessing) return;
-    const selectedIds = new Set(selectedPendingOutputs(project).map(entry => entry.id));
+  if (selection || !outputIsReady(output)) {
+    if (project.outputProcessing && !outputIsReady(output)) return;
+    richEditor.flush();
+    const selectedIds = new Set(selectedOutputs(project).map(entry => entry.id));
     if (selectedIds.has(output.id)) selectedIds.delete(output.id);
     else selectedIds.add(output.id);
-    project.selectedPendingOutputIds = [...selectedIds];
+    project.selectedOutputIds = [...selectedIds];
     saveProjects();
     renderOutputs(project);
-    [...$('#output-list').querySelectorAll('[data-output-id]')].find(button => button.dataset.outputId === output.id)?.focus({ preventScroll: true });
+    const selector = selection ? '[data-select-output]' : '[data-output-id]';
+    [...$('#output-list').querySelectorAll(selector)].find(button => (button.dataset.selectOutput || button.dataset.outputId) === output.id)?.focus({ preventScroll: true });
     return;
   }
   richEditor.flush();
   if (project.selectedOutputId === output.id) delete project.selectedOutputId;
-  else project.selectedOutputId = output.id;
+  else {
+    project.selectedOutputIds = [...new Set([...selectedOutputs(project).map(entry => entry.id), output.id])];
+    project.selectedOutputId = output.id;
+  }
   saveProjects();
   showEditorProject(project);
 });
@@ -568,6 +575,7 @@ function finishOutputProcessing(project, renderWhenReady = true) {
   clearTimeout(outputTimers.get(project.id));
   outputTimers.delete(project.id);
   const ids = new Set(job.ids);
+  project.selectedOutputIds = [...new Set([...selectedOutputs(project).map(output => output.id), ...ids])];
   const active = activeProjectId === project.id && !$('#composer').hidden;
   if (active) richEditor.close();
   for (const output of projectOutputs(project)) {
@@ -575,7 +583,7 @@ function finishOutputProcessing(project, renderWhenReady = true) {
   }
   const latestCreated = projectOutputs(project).find(output => output.id === job.openOutputId && outputIsReady(output)) || projectOutputs(project).filter(output => ids.has(output.id) && outputIsReady(output)).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))[0];
   if (latestCreated) project.selectedOutputId = latestCreated.id;
-  project.selectedPendingOutputIds = selectedPendingOutputs(project).map(output => output.id);
+  delete project.selectedPendingOutputIds;
   delete project.outputProcessing;
   saveProjects();
   if (active && renderWhenReady) {

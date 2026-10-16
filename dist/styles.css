@@ -50,7 +50,7 @@ body:not(.sidebar-expanded) .sidebar [data-tooltip]::after { content: 'Expand si
 .brand { display: grid; place-items: center; flex-shrink: 0; width: 54px; height: 100%; padding: 0; border: 0; border-radius: 10px 10px 0 0; background: transparent; font-size: 15px; font-weight: 700; letter-spacing: -.3px; }
 .brand:hover { background: #f8f9fb; }
 .collapse-sidebar { margin-right: 9px; }
-.collapse-sidebar svg { width: 18px; height: 18px; }
+.collapse-sidebar .material-symbols-outlined { width: 24px; height: 24px; overflow: hidden; font-size: 24px; line-height: 1; font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
 .nav-label { display: none; white-space: nowrap; font-size: 14px; font-weight: 650; line-height: 20px; }
 .sidebar-backdrop { display: none; }
 .sidebar-expanded { --sidebar-width: 424px; }

@@ -1,7 +1,7 @@
 import { createSearchExperience } from './search.js?v=20261016-tools-direction';
 import { createDashboard } from './dashboard.js?v=20261016-variant-cards';
 import { createRecentProjects } from './recent-projects.js?v=20261016-project-actions';
-import { createMaterialEditor } from './editor.js?v=20261016-variant-cards';
+import { createMaterialEditor } from './editor.js?v=20261016-editor-actions';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-search-controls';
 import { createRailNavigation } from './navigation.js?v=20261016-hover-navigation';
@@ -70,7 +70,6 @@ const toolDropdowns = createToolDropdowns({ notify });
 const recentProjectsPanel = createRecentProjects({ onOpen: showProject, onArchive: id => moveProject(id, 'archive'), onTrash: id => moveProject(id, 'trash') });
 const railNavigation = createRailNavigation({ onRecentsOpen: renderRecentProjects, onOpen: () => { toolDropdowns.close(); recentProjectsPanel.close(); } });
 const richEditor = createMaterialEditor({
-  onHome: () => showHome(),
   onDownloadSource: downloadSource,
   onSendToCms: markVariantSentToCms,
   notify,

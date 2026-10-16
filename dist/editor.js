@@ -35,7 +35,7 @@ function savedDocument(value) {
   return { ops };
 }
 
-export function createMaterialEditor({ onSave, onHome, onDownloadSource, onSendToCms, notify }) {
+export function createMaterialEditor({ onSave, onDownloadSource, onSendToCms, notify }) {
   const $ = (selector) => document.querySelector(selector);
   const root = $('#material-editor');
   const title = $('#editor-title');
@@ -157,7 +157,6 @@ export function createMaterialEditor({ onSave, onHome, onDownloadSource, onSendT
   }).observe(root);
   for (const key of ['author', 'tags']) $(`#editor-${key}`).addEventListener('input', scheduleSave);
   for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).addEventListener('change', scheduleSave);
-  $('#editor-home').addEventListener('click', () => { flush(); onHome(); });
 
   function setPanel(name, open) {
     for (const key of ['sources', 'metadata', 'find']) {

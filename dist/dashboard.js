@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261015-home-reveal';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261016-source-selection';
 
 function node(tag, className, text) {
   const element = document.createElement(tag);
@@ -54,7 +54,7 @@ export function createDashboard({ onNew, onOpen }) {
       const variants = projectOutputs(project).filter(outputIsReady);
       const sentCount = variants.filter(variant => Number.isFinite(variant.cmsSentAt) && variant.cmsSentAt > 0).length;
       const badges = node('div', 'project-badges');
-      badges.append(node('span', 'project-badge', sentCount ? `${sentCount} ${sentCount === 1 ? 'variant' : 'variants'} sent to CMS` : 'Draft'));
+      badges.append(node('span', `project-badge${sentCount ? ' project-badge--sent' : ''}`, sentCount ? `${sentCount} ${sentCount === 1 ? 'variant' : 'variants'} sent to CMS` : 'Draft'));
       const title = node('h2', '', project.title);
       title.title = project.title;
       const meta = node('div', 'project-meta');

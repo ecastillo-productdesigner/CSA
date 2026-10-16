@@ -1,5 +1,5 @@
 import { createSearchExperience } from './search.js?v=20261016-draft-selection';
-import { createDashboard } from './dashboard.js?v=20261016-variant-cards';
+import { createDashboard } from './dashboard.js?v=20261016-cms-status';
 import { createRecentProjects } from './recent-projects.js?v=20261016-project-actions';
 import { createMaterialEditor } from './editor.js?v=20261016-source-selection';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';

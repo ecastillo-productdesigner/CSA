@@ -49,6 +49,13 @@
 :root[data-theme="dark"] #editor-title::placeholder { color: #8d9bb0; }
 :root[data-theme="dark"] #editorial-direction-text { background: var(--surface-raised); color: var(--ink); }
 :root[data-theme="dark"] .text-button:hover { color: var(--strong-ink); }
+:root[data-theme="dark"] .history-menu { background: var(--surface); box-shadow: 0 8px 28px #0005; }
+:root[data-theme="dark"] .new-project-upload.dragging { background: var(--surface-selected); border-color: #8ca8d3; }
+:root[data-theme="dark"] .article-preview-badge { background: var(--surface-selected); }
+:root[data-theme="dark"] .article-preview-dialog { box-shadow: 0 16px 65px #0005; }
+:root[data-theme="dark"] :is(.history-options[aria-expanded="true"], .history-menu-item:hover, .history-menu-item:focus-visible) { background: var(--surface-hover); }
+:root[data-theme="dark"] .history-delete { color: #f2a7ac; }
+:root[data-theme="dark"] :is(.history-delete:hover, .history-delete:focus-visible) { background: #4b2b35; color: #ffd1d5; }
 :root[data-theme="dark"] :is(.demo-access-submit, .submit-button, .create-variant, .create-output, .new-project-continue, .editor-wordpress-button, .primary-button):not(:disabled) { background: var(--action); color: var(--action-ink); border-color: var(--action); }
 :root[data-theme="dark"] :is(.demo-access-submit, .submit-button, .create-variant, .create-output, .new-project-continue, .editor-wordpress-button, .primary-button):not(:disabled):hover { background: var(--action-hover); border-color: var(--action-hover); }
 :root[data-theme="dark"] :is(.demo-access-submit, .submit-button, .create-variant, .create-output, .new-project-continue, .primary-button, .variant-settings, .draft-button):disabled { background: var(--surface-raised); color: var(--disabled-ink); border-color: var(--line); opacity: 1; }

@@ -9,9 +9,9 @@
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <script src="./theme.js?v=20261016-dark-mode"></script>
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="./styles.css?v=20261016-dark-mode">
-    <link rel="stylesheet" href="./theme.css?v=20261016-dark-mode">
-    <script src="./demo-access.js?v=20261016-dark-mode" type="module"></script>
+    <link rel="stylesheet" href="./styles.css?v=20261016-starter-sources">
+    <link rel="stylesheet" href="./theme.css?v=20261016-starter-sources">
+    <script src="./demo-access.js?v=20261016-starter-sources" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -39,6 +39,8 @@
       <symbol id="icon-history" viewBox="0 0 24 24"><path d="M4.5 8A8.3 8.3 0 1 1 4 15M4 3.5V8h4.5M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h13M12 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+      <symbol id="icon-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="19" cy="12" r="1.8" fill="currentColor"/></symbol>
+      <symbol id="icon-open" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7L10 14M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-undo" viewBox="0 0 24 24"><path d="m9 4-5 5 5 5M4 9h9a6 6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-redo" viewBox="0 0 24 24"><path d="m15 4 5 5-5 5m5-5h-9a6 6 0 0 0 0 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -236,6 +238,10 @@
       </form>
       <div class="new-project-divider"><span>Or use your own material</span></div>
       <button class="new-project-material" id="new-project-material" type="button"><span class="new-project-material-icon"><svg aria-hidden="true"><use href="#icon-file"/></svg></span><span><strong>Start from your own material</strong><small>Bring your notes, an article, or a rough idea</small></span><span aria-hidden="true">›</span></button>
+      <label class="new-project-material new-project-upload" id="new-project-drop-zone" for="new-project-file-input"><span class="new-project-material-icon"><svg aria-hidden="true"><use href="#icon-upload"/></svg></span><span><strong>Upload documents</strong><small>Drop files here or <span class="browse-label">browse files</span></small></span><input class="visually-hidden" id="new-project-file-input" type="file" aria-label="Upload documents" aria-describedby="new-project-upload-help" multiple accept=".pdf,.docx,.pptx,.txt,.md"></label>
+      <p class="new-project-upload-help" id="new-project-upload-help">PDF, DOCX, PPTX, TXT or Markdown · Up to 10 MB each</p>
+      <div id="new-project-upload-selection" hidden><ul class="selected-files" id="new-project-selected-files"></ul><p class="file-status" id="new-project-file-status" role="status" aria-live="polite"></p><button class="new-project-continue" id="new-project-use-material" type="button" disabled>Start creating</button><p class="material-hint">Documents stay in this browser. Download the originals from Sources in your project.</p></div>
+      <p class="form-error" id="new-project-material-error" role="alert" hidden></p>
     </dialog>
 
     <dialog class="editorial-direction-dialog" id="editorial-direction-dialog" aria-labelledby="editorial-direction-heading" aria-describedby="editorial-direction-help">
@@ -248,25 +254,34 @@
       </form>
     </dialog>
 
+    <dialog class="article-preview-dialog" id="article-preview-dialog" aria-labelledby="article-preview-title" aria-describedby="article-preview-notice">
+      <div class="panel-heading"><span class="article-preview-badge">Fictional article preview</span><button class="icon-button" type="button" data-close="article-preview-dialog" aria-label="Close article preview"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></div>
+      <h2 id="article-preview-title"></h2><p class="article-preview-meta" id="article-preview-meta"></p>
+      <p class="article-preview-notice" id="article-preview-notice">Made-up content for the CSA demo.</p>
+      <div class="article-preview-body" id="article-preview-body" tabindex="0" role="region" aria-label="Article text"></div>
+      <div class="dialog-footer"><button class="secondary-button" type="button" data-close="article-preview-dialog">Back to results</button><button class="primary-button" id="article-preview-select" type="button">Select source</button></div>
+    </dialog>
+
     <dialog class="editor-link-dialog" id="editor-link-dialog" aria-labelledby="editor-link-heading"><form id="editor-link-form"><div class="editor-panel-heading"><h2 id="editor-link-heading">Add a link</h2><button class="icon-button" type="button" data-close="editor-link-dialog" aria-label="Close link dialog"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></div><label for="editor-link-text">Link text<input id="editor-link-text" type="text" placeholder="Text to display" maxlength="2000"></label><label for="editor-link-url">URL<input id="editor-link-url" type="text" placeholder="https://" required></label><p class="form-error" id="editor-link-error" role="alert" hidden></p><div class="dialog-footer"><button class="secondary-button" id="editor-remove-link" type="button">Remove link</button><button class="primary-button" type="submit">Apply link</button></div></form></dialog>
 
     <dialog class="material-dialog" id="material-dialog" aria-labelledby="material-title">
       <div class="panel-heading"><div><p class="eyebrow">A PLACE TO BEGIN</p><h2 id="material-title">Start with your material</h2></div><button class="icon-button" type="button" data-close="material-dialog" aria-label="Close material dialog"><svg><use href="#icon-close"/></svg></button></div>
-      <div class="material-tabs" role="tablist" aria-label="Material type">
+      <div class="material-tabs" id="material-tabs" role="tablist" aria-label="Material type">
         <button id="upload-tab" type="button" role="tab" aria-selected="true" aria-controls="upload-panel" data-tab="upload">Choose files</button>
         <button id="paste-tab" type="button" role="tab" aria-selected="false" aria-controls="paste-panel" tabindex="-1" data-tab="paste">Paste text</button>
       </div>
       <div id="upload-panel" role="tabpanel" aria-labelledby="upload-tab">
-        <label class="drop-zone" id="drop-zone" for="file-input"><svg><use href="#icon-upload"/></svg><strong>Drop your files here</strong><span>or <span class="browse-label">browse files</span></span><small>PDF, Word, PowerPoint, text or Markdown · Up to 10 MB each</small><input class="visually-hidden" id="file-input" type="file" multiple accept=".pdf,.docx,.pptx,.txt,.md"></label>
+        <label class="drop-zone" id="drop-zone" for="file-input"><svg aria-hidden="true"><use href="#icon-upload"/></svg><strong>Drop your files here</strong><span>or <span class="browse-label">browse files</span></span><small>PDF, DOCX, PPTX, TXT or MD · Up to 10 MB each · 20 files max</small><input class="visually-hidden" id="file-input" type="file" aria-label="Upload documents" multiple accept=".pdf,.docx,.pptx,.txt,.md"></label>
         <ul class="selected-files" id="selected-files"></ul>
-        <p class="material-hint">Files are selected locally. This prototype saves their names; text files also save their content.</p>
+        <p class="file-status" id="file-status" role="status" aria-live="polite"></p>
+        <p class="material-hint">Documents stay in this browser. You can download the originals from your project. Text and Markdown files also include a text preview.</p>
       </div>
       <div id="paste-panel" role="tabpanel" aria-labelledby="paste-tab" hidden>
         <label class="field-label" for="material-text">What are you working with?</label>
         <textarea id="material-text" rows="7" maxlength="100000" placeholder="Paste notes, an article, or an idea…"></textarea>
       </div>
       <p class="form-error" id="material-error" role="alert" hidden></p>
-      <div class="dialog-footer"><button class="secondary-button" type="button" data-close="material-dialog">Cancel</button><button class="primary-button" id="use-material" type="button" disabled>Start creating <span aria-hidden="true">→</span></button></div>
+      <div class="dialog-footer"><button class="secondary-button" id="material-cancel" type="button" data-close="material-dialog">Cancel</button><button class="primary-button" id="use-material" type="button" disabled>Start creating</button></div>
     </dialog>
     <div class="toast" id="toast" role="status" hidden><span id="toast-message"></span><button id="toast-undo" type="button" hidden>Undo</button></div>
     </div>

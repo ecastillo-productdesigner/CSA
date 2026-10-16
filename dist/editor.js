@@ -35,7 +35,7 @@ function savedDocument(value) {
   return { ops };
 }
 
-export function createMaterialEditor({ onSave, onHome, notify }) {
+export function createMaterialEditor({ onSave, onHome, onDownloadSource, notify }) {
   const $ = (selector) => document.querySelector(selector);
   const root = $('#material-editor');
   const title = $('#editor-title');
@@ -184,8 +184,17 @@ export function createMaterialEditor({ onSave, onHome, notify }) {
       heading.textContent = source.title;
       if (href) { heading.href = href; heading.target = '_blank'; heading.rel = 'noopener noreferrer'; }
       const detail = document.createElement('p');
-      detail.textContent = source.text ? source.text.slice(0, 260) + (source.text.length > 260 ? '…' : '') : href || 'Local source';
-      row.append(heading, detail); list.append(row);
+      detail.textContent = source.text ? source.text.slice(0, 260) + (source.text.length > 260 ? '…' : '') : href || (source.attachmentId ? 'Document saved in this browser' : 'Local source');
+      row.append(heading, detail);
+      if (source.attachmentId && onDownloadSource) {
+        const download = document.createElement('button');
+        download.type = 'button'; download.className = 'text-button document-download';
+        download.textContent = 'Download document';
+        download.setAttribute('aria-label', `Download ${source.title}`);
+        download.addEventListener('click', () => onDownloadSource(source));
+        row.append(download);
+      }
+      list.append(row);
     }
   }
   $('#editor-add-source').addEventListener('submit', event => {
@@ -324,6 +333,7 @@ export function createMaterialEditor({ onSave, onHome, notify }) {
       if (!next.draftText) title.focus(); else quill.setSelection(0, 0, 'silent');
     },
     close() { flush(); project = null; root.hidden = true; setPanel('', false); if (linkDialog.open) linkDialog.close(); $('#editor-download').open = false; },
+    showSources() { if (project) setPanel('sources', true); },
     flush,
   };
 }

@@ -20,6 +20,18 @@ function sampleArticles(query) {
     source: index < 4 ? 'The State' : ['The State', 'Culture Weekly', 'Spotlight', 'Culture Weekly'][index - 4],
     date: `2026-10-${index < 4 ? '12' : String(15 - index).padStart(2, '0')}`,
     referenceImage: isKelly,
+    paragraphs: [
+      [
+        `In this fictional story, a neighborhood business becomes an unexpected part of the conversation around ${query}. What begins as a small creative idea draws attention to the people and everyday places behind it.`,
+        `In this fictional story, ${query} offers a behind-the-scenes look at a creative project that started with a simple question: what happens when a familiar idea is tried in a different way?`,
+        `This fictional article explores the conversation around ${query}, following a small collaboration that gives people a new reason to talk about creativity and community.`,
+        `In this fictional story, ${query} looks back at the ordinary moments that can become the beginning of something memorable. A shared interest brings a small group together for a new creative experiment.`,
+      ][index % 4],
+      'The first meeting takes place in a modest shared workspace, where sketches, notebooks, and half-finished ideas cover a long table. The group agrees to try one small experiment before deciding what the larger project should become.',
+      'Each participant contributes a different perspective. One focuses on the visual details, another on the story behind the idea, and a third considers how neighbors might take part. Their early conversations help turn a loose concept into a practical plan.',
+      'A short rehearsal gives the team a chance to see what works. They simplify a few details, leave room for improvisation, and discover that the quieter moments connect most strongly with their small test audience.',
+      'The project ends with plans for another gathering. Its lasting effect is the connection between the people involved, and the reminder that a compelling story can begin with curiosity, a familiar place, and a willingness to try something new.',
+    ],
   }));
 }
 
@@ -37,6 +49,35 @@ function dateLabel(value) {
 export function createSearchExperience({ onSearch, onSelectionChange, onDirection, onDraft }) {
   const $ = (selector) => document.querySelector(selector);
   let state = null;
+  let previewArticle = null;
+  const preview = $('#article-preview-dialog');
+
+  function openPreview(id) {
+    const article = state?.articles.find(article => article.id === id);
+    if (!article) return;
+    previewArticle = { ...article, projectId: state.projectId };
+    $('#article-preview-title').textContent = article.title;
+    $('#article-preview-meta').textContent = `${article.source} · ${dateLabel(article.date)}`;
+    $('#article-preview-body').replaceChildren(...article.paragraphs.map(paragraph => node('p', '', paragraph)));
+    $('#article-preview-select').textContent = state.selected.has(id) ? 'Remove source' : 'Select source';
+    preview.showModal();
+    $('#article-preview-body').scrollTop = 0;
+  }
+
+  preview.addEventListener('close', () => {
+    if (state?.projectId === previewArticle?.projectId && !$('#search-results').hidden) {
+      $('#result-list').querySelector(`[data-preview-article-id="${previewArticle.id}"]`)?.focus({ preventScroll: true });
+    }
+    previewArticle = null;
+  });
+  $('#article-preview-select').addEventListener('click', () => {
+    if (!state || previewArticle?.projectId !== state.projectId) return;
+    const id = previewArticle.id;
+    if (state.selected.has(id)) state.selected.delete(id); else state.selected.add(id);
+    onSelectionChange(state.projectId, [...state.selected]);
+    render();
+    preview.close();
+  });
 
   function filteredArticles() {
     return state.articles.filter((article) =>
@@ -59,13 +100,14 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     $('#results-filter-button').title = state.editorialDirection ? 'Edit saved editorial direction' : 'Add editorial direction';
     const list = $('#result-list');
     list.replaceChildren(...visible.map((article) => {
-      const item = node('li');
+      const item = node('li', 'result-item');
       const card = node('button', 'result-card');
       card.type = 'button';
       card.dataset.articleId = article.id;
       card.setAttribute('aria-label', `Select story ${article.id.split('-').pop()}: ${article.title}`);
       card.setAttribute('aria-pressed', String(state.selected.has(article.id)));
-      card.title = 'Select this story for your draft';
+      card.dataset.selected = String(state.selected.has(article.id));
+      card.title = state.selected.has(article.id) ? 'Unselect this story' : 'Select this story for your draft';
       const thumbnail = node('span', `result-thumbnail${article.referenceImage ? ' result-thumbnail--reference' : ''}`);
       thumbnail.setAttribute('aria-hidden', 'true');
       if (!article.referenceImage) thumbnail.textContent = state.query.split(/\s+/).slice(0, 2).map((word) => word[0]).join('').toUpperCase();
@@ -76,7 +118,18 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
         node('span', 'result-snippet', article.excerpt),
       );
       card.append(thumbnail, copy);
-      item.append(card);
+      const previewButton = node('button', 'icon-button result-preview-button');
+      previewButton.type = 'button';
+      previewButton.dataset.previewArticleId = article.id;
+      previewButton.setAttribute('aria-label', `Preview story ${article.id.split('-').pop()}: ${article.title}`);
+      previewButton.setAttribute('aria-haspopup', 'dialog');
+      previewButton.setAttribute('aria-controls', 'article-preview-dialog');
+      previewButton.title = 'Preview article';
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+      svg.setAttribute('aria-hidden', 'true'); use.setAttribute('href', '#icon-open'); svg.append(use);
+      previewButton.append(svg);
+      item.append(card, previewButton);
       return item;
     }));
     $('#results-empty').hidden = filtered.length > 0;
@@ -84,7 +137,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     $('#load-more').disabled = visible.length >= filtered.length;
     $('#load-more').textContent = visible.length >= filtered.length ? 'All results shown' : 'Load more';
     $('#create-draft').disabled = chosenArticles().length === 0;
-    $('#create-draft').title = `Draft from ${chosenArticles().length} ${state.selected.size ? 'selected' : 'visible'} stories`;
+    $('#create-draft').title = `Draft from ${chosenArticles().length} ${state.selected.size ? 'selected' : 'visible'} ${chosenArticles().length === 1 ? 'story' : 'stories'}`;
     $('#results-selection').hidden = state.selected.size === 0;
     $('#results-selection').textContent = `${state.selected.size} ${state.selected.size === 1 ? 'story' : 'stories'} selected`;
   }
@@ -113,6 +166,8 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
   $('#results-filter-button').addEventListener('click', () => { if (state) onDirection(state.projectId); });
   $('#load-more').addEventListener('click', () => { if (state) { state.visibleCount += 4; render(); } });
   $('#result-list').addEventListener('click', (event) => {
+    const previewButton = event.target.closest('.result-preview-button');
+    if (previewButton) { openPreview(previewButton.dataset.previewArticleId); return; }
     const card = event.target.closest('.result-card');
     if (!card || !state) return;
     const id = card.dataset.articleId;
@@ -152,6 +207,6 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       state.editorialDirection = direction;
       render();
     },
-    hide() { state = null; $('#search-results').hidden = true; },
+    hide() { if (preview.open) preview.close(); previewArticle = null; state = null; $('#search-results').hidden = true; },
   };
 }

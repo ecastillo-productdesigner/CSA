@@ -1,6 +1,8 @@
-import { createSearchExperience } from './search.js?v=20261015-output-workspace';
-import { createDashboard } from './dashboard.js?v=20261015-home-reveal';
-import { createMaterialEditor } from './editor.js?v=20261015-wordpress-button';
+import { createSearchExperience } from './search.js?v=20261016-article-preview';
+import { createDashboard } from './dashboard.js?v=20261016-project-actions';
+import { createRecentProjects } from './recent-projects.js?v=20261016-project-actions';
+import { createMaterialEditor } from './editor.js?v=20261016-document-upload';
+import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-saved-tools';
 import { createRailNavigation } from './navigation.js?v=20261016-hover-navigation';
 import { projectOutputs, sampleVariant, outputIsReady, populateOutputContent, renderOutputs, toggleOutputMenu } from './outputs.js?v=20261015-home-reveal';
@@ -59,14 +61,18 @@ let directionProjectId = null;
 let materialMode = 'upload';
 let selectedFiles = [];
 let addingToProject = false;
+let uploadContext = 'material';
+let materialBusy = false;
 let toastTimer;
 let toastAction = null;
 let dashboard = null;
 const outputTimers = new Map();
 const toolDropdowns = createToolDropdowns({ notify });
-const railNavigation = createRailNavigation({ onRecentsOpen: renderRecentProjects, onOpen: () => toolDropdowns.close() });
+const recentProjectsPanel = createRecentProjects({ onOpen: showProject, onArchive: id => moveProject(id, 'archive'), onTrash: id => moveProject(id, 'trash') });
+const railNavigation = createRailNavigation({ onRecentsOpen: renderRecentProjects, onOpen: () => { toolDropdowns.close(); recentProjectsPanel.close(); } });
 const richEditor = createMaterialEditor({
   onHome: () => showHome(),
+  onDownloadSource: downloadSource,
   notify,
   onSave(snapshot) {
     const project = projects.find(entry => entry.id === snapshot.id);
@@ -157,6 +163,7 @@ function createProject(sources, options = {}) {
     dashboard: first?.type !== 'search',
     ...(options.kind ? { kind: options.kind } : {}),
     ...(options.draftText !== undefined ? { draftText: options.draftText } : {}),
+    ...(options.document ? { document: options.document } : {}),
     ...(options.awaitingOutput ? { awaitingOutput: true } : {}),
     ...(typeof options.editorialDirection === 'string' ? { editorialDirection: options.editorialDirection } : {}),
     ...(options.toolPreferences ? { toolPreferences: options.toolPreferences } : {}),
@@ -244,6 +251,12 @@ function showProjectStart() {
 }
 
 function openProjectDialog(reset = true) {
+  uploadContext = 'starter';
+  materialMode = 'upload';
+  selectedFiles = [];
+  $('#new-project-file-input').value = '';
+  clearError();
+  renderFiles();
   if (reset) $('#new-project-query').value = '';
   $('#new-project-submit').disabled = !$('#new-project-query').value.trim();
   if (!$('#new-project-dialog').open) $('#new-project-dialog').showModal();
@@ -299,6 +312,13 @@ function showProject(id) {
     const detail = source.type === 'file' && Number.isFinite(source.size) ? ` · ${formatBytes(source.size)}` : '';
     info.append(element('small', '', labels[source.type] + detail));
     if (source.text) info.append(element('p', '', source.text));
+    if (source.attachmentId) {
+      const download = element('button', 'text-button document-download', 'Download document');
+      download.type = 'button';
+      download.setAttribute('aria-label', `Download ${source.title}`);
+      download.addEventListener('click', () => downloadSource(source));
+      info.append(download);
+    }
     card.append(icon(source.type === 'link' ? 'link' : source.type === 'search' ? 'search' : 'file'), info);
     return card;
   }));
@@ -504,8 +524,13 @@ function submitSource(input) {
   if (!input) return;
   const tokens = input.split(/\s+/);
   const urls = tokens.map(safeUrl);
-  if (urls.every(Boolean)) createProject(urls.map((url) => ({ type: 'link', title: url, url })));
-  else startSearch(input);
+  if (urls.every(Boolean)) {
+    const sources = urls.map(url => ({ type: 'link', title: url, url }));
+    const sample = sampleVariant({ sources }, []);
+    populateOutputContent(sample);
+    createProject(sources, { title: sample.title, kind: 'draft', draftText: `Fictional sample story for the CSA demo.\n\n${sample.draftText}`, document: { ops: [{ insert: 'Fictional sample story for the CSA demo.\n' }, ...sample.document.ops] } });
+    notify('A fictional sample story is ready. Your link is saved in Sources.');
+  } else startSearch(input);
 }
 
 $('#new-project-query').addEventListener('input', () => {
@@ -522,6 +547,10 @@ $('#new-project-material').addEventListener('click', () => {
   $('#new-project-dialog').close();
   createProject([], { title: 'Untitled story', kind: 'draft', draftText: '' });
 });
+async function downloadSource(source) {
+  try { await downloadDocument(source); }
+  catch (error) { notify(error.message || 'This document could not be downloaded. Please try again.'); }
+}
 
 function startSearch(query) {
   const existing = projects.find((project) => !project.deletedAt && !project.archivedAt && project.sources.length === 1 && project.sources[0].type === 'search' && project.sources[0].title.toLowerCase() === query.toLowerCase());
@@ -537,29 +566,7 @@ $('#profile-home').addEventListener('click', () => showHome());
 $('#profile-materials').addEventListener('click', showSourceStart);
 
 function renderRecentProjects() {
-  const content = $('#history-content');
-  const recentProjects = projects.filter((project) => !project.archivedAt && !project.deletedAt).slice(0, 30);
-  if (!recentProjects.length) {
-    content.replaceChildren(element('p', 'empty-history', 'Your projects will appear here once you begin.'));
-  } else {
-    const list = element('ul', 'history-list');
-    for (const project of recentProjects) {
-      const item = element('li');
-      const button = element('button', 'history-item');
-      button.type = 'button';
-      button.title = project.title;
-      button.setAttribute('aria-label', project.title);
-      const title = element('span', 'history-item-title', project.title.replace(/(?:\.{3}|…)\s*$/, ''));
-      const ellipsis = element('span', 'history-item-ellipsis', '...');
-      ellipsis.setAttribute('aria-hidden', 'true');
-      button.append(icon('file'), title, ellipsis);
-      if (project.id === activeProjectId) button.setAttribute('aria-current', 'page');
-      button.addEventListener('click', () => showProject(project.id));
-      item.append(button);
-      list.append(item);
-    }
-    content.replaceChildren(list);
-  }
+  recentProjectsPanel.render(projects, activeProjectId);
 }
 
 function setMaterialMode(mode) {
@@ -577,12 +584,15 @@ function setMaterialMode(mode) {
 
 function openMaterial(mode, append = false) {
   addingToProject = append;
+  uploadContext = 'material';
   selectedFiles = [];
   $('#file-input').value = '';
   $('#material-text').value = '';
   $('#selected-files').replaceChildren();
   $('#material-title').textContent = append ? 'Add your material' : 'Start with your material';
-  $('#use-material').textContent = append ? 'Add to project →' : 'Start creating →';
+  $('#material-cancel').textContent = 'Cancel';
+  $('#file-status').textContent = '';
+  $('#use-material').textContent = append ? 'Add to project' : 'Start creating';
   setMaterialMode(mode);
   closeProfile();
   $('#material-dialog').showModal();
@@ -602,18 +612,23 @@ for (const button of document.querySelectorAll('[data-tab]')) {
   });
 }
 
+function uploadElement(id) {
+  return $(`#${uploadContext === 'starter' ? 'new-project-' : ''}${id}`);
+}
+
 function updateMaterialButton() {
-  $('#use-material').disabled = materialMode === 'upload' ? selectedFiles.length === 0 : !$('#material-text').value.trim();
+  uploadElement('use-material').disabled = materialBusy || (materialMode === 'upload' ? selectedFiles.length === 0 : !$('#material-text').value.trim());
+  if (uploadContext === 'starter') $('#new-project-upload-selection').hidden = selectedFiles.length === 0;
 }
 
 function clearError() {
-  $('#material-error').hidden = true;
-  $('#material-error').textContent = '';
+  uploadElement('material-error').hidden = true;
+  uploadElement('material-error').textContent = '';
 }
 
 function showError(message) {
-  $('#material-error').textContent = message;
-  $('#material-error').hidden = false;
+  uploadElement('material-error').textContent = message;
+  uploadElement('material-error').hidden = false;
 }
 
 function formatBytes(size) {
@@ -621,48 +636,69 @@ function formatBytes(size) {
 }
 
 function renderFiles() {
-  $('#selected-files').replaceChildren(...selectedFiles.map((file, index) => {
+  uploadElement('selected-files').replaceChildren(...selectedFiles.map((file, index) => {
     const item = element('li');
     const remove = element('button', 'icon-button');
     remove.type = 'button';
     remove.setAttribute('aria-label', `Remove ${file.name}`);
     remove.append(icon('close'));
-    remove.addEventListener('click', () => { selectedFiles.splice(index, 1); renderFiles(); });
+    remove.addEventListener('click', () => {
+      selectedFiles.splice(index, 1);
+      clearError();
+      renderFiles();
+      (uploadElement('selected-files').querySelector('button') || uploadElement('file-input')).focus();
+    });
     item.append(element('span', '', `${file.name} · ${formatBytes(file.size)}`), remove);
     return item;
   }));
+  uploadElement('file-status').textContent = selectedFiles.length ? `${selectedFiles.length} ${selectedFiles.length === 1 ? 'document' : 'documents'} selected` : '';
   updateMaterialButton();
 }
 
-function selectFiles(files) {
+function selectFiles(files, context) {
+  if (materialBusy) return;
+  uploadContext = context;
   clearError();
   const rejected = [];
   for (const file of files) {
     const extension = file.name.split('.').pop().toLowerCase();
-    if (!acceptedExtensions.has(extension) || file.size > 10 * 1024 * 1024) {
+    if (!acceptedExtensions.has(extension) || file.size === 0 || file.size > 10 * 1024 * 1024) {
       rejected.push(file.name);
     } else if (!selectedFiles.some((entry) => entry.name === file.name && entry.size === file.size && entry.lastModified === file.lastModified)) {
       if (selectedFiles.length < 20) selectedFiles.push(file);
       else rejected.push(file.name);
     }
   }
-  if (rejected.length) showError(`Couldn't add ${rejected.join(', ')}. Choose a supported file up to 10 MB, with no more than 20 files at a time.`);
+  if (rejected.length) showError(`Couldn't add ${rejected.join(', ')}. Choose a non-empty, supported file up to 10 MB, with no more than 20 files at a time.`);
   renderFiles();
 }
 
-$('#file-input').addEventListener('change', (event) => selectFiles(event.target.files));
+for (const [context, prefix] of [['material', ''], ['starter', 'new-project-']]) {
+  const input = $(`#${prefix}file-input`);
+  const zone = $(`#${prefix}drop-zone`);
+  input.addEventListener('change', event => {
+    selectFiles(event.target.files, context);
+    event.target.value = '';
+  });
+  zone.addEventListener('dragover', event => { event.preventDefault(); zone.classList.add('dragging'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragging'));
+  zone.addEventListener('drop', event => {
+    event.preventDefault(); zone.classList.remove('dragging');
+    selectFiles(event.dataTransfer.files, context);
+  });
+}
 $('#material-text').addEventListener('input', () => { clearError(); updateMaterialButton(); });
-$('#drop-zone').addEventListener('dragover', (event) => { event.preventDefault(); $('#drop-zone').classList.add('dragging'); });
-$('#drop-zone').addEventListener('dragleave', () => $('#drop-zone').classList.remove('dragging'));
-$('#drop-zone').addEventListener('drop', (event) => {
-  event.preventDefault();
-  $('#drop-zone').classList.remove('dragging');
-  selectFiles(event.dataTransfer.files);
-});
 
-$('#use-material').addEventListener('click', async () => {
-  const button = $('#use-material');
-  button.disabled = true;
+async function useMaterial() {
+  if (materialBusy) return;
+  const fromStarter = uploadContext === 'starter';
+  const dialog = $(fromStarter ? '#new-project-dialog' : '#material-dialog');
+  const button = uploadElement('use-material');
+  const label = button.textContent;
+  materialBusy = true;
+  button.textContent = materialMode === 'upload' ? 'Saving documents…' : 'Saving…';
+  dialog.setAttribute('aria-busy', 'true');
+  for (const control of dialog.querySelectorAll('button, input, textarea')) control.disabled = true;
   clearError();
   try {
     let sources;
@@ -672,32 +708,44 @@ $('#use-material').addEventListener('click', async () => {
       sources = [{ type: 'text', title: titleFrom(text), text }];
     } else {
       if (!selectedFiles.length) return;
-      sources = await Promise.all(selectedFiles.map(async (file) => ({
-        type: 'file',
-        title: file.name,
-        size: file.size,
-        ...(/\.(txt|md)$/i.test(file.name) ? { text: (await file.slice(0, 100000).text()).slice(0, 100000) } : {}),
-      })));
+      sources = await saveDocuments(selectedFiles);
     }
-    $('#material-dialog').close();
-    const existing = addingToProject && projects.find((project) => project.id === activeProjectId);
+    dialog.close();
+    const existing = !fromStarter && addingToProject && projects.find((project) => project.id === activeProjectId);
     if (existing) {
       existing.sources.push(...sources);
       saveProjects();
       showProject(existing.id);
+    } else if (fromStarter) {
+      const text = sources.filter(source => source.text).map(source => source.text.trim()).join('\n\n');
+      createProject(sources, {
+        title: titleFrom(sources[0].title.replace(/\.[^.]+$/, '')),
+        kind: 'draft', draftText: text, document: { ops: text.split(/\n\s*\n/).filter(paragraph => paragraph.trim()).map(paragraph => ({ insert: `${paragraph}\n` })) },
+      });
+      richEditor.showSources();
     } else {
       createProject(sources);
     }
-  } catch {
-    showError('This file could not be read. Please choose it again.');
+  } catch (error) {
+    showError(error.name === 'QuotaExceededError' ? 'There is not enough browser storage for these documents. Try fewer or smaller files.' : 'These documents could not be saved in this browser. Please try again with fewer files.');
   } finally {
+    materialBusy = false;
+    button.textContent = label;
+    dialog.removeAttribute('aria-busy');
+    for (const control of dialog.querySelectorAll('button, input, textarea')) control.disabled = false;
+    if (fromStarter) $('#new-project-submit').disabled = !$('#new-project-query').value.trim();
     updateMaterialButton();
   }
-});
+}
+$('#use-material').addEventListener('click', useMaterial);
+$('#new-project-use-material').addEventListener('click', useMaterial);
+
+for (const id of ['material-dialog', 'new-project-dialog']) $(`#${id}`).addEventListener('cancel', event => { if (materialBusy) event.preventDefault(); });
 
 for (const button of document.querySelectorAll('[data-close]')) button.addEventListener('click', () => $(`#${button.dataset.close}`).close());
 for (const dialog of document.querySelectorAll('dialog')) {
   dialog.addEventListener('click', (event) => {
+    if (['material-dialog', 'new-project-dialog'].includes(dialog.id) && materialBusy) return;
     if (event.target !== dialog) return;
     const bounds = dialog.getBoundingClientRect();
     if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close();
@@ -705,14 +753,14 @@ for (const dialog of document.querySelectorAll('dialog')) {
 }
 
 const searchExperience = createSearchExperience({
-  onSearch: startSearch,
+  onSearch: submitSource,
   onDirection: openEditorialDirection,
   onSelectionChange(id, selection) {
     const project = projects.find((entry) => entry.id === id);
     if (project) { project.selectedArticleIds = selection; saveProjects(); }
   },
   onDraft({ query, articles, editorialDirection }) {
-    createProject(articles.map((article) => ({ type: 'text', title: article.title, text: `${article.excerpt}\n\nSample article · ${article.source} · ${article.date}` })), { title: `${titleFrom(query)} — Draft`, kind: 'draft', awaitingOutput: true, editorialDirection });
+    createProject(articles.map((article) => ({ type: 'text', title: article.title, text: `Fictional sample article · ${article.source} · ${article.date}\n\n${article.paragraphs.join('\n\n')}` })), { title: `${titleFrom(query)} — Draft`, kind: 'draft', awaitingOutput: true, editorialDirection });
   },
 });
 
@@ -722,12 +770,14 @@ $('#draft-text').addEventListener('input', () => {
 });
 
 function moveProject(id, destination) {
+  richEditor.flush();
   const project = projects.find((entry) => entry.id === id);
   if (!project) return;
   const previous = { archivedAt: project.archivedAt, deletedAt: project.deletedAt };
   if (destination === 'archive') project.archivedAt = Date.now();
   else project.deletedAt = Date.now();
   saveProjects();
+  if (activeProjectId === id) showHome();
   notify(destination === 'archive' ? 'Project archived.' : 'Project moved to Trash.', () => {
     Object.assign(project, previous);
     saveProjects();

@@ -49,7 +49,7 @@ export function createDashboard({ onNew, onOpen, onArchive, onTrash, onRestore }
 
   function render(projects) {
     currentProjects = projects;
-    const dashboardProjects = projects.filter((project) => project.dashboard === true);
+    const dashboardProjects = projects.filter((project) => project.dashboard === true || project.archivedAt || project.deletedAt);
     const groups = {
       active: dashboardProjects.filter((project) => !project.archivedAt && !project.deletedAt),
       archived: dashboardProjects.filter((project) => project.archivedAt && !project.deletedAt),

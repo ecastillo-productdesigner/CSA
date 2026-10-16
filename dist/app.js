@@ -363,6 +363,12 @@ function setSidebarExpanded(expanded, restoreFocus = false) {
 }
 
 sidebarOverlayQuery.addEventListener('change', syncSidebarOverlay);
+$('.sidebar').addEventListener('click', (event) => {
+  if (event.detail === 0 || document.body.classList.contains('sidebar-expanded')) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  setSidebarExpanded(true);
+}, true);
 $('.brand').addEventListener('click', () => setSidebarExpanded(!document.body.classList.contains('sidebar-expanded')));
 $('#collapse-sidebar').addEventListener('click', () => setSidebarExpanded(false, true));
 $('#sidebar-backdrop').addEventListener('click', () => setSidebarExpanded(false, true));

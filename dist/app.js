@@ -2,7 +2,7 @@ import { createSearchExperience } from './search.js?v=20261015-output-workspace'
 import { createDashboard } from './dashboard.js?v=20261015-draft';
 import { createMaterialEditor } from './editor.js?v=20261015-editor';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261015-tools-menus';
-import { projectOutputs, sampleVariant, renderOutputs, toggleOutputMenu } from './outputs.js?v=20261015-variant-cards';
+import { projectOutputs, sampleVariant, outputIsReady, renderOutputs, toggleOutputMenu } from './outputs.js?v=20261015-output-processing';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -61,6 +61,7 @@ let addingToProject = false;
 let toastTimer;
 let toastAction = null;
 let dashboard = null;
+const outputTimers = new Map();
 const toolDropdowns = createToolDropdowns();
 const richEditor = createMaterialEditor({
   onHome: () => showHome(),
@@ -313,7 +314,8 @@ function showEditorProject(project) {
   document.body.classList.add('showing-composer');
   for (const section of ['home', 'workspace', 'project-start']) $(`#${section}`).hidden = true;
   $('#composer').hidden = false;
-  const selectedOutput = projectOutputs(project).find(output => output.id === project.selectedOutputId);
+  resumeOutputProcessing(project);
+  const selectedOutput = projectOutputs(project).find(output => output.id === project.selectedOutputId && outputIsReady(output));
   if (project.awaitingOutput && !selectedOutput) {
     $('#composer').classList.add('has-output');
     $('#composer-heading').textContent = 'Story workspace';
@@ -361,10 +363,14 @@ $('.create-variant').addEventListener('click', () => {
   if (!project) return;
   const output = sampleVariant(project, selections);
   project.outputs = [output, ...projectOutputs(project)];
+  project.toolPreferences = { format: '', audience: '', voice: '' };
+  for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = '';
+  toolDropdowns.refresh();
+  updateComposerActions();
   project.updatedAt = Date.now();
   const saved = saveProjects();
   renderOutputs(project);
-  $('#output-list').querySelector(`[data-output-id="${output.id}"]`).focus();
+  $('#create-output').focus();
   if (saved) notify('Variant created.');
 });
 
@@ -378,12 +384,47 @@ $('#output-list').addEventListener('click', event => {
   const card = event.target.closest('[data-output-id]');
   if (!card) return;
   const output = projectOutputs(project).find(entry => entry.id === card.dataset.outputId);
-  if (!output) return;
+  if (!output || !outputIsReady(output)) return;
   richEditor.flush();
   if (project.selectedOutputId === output.id) delete project.selectedOutputId;
   else project.selectedOutputId = output.id;
   saveProjects();
   showEditorProject(project);
+});
+
+function finishOutputProcessing(project) {
+  const job = project.outputProcessing;
+  if (!job) return;
+  clearTimeout(outputTimers.get(project.id));
+  outputTimers.delete(project.id);
+  const ids = new Set(job.ids);
+  for (const output of projectOutputs(project)) {
+    if (ids.has(output.id)) { output.status = 'ready'; output.processedAt = Date.now(); }
+  }
+  delete project.outputProcessing;
+  saveProjects();
+  if (activeProjectId === project.id && !$('#composer').hidden) {
+    renderOutputs(project);
+    notify('Output ready. Select a solid card to open the editor.');
+  }
+}
+
+function resumeOutputProcessing(project) {
+  const job = project.outputProcessing;
+  if (!job || !Array.isArray(job.ids) || !Number.isFinite(job.readyAt)) return;
+  if (job.readyAt <= Date.now()) { finishOutputProcessing(project); return; }
+  if (!outputTimers.has(project.id)) outputTimers.set(project.id, setTimeout(() => finishOutputProcessing(project), job.readyAt - Date.now()));
+}
+
+$('#create-output').addEventListener('click', () => {
+  const project = projects.find(entry => entry.id === activeProjectId);
+  if (!project || project.outputProcessing) return;
+  const pending = projectOutputs(project).filter(output => !outputIsReady(output));
+  if (!pending.length) return;
+  project.outputProcessing = { ids: pending.map(output => output.id), readyAt: Date.now() + 4000 };
+  saveProjects();
+  renderOutputs(project);
+  resumeOutputProcessing(project);
 });
 
 function deleteOutput(project, id) {
@@ -772,6 +813,7 @@ dashboard = createDashboard({
   onRestore: restoreProject,
 });
 dashboard.render(projects);
+for (const project of projects) resumeOutputProcessing(project);
 try {
   const savedEditor = sessionStorage.getItem('csa.editor.active.v1');
   if (savedEditor && projects.some(project => project.id === savedEditor && !project.deletedAt && !project.archivedAt)) showProject(savedEditor);

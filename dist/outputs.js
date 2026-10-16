@@ -13,6 +13,10 @@ export function projectOutputs(project) {
   return Array.isArray(project?.outputs) ? project.outputs.filter(output => output && typeof output.id === 'string' && typeof output.title === 'string') : [];
 }
 
+export function outputIsReady(output) {
+  return output.status === 'ready' || (!output.status && Boolean(output.document || output.draftText));
+}
+
 export function sampleVariant(project, selections) {
   const used = new Set(projectOutputs(project).map(output => output.title));
   const available = sampleHeadlines.filter(title => !used.has(title));
@@ -21,6 +25,7 @@ export function sampleVariant(project, selections) {
     id: crypto.randomUUID(),
     title: choices[Math.floor(Math.random() * choices.length)],
     createdAt: Date.now(),
+    status: 'pending',
     labels: selections.map(({ key, label }) => ({ key, label })),
     toolPreferences: Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, selections.find(selection => selection.key === key)?.value || ''])),
     editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '',
@@ -31,22 +36,32 @@ export function sampleVariant(project, selections) {
 
 export function renderOutputs(project) {
   const outputs = projectOutputs(project);
+  const processing = Boolean(project?.outputProcessing);
+  const pending = outputs.some(output => !outputIsReady(output));
   const list = document.querySelector('#output-list');
+  document.querySelector('.composer-outputs').setAttribute('aria-busy', String(processing));
+  document.querySelector('#create-output').disabled = processing || !pending;
+  document.querySelector('#create-output-label').textContent = processing ? 'Processing…' : 'Create Output';
+  document.querySelector('#output-processing-spinner').hidden = !processing;
+  document.querySelector('#output-processing-status').textContent = processing ? 'Processing your output. This takes about four seconds.' : '';
   document.querySelector('#outputs-empty').hidden = outputs.length > 0;
   list.hidden = outputs.length === 0;
   list.replaceChildren(...outputs.map(output => {
     const item = document.createElement('li');
     const card = document.createElement('article');
-    const selected = project.selectedOutputId === output.id;
+    const ready = outputIsReady(output);
+    const selected = ready && project.selectedOutputId === output.id;
     card.className = 'output-card';
     card.dataset.selected = String(selected);
+    card.dataset.ready = String(ready);
     const open = document.createElement('button');
     open.type = 'button';
     open.className = 'output-open';
     open.dataset.outputId = output.id;
-    open.setAttribute('aria-label', `${selected ? 'Return to workspace from' : 'Open variant'}: ${output.title}`);
+    open.disabled = !ready;
+    open.setAttribute('aria-label', `${!ready ? 'Pending variant' : selected ? 'Return to workspace from' : 'Open variant'}: ${output.title}`);
     open.setAttribute('aria-pressed', String(selected));
-    open.title = selected ? 'Return to your workspace' : 'Open this variant in the editor';
+    open.title = !ready ? 'Choose Create Output to prepare this variant' : selected ? 'Return to your workspace' : 'Open this variant in the editor';
     const top = document.createElement('span');
     top.className = 'output-card-top';
     const badges = document.createElement('span');

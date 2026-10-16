@@ -1,9 +1,9 @@
 import { createSearchExperience } from './search.js?v=20261016-draft-selection';
 import { createDashboard } from './dashboard.js?v=20261016-variant-cards';
 import { createRecentProjects } from './recent-projects.js?v=20261016-project-actions';
-import { createMaterialEditor } from './editor.js?v=20261016-editor-actions';
+import { createMaterialEditor } from './editor.js?v=20261016-content-feedback';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-search-controls';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
 import { createRailNavigation } from './navigation.js?v=20261016-hover-navigation';
 import { projectOutputs, sampleVariant, outputIsReady, populateOutputContent, renderOutputs, toggleOutputMenu } from './outputs.js?v=20261015-home-reveal';
 
@@ -64,6 +64,7 @@ let uploadContext = 'material';
 let materialBusy = false;
 let toastTimer;
 let toastAction = null;
+let feedbackTarget = null;
 let dashboard = null;
 const outputTimers = new Map();
 const toolDropdowns = createToolDropdowns({ notify });
@@ -72,6 +73,7 @@ const railNavigation = createRailNavigation({ onRecentsOpen: renderRecentProject
 const richEditor = createMaterialEditor({
   onDownloadSource: downloadSource,
   onSendToCms: markVariantSentToCms,
+  onContentChange: updateComposerActions,
   notify,
   onSave(snapshot) {
     const project = projects.find(entry => entry.id === snapshot.id);
@@ -389,9 +391,18 @@ function closeProfile() {
 }
 
 function updateComposerActions() {
-  const enabled = ['format', 'audience', 'voice'].some(key => $(`#composer-${key}`).value);
+  const hasContent = !$('#material-editor').hidden ? richEditor.hasContent() : !$('#output-placeholder').hidden;
+  let changed = false;
+  for (const key of ['format', 'audience', 'voice']) {
+    const select = $(`#composer-${key}`);
+    if (select.disabled !== !hasContent) changed = true;
+    select.disabled = !hasContent;
+    select.title = hasContent ? '' : 'Add content to the editor first';
+  }
+  if (changed) toolDropdowns.refresh();
+  const enabled = hasContent && ['format', 'audience', 'voice'].some(key => $(`#composer-${key}`).value);
   $('.create-variant').disabled = !enabled;
-  $('.create-variant').title = enabled ? 'Create variant' : 'Select a format, audience, or voice to create a variant';
+  $('.create-variant').title = !hasContent ? 'Add content to the editor first' : enabled ? 'Create variant' : 'Select a format, audience, or voice to create a variant';
 }
 
 function ensureComposerProject() {
@@ -408,6 +419,7 @@ function ensureComposerProject() {
 }
 
 $('.create-variant').addEventListener('click', () => {
+  if ($('.create-variant').disabled) return;
   const selections = ['format', 'audience', 'voice'].flatMap(key => {
     const select = $(`#composer-${key}`);
     return select.value ? [{ key, value: select.value, label: select.options[select.selectedIndex].textContent }] : [];
@@ -816,13 +828,42 @@ function markVariantSentToCms(projectId) {
   if (!variant) { notify('Select a generated variant to send to CMS.'); return; }
   if (Number.isFinite(variant.cmsSentAt) && variant.cmsSentAt > 0) {
     notify('Demo: this variant is already marked as sent to CMS.');
+    openExperienceFeedback(project, variant);
     return;
   }
   variant.cmsSentAt = Date.now();
   project.updatedAt = variant.cmsSentAt;
   const saved = saveProjects();
   notify(saved ? 'Demo: variant marked as sent to CMS. WordPress is not connected.' : 'Demo: variant marked as sent for this session only. WordPress is not connected.');
+  openExperienceFeedback(project, variant);
 }
+
+function openExperienceFeedback(project, variant) {
+  feedbackTarget = { projectId: project.id, outputId: variant.id };
+  $('#experience-feedback-options').hidden = false;
+  $('#experience-feedback-thanks').hidden = true;
+  $('#experience-feedback-done').hidden = true;
+  for (const button of document.querySelectorAll('[data-experience-rating]')) {
+    button.setAttribute('aria-pressed', String(button.dataset.experienceRating === variant.experienceFeedback?.rating));
+  }
+  $('#experience-feedback-dialog').showModal();
+}
+
+$('#experience-feedback-options').addEventListener('click', event => {
+  const button = event.target.closest('[data-experience-rating]');
+  if (!button || !feedbackTarget) return;
+  const project = projects.find(entry => entry.id === feedbackTarget.projectId);
+  const variant = projectOutputs(project).find(output => output.id === feedbackTarget.outputId);
+  if (!variant) return;
+  variant.experienceFeedback = { rating: button.dataset.experienceRating, submittedAt: Date.now() };
+  const saved = saveProjects();
+  $('#experience-feedback-thanks').textContent = saved ? 'Thanks for your feedback!' : 'Thanks! Your feedback is saved for this session.';
+  $('#experience-feedback-options').hidden = true;
+  $('#experience-feedback-thanks').hidden = false;
+  $('#experience-feedback-done').hidden = false;
+  $('#experience-feedback-done').focus();
+});
+$('#experience-feedback-dialog').addEventListener('close', () => { feedbackTarget = null; });
 
 $('#toast-undo').addEventListener('click', () => {
   const action = toastAction;

@@ -141,6 +141,9 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
       empty.hidden = !savedOnly || rows.some(choice => !choice.row.hidden);
     }
     function refresh() {
+      trigger.disabled = select.disabled;
+      trigger.title = select.title;
+      if (select.disabled) close();
       const selected = select.options[select.selectedIndex];
       text.textContent = select.value ? selected.textContent : label;
       trigger.setAttribute('aria-label', `${label}: ${selected?.textContent || 'None Selected'}`);
@@ -157,6 +160,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
       if (restoreFocus) trigger.focus();
     }
     function open() {
+      if (select.disabled) return;
       closeAll();
       refresh();
       menu.hidden = false;

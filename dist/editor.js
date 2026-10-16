@@ -35,7 +35,7 @@ function savedDocument(value) {
   return { ops };
 }
 
-export function createMaterialEditor({ onSave, onDownloadSource, onSendToCms, notify }) {
+export function createMaterialEditor({ onSave, onDownloadSource, onSendToCms, onContentChange = () => {}, notify }) {
   const $ = (selector) => document.querySelector(selector);
   const root = $('#material-editor');
   const title = $('#editor-title');
@@ -57,7 +57,7 @@ export function createMaterialEditor({ onSave, onDownloadSource, onSendToCms, no
     quill.root.setAttribute('aria-label', 'Story body');
     quill.root.setAttribute('aria-multiline', 'true');
     quill.root.setAttribute('spellcheck', 'true');
-    quill.on('text-change', () => { if (!loading) { updateCounts(); updateToolbar(); updateFind(); scheduleSave(); } });
+    quill.on('text-change', () => { if (!loading) { updateCounts(); updateToolbar(); updateFind(); scheduleSave(); onContentChange(); } });
     quill.on('selection-change', (range) => { if (range) { selection = range; updateToolbar(); } });
     const icons = Quill.import('ui/icons');
     for (const button of $('#editor-toolbar').querySelectorAll('[data-format], [data-list], [data-editor-action="clear"]')) {
@@ -303,7 +303,7 @@ export function createMaterialEditor({ onSave, onDownloadSource, onSendToCms, no
     onSendToCms(project.id);
   });
   document.addEventListener('keydown', event => {
-    if (!project || root.hidden || linkDialog.open || !(event.metaKey || event.ctrlKey) || event.altKey) return;
+    if (!project || root.hidden || document.querySelector('dialog[open]') || !(event.metaKey || event.ctrlKey) || event.altKey) return;
     const key = event.key.toLowerCase();
     if (key === 's') { event.preventDefault(); flush(); }
     if (key === 'f') { event.preventDefault(); setPanel('find', true); }
@@ -335,6 +335,7 @@ export function createMaterialEditor({ onSave, onDownloadSource, onSendToCms, no
     },
     close() { flush(); project = null; root.hidden = true; setPanel('', false); if (linkDialog.open) linkDialog.close(); $('#editor-download').open = false; },
     showSources() { if (project) setPanel('sources', true); },
+    hasContent() { return Boolean(project && quill && quill.getText().replace(/[\s\u200B-\u200D\uFEFF]/gu, '')); },
     flush,
   };
 }

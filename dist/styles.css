@@ -481,6 +481,7 @@ select:focus-visible { outline: 3px solid #99abc6; outline-offset: 3px; }
 .result-list li { min-width: 0; }
 .result-item { position: relative; }
 .result-preview-button { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; padding: 7px; color: var(--ink); }
+.result-preview-button svg { width: 16px; height: 16px; }
 .result-preview-button:hover { background: #edf0f5; }
 .result-item .result-copy { padding-right: 30px; }
 .result-card { display: grid; grid-template-columns: 104px minmax(0, 1fr); align-items: center; gap: 15px; width: 100%; min-height: 116px; padding: 10px; border: 1px solid var(--line); border-radius: 9px; background: white; text-align: left; color: #111; transition: border-color .15s, box-shadow .15s; }

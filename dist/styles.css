@@ -145,7 +145,7 @@ main:focus { outline: none; }
 .composer-fields { display: grid; gap: 14px; margin-top: 30px; }
 .composer-field { position: relative; min-width: 0; }
 .composer-field.is-open { z-index: 10; }
-.tool-dropdown-trigger { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-width: 0; height: 48px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 14px; background: #fafafa; color: var(--ink); text-align: left; font-size: 16px; font-weight: 650; }
+.tool-dropdown-trigger { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-width: 0; height: 36px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fafafa; color: var(--ink); text-align: left; font-size: 16px; line-height: 20px; font-weight: 650; }
 .tool-dropdown-trigger span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tool-dropdown-trigger svg { flex-shrink: 0; width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s ease; }
 .tool-dropdown-trigger:hover { border-color: #c4cbd5; background: #f7f8fa; }

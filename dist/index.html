@@ -7,9 +7,11 @@
     <meta name="description" content="Your next idea starts here. Bring a link, a search, or your own material into a CSA workspace.">
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <script src="./theme.js?v=20261016-dark-mode"></script>
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="./styles.css?v=20261016-hover-navigation">
-    <script src="./demo-access.js?v=20261016-hover-navigation" type="module"></script>
+    <link rel="stylesheet" href="./styles.css?v=20261016-dark-mode">
+    <link rel="stylesheet" href="./theme.css?v=20261016-dark-mode">
+    <script src="./demo-access.js?v=20261016-dark-mode" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -33,7 +35,7 @@
     <div id="workspace-app" hidden inert>
     <a class="skip-link" href="#main">Skip to content</a>
     <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <symbol id="icon-plus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M12 7v10M7 12h10" stroke="white" stroke-width="2" stroke-linecap="round"/></symbol>
+      <symbol id="icon-plus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M12 7v10M7 12h10" stroke="var(--icon-cutout, white)" stroke-width="2" stroke-linecap="round"/></symbol>
       <symbol id="icon-history" viewBox="0 0 24 24"><path d="M4.5 8A8.3 8.3 0 1 1 4 15M4 3.5V8h4.5M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h13M12 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
@@ -41,13 +43,13 @@
       <symbol id="icon-redo" viewBox="0 0 24 24"><path d="m15 4 5 5-5 5m5-5h-9a6 6 0 0 0 0 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-file" viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8Zm0 0v5h5M9 13h6M9 17h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icon-document" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8h-4a2 2 0 0 1-2-2Zm2 0v4h4Z" fill="currentColor"/><path d="M9 14h6m-6 4h3" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"/></symbol>
+      <symbol id="icon-document" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8h-4a2 2 0 0 1-2-2Zm2 0v4h4Z" fill="currentColor"/><path d="M9 14h6m-6 4h3" fill="none" stroke="var(--icon-cutout, white)" stroke-width="1.8" stroke-linecap="round"/></symbol>
       <symbol id="icon-link" viewBox="0 0 24 24"><path d="m10 13 4-4m-5 7-2 2a3.5 3.5 0 0 1-5-5l4-4a3.5 3.5 0 0 1 5 0m2 0 2-2a3.5 3.5 0 1 1 5 5l-4 4a3.5 3.5 0 0 1-5 0" transform="translate(1 -1)" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
       <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
       <symbol id="icon-filters" viewBox="0 0 24 24"><path d="M5 8h14M5 16h14" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 4h5v8H8zm4 8h5v8h-5z" fill="currentColor"/></symbol>
       <symbol id="icon-edit-output" viewBox="0 0 24 24"><path d="M3 4h12M3 8h12M3 12h7m3 6 7-7 3 3-7 7h-3Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="round"/></symbol>
-      <symbol id="icon-archive" viewBox="0 0 24 24"><path d="M4 8h16v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z" fill="currentColor"/><path d="M3 3h18v5H3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12h6" stroke="white" stroke-width="1.7"/></symbol>
-      <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M6 6h12l-1 15H7z" fill="currentColor"/><path d="M4 5h16M9 3h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10 9v8m4-8v8" stroke="white" stroke-width="1.2"/></symbol>
+      <symbol id="icon-archive" viewBox="0 0 24 24"><path d="M4 8h16v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z" fill="currentColor"/><path d="M3 3h18v5H3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12h6" stroke="var(--icon-cutout, white)" stroke-width="1.7"/></symbol>
+      <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M6 6h12l-1 15H7z" fill="currentColor"/><path d="M4 5h16M9 3h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10 9v8m4-8v8" stroke="var(--icon-cutout, white)" stroke-width="1.2"/></symbol>
       <symbol id="icon-restore" viewBox="0 0 24 24"><path d="M4 9a8 8 0 1 1 0 6M4 4v5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-tools" viewBox="0 0 24 24"><path d="m14 5 5-2-1 5-3 1-9 11-3-3L14 8ZM4 3l4 4m2 3 10 10M3 4l2-2 4 4-2 2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-outputs" viewBox="0 0 24 24"><path d="M8 3v2m0 8v2M2 9h2m8 0h2M4 5l1.5 1.5m5 5L12 13M4 13l1.5-1.5m5-5L12 5m5 6v2m0 8v2m-6-6h2m8 0h2m-10-4 1.5 1.5m5 5L21 21m-8 0 1.5-1.5m5-5L21 13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="9" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
@@ -212,7 +214,17 @@
       <header class="rail-panel-header"><h2 id="recent-projects-heading">Recent projects</h2><button class="icon-button" type="button" data-close-navigation="history" aria-label="Close recent projects"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></header>
       <div id="history-content"></div>
     </section>
-    <div class="profile-menu" id="profile-menu" role="dialog" aria-labelledby="profile-name" hidden><button class="icon-button profile-close" type="button" data-close-navigation="profile" aria-label="Close profile"><svg aria-hidden="true"><use href="#icon-close"/></svg></button><img src="./avatar.svg" alt="" width="42" height="42"><div><strong id="profile-name">Julia</strong><span>Personal workspace</span><button class="text-button profile-navigation" id="profile-home" type="button">Home</button><button class="text-button profile-navigation" id="profile-materials" type="button">Search &amp; materials</button><button class="text-button profile-navigation" id="demo-lock" type="button">Lock demo</button></div></div>
+    <div class="profile-menu" id="profile-menu" role="dialog" aria-labelledby="profile-name" hidden>
+      <button class="icon-button profile-close" type="button" data-close-navigation="profile" aria-label="Close profile"><svg aria-hidden="true"><use href="#icon-close"/></svg></button>
+      <img src="./avatar.svg" alt="" width="42" height="42">
+      <div><strong id="profile-name">Julia</strong><span>Personal workspace</span>
+        <button class="text-button profile-navigation" id="profile-home" type="button">Home</button>
+        <button class="text-button profile-navigation" id="profile-materials" type="button">Search &amp; materials</button>
+        <button class="profile-theme-toggle" id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Dark mode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 15.3A8.5 8.5 0 0 1 8.7 4a8.5 8.5 0 1 0 11.3 11.3Z"/></svg><span class="theme-toggle-label">Dark mode</span><span class="theme-toggle-track" aria-hidden="true"><span class="theme-toggle-thumb"></span></span></button>
+        <span class="visually-hidden" id="theme-status" role="status"></span>
+        <button class="text-button profile-navigation" id="demo-lock" type="button">Lock demo</button>
+      </div>
+    </div>
 
     <dialog class="new-project-dialog" id="new-project-dialog" aria-labelledby="new-project-dialog-title">
       <h2 id="new-project-dialog-title">Start your next story</h2>

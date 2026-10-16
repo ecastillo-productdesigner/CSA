@@ -1,0 +1,91 @@
+export function createRailNavigation({ onRecentsOpen, onOpen }) {
+  const panels = {
+    history: { trigger: document.querySelector('#show-history'), panel: document.querySelector('#recent-projects') },
+    profile: { trigger: document.querySelector('#show-profile'), panel: document.querySelector('#profile-menu') },
+  };
+  let active = null;
+  let activation = '';
+  let closeTimer;
+  let restoringFocus = false;
+
+  function clearCloseTimer() { clearTimeout(closeTimer); }
+
+  function close(name = active, restoreFocus = false) {
+    if (!name || !panels[name]) return;
+    clearCloseTimer();
+    const { trigger, panel } = panels[name];
+    panel.hidden = true;
+    trigger.setAttribute('aria-expanded', 'false');
+    if (active === name) { active = null; activation = ''; }
+    if (restoreFocus) {
+      restoringFocus = true;
+      trigger.focus({ preventScroll: true });
+      restoringFocus = false;
+    }
+  }
+
+  function open(name, source) {
+    if (document.querySelector('dialog[open]')) return;
+    clearCloseTimer();
+    if (active === name) { if (source === 'click') activation = source; return; }
+    if (active) close(active);
+    onOpen?.();
+    if (name === 'history') onRecentsOpen();
+    const { trigger, panel } = panels[name];
+    panel.hidden = false;
+    trigger.setAttribute('aria-expanded', 'true');
+    active = name;
+    activation = source;
+  }
+
+  function scheduleClose(name) {
+    clearCloseTimer();
+    if (active !== name || activation !== 'hover') return;
+    closeTimer = setTimeout(() => {
+      const { trigger, panel } = panels[name];
+      if (trigger.matches(':hover') || panel.matches(':hover') || panel.contains(document.activeElement)) return;
+      close(name);
+    }, 220);
+  }
+
+  for (const [name, { trigger, panel }] of Object.entries(panels)) {
+    for (const target of [trigger, panel]) {
+      target.addEventListener('pointerenter', event => {
+        if (event.pointerType === 'touch') return;
+        clearCloseTimer();
+        if (target === trigger) open(name, 'hover');
+      });
+      target.addEventListener('pointerleave', () => scheduleClose(name));
+      target.addEventListener('focusin', () => {
+        clearCloseTimer();
+        if (target === trigger && !restoringFocus && trigger.matches(':focus-visible')) open(name, 'focus');
+      });
+      target.addEventListener('focusout', event => {
+        if (trigger.contains(event.relatedTarget) || panel.contains(event.relatedTarget)) return;
+        if (!trigger.matches(':hover') && !panel.matches(':hover')) close(name);
+      });
+    }
+    trigger.addEventListener('click', () => {
+      if (active === name && activation === 'click') close(name); else open(name, 'click');
+    });
+    trigger.addEventListener('keydown', event => {
+      if (!['ArrowRight', 'ArrowDown'].includes(event.key)) return;
+      event.preventDefault();
+      open(name, 'focus');
+      (panel.querySelector(name === 'history' ? '.history-item' : '.profile-navigation') || panel.querySelector('[data-close-navigation]'))?.focus();
+    });
+  }
+
+  for (const button of document.querySelectorAll('[data-close-navigation]')) button.addEventListener('click', () => close(button.dataset.closeNavigation, true));
+  document.addEventListener('pointerdown', event => {
+    if (!active) return;
+    const { trigger, panel } = panels[active];
+    if (!trigger.contains(event.target) && !panel.contains(event.target)) close();
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape' || !active) return;
+    event.preventDefault();
+    close(active, true);
+  });
+  return { close };
+}

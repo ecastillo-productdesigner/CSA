@@ -2,6 +2,7 @@ import { createSearchExperience } from './search.js?v=20261015-output-workspace'
 import { createDashboard } from './dashboard.js?v=20261015-home-reveal';
 import { createMaterialEditor } from './editor.js?v=20261015-wordpress-button';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-saved-tools';
+import { createRailNavigation } from './navigation.js?v=20261016-hover-navigation';
 import { projectOutputs, sampleVariant, outputIsReady, populateOutputContent, renderOutputs, toggleOutputMenu } from './outputs.js?v=20261015-home-reveal';
 
 const $ = (selector) => document.querySelector(selector);
@@ -63,6 +64,7 @@ let toastAction = null;
 let dashboard = null;
 const outputTimers = new Map();
 const toolDropdowns = createToolDropdowns({ notify });
+const railNavigation = createRailNavigation({ onRecentsOpen: renderRecentProjects, onOpen: () => toolDropdowns.close() });
 const richEditor = createMaterialEditor({
   onHome: () => showHome(),
   notify,
@@ -168,7 +170,7 @@ function createProject(sources, options = {}) {
 function showHome(focusInput = true) {
   activeProjectId = null;
   closeComposer();
-  setSidebarExpanded(false);
+  railNavigation.close();
   searchExperience.hide();
   document.body.classList.remove('showing-results');
   $('#workspace').hidden = true;
@@ -188,7 +190,7 @@ function showHome(focusInput = true) {
 function showSourceStart() {
   activeProjectId = null;
   closeComposer();
-  setSidebarExpanded(false);
+  railNavigation.close();
   searchExperience.hide();
   document.body.classList.remove('showing-results');
   $('#home').hidden = true;
@@ -220,7 +222,7 @@ function closeComposer() {
 function showProjectStart() {
   closeComposer();
   activeProjectId = null;
-  setSidebarExpanded(false);
+  railNavigation.close();
   searchExperience.hide();
   document.body.classList.remove('showing-results');
   document.body.classList.add('showing-composer');
@@ -253,11 +255,11 @@ function showProject(id) {
   if (!project || project.deletedAt) return;
   if (project.kind === 'draft') { showEditorProject(project); return; }
   closeComposer();
-  if (sidebarOverlayQuery.matches) setSidebarExpanded(false);
+  railNavigation.close();
   activeProjectId = id;
   $('#project-start').hidden = true;
   if (project.sources.length === 1 && project.sources[0].type === 'search') {
-    setSidebarExpanded(false);
+    railNavigation.close();
     $('#home').hidden = true;
     $('#workspace').hidden = true;
     document.body.classList.add('showing-results');
@@ -308,7 +310,7 @@ function showProject(id) {
 
 function showEditorProject(project) {
   closeComposer();
-  setSidebarExpanded(false);
+  railNavigation.close();
   activeProjectId = project.id;
   searchExperience.hide();
   document.body.classList.remove('showing-results');
@@ -342,8 +344,7 @@ function showEditorProject(project) {
 }
 
 function closeProfile() {
-  $('#profile-menu').hidden = true;
-  $('#show-profile').setAttribute('aria-expanded', 'false');
+  railNavigation.close('profile');
 }
 
 function updateComposerActions() {
@@ -528,55 +529,12 @@ function startSearch(query) {
   else createProject([{ type: 'search', title: query }], { kind: 'search' });
 }
 
-const sidebarOverlayQuery = matchMedia('(max-width: 900px)');
-
-function syncSidebarOverlay() {
-  $('#main').inert = document.body.classList.contains('sidebar-expanded') && sidebarOverlayQuery.matches;
-}
-
-function setSidebarExpanded(expanded, restoreFocus = false) {
-  if (!expanded) setRecentsExpanded(false);
-  document.body.classList.toggle('sidebar-expanded', expanded);
-  $('#collapse-sidebar').hidden = !expanded;
-  $('#sidebar-backdrop').hidden = !expanded;
-  closeProfile();
-  syncSidebarOverlay();
-  if (restoreFocus) $('.brand').focus();
-}
-
-sidebarOverlayQuery.addEventListener('change', syncSidebarOverlay);
-$('.sidebar').addEventListener('click', (event) => {
-  if (event.target.closest('.brand') || event.detail === 0 || document.body.classList.contains('sidebar-expanded')) return;
-  event.preventDefault();
-  event.stopImmediatePropagation();
-  setSidebarExpanded(true);
-}, true);
 $('.brand').addEventListener('click', () => showHome());
-$('#collapse-sidebar').addEventListener('click', () => setSidebarExpanded(false, true));
-$('#sidebar-backdrop').addEventListener('click', () => setSidebarExpanded(false, true));
 $('#new-project').addEventListener('click', showProjectStart);
 $('#back-home').addEventListener('click', () => showHome());
 $('#back-dashboard').addEventListener('click', () => showHome());
 $('#profile-home').addEventListener('click', () => showHome());
 $('#profile-materials').addEventListener('click', showSourceStart);
-
-$('#show-profile').addEventListener('click', () => {
-  const show = $('#profile-menu').hidden;
-  $('#profile-menu').hidden = !show;
-  $('#show-profile').setAttribute('aria-expanded', String(show));
-});
-document.addEventListener('click', (event) => {
-  if (!event.target.closest('#show-profile, #profile-menu')) closeProfile();
-});
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') {
-    closeProfile();
-    if (!document.querySelector('dialog[open]')) {
-      if (!$('#recent-projects').hidden) setRecentsExpanded(false, true);
-      else if (document.body.classList.contains('sidebar-expanded')) setSidebarExpanded(false, true);
-    }
-  }
-});
 
 function renderRecentProjects() {
   const content = $('#history-content');
@@ -594,7 +552,7 @@ function renderRecentProjects() {
       const title = element('span', 'history-item-title', project.title.replace(/(?:\.{3}|…)\s*$/, ''));
       const ellipsis = element('span', 'history-item-ellipsis', '...');
       ellipsis.setAttribute('aria-hidden', 'true');
-      button.append(title, ellipsis);
+      button.append(icon('file'), title, ellipsis);
       if (project.id === activeProjectId) button.setAttribute('aria-current', 'page');
       button.addEventListener('click', () => showProject(project.id));
       item.append(button);
@@ -603,20 +561,6 @@ function renderRecentProjects() {
     content.replaceChildren(list);
   }
 }
-
-function setRecentsExpanded(expanded, restoreFocus = false) {
-  if (expanded) renderRecentProjects();
-  $('#recent-projects').hidden = !expanded;
-  $('#show-history').setAttribute('aria-expanded', String(expanded));
-  if (restoreFocus) $('#show-history').focus();
-}
-
-$('#show-history').addEventListener('click', () => {
-  closeProfile();
-  const expanded = $('#recent-projects').hidden;
-  if (expanded) setSidebarExpanded(true);
-  setRecentsExpanded(expanded);
-});
 
 function setMaterialMode(mode) {
   materialMode = mode;

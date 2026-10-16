@@ -7,6 +7,6 @@
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "start": "node scripts/serve.mjs",
-    "check": "node --check dist/demo-access.js && node --check dist/app.js && node --check dist/editor.js && node --check dist/search.js && node --check dist/outputs.js && node --check dist/tool-dropdowns.js && node --check dist/dashboard.js && node --check scripts/serve.mjs"
+    "check": "node --check dist/demo-access.js && node --check dist/app.js && node --check dist/editor.js && node --check dist/search.js && node --check dist/outputs.js && node --check dist/tool-dropdowns.js && node --check dist/navigation.js && node --check dist/dashboard.js && node --check scripts/serve.mjs"
   }
 }

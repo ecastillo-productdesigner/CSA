@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261016-saved-tools');
+  await import('./app.js?v=20261016-hover-navigation');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

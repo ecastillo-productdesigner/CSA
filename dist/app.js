@@ -1,7 +1,7 @@
 import { createSearchExperience } from './search.js?v=20261016-draft-selection';
 import { createDashboard } from './dashboard.js?v=20261016-variant-cards';
 import { createRecentProjects } from './recent-projects.js?v=20261016-project-actions';
-import { createMaterialEditor } from './editor.js?v=20261016-content-feedback';
+import { createMaterialEditor } from './editor.js?v=20261016-seo-metadata';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
 import { createRailNavigation } from './navigation.js?v=20261016-hover-navigation';

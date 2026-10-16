@@ -317,11 +317,14 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
 .editor-spellcheck { margin-left: auto; }
 .editor-context-panel { flex-shrink: 0; min-width: 0; max-height: 30svh; overflow-y: auto; overscroll-behavior-y: contain; margin-bottom: 20px; padding: 22px; border: 1px solid var(--line); border-radius: 12px; background: white; }
 #editor-metadata { border-radius: 8px; }
+.editor-seo-metadata { display: grid; gap: 14px; margin: 0; color: #26344a; font-size: 14px; line-height: 1.65; overflow-wrap: anywhere; }
+.editor-seo-metadata dt { display: inline; color: var(--muted); font-weight: 700; }
+.editor-seo-metadata dd { display: inline; margin: 0; }
 .editor-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
 .editor-panel-heading h2 { margin: 0; font-size: 15px; font-weight: 650; }
 .editor-context-panel label, .editor-link-dialog label { display: grid; gap: 8px; font-size: 12px; font-weight: 600; }
 .editor-context-panel input, .editor-link-dialog input { width: 100%; min-width: 0; height: 40px; padding: 9px 11px; border: 1px solid #dfe4eb; border-radius: 8px; background: #fcfcfd; color: #34445d; font-size: 13px; font-weight: 400; }
-.editor-metadata-fields, .editor-find-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.editor-find-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 #editor-source-list { display: grid; gap: 15px; max-height: 300px; overflow-y: auto; margin: 0 0 20px; padding: 0; list-style: none; }
 #editor-source-list li { min-width: 0; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
 #editor-source-list strong, #editor-source-list a { font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
@@ -342,7 +345,7 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
 .experience-feedback-options svg { width: 25px; height: 25px; }
 .experience-feedback-options .thumb-down { transform: rotate(180deg); }
 .experience-feedback-dialog .experience-feedback-thanks { margin-top: 24px; color: var(--ink); font-weight: 600; }
-.experience-feedback-done { width: 100%; margin-top: 24px; }
+.experience-feedback-dialog .experience-feedback-done { display: grid; place-items: center; width: 100%; margin-top: 24px; text-align: center; }
 .editor-link-dialog { width: min(460px, calc(100vw - 32px)); border-radius: 16px; }
 .editor-link-dialog label+label { margin-top: 16px; }
 @media (max-width: 1100px) {
@@ -367,7 +370,7 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
   .editor-footer { gap: 6px 14px; padding: 13px 18px; }
   .editor-spellcheck { margin-left: 0; }
   .editor-context-panel { padding: 18px; }
-  .editor-metadata-fields, .editor-find-fields { grid-template-columns: minmax(0, 1fr); }
+  .editor-find-fields { grid-template-columns: minmax(0, 1fr); }
   .composer-rail, .composer.has-editor .composer-rail { grid-template-columns: minmax(0, 1fr); padding: 0; }
   .editor-source-form>div { flex-direction: column; }
   .new-project-dialog { padding: 44px 24px 24px; }

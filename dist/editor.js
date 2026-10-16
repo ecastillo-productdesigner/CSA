@@ -57,7 +57,7 @@ export function createMaterialEditor({ onSave, onDownloadSource, onSendToCms, on
     quill.root.setAttribute('aria-label', 'Story body');
     quill.root.setAttribute('aria-multiline', 'true');
     quill.root.setAttribute('spellcheck', 'true');
-    quill.on('text-change', () => { if (!loading) { updateCounts(); updateToolbar(); updateFind(); scheduleSave(); onContentChange(); } });
+    quill.on('text-change', () => { if (!loading) { updateCounts(); updateToolbar(); updateFind(); scheduleSave(); if (!$('#editor-metadata').hidden) updateMetadata(); onContentChange(); } });
     quill.on('selection-change', (range) => { if (range) { selection = range; updateToolbar(); } });
     const icons = Quill.import('ui/icons');
     for (const button of $('#editor-toolbar').querySelectorAll('[data-format], [data-list], [data-editor-action="clear"]')) {
@@ -82,7 +82,7 @@ export function createMaterialEditor({ onSave, onDownloadSource, onSendToCms, on
     const snapshot = {
       id: project.id, title: title.value.trim() || 'Untitled story', kind: 'draft',
       document: quill.getContents(), draftText: quill.getText().replace(/\n$/, ''),
-      metadata: { author: $('#editor-author').value.trim(), tags: $('#editor-tags').value.trim() },
+      metadata: { ...project.metadata, ...storyMetadata() },
       toolPreferences: Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, $(`#composer-${key}`).value])),
       updatedAt: Date.now(),
     };
@@ -149,14 +149,37 @@ export function createMaterialEditor({ onSave, onDownloadSource, onSendToCms, on
   });
   for (const key of ['font', 'size', 'align']) $(`#editor-${key}`).addEventListener('change', () => format(key, $(`#editor-${key}`).value || false));
   $('#editor-color').addEventListener('input', () => format('color', $('#editor-color').value));
-  title.addEventListener('input', () => { resizeTitle(); scheduleSave(); });
+  title.addEventListener('input', () => { resizeTitle(); scheduleSave(); if (!$('#editor-metadata').hidden) updateMetadata(); });
   let previousWidth = 0;
   new ResizeObserver(entries => {
     const width = entries[0].contentRect.width;
     if (width > 0 && width !== previousWidth) { previousWidth = width; resizeTitle(); }
   }).observe(root);
-  for (const key of ['author', 'tags']) $(`#editor-${key}`).addEventListener('input', scheduleSave);
   for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).addEventListener('change', scheduleSave);
+
+  function storyMetadata() {
+    const heading = title.value.replace(/\s+/gu, ' ').trim();
+    const text = quill?.getText().replace(/\s+/gu, ' ').trim() || '';
+    const opening = text.match(/^.*?[.!?](?:\s|$)/u)?.[0].trim() || text;
+    const description = opening.length > 180 ? `${opening.slice(0, 177).replace(/\s+\S*$/u, '')}…` : opening;
+    const stopWords = new Set('about after again also another around became become been before being behind between both could each entirely every first found from have into itself just like made more most much nearby neither none once only ordinary other over same should some story stories such than that their them then there these they this those through together under very were what when where which while with without would your'.split(' '));
+    const scores = new Map();
+    for (const [content, weight] of [[heading, 3], [text, 1]]) {
+      for (const word of content.toLowerCase().match(/[\p{L}][\p{L}’'-]*/gu) || []) {
+        const keyword = word.replace(/[’']s$/u, '');
+        if (keyword.length < 4 || stopWords.has(keyword)) continue;
+        scores.set(keyword, (scores.get(keyword) || 0) + weight);
+      }
+    }
+    return { seoTitle: heading, metaDescription: description, seoKeywords: [...scores].sort((a, b) => b[1] - a[1]).slice(0, 7).map(([word]) => word).join(', ') };
+  }
+
+  function updateMetadata() {
+    const metadata = storyMetadata();
+    $('#editor-seo-title').textContent = metadata.seoTitle || '—';
+    $('#editor-meta-description').textContent = metadata.metaDescription || '—';
+    $('#editor-seo-keywords').textContent = metadata.seoKeywords || '—';
+  }
 
   function setPanel(name, open) {
     for (const key of ['sources', 'metadata', 'find']) {
@@ -165,6 +188,7 @@ export function createMaterialEditor({ onSave, onDownloadSource, onSendToCms, on
       $(`#editor-${key}-button`).setAttribute('aria-expanded', String(active));
     }
     if (name === 'sources' && open) renderSources();
+    if (name === 'metadata' && open) updateMetadata();
     if (name === 'find' && open) $('#editor-find-text').focus();
   }
   for (const name of ['sources', 'metadata', 'find']) $(`#editor-${name}-button`).addEventListener('click', () => setPanel(name, $(`#editor-${name}`).hidden));
@@ -320,8 +344,6 @@ export function createMaterialEditor({ onSave, onDownloadSource, onSendToCms, on
       title.value = next.title === 'Untitled story' ? '' : next.title;
       $('#editor-wordpress').disabled = !next.selectedOutputId;
       $('#editor-wordpress').title = next.selectedOutputId ? 'Send this variant to CMS (demo)' : 'Select a generated variant to send to CMS';
-      $('#editor-author').value = typeof next.metadata?.author === 'string' ? next.metadata.author : '';
-      $('#editor-tags').value = typeof next.metadata?.tags === 'string' ? next.metadata.tags : '';
       const document = savedDocument(next.document);
       if (document) quill.setContents(document, 'silent'); else quill.setText(typeof next.draftText === 'string' ? next.draftText : '', 'silent');
       quill.history.clear(); selection = { index: 0, length: 0 }; findIndex = -1;

@@ -1,3 +1,5 @@
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261015-home-reveal';
+
 function node(tag, className, text) {
   const element = document.createElement(tag);
   if (className) element.className = className;
@@ -19,9 +21,7 @@ function projectDate(timestamp) {
   return day.format(timestamp) === day.format(Date.now()) ? 'Today' : new Date(timestamp).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric' });
 }
 
-export function createDashboard({ onNew, onOpen, onArchive, onTrash, onRestore }) {
-  let collection = 'active';
-  let currentProjects = [];
+export function createDashboard({ onNew, onOpen }) {
   let revealTimer;
   const home = document.querySelector('#home');
   window.addEventListener('scroll', () => {
@@ -37,73 +37,39 @@ export function createDashboard({ onNew, onOpen, onArchive, onTrash, onRestore }
     revealTimer = setTimeout(() => home.classList.remove('is-entering'), 1400);
   }
 
-  function actionButton(label, symbol, callback, className = '') {
-    const button = node('button', `project-action ${className}`.trim());
-    button.type = 'button';
-    button.setAttribute('aria-label', label);
-    button.title = label;
-    button.append(icon(symbol));
-    button.addEventListener('click', callback);
-    return button;
-  }
-
   function render(projects) {
-    currentProjects = projects;
-    const dashboardProjects = projects.filter((project) => project.dashboard === true || project.archivedAt || project.deletedAt);
-    const groups = {
-      active: dashboardProjects.filter((project) => !project.archivedAt && !project.deletedAt),
-      archived: dashboardProjects.filter((project) => project.archivedAt && !project.deletedAt),
-      trash: dashboardProjects.filter((project) => project.deletedAt),
-    };
-    if (collection !== 'active' && !groups[collection].length) collection = 'active';
-    const collections = document.querySelector('#dashboard-collections');
-    collections.hidden = groups.archived.length === 0 && groups.trash.length === 0;
-    collections.replaceChildren(...[['active', 'Projects'], ['archived', 'Archived'], ['trash', 'Trash']].map(([key, label]) => {
-      const button = node('button', '', `${label}${key === 'active' ? '' : ` (${groups[key].length})`}`);
-      button.type = 'button';
-      button.setAttribute('aria-pressed', String(collection === key));
-      button.addEventListener('click', () => { collection = key; render(currentProjects); });
-      return button;
-    }));
-
+    const dashboardProjects = projects.filter(project => project.dashboard === true && !project.archivedAt && !project.deletedAt);
     const grid = document.querySelector('#dashboard-grid');
     grid.replaceChildren();
-    if (collection === 'active') {
-      const button = node('button', 'new-project-tile');
-      button.id = 'dashboard-new-project';
-      button.type = 'button';
-      button.append(icon('plus'), node('span', '', 'New Project'));
-      button.addEventListener('click', onNew);
-      grid.append(button);
-    }
+    const button = node('button', 'new-project-tile');
+    button.id = 'dashboard-new-project';
+    button.type = 'button';
+    button.append(icon('plus'), node('span', '', 'New Project'));
+    button.addEventListener('click', onNew);
+    grid.append(button);
 
-    for (const project of groups[collection]) {
+    for (const project of dashboardProjects) {
       const card = node('article', 'dashboard-project');
       card.setAttribute('aria-label', project.title);
+      const variants = projectOutputs(project).filter(outputIsReady);
+      const sentCount = variants.filter(variant => Number.isFinite(variant.cmsSentAt) && variant.cmsSentAt > 0).length;
       const badges = node('div', 'project-badges');
-      badges.append(node('span', 'project-badge', 'Draft'));
+      badges.append(node('span', 'project-badge', sentCount ? `${sentCount} ${sentCount === 1 ? 'variant' : 'variants'} sent to CMS` : 'Draft'));
       const title = node('h2', '', project.title);
       title.title = project.title;
       const meta = node('div', 'project-meta');
       const date = node('span'); date.append(icon('history'), document.createTextNode(projectDate(project.createdAt)));
-      const count = node('span'); count.append(icon('file'), document.createTextNode(`${project.sources.length} ${project.sources.length === 1 ? 'Source' : 'Sources'}`));
+      const count = node('span'); count.append(icon('file'), document.createTextNode(`${variants.length} ${variants.length === 1 ? 'variant' : 'variants'}`));
       meta.append(date, node('span', 'meta-dot', '·'), count);
       const actions = node('div', 'project-actions');
-      const open = node('button', 'project-open', collection === 'trash' ? 'Restore' : 'Open');
+      const open = node('button', 'project-open', 'Open');
       open.type = 'button';
-      open.setAttribute('aria-label', `${collection === 'trash' ? 'Restore' : 'Open'} ${project.title}`);
-      open.addEventListener('click', () => collection === 'trash' ? onRestore(project.id) : onOpen(project.id));
+      open.setAttribute('aria-label', `Open ${project.title}`);
+      open.addEventListener('click', () => onOpen(project.id));
       actions.append(open);
-      if (collection !== 'trash') {
-        actions.append(
-          actionButton(`${collection === 'archived' ? 'Restore' : 'Archive'} ${project.title}`, collection === 'archived' ? 'restore' : 'archive', () => collection === 'archived' ? onRestore(project.id) : onArchive(project.id)),
-          actionButton(`Delete ${project.title}`, 'trash', () => onTrash(project.id), 'project-action--delete'),
-        );
-      }
       card.append(badges, title, meta, actions);
       grid.append(card);
     }
-    if (!grid.children.length) grid.append(node('p', 'dashboard-empty', 'No projects here yet.'));
     for (const [index, card] of [...grid.children].entries()) card.style.setProperty('--reveal-order', Math.min(index, 7));
   }
 

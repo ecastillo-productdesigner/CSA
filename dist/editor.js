@@ -35,7 +35,7 @@ function savedDocument(value) {
   return { ops };
 }
 
-export function createMaterialEditor({ onSave, onHome, onDownloadSource, notify }) {
+export function createMaterialEditor({ onSave, onHome, onDownloadSource, onSendToCms, notify }) {
   const $ = (selector) => document.querySelector(selector);
   const root = $('#material-editor');
   const title = $('#editor-title');
@@ -301,7 +301,7 @@ export function createMaterialEditor({ onSave, onHome, onDownloadSource, notify 
   $('#editor-wordpress').addEventListener('click', () => {
     if (!project) return;
     flush();
-    notify('WordPress isn’t connected yet. This button is a demo.');
+    onSendToCms(project.id);
   });
   document.addEventListener('keydown', event => {
     if (!project || root.hidden || linkDialog.open || !(event.metaKey || event.ctrlKey) || event.altKey) return;
@@ -319,6 +319,8 @@ export function createMaterialEditor({ onSave, onHome, onDownloadSource, notify 
       flush(); project = next; loading = true; root.hidden = false;
       initialize();
       title.value = next.title === 'Untitled story' ? '' : next.title;
+      $('#editor-wordpress').disabled = !next.selectedOutputId;
+      $('#editor-wordpress').title = next.selectedOutputId ? 'Send this variant to CMS (demo)' : 'Select a generated variant to send to CMS';
       $('#editor-author').value = typeof next.metadata?.author === 'string' ? next.metadata.author : '';
       $('#editor-tags').value = typeof next.metadata?.tags === 'string' ? next.metadata.tags : '';
       const document = savedDocument(next.document);

@@ -80,10 +80,17 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
   });
 
   function filteredArticles() {
+    const query = state.query.toLowerCase();
+    const terms = [...new Set(query.split(/\s+/).filter(Boolean))];
+    const relevance = article => {
+      const title = article.title.toLowerCase();
+      const excerpt = article.excerpt.toLowerCase();
+      return terms.reduce((score, term) => score + (title.includes(term) ? 3 : 0) + (excerpt.includes(term) ? 1 : 0), title.startsWith(query) ? 2 : 0);
+    };
     return state.articles.filter((article) =>
       (state.source === 'all' || article.source === state.source) &&
       (!state.after || article.date >= state.after)
-    ).sort((a, b) => state.sort === 'newest' ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date));
+    ).sort((a, b) => state.sort === 'relevance' ? relevance(b) - relevance(a) : state.sort === 'newest' ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date));
   }
 
   function chosenArticles() {
@@ -120,11 +127,10 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       card.append(thumbnail, copy);
       const previewButton = node('button', 'icon-button result-preview-button');
       previewButton.type = 'button';
+      previewButton.disabled = true;
       previewButton.dataset.previewArticleId = article.id;
       previewButton.setAttribute('aria-label', `Preview story ${article.id.split('-').pop()}: ${article.title}`);
-      previewButton.setAttribute('aria-haspopup', 'dialog');
-      previewButton.setAttribute('aria-controls', 'article-preview-dialog');
-      previewButton.title = 'Preview article';
+      previewButton.title = 'Article preview';
       const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
       svg.setAttribute('aria-hidden', 'true'); use.setAttribute('href', '#icon-open'); svg.append(use);
@@ -167,7 +173,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
   $('#load-more').addEventListener('click', () => { if (state) { state.visibleCount += 4; render(); } });
   $('#result-list').addEventListener('click', (event) => {
     const previewButton = event.target.closest('.result-preview-button');
-    if (previewButton) { openPreview(previewButton.dataset.previewArticleId); return; }
+    if (previewButton) return;
     const card = event.target.closest('.result-card');
     if (!card || !state) return;
     const id = card.dataset.articleId;
@@ -193,6 +199,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       $('#results-query').value = query;
       $('#results-search-button').disabled = false;
       $('#results-sort').value = 'newest';
+      $('#results-sort').dispatchEvent(new Event('change', { bubbles: true }));
       $('#results-source').replaceChildren(node('option', '', 'All sources'), ...[...new Set(articles.map((article) => article.source))].map((source) => {
         const option = node('option', '', source); option.value = source; return option;
       }));

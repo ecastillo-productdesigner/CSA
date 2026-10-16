@@ -19,7 +19,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
     if (stored && typeof stored === 'object' && !Array.isArray(stored)) savedFavorites = stored;
   } catch { /* Start with no saved choices when storage is unavailable. */ }
 
-  const controls = [...document.querySelectorAll('.composer-field')].map(field => {
+  const controls = [...document.querySelectorAll('.composer-field, .results-sort-field')].map(field => {
     const select = field.querySelector('select');
     const label = field.dataset.label;
     const key = select.id.replace('composer-', '');

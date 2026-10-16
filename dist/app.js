@@ -1,9 +1,9 @@
-import { createSearchExperience } from './search.js?v=20261016-article-preview';
-import { createDashboard } from './dashboard.js?v=20261016-project-actions';
+import { createSearchExperience } from './search.js?v=20261016-search-controls';
+import { createDashboard } from './dashboard.js?v=20261016-variant-cards';
 import { createRecentProjects } from './recent-projects.js?v=20261016-project-actions';
-import { createMaterialEditor } from './editor.js?v=20261016-document-upload';
+import { createMaterialEditor } from './editor.js?v=20261016-variant-cards';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-saved-tools';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-search-controls';
 import { createRailNavigation } from './navigation.js?v=20261016-hover-navigation';
 import { projectOutputs, sampleVariant, outputIsReady, populateOutputContent, renderOutputs, toggleOutputMenu } from './outputs.js?v=20261015-home-reveal';
 
@@ -73,6 +73,7 @@ const railNavigation = createRailNavigation({ onRecentsOpen: renderRecentProject
 const richEditor = createMaterialEditor({
   onHome: () => showHome(),
   onDownloadSource: downloadSource,
+  onSendToCms: markVariantSentToCms,
   notify,
   onSave(snapshot) {
     const project = projects.find(entry => entry.id === snapshot.id);
@@ -819,13 +820,18 @@ function moveProject(id, destination) {
   });
 }
 
-function restoreProject(id) {
-  const project = projects.find((entry) => entry.id === id);
-  if (!project) return;
-  delete project.archivedAt;
-  delete project.deletedAt;
-  saveProjects();
-  notify('Project restored.');
+function markVariantSentToCms(projectId) {
+  const project = projects.find(entry => entry.id === projectId);
+  const variant = projectOutputs(project).find(output => output.id === project?.selectedOutputId && outputIsReady(output));
+  if (!variant) { notify('Select a generated variant to send to CMS.'); return; }
+  if (Number.isFinite(variant.cmsSentAt) && variant.cmsSentAt > 0) {
+    notify('Demo: this variant is already marked as sent to CMS.');
+    return;
+  }
+  variant.cmsSentAt = Date.now();
+  project.updatedAt = variant.cmsSentAt;
+  const saved = saveProjects();
+  notify(saved ? 'Demo: variant marked as sent to CMS. WordPress is not connected.' : 'Demo: variant marked as sent for this session only. WordPress is not connected.');
 }
 
 $('#toast-undo').addEventListener('click', () => {
@@ -839,9 +845,6 @@ $('#toast-undo').addEventListener('click', () => {
 dashboard = createDashboard({
   onNew: showProjectStart,
   onOpen: showProject,
-  onArchive: (id) => moveProject(id, 'archive'),
-  onTrash: (id) => moveProject(id, 'trash'),
-  onRestore: restoreProject,
 });
 dashboard.render(projects);
 dashboard.reveal();

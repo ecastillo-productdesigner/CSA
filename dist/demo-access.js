@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261015-home-reveal');
+  await import('./app.js?v=20261016-saved-tools');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

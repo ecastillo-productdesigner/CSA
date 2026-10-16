@@ -9,8 +9,8 @@
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0&amp;icon_names=left_panel_close">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="./styles.css?v=20261015-home-reveal">
-    <script src="./demo-access.js?v=20261015-home-reveal" type="module"></script>
+    <link rel="stylesheet" href="./styles.css?v=20261016-saved-tools">
+    <script src="./demo-access.js?v=20261016-saved-tools" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -132,7 +132,7 @@
         </div>
         <aside class="composer-rail" aria-label="Project tools and outputs">
           <section class="composer-panel composer-tools" aria-labelledby="composer-tools-heading">
-            <h2 id="composer-tools-heading"><svg aria-hidden="true"><use href="#icon-tools"/></svg>Tools</h2>
+            <div class="composer-tools-header"><h2 id="composer-tools-heading"><svg aria-hidden="true"><use href="#icon-tools"/></svg>Tools</h2><button class="icon-button tool-share-button" id="composer-share-button" type="button" aria-label="Share tools" title="Share tools"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8V3l8 8-8 8v-5C7 14 3.5 16.5 2 21 2 13.5 5.5 8 14 8Z" fill="currentColor"/></svg></button></div>
             <div class="composer-fields">
               <div class="composer-field" data-label="Format">
                 <select id="composer-format" aria-label="Format" hidden><option value="">None Selected</option><option value="what-to-know">What to know</option><option value="listicle">Listicle</option><option value="news-story">News story</option><option value="social-post">Social post</option></select>

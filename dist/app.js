@@ -1,7 +1,7 @@
 import { createSearchExperience } from './search.js?v=20261015-output-workspace';
 import { createDashboard } from './dashboard.js?v=20261015-home-reveal';
 import { createMaterialEditor } from './editor.js?v=20261015-wordpress-button';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261015-tools-menus';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-saved-tools';
 import { projectOutputs, sampleVariant, outputIsReady, populateOutputContent, renderOutputs, toggleOutputMenu } from './outputs.js?v=20261015-home-reveal';
 
 const $ = (selector) => document.querySelector(selector);
@@ -62,7 +62,7 @@ let toastTimer;
 let toastAction = null;
 let dashboard = null;
 const outputTimers = new Map();
-const toolDropdowns = createToolDropdowns();
+const toolDropdowns = createToolDropdowns({ notify });
 const richEditor = createMaterialEditor({
   onHome: () => showHome(),
   notify,
@@ -460,6 +460,7 @@ function openEditorialDirection(projectId) {
 }
 
 $('#composer-direction-button').addEventListener('click', () => openEditorialDirection(activeProjectId));
+$('#composer-share-button').addEventListener('click', () => notify('Tool sharing is coming soon.'));
 $('#editorial-direction-dialog').addEventListener('close', () => { directionProjectId = null; });
 $('#editorial-direction-form').addEventListener('submit', event => {
   event.preventDefault();

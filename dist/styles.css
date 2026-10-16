@@ -170,7 +170,8 @@ main:focus { outline: none; }
 .tool-saved-empty { margin: 0; padding: 20px 18px 24px; color: var(--muted); font-size: 13px; line-height: 1.6; }
 @media (hover: none) { .tool-option-favorite { opacity: 1; } }
 .composer-actions { display: grid; grid-template-columns: minmax(0, 1fr); margin-top: 20px; }
-.create-variant { display: grid; place-items: center; min-width: 0; height: 44px; border: 1px solid #dfe3e9; border-radius: 14px; background: #f5f7fa; color: #cfdaea; font-size: 20px; font-weight: 700; }
+.create-variant, .create-output, .editor-wordpress-button { height: var(--button-height); font-size: 16px; font-weight: 700; }
+.create-variant { display: grid; place-items: center; min-width: 0; border: 1px solid #dfe3e9; border-radius: 14px; background: #f5f7fa; color: #cfdaea; }
 .create-variant:not(:disabled) { background: var(--ink); border-color: var(--ink); color: white; }
 .create-variant:not(:disabled):hover { background: #35445e; }
 .composer-outputs { position: relative; display: flex; flex-direction: column; min-height: 0; }
@@ -198,7 +199,7 @@ main:focus { outline: none; }
 .output-badge--voice { background: #c9e9f3; color: #006f95; }
 .output-card-title { display: block; margin-top: 18px; font-size: 14px; line-height: 1.5; font-weight: 700; overflow-wrap: anywhere; }
 .outputs-footer { position: relative; z-index: 1; margin-top: auto; padding-top: 20px; }
-.create-output { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: var(--button-height); border: 1px solid var(--ink); border-radius: 14px; background: var(--ink); color: white; font-size: 16px; font-weight: 700; }
+.create-output { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; border: 1px solid var(--ink); border-radius: 14px; background: var(--ink); color: white; }
 .create-output:hover:not(:disabled) { background: #35445e; }
 .create-output:disabled { border-color: #dfe3e9; background: #f5f7fa; color: #cfdaea; }
 .output-processing-spinner { width: 16px; height: 16px; border: 2px solid #a7b5c8; border-top-color: var(--ink); border-radius: 50%; animation: output-spin .8s linear infinite; }
@@ -309,7 +310,7 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
 #rich-text-editor .ql-editor.ql-blank::before { left: 38px; right: 38px; color: #9aa5b5; font-style: normal; }
 .editor-footer { display: flex; flex-shrink: 0; align-items: center; flex-wrap: wrap; gap: 10px 20px; min-height: 48px; padding: 13px 24px; border-top: 1px solid var(--line); color: #7b879a; font-size: 11px; line-height: 18px; }
 .editor-publish-actions { display: flex; flex-shrink: 0; justify-content: center; padding: 12px 24px; }
-.editor-wordpress-button { width: min(300px, 100%); height: var(--button-height); padding: 0 24px; border: 1px solid var(--ink); border-radius: 10px; background: var(--ink); color: white; font-size: 16px; font-weight: 700; }
+.editor-wordpress-button { width: min(300px, 100%); padding: 0 24px; border: 1px solid var(--ink); border-radius: 10px; background: var(--ink); color: white; }
 .editor-wordpress-button:not(:disabled):hover { background: #3d4c68; border-color: #3d4c68; }
 .editor-wordpress-button:disabled { background: #f5f7fa; border-color: #dfe3e9; color: #cfdaea; }
 .editor-spellcheck { margin-left: auto; }

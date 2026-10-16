@@ -8,8 +8,9 @@
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="./styles.css?v=20261016-add-source">
-    <script src="./demo-access.js?v=20261016-add-source" type="module"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=favorite,folder_open">
+    <link rel="stylesheet" href="./styles.css?v=20261016-output-presets">
+    <script src="./demo-access.js?v=20261016-output-presets" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -64,6 +65,7 @@
       <nav class="navigation" id="workspace-navigation" aria-label="Workspace">
         <button class="icon-button nav-button" id="new-project" type="button" aria-label="New project" data-tooltip="New project"><svg aria-hidden="true"><use href="#icon-plus"/></svg></button>
         <button class="icon-button nav-button" id="show-history" type="button" aria-label="Recent projects" aria-haspopup="dialog" aria-controls="recent-projects" aria-expanded="false"><svg aria-hidden="true"><use href="#icon-history"/></svg></button>
+        <button class="icon-button nav-button" id="show-sources" type="button" aria-label="Sources" aria-haspopup="dialog" aria-controls="editor-sources" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">folder_open</span></button>
       </nav>
       <button class="profile-button" id="show-profile" type="button" aria-label="Julia's profile" aria-haspopup="dialog" aria-controls="profile-menu" aria-expanded="false">
         <img src="./avatar.svg" alt="" width="32" height="32">
@@ -86,7 +88,6 @@
           <section class="material-editor" id="material-editor" aria-label="Story editor" hidden>
             <div class="editor-topbar">
               <div class="editor-navigation">
-                <button class="editor-nav-button" id="editor-sources-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-sources"><svg aria-hidden="true"><use href="#icon-link"/></svg>Sources <span class="editor-source-count" id="editor-source-count">0</span><svg class="editor-flyover-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
                 <button class="editor-nav-button" id="editor-metadata-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-metadata"><svg aria-hidden="true"><use href="#icon-file"/></svg>Metadata<svg class="editor-flyover-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               </div>
               <div class="editor-document-actions" hidden>
@@ -96,12 +97,6 @@
             <div class="editor-context-panel editor-flyover" id="editor-metadata" role="dialog" aria-labelledby="editor-metadata-heading" tabindex="-1" hidden>
               <div class="editor-panel-heading"><h2 id="editor-metadata-heading">Metadata</h2><button class="text-button" type="button" data-editor-close="metadata">Close</button></div>
               <dl class="editor-seo-metadata"><div><dt>SEO title:</dt> <dd id="editor-seo-title">—</dd></div><div><dt>Meta description:</dt> <dd id="editor-meta-description">—</dd></div><div><dt>SEO keywords:</dt> <dd id="editor-seo-keywords">—</dd></div></dl>
-            </div>
-            <div class="editor-context-panel editor-flyover" id="editor-sources" role="dialog" aria-labelledby="editor-sources-heading" tabindex="-1" hidden>
-              <div class="editor-panel-heading"><h2 id="editor-sources-heading">Sources</h2><button class="text-button" type="button" data-editor-close="sources">Close</button></div>
-              <p class="editor-source-selection-status" id="editor-source-selection-status" role="status"></p>
-              <ul id="editor-source-list"></ul>
-              <button class="secondary-button editor-add-source-button" id="editor-add-source-button" type="button">Add source</button>
             </div>
             </div>
             <div class="editor-context-panel editor-find-panel" id="editor-find" hidden>
@@ -126,7 +121,7 @@
         </div>
         <aside class="composer-rail" aria-label="Project tools and outputs">
           <section class="composer-panel composer-tools" aria-labelledby="composer-tools-heading">
-            <div class="composer-tools-header"><h2 id="composer-tools-heading"><svg aria-hidden="true"><use href="#icon-tools"/></svg>Tools</h2><button class="icon-button tool-share-button" id="composer-share-button" type="button" aria-label="Share tools" title="Share tools"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8V3l8 8-8 8v-5C7 14 3.5 16.5 2 21 2 13.5 5.5 8 14 8Z" fill="currentColor"/></svg></button></div>
+            <div class="composer-tools-header"><h2 id="composer-tools-heading"><svg aria-hidden="true"><use href="#icon-tools"/></svg>New Variant</h2><button class="icon-button tool-share-button" id="composer-share-button" type="button" aria-label="Share tools" title="Share tools"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8V3l8 8-8 8v-5C7 14 3.5 16.5 2 21 2 13.5 5.5 8 14 8Z" fill="currentColor"/></svg></button></div>
             <div class="composer-fields">
               <div class="composer-field" data-label="Format">
                 <select id="composer-format" aria-label="Format" hidden><option value="">None Selected</option><option value="what-to-know">What to know</option><option value="listicle">Listicle</option><option value="news-story">News story</option><option value="social-post">Social post</option></select>
@@ -147,7 +142,12 @@
             </div>
           </section>
           <section class="composer-panel composer-outputs" aria-labelledby="composer-outputs-heading">
-            <h2 id="composer-outputs-heading"><svg aria-hidden="true"><use href="#icon-outputs"/></svg>Outputs</h2>
+            <div class="composer-outputs-header"><h2 id="composer-outputs-heading"><svg aria-hidden="true"><use href="#icon-outputs"/></svg>Outputs</h2>
+            <div class="output-presets" id="output-presets" hidden>
+              <button class="tool-dropdown-trigger" id="output-presets-trigger" type="button" aria-haspopup="listbox" aria-controls="output-presets-options" aria-expanded="false"><span>Presets</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+              <div class="output-presets-menu" id="output-presets-options" role="listbox" aria-label="Saved outputs" hidden></div>
+            </div>
+            </div>
             <div class="composer-empty" id="outputs-empty" role="status"><p>Outputs will appear here once<br>content is selected</p></div>
             <ul class="output-list" id="output-list" aria-label="Created variants" hidden></ul>
             <div class="outputs-footer"><button class="create-output" id="create-output" type="button" disabled><span class="output-processing-spinner" id="output-processing-spinner" aria-hidden="true" hidden></span><span id="create-output-label">Create Output</span></button><p class="visually-hidden" id="output-processing-status" role="status" aria-live="polite"></p></div>
@@ -219,6 +219,14 @@
     <section class="recents-panel" id="recent-projects" role="dialog" aria-labelledby="recent-projects-heading" hidden>
       <header class="rail-panel-header"><h2 id="recent-projects-heading">Recent projects</h2><button class="icon-button" type="button" data-close-navigation="history" aria-label="Close recent projects"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></header>
       <div id="history-content"></div>
+    </section>
+    <section class="recents-panel sources-panel" id="editor-sources" role="dialog" aria-labelledby="editor-sources-heading" hidden>
+      <header class="rail-panel-header"><h2 id="editor-sources-heading">Sources</h2><button class="icon-button" type="button" data-close-navigation="sources" aria-label="Close sources"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></header>
+      <div class="sources-panel-content">
+        <button class="secondary-button editor-add-source-button" id="editor-add-source-button" type="button">Add new source</button>
+        <p class="editor-source-selection-status" id="editor-source-selection-status" role="status"></p>
+        <ul id="editor-source-list"></ul>
+      </div>
     </section>
     <div class="profile-menu" id="profile-menu" role="dialog" aria-labelledby="profile-name" hidden>
       <button class="icon-button profile-close" type="button" data-close-navigation="profile" aria-label="Close profile"><svg aria-hidden="true"><use href="#icon-close"/></svg></button>

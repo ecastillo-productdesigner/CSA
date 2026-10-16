@@ -1,11 +1,13 @@
 import { createSearchExperience } from './search.js?v=20261016-add-source';
-import { createDashboard } from './dashboard.js?v=20261016-cms-status';
+import { createDashboard } from './dashboard.js?v=20261016-output-presets';
 import { createRecentProjects } from './recent-projects.js?v=20261016-project-actions';
-import { createMaterialEditor } from './editor.js?v=20261016-add-source';
+import { createMaterialEditor } from './editor.js?v=20261016-sidebar-sources';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
-import { createRailNavigation } from './navigation.js?v=20261016-hover-navigation';
-import { projectOutputs, sampleVariant, outputIsReady, populateOutputContent, renderOutputs, toggleOutputMenu } from './outputs.js?v=20261016-source-selection';
+import { createRailNavigation } from './navigation.js?v=20261016-sidebar-sources';
+import { createProjectSources } from './sources.js?v=20261016-sidebar-sources';
+import { projectOutputs, sampleVariant, outputIsReady, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261016-output-presets';
+import { createOutputPresets } from './output-presets.js?v=20261016-output-presets';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -70,11 +72,23 @@ let dashboard = null;
 const outputTimers = new Map();
 const toolDropdowns = createToolDropdowns({ notify });
 const recentProjectsPanel = createRecentProjects({ onOpen: showProject, onArchive: id => moveProject(id, 'archive'), onTrash: id => moveProject(id, 'trash') });
-const railNavigation = createRailNavigation({ onRecentsOpen: renderRecentProjects, onOpen: () => { toolDropdowns.close(); recentProjectsPanel.close(); } });
-const richEditor = createMaterialEditor({
+const outputPresets = createOutputPresets({ onSelect: openSavedOutput });
+const projectSourcesPanel = createProjectSources({
   onDownloadSource: downloadSource,
+  onSelectionChange(projectId) {
+    richEditor.flush();
+    const project = projects.find(entry => entry.id === projectId);
+    if (project) { project.updatedAt = Date.now(); saveProjects(); }
+  },
+  onAddSource(projectId) { richEditor.flush(); railNavigation.close(); openProjectDialog(true, projectId); },
+});
+const railNavigation = createRailNavigation({
+  onRecentsOpen: renderRecentProjects,
+  onSourcesOpen() { projectSourcesPanel.render(projects.find(project => project.id === activeProjectId && project.kind === 'draft') || null); },
+  onOpen: () => { toolDropdowns.close(); outputPresets.close(); recentProjectsPanel.close(); richEditor.closePanels(); },
+});
+const richEditor = createMaterialEditor({
   onSendToCms: markVariantSentToCms,
-  onAddSource: projectId => openProjectDialog(true, projectId),
   onContentChange: updateComposerActions,
   notify,
   onSave(snapshot) {
@@ -92,6 +106,31 @@ const richEditor = createMaterialEditor({
     return saved;
   },
 });
+
+function renderOutputs(project) {
+  renderProjectOutputs(project);
+  outputPresets.render(projects, project?.id || null);
+}
+
+function openSavedOutput(projectId, outputId) {
+  richEditor.flush();
+  const project = projects.find(entry => entry.id === projectId && !entry.archivedAt && !entry.deletedAt);
+  const output = projectOutputs(project).find(entry => entry.id === outputId && entry.isFavorite);
+  if (!output) return;
+  if (outputIsReady(output)) {
+    project.selectedOutputId = output.id;
+    saveProjects();
+    showEditorProject(project);
+    return;
+  }
+  if (project.outputProcessing) {
+    if (!project.outputProcessing.ids.includes(output.id)) project.outputProcessing.ids.push(output.id);
+    project.outputProcessing.openOutputId = output.id;
+  } else project.outputProcessing = { ids: [output.id], readyAt: Date.now() + 4000, openOutputId: output.id };
+  saveProjects();
+  showEditorProject(project);
+  notify('Preparing your saved output…');
+}
 
 function loadProjects() {
   try {
@@ -112,6 +151,7 @@ function saveProjects() {
     notify('Browser storage is unavailable or full. This project will last for this session.');
   }
   renderRecentProjects();
+  outputPresets.render(projects, activeProjectId);
   dashboard?.render(projects);
   return saved;
 }
@@ -218,6 +258,7 @@ function showSourceStart() {
 }
 
 function closeComposer() {
+  outputPresets.close();
   toolDropdowns.close();
   richEditor.close();
   try { sessionStorage.removeItem('csa.editor.active.v1'); } catch { /* Navigation still works without storage. */ }
@@ -276,7 +317,7 @@ function returnFromSourceAddition() {
   sourceTargetProjectId = null;
   if ($('#new-project-dialog').open) $('#new-project-dialog').close();
   if ($('#material-dialog').open) $('#material-dialog').close();
-  if (project) { showEditorProject(project); richEditor.showSources(); }
+  if (project) { showEditorProject(project); railNavigation.open('sources'); }
   else showHome();
 }
 
@@ -289,7 +330,7 @@ function appendProjectSources(sources) {
   saveProjects();
   sourceTargetProjectId = null;
   showEditorProject(project);
-  richEditor.showSources();
+  railNavigation.open('sources');
   notify(additions.length ? `${additions.length} ${additions.length === 1 ? 'source' : 'sources'} added.` : 'These sources are already in your project.');
 }
 
@@ -486,10 +527,19 @@ $('.create-variant').addEventListener('click', () => {
 $('#output-list').addEventListener('click', event => {
   const project = projects.find(entry => entry.id === activeProjectId);
   if (!project) return;
-  const menuButton = event.target.closest('[data-output-menu]');
-  if (menuButton) { toggleOutputMenu(menuButton); return; }
-  const removeButton = event.target.closest('[data-delete-output]');
-  if (removeButton) { deleteOutput(project, removeButton.dataset.deleteOutput); return; }
+  const favorite = event.target.closest('[data-favorite-output]');
+  if (favorite) {
+    richEditor.flush();
+    const output = projectOutputs(project).find(entry => entry.id === favorite.dataset.favoriteOutput);
+    if (!output) return;
+    output.isFavorite = !output.isFavorite;
+    if (output.isFavorite) output.favoritedAt = Date.now();
+    else delete output.favoritedAt;
+    saveProjects();
+    renderOutputs(project);
+    [...$('#output-list').querySelectorAll('[data-favorite-output]')].find(button => button.dataset.favoriteOutput === output.id)?.focus({ preventScroll: true });
+    return;
+  }
   const card = event.target.closest('[data-output-id]');
   if (!card) return;
   const output = projectOutputs(project).find(entry => entry.id === card.dataset.outputId);
@@ -512,7 +562,7 @@ function finishOutputProcessing(project, renderWhenReady = true) {
   for (const output of projectOutputs(project)) {
     if (ids.has(output.id)) { output.status = 'ready'; output.processedAt = Date.now(); populateOutputContent(output); }
   }
-  const latestCreated = projectOutputs(project).filter(output => ids.has(output.id) && outputIsReady(output)).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))[0];
+  const latestCreated = projectOutputs(project).find(output => output.id === job.openOutputId && outputIsReady(output)) || projectOutputs(project).filter(output => ids.has(output.id) && outputIsReady(output)).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))[0];
   if (latestCreated) project.selectedOutputId = latestCreated.id;
   delete project.outputProcessing;
   saveProjects();
@@ -539,34 +589,6 @@ $('#create-output').addEventListener('click', () => {
   renderOutputs(project);
   resumeOutputProcessing(project);
 });
-
-function deleteOutput(project, id) {
-  richEditor.flush();
-  const outputs = projectOutputs(project);
-  const index = outputs.findIndex(output => output.id === id);
-  if (index < 0) return;
-  const removed = outputs[index];
-  const selected = project.selectedOutputId === id;
-  project.outputs = outputs.filter(output => output.id !== id);
-  if (selected) delete project.selectedOutputId;
-  saveProjects();
-  if (selected) showEditorProject(project);
-  else {
-    renderOutputs(project);
-    if (!$('#output-placeholder').hidden) renderSourceStory(project);
-  }
-  notify('Variant deleted.', () => {
-    const current = projectOutputs(project);
-    current.splice(Math.min(index, current.length), 0, removed);
-    project.outputs = current;
-    saveProjects();
-    if (activeProjectId === project.id) {
-      renderOutputs(project);
-      if (!$('#output-placeholder').hidden) renderSourceStory(project);
-    }
-    notify('Variant restored.');
-  });
-}
 
 $('#composer-share-button').addEventListener('click', () => notify('Tool sharing is coming soon.'));
 $('#composer-editorial-direction').addEventListener('input', () => {
@@ -805,7 +827,7 @@ async function useMaterial() {
         title: titleFrom(sources[0].title.replace(/\.[^.]+$/, '')),
         kind: 'draft', draftText: text, document: { ops: text.split(/\n\s*\n/).filter(paragraph => paragraph.trim()).map(paragraph => ({ insert: `${paragraph}\n` })) },
       });
-      richEditor.showSources();
+      railNavigation.open('sources');
     } else {
       createProject(sources);
     }

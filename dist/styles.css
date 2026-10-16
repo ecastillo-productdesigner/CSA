@@ -70,11 +70,17 @@ svg { display: block; width: 24px; height: 24px; }
 .profile-button img { display: block; border-radius: 50%; }
 main { min-height: 100svh; padding: 40px 32px 40px calc(var(--sidebar-left) + var(--sidebar-width) + 30px); display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; transition: padding-left .2s ease; }
 main:focus { outline: none; }
-.home { width: 100%; min-width: 0; max-width: 830px; align-self: start; margin-top: clamp(70px, 20.4vh, 182px); text-align: center; }
+.home { width: 100%; min-width: 0; max-width: 1260px; container: project-dashboard / inline-size; align-self: start; margin-top: clamp(70px, 20.4vh, 182px); text-align: center; }
 .home h1, .project-start h1 { margin: 0 0 28px; font-size: 25px; line-height: 1.4; font-weight: 700; letter-spacing: -.35px; }
 .project-start { width: 100%; min-width: 0; max-width: 520px; text-align: center; transform: translateY(-20px); }
 .starter-back { display: block; margin: 0 0 24px; color: var(--muted); }
-.dashboard-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; text-align: left; }
+.dashboard-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 30px; text-align: left; }
+@container project-dashboard (max-width: 999px) {
+  .dashboard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container project-dashboard (max-width: 579px) {
+  .dashboard-grid { grid-template-columns: minmax(0, 1fr); }
+}
 .new-project-tile, .dashboard-project { height: 257px; min-width: 0; border: 1px solid var(--line); border-radius: 21px; background: white; }
 .new-project-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; font-size: 18px; line-height: 25px; font-weight: 700; }
 .new-project-tile svg { width: 38px; height: 38px; }

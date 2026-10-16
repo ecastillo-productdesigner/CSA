@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261016-drawers-metadata';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261016-variant-tabs-drawer';
 
 function node(tag, className, text) {
   const element = document.createElement(tag);

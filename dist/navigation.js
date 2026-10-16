@@ -6,7 +6,6 @@ export function createRailNavigation({ onRecentsOpen, onSourcesOpen, onOpen }) {
   };
   const sidebar = document.querySelector('#navigation-drawer');
   const drawerToggle = document.querySelector('#toggle-navigation-drawer');
-  const drawerBackdrop = document.querySelector('#navigation-drawer-backdrop');
   let drawerOpen = false;
   let active = null;
   let activation = '';
@@ -25,7 +24,6 @@ export function createRailNavigation({ onRecentsOpen, onSourcesOpen, onOpen }) {
     drawerToggle.setAttribute('aria-expanded', String(open));
     drawerToggle.setAttribute('aria-label', `${open ? 'Close' : 'Open'} navigation drawer`);
     drawerToggle.querySelector('.material-symbols-outlined').textContent = open ? 'right_panel_open' : 'right_panel_close';
-    drawerBackdrop.hidden = !open;
     if (restoreFocus) drawerToggle.focus({ preventScroll: true });
   }
   drawerToggle.addEventListener('click', () => setDrawer(!drawerOpen));
@@ -87,6 +85,7 @@ export function createRailNavigation({ onRecentsOpen, onSourcesOpen, onOpen }) {
       });
     }
     trigger.addEventListener('click', () => {
+      setDrawer(true);
       if (active === name && activation === 'click') close(name); else open(name, 'click');
     });
     trigger.addEventListener('keydown', event => {
@@ -96,6 +95,8 @@ export function createRailNavigation({ onRecentsOpen, onSourcesOpen, onOpen }) {
       (panel.querySelector(name === 'history' ? '.history-item' : name === 'sources' ? '#editor-add-source-button:not(:disabled), .editor-source-checkbox' : '.profile-navigation') || panel.querySelector('[data-close-navigation]'))?.focus();
     });
   }
+
+  document.querySelector('#new-project').addEventListener('click', () => setDrawer(true));
 
   for (const button of document.querySelectorAll('[data-close-navigation]')) button.addEventListener('click', () => close(button.dataset.closeNavigation, true));
   document.addEventListener('pointerdown', event => {

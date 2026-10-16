@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261016-drawers-metadata');
+  await import('./app.js?v=20261016-variant-tabs-drawer');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

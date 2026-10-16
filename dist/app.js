@@ -1,13 +1,14 @@
 import { createSearchExperience } from './search.js?v=20261016-add-source';
-import { createDashboard } from './dashboard.js?v=20261016-drawers-metadata';
+import { createDashboard } from './dashboard.js?v=20261016-variant-tabs-drawer';
 import { createRecentProjects } from './recent-projects.js?v=20261016-project-actions';
-import { createMaterialEditor } from './editor.js?v=20261016-drawers-metadata';
+import { createMaterialEditor } from './editor.js?v=20261016-variant-tabs-drawer';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
-import { createRailNavigation } from './navigation.js?v=20261016-drawers-metadata';
+import { createRailNavigation } from './navigation.js?v=20261016-variant-tabs-drawer';
 import { createProjectSources } from './sources.js?v=20261016-sidebar-sources';
-import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261016-drawers-metadata';
-import { createOutputPresets } from './output-presets.js?v=20261016-drawers-metadata';
+import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261016-variant-tabs-drawer';
+import { createEditorTabs } from './editor-tabs.js?v=20261016-variant-tabs-drawer';
+import { createOutputPresets } from './output-presets.js?v=20261016-variant-tabs-drawer';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -73,6 +74,7 @@ const outputTimers = new Map();
 const toolDropdowns = createToolDropdowns({ notify });
 const recentProjectsPanel = createRecentProjects({ onOpen: showProject, onArchive: id => moveProject(id, 'archive'), onTrash: id => moveProject(id, 'trash') });
 const outputPresets = createOutputPresets({ onSelect: openSavedOutput });
+const editorTabs = createEditorTabs({ onSelect: openEditorTab });
 const projectSourcesPanel = createProjectSources({
   onDownloadSource: downloadSource,
   onSelectionChange(projectId) {
@@ -110,6 +112,24 @@ const richEditor = createMaterialEditor({
 function renderOutputs(project) {
   renderProjectOutputs(project);
   outputPresets.render(projects, project?.id || null);
+  editorTabs.render(project);
+}
+
+function openEditorTab(outputId) {
+  richEditor.flush();
+  const project = projects.find(entry => entry.id === activeProjectId);
+  if (!project) return;
+  if (outputId) {
+    if (!projectOutputs(project).some(output => output.id === outputId && outputIsReady(output))) return;
+    project.selectedOutputIds = [...new Set([...selectedOutputs(project).map(output => output.id), outputId])];
+    project.selectedOutputId = outputId;
+    project.viewOriginalDraft = false;
+  } else {
+    delete project.selectedOutputId;
+    project.viewOriginalDraft = true;
+  }
+  saveProjects();
+  showEditorProject(project);
 }
 
 function openSavedOutput(projectId, outputId) {
@@ -119,6 +139,7 @@ function openSavedOutput(projectId, outputId) {
   if (!output) return;
   project.selectedOutputIds = [...new Set([...selectedOutputs(project).map(entry => entry.id), output.id])];
   if (outputIsReady(output)) {
+    project.viewOriginalDraft = false;
     project.selectedOutputId = output.id;
     saveProjects();
     showEditorProject(project);
@@ -414,7 +435,7 @@ function showProject(id) {
 }
 
 function renderSourceStory(project) {
-  const latestOutput = projectOutputs(project).filter(outputIsReady).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))[0];
+  const latestOutput = project.viewOriginalDraft ? null : projectOutputs(project).filter(outputIsReady).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))[0];
   let story;
   if (latestOutput) {
     if (populateOutputContent(latestOutput)) saveProjects();
@@ -581,8 +602,9 @@ $('#output-list').addEventListener('click', event => {
     return;
   }
   richEditor.flush();
-  if (project.selectedOutputId === output.id) delete project.selectedOutputId;
+  if (project.selectedOutputId === output.id) { delete project.selectedOutputId; project.viewOriginalDraft = true; }
   else {
+    project.viewOriginalDraft = false;
     project.selectedOutputIds = [...new Set([...selectedOutputs(project).map(entry => entry.id), output.id])];
     project.selectedOutputId = output.id;
   }
@@ -603,7 +625,7 @@ function finishOutputProcessing(project, renderWhenReady = true) {
     if (ids.has(output.id)) { output.status = 'ready'; output.processedAt = Date.now(); populateOutputContent(output); }
   }
   const latestCreated = projectOutputs(project).find(output => output.id === job.openOutputId && outputIsReady(output)) || projectOutputs(project).filter(output => ids.has(output.id) && outputIsReady(output)).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))[0];
-  if (latestCreated) project.selectedOutputId = latestCreated.id;
+  if (latestCreated) { project.selectedOutputId = latestCreated.id; project.viewOriginalDraft = false; }
   delete project.selectedPendingOutputIds;
   delete project.outputProcessing;
   saveProjects();

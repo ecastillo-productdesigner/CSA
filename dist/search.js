@@ -276,11 +276,6 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       $('#results-toggle-filters').setAttribute('aria-expanded', 'false');
       render();
     },
-    setEditorialDirection(projectId, direction) {
-      if (state?.projectId !== projectId) return;
-      state.editorialDirection = direction;
-      $('#results-editorial-direction').value = direction;
-    },
     hide() { clearAdditionTimers(); if (preview.open) preview.close(); previewArticle = null; state = null; $('#search-results').hidden = true; },
   };
 }

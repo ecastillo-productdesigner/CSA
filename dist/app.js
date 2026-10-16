@@ -1,4 +1,4 @@
-import { createSearchExperience } from './search.js?v=20261016-inspect-divider';
+import { createSearchExperience } from './search.js?v=20261016-tools-direction';
 import { createDashboard } from './dashboard.js?v=20261016-variant-cards';
 import { createRecentProjects } from './recent-projects.js?v=20261016-project-actions';
 import { createMaterialEditor } from './editor.js?v=20261016-variant-cards';
@@ -57,7 +57,6 @@ let projects = [
   ...savedProjects,
 ];
 let activeProjectId = null;
-let directionProjectId = null;
 let materialMode = 'upload';
 let selectedFiles = [];
 let addingToProject = false;
@@ -222,8 +221,7 @@ function closeComposer() {
   $('#composer').classList.remove('has-editor', 'has-output');
   $('#output-placeholder').hidden = true;
   $('.create-variant').disabled = true;
-  $('#composer-direction-button').disabled = true;
-  $('#composer-direction-button').classList.remove('has-direction');
+  $('#composer-editorial-direction').value = '';
   document.body.classList.remove('showing-composer', 'editing-material');
 }
 
@@ -379,7 +377,7 @@ function showEditorProject(project) {
   toolDropdowns.refresh();
   updateComposerActions();
   renderOutputs(project);
-  $('#composer-direction-button').classList.toggle('has-direction', Boolean(project.editorialDirection));
+  $('#composer-editorial-direction').value = typeof project.editorialDirection === 'string' ? project.editorialDirection : '';
   closeProfile();
   renderRecentProjects();
   document.title = `${selectedOutput?.title || project.title} — CSA`;
@@ -394,9 +392,20 @@ function closeProfile() {
 function updateComposerActions() {
   const enabled = ['format', 'audience', 'voice'].some(key => $(`#composer-${key}`).value);
   $('.create-variant').disabled = !enabled;
-  $('#composer-direction-button').disabled = !enabled;
   $('.create-variant').title = enabled ? 'Create variant' : 'Select a format, audience, or voice to create a variant';
-  $('#composer-direction-button').title = enabled ? 'Editorial direction' : 'Select a format, audience, or voice to add editorial direction';
+}
+
+function ensureComposerProject() {
+  let project = projects.find(entry => entry.id === activeProjectId);
+  if (project || $('#composer').hidden) return project;
+  const preferences = Object.fromEntries(['format', 'audience', 'voice'].map(name => [name, $(`#composer-${name}`).value]));
+  const direction = $('#composer-editorial-direction').value;
+  if (!Object.values(preferences).some(Boolean) && !direction.trim()) return null;
+  project = createProject([], { kind: 'draft', awaitingOutput: true, toolPreferences: preferences, editorialDirection: direction, open: false });
+  activeProjectId = project.id;
+  document.title = `${project.title} — CSA`;
+  try { sessionStorage.setItem('csa.editor.active.v1', project.id); } catch { /* Project storage still keeps the guidance and selections. */ }
+  return project;
 }
 
 $('.create-variant').addEventListener('click', () => {
@@ -506,40 +515,18 @@ function deleteOutput(project, id) {
   });
 }
 
-function openEditorialDirection(projectId) {
-  const project = projects.find(entry => entry.id === projectId);
-  if (!project) return;
-  directionProjectId = projectId;
-  $('#editorial-direction-text').value = typeof project.editorialDirection === 'string' ? project.editorialDirection : '';
-  $('#editorial-direction-dialog').showModal();
-  $('#editorial-direction-text').focus();
-}
-
-$('#composer-direction-button').addEventListener('click', () => openEditorialDirection(activeProjectId));
 $('#composer-share-button').addEventListener('click', () => notify('Tool sharing is coming soon.'));
-$('#editorial-direction-dialog').addEventListener('close', () => { directionProjectId = null; });
-$('#editorial-direction-form').addEventListener('submit', event => {
-  event.preventDefault();
-  const project = projects.find(entry => entry.id === directionProjectId);
+$('#composer-editorial-direction').addEventListener('input', () => {
+  const project = ensureComposerProject();
   if (!project) return;
-  project.editorialDirection = $('#editorial-direction-text').value.trim();
+  project.editorialDirection = $('#composer-editorial-direction').value;
   project.updatedAt = Date.now();
-  const saved = saveProjects();
-  searchExperience.setEditorialDirection(project.id, project.editorialDirection);
-  $('#composer-direction-button').classList.toggle('has-direction', Boolean(project.editorialDirection));
-  $('#editorial-direction-dialog').close();
-  if (saved) notify(project.editorialDirection ? 'Editorial direction saved.' : 'Editorial direction cleared.');
+  saveProjects();
 });
 for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).addEventListener('change', () => {
   updateComposerActions();
   const preferences = Object.fromEntries(['format', 'audience', 'voice'].map(name => [name, $(`#composer-${name}`).value]));
-  let project = projects.find(entry => entry.id === activeProjectId);
-  if (!project && !$('#composer').hidden && Object.values(preferences).some(Boolean)) {
-    project = createProject([], { kind: 'draft', awaitingOutput: true, toolPreferences: preferences, open: false });
-    activeProjectId = project.id;
-    document.title = `${project.title} — CSA`;
-    try { sessionStorage.setItem('csa.editor.active.v1', project.id); } catch { /* Project storage still keeps the selections. */ }
-  }
+  const project = ensureComposerProject();
   if (!project?.awaitingOutput) return;
   project.toolPreferences = preferences;
   saveProjects();

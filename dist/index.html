@@ -9,9 +9,9 @@
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <script src="./theme.js?v=20261016-dark-mode"></script>
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="./styles.css?v=20261016-smaller-preview-icon">
+    <link rel="stylesheet" href="./styles.css?v=20261016-source-story">
     <link rel="stylesheet" href="./theme.css?v=20261016-starter-sources">
-    <script src="./demo-access.js?v=20261016-starter-sources" type="module"></script>
+    <script src="./demo-access.js?v=20261016-source-story" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -83,7 +83,7 @@
       <section class="composer" id="composer" aria-labelledby="composer-heading" hidden>
         <h1 class="visually-hidden" id="composer-heading">New project</h1>
         <div class="composer-canvas" role="region" aria-label="Project canvas">
-          <div class="output-placeholder" id="output-placeholder" role="status" hidden><svg aria-hidden="true"><use href="#icon-document"/></svg><p>Content will appear here<br>when you select an output</p></div>
+          <article class="output-placeholder" id="output-placeholder" aria-labelledby="source-story-title" tabindex="0" hidden><h2 id="source-story-title"></h2><div id="source-story-body"></div></article>
           <section class="material-editor" id="material-editor" aria-label="Story editor" hidden>
             <div class="editor-topbar">
               <div class="editor-navigation">

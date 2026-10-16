@@ -129,9 +129,10 @@ main:focus { outline: none; }
 .showing-composer main { display: block; padding: 10px 10px 10px 86px; }
 .composer { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; width: 100%; min-height: calc(100svh - 20px); }
 .composer-canvas { min-width: 0; }
-.output-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; min-height: calc(100svh - 20px); padding: 40px 20px; color: var(--ink); text-align: center; }
-.output-placeholder svg { width: 40px; height: 44px; }
-.output-placeholder p { margin: 0; font-size: 20px; line-height: 1.4; font-weight: 400; }
+.output-placeholder { width: 100%; max-width: 1000px; height: calc(100svh - 20px); min-height: 0; margin: 0 auto; padding: 56px 48px 40px; overflow-y: auto; overscroll-behavior: contain; color: var(--ink); text-align: left; }
+.output-placeholder h2 { margin: 0 0 28px; overflow-wrap: anywhere; font-size: clamp(24px, 2.4vw, 32px); line-height: 1.3; font-weight: 700; letter-spacing: -.5px; }
+.output-placeholder p { margin: 0 0 20px; font-size: 16px; line-height: 1.7; font-weight: 400; }
+.output-placeholder p:last-child { margin-bottom: 0; }
 .composer-rail { display: grid; grid-template-rows: max-content minmax(220px, 1fr); gap: 10px; height: calc(100svh - 20px); min-height: 594px; }
 .composer-panel { min-width: 0; padding: 19px 15px; border: 1px solid var(--line); border-radius: 11px; background: white; }
 .composer-panel h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 14px; line-height: 20px; font-weight: 700; }
@@ -513,7 +514,7 @@ select:focus-visible { outline: 3px solid #99abc6; outline-offset: 3px; }
 .draft-editor { margin: -15px 0 35px; }
 .draft-editor textarea { min-height: 280px; max-height: 60vh; background: white; }
 @media (max-width: 1100px) {
-  .composer.has-output .output-placeholder { min-height: 55svh; }
+  .composer.has-output .output-placeholder { height: 65svh; min-height: 0; padding: 32px 24px; }
 }
 @media (max-width: 650px) {
   :root { --sidebar-left: 10px; --sidebar-width: 50px; }
@@ -557,8 +558,8 @@ select:focus-visible { outline: 3px solid #99abc6; outline-offset: 3px; }
   .composer-canvas { display: none; }
   .composer.has-output .composer-canvas { display: block; }
   .composer.has-output .composer-rail { grid-template-columns: minmax(0, 1fr); }
-  .composer.has-output .output-placeholder { min-height: 48svh; padding-inline: 0; }
-  .output-placeholder p { font-size: 17px; }
+  .composer.has-output .output-placeholder { height: 65svh; min-height: 0; padding: 24px 0; }
+  .output-placeholder p { font-size: 16px; }
   .results-toolbar { flex-wrap: wrap; gap: 10px; }
   .results-toolbar-actions { margin-left: auto; gap: 12px; }
   .composer-actions { grid-template-columns: minmax(0, 1fr) 48px; gap: 12px; }

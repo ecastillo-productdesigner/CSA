@@ -328,6 +328,21 @@ function showProject(id) {
   window.scrollTo({ top: 0 });
 }
 
+function renderSourceStory(project) {
+  let story = project.sourceStory;
+  if (!story || typeof story.title !== 'string' || !Array.isArray(story.paragraphs) || !story.paragraphs.length || !story.paragraphs.every(paragraph => typeof paragraph === 'string')) {
+    const sample = sampleVariant(project, []);
+    populateOutputContent(sample);
+    const paragraphs = sample.draftText.split(/\n\s*\n/);
+    story = { title: sample.title, paragraphs: [...paragraphs.slice(0, 3), ...paragraphs.slice(-2)] };
+    project.sourceStory = story;
+    saveProjects();
+  }
+  $('#source-story-title').textContent = story.title;
+  $('#source-story-body').replaceChildren(...story.paragraphs.map(paragraph => element('p', '', paragraph)));
+  $('#output-placeholder').scrollTop = 0;
+}
+
 function showEditorProject(project) {
   closeComposer();
   railNavigation.close();
@@ -343,6 +358,7 @@ function showEditorProject(project) {
   if (project.awaitingOutput && !selectedOutput) {
     $('#composer').classList.add('has-output');
     $('#composer-heading').textContent = 'Story workspace';
+    renderSourceStory(project);
     $('#output-placeholder').hidden = false;
     for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = project.toolPreferences?.[key] || '';
     $('#main').focus({ preventScroll: true });

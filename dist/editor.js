@@ -109,8 +109,6 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     for (const button of $('#editor-toolbar').querySelectorAll('[data-list]')) button.setAttribute('aria-pressed', String(value.list === button.dataset.list));
     $('[data-editor-action="highlight"]').setAttribute('aria-pressed', String(Boolean(value.background)));
     $('#editor-block').value = value.blockquote ? 'quote' : String(value.header || '');
-    $('#editor-font').value = typeof value.font === 'string' ? value.font : '';
-    $('#editor-size').value = typeof value.size === 'string' ? value.size : '';
     $('#editor-align').value = typeof value.align === 'string' ? value.align : '';
     if (typeof value.color === 'string' && /^#[\da-f]{6}$/i.test(value.color)) $('#editor-color').value = value.color;
   }
@@ -148,7 +146,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     quill.history.cutoff();
     updateToolbar();
   });
-  for (const key of ['font', 'size', 'align']) $(`#editor-${key}`).addEventListener('change', () => format(key, $(`#editor-${key}`).value || false));
+  $('#editor-align').addEventListener('change', () => format('align', $('#editor-align').value || false));
   $('#editor-color').addEventListener('input', () => format('color', $('#editor-color').value));
   title.addEventListener('input', () => { resizeTitle(); scheduleSave(); if (!$('#editor-metadata').hidden) updateMetadata(); });
   let previousWidth = 0;

@@ -17,6 +17,11 @@ export function outputIsReady(output) {
   return output.status === 'ready' || (!output.status && Boolean(output.document || output.draftText));
 }
 
+export function selectedPendingOutputs(project) {
+  const selectedIds = new Set(Array.isArray(project?.selectedPendingOutputIds) ? project.selectedPendingOutputIds : []);
+  return projectOutputs(project).filter(output => !outputIsReady(output) && selectedIds.has(output.id));
+}
+
 function legacySampleContent(heading) {
     const title = heading.toLowerCase();
     const opening = /camera|photo/.test(title)
@@ -173,20 +178,23 @@ export function sampleVariant(project, selections) {
 export function renderOutputs(project) {
   const outputs = projectOutputs(project);
   const processing = Boolean(project?.outputProcessing);
-  const pending = outputs.some(output => !outputIsReady(output));
+  const selectedPending = selectedPendingOutputs(project);
+  const selectedIds = new Set(selectedPending.map(output => output.id));
   const list = document.querySelector('#output-list');
   document.querySelector('.composer-outputs').setAttribute('aria-busy', String(processing));
-  document.querySelector('#create-output').disabled = processing || !pending;
+  const create = document.querySelector('#create-output');
+  create.disabled = processing || !selectedPending.length;
+  create.title = processing ? 'Preparing selected outputs' : selectedPending.length ? `Create ${selectedPending.length} selected output${selectedPending.length === 1 ? '' : 's'}` : 'Select at least one pending output';
   document.querySelector('#create-output-label').textContent = processing ? 'Processing…' : 'Create Output';
   document.querySelector('#output-processing-spinner').hidden = !processing;
-  document.querySelector('#output-processing-status').textContent = processing ? 'Processing your output. This takes about four seconds.' : '';
+  document.querySelector('#output-processing-status').textContent = processing ? 'Processing your selected outputs. This takes about four seconds.' : `${selectedPending.length} pending output${selectedPending.length === 1 ? '' : 's'} selected.`;
   document.querySelector('#outputs-empty').hidden = outputs.length > 0;
   list.hidden = outputs.length === 0;
   list.replaceChildren(...outputs.map(output => {
     const item = document.createElement('li');
     const card = document.createElement('article');
     const ready = outputIsReady(output);
-    const selected = ready && project.selectedOutputId === output.id;
+    const selected = ready ? project.selectedOutputId === output.id : selectedIds.has(output.id);
     card.className = 'output-card';
     card.dataset.selected = String(selected);
     card.dataset.ready = String(ready);
@@ -194,10 +202,10 @@ export function renderOutputs(project) {
     open.type = 'button';
     open.className = 'output-open';
     open.dataset.outputId = output.id;
-    open.disabled = !ready;
-    open.setAttribute('aria-label', `${!ready ? 'Pending variant' : selected ? 'Return to workspace from' : 'Open variant'}: ${output.title}`);
+    open.disabled = !ready && processing;
+    open.setAttribute('aria-label', `${!ready ? selected ? 'Deselect output' : 'Select output' : selected ? 'Return to workspace from' : 'Open variant'}: ${output.title}`);
     open.setAttribute('aria-pressed', String(selected));
-    open.title = !ready ? 'Choose Create Output to prepare this variant' : selected ? 'Return to your workspace' : 'Open this variant in the editor';
+    open.title = !ready ? selected ? 'Unselect this output' : 'Select this output to create it' : selected ? 'Return to your workspace' : 'Open this variant in the editor';
     const top = document.createElement('span');
     top.className = 'output-card-top';
     const badges = document.createElement('span');
@@ -210,6 +218,11 @@ export function renderOutputs(project) {
       badge.textContent = label.label;
       badges.append(badge);
     }
+    const indicator = document.createElement('span');
+    indicator.className = 'output-selection-indicator';
+    indicator.setAttribute('aria-hidden', 'true');
+    if (selected) indicator.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
+    top.append(indicator);
     top.append(badges);
     const heading = document.createElement('strong');
     heading.className = 'output-card-title';

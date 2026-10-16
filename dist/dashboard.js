@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261016-output-presets';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261016-output-selection';
 
 function node(tag, className, text) {
   const element = document.createElement(tag);

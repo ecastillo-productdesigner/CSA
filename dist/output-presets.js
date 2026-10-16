@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261016-output-presets';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261016-output-selection';
 
 export function createOutputPresets({ onSelect }) {
   const root = document.querySelector('#output-presets');

@@ -1,13 +1,13 @@
 import { createSearchExperience } from './search.js?v=20261016-add-source';
-import { createDashboard } from './dashboard.js?v=20261016-output-presets';
+import { createDashboard } from './dashboard.js?v=20261016-output-selection';
 import { createRecentProjects } from './recent-projects.js?v=20261016-project-actions';
-import { createMaterialEditor } from './editor.js?v=20261016-sidebar-sources';
+import { createMaterialEditor } from './editor.js?v=20261016-output-selection';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
 import { createRailNavigation } from './navigation.js?v=20261016-sidebar-sources';
 import { createProjectSources } from './sources.js?v=20261016-sidebar-sources';
-import { projectOutputs, sampleVariant, outputIsReady, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261016-output-presets';
-import { createOutputPresets } from './output-presets.js?v=20261016-output-presets';
+import { projectOutputs, sampleVariant, outputIsReady, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261016-output-selection';
+import { createOutputPresets } from './output-presets.js?v=20261016-output-selection';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -520,7 +520,7 @@ $('.create-variant').addEventListener('click', () => {
   project.updatedAt = Date.now();
   const saved = saveProjects();
   renderOutputs(project);
-  $('#create-output').focus();
+  [...$('#output-list').querySelectorAll('[data-output-id]')].find(button => button.dataset.outputId === output.id)?.focus();
   if (saved) notify('Variant created.');
 });
 
@@ -543,7 +543,18 @@ $('#output-list').addEventListener('click', event => {
   const card = event.target.closest('[data-output-id]');
   if (!card) return;
   const output = projectOutputs(project).find(entry => entry.id === card.dataset.outputId);
-  if (!output || !outputIsReady(output)) return;
+  if (!output) return;
+  if (!outputIsReady(output)) {
+    if (project.outputProcessing) return;
+    const selectedIds = new Set(selectedPendingOutputs(project).map(entry => entry.id));
+    if (selectedIds.has(output.id)) selectedIds.delete(output.id);
+    else selectedIds.add(output.id);
+    project.selectedPendingOutputIds = [...selectedIds];
+    saveProjects();
+    renderOutputs(project);
+    [...$('#output-list').querySelectorAll('[data-output-id]')].find(button => button.dataset.outputId === output.id)?.focus({ preventScroll: true });
+    return;
+  }
   richEditor.flush();
   if (project.selectedOutputId === output.id) delete project.selectedOutputId;
   else project.selectedOutputId = output.id;
@@ -564,6 +575,7 @@ function finishOutputProcessing(project, renderWhenReady = true) {
   }
   const latestCreated = projectOutputs(project).find(output => output.id === job.openOutputId && outputIsReady(output)) || projectOutputs(project).filter(output => ids.has(output.id) && outputIsReady(output)).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))[0];
   if (latestCreated) project.selectedOutputId = latestCreated.id;
+  project.selectedPendingOutputIds = selectedPendingOutputs(project).map(output => output.id);
   delete project.outputProcessing;
   saveProjects();
   if (active && renderWhenReady) {
@@ -582,7 +594,7 @@ function resumeOutputProcessing(project, renderWhenReady = true) {
 $('#create-output').addEventListener('click', () => {
   const project = projects.find(entry => entry.id === activeProjectId);
   if (!project || project.outputProcessing) return;
-  const pending = projectOutputs(project).filter(output => !outputIsReady(output));
+  const pending = selectedPendingOutputs(project);
   if (!pending.length) return;
   project.outputProcessing = { ids: pending.map(output => output.id), readyAt: Date.now() + 4000 };
   saveProjects();

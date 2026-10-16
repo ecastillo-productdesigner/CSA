@@ -359,7 +359,7 @@ function showEditorProject(project) {
   document.body.classList.add('showing-composer');
   for (const section of ['home', 'workspace', 'project-start']) $(`#${section}`).hidden = true;
   $('#composer').hidden = false;
-  resumeOutputProcessing(project);
+  resumeOutputProcessing(project, false);
   const selectedOutput = projectOutputs(project).find(output => output.id === project.selectedOutputId && outputIsReady(output));
   if (selectedOutput && populateOutputContent(selectedOutput)) saveProjects();
   if (project.awaitingOutput && !selectedOutput) {
@@ -438,28 +438,31 @@ $('#output-list').addEventListener('click', event => {
   showEditorProject(project);
 });
 
-function finishOutputProcessing(project) {
+function finishOutputProcessing(project, renderWhenReady = true) {
   const job = project.outputProcessing;
   if (!job) return;
   clearTimeout(outputTimers.get(project.id));
   outputTimers.delete(project.id);
   const ids = new Set(job.ids);
+  const active = activeProjectId === project.id && !$('#composer').hidden;
+  if (active) richEditor.close();
   for (const output of projectOutputs(project)) {
     if (ids.has(output.id)) { output.status = 'ready'; output.processedAt = Date.now(); populateOutputContent(output); }
   }
+  const latestCreated = projectOutputs(project).filter(output => ids.has(output.id) && outputIsReady(output)).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))[0];
+  if (latestCreated) project.selectedOutputId = latestCreated.id;
   delete project.outputProcessing;
   saveProjects();
-  if (activeProjectId === project.id && !$('#composer').hidden) {
-    if (!$('#output-placeholder').hidden) renderSourceStory(project);
-    renderOutputs(project);
-    notify('Output ready. Select a solid card to open the editor.');
+  if (active && renderWhenReady) {
+    showEditorProject(project);
+    notify(latestCreated ? 'Output ready. The newest variant is open in the editor.' : 'Output processing finished.');
   }
 }
 
-function resumeOutputProcessing(project) {
+function resumeOutputProcessing(project, renderWhenReady = true) {
   const job = project.outputProcessing;
   if (!job || !Array.isArray(job.ids) || !Number.isFinite(job.readyAt)) return;
-  if (job.readyAt <= Date.now()) { finishOutputProcessing(project); return; }
+  if (job.readyAt <= Date.now()) { finishOutputProcessing(project, renderWhenReady); return; }
   if (!outputTimers.has(project.id)) outputTimers.set(project.id, setTimeout(() => finishOutputProcessing(project), job.readyAt - Date.now()));
 }
 

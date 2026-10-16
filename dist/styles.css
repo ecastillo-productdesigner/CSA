@@ -170,7 +170,7 @@ main:focus { outline: none; }
 .tool-saved-empty { margin: 0; padding: 20px 18px 24px; color: var(--muted); font-size: 13px; line-height: 1.6; }
 @media (hover: none) { .tool-option-favorite { opacity: 1; } }
 .composer-actions { display: grid; grid-template-columns: minmax(0, 1fr); margin-top: 20px; }
-.create-variant { display: grid; place-items: center; min-width: 0; height: var(--button-height); border: 1px solid #dfe3e9; border-radius: 14px; background: #f5f7fa; color: #cfdaea; font-size: 20px; font-weight: 700; }
+.create-variant { display: grid; place-items: center; min-width: 0; height: 46px; border: 1px solid #dfe3e9; border-radius: 14px; background: #f5f7fa; color: #cfdaea; font-size: 20px; font-weight: 700; }
 .create-variant:not(:disabled) { background: var(--ink); border-color: var(--ink); color: white; }
 .create-variant:not(:disabled):hover { background: #35445e; }
 .composer-outputs { position: relative; display: flex; flex-direction: column; min-height: 0; }

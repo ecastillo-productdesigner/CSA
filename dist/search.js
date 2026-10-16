@@ -60,15 +60,15 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
 
   function renderAddition(container, article) {
     container.replaceChildren();
-    if (state.readyArticleIds.has(article.id)) {
-      const inspect = node('button', 'result-inspect-button', 'Inspect');
-      inspect.type = 'button';
-      inspect.dataset.inspectArticleId = article.id;
-      inspect.setAttribute('aria-label', `Inspect story ${article.id.split('-').pop()}: ${article.title}`);
-      inspect.setAttribute('aria-haspopup', 'dialog');
-      inspect.setAttribute('aria-controls', 'article-preview-dialog');
-      container.append(inspect);
-    } else {
+    const selected = state.selected.has(article.id);
+    const ready = selected && state.readyArticleIds.has(article.id);
+    const inspect = container.closest('.result-card').querySelector('.result-inspect-button');
+    inspect.disabled = !ready;
+    inspect.title = ready ? 'Inspect article' : selected ? 'Adding to CSA' : 'Select this story to inspect';
+    container.hidden = !selected;
+    container.classList.toggle('is-loading', selected && !ready);
+    if (ready) container.append(node('span', 'visually-hidden', 'Added to CSA. Inspect article is ready.'));
+    else if (selected) {
       const adding = node('span', 'result-adding');
       const spinner = node('span', 'output-processing-spinner');
       spinner.setAttribute('aria-hidden', 'true');
@@ -97,7 +97,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     }
     onSelectionChange(state.projectId, [...state.selected]);
     render();
-    $('#result-list').querySelector(`[data-article-id="${id}"]`)?.focus({ preventScroll: true });
+    $('#result-list').querySelector(`[data-article-id="${id}"] .result-select-button`)?.focus({ preventScroll: true });
   }
 
   function openPreview(id) {
@@ -145,23 +145,38 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     const list = $('#result-list');
     list.replaceChildren(...visible.map((article) => {
       const item = node('li', 'result-item');
-      const card = node('button', 'result-card');
-      card.type = 'button';
+      const card = node('div', 'result-card');
       card.dataset.articleId = article.id;
-      card.setAttribute('aria-label', `Select story ${article.id.split('-').pop()}: ${article.title}`);
-      card.setAttribute('aria-pressed', String(state.selected.has(article.id)));
       card.dataset.selected = String(state.selected.has(article.id));
-      card.title = state.selected.has(article.id) ? 'Unselect this story' : 'Select this story for your draft';
+      const selection = node('button', 'result-select-button');
+      selection.type = 'button';
+      selection.setAttribute('aria-label', `Select story ${article.id.split('-').pop()}: ${article.title}`);
+      selection.setAttribute('aria-pressed', String(state.selected.has(article.id)));
+      selection.title = state.selected.has(article.id) ? 'Unselect this story' : 'Select this story for your draft';
       const thumbnail = node('span', `result-thumbnail${article.referenceImage ? ' result-thumbnail--reference' : ''}`);
       thumbnail.setAttribute('aria-hidden', 'true');
       if (!article.referenceImage) thumbnail.textContent = state.query.split(/\s+/).slice(0, 2).map((word) => word[0]).join('').toUpperCase();
       const copy = node('span', 'result-copy');
+      const meta = node('span', 'result-meta');
+      const publication = node('span', 'result-publication', article.source);
+      const inspect = node('button', 'result-inspect-button');
+      inspect.type = 'button';
+      inspect.dataset.inspectArticleId = article.id;
+      inspect.setAttribute('aria-label', `Inspect story ${article.id.split('-').pop()}: ${article.title}`);
+      inspect.setAttribute('aria-haspopup', 'dialog');
+      inspect.setAttribute('aria-controls', 'article-preview-dialog');
+      const eye = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      const eyeUse = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+      eye.setAttribute('aria-hidden', 'true'); eyeUse.setAttribute('href', '#icon-eye'); eye.append(eyeUse);
+      inspect.append(eye);
+      publication.append(inspect);
+      meta.append(node('span', '', `Published date: ${dateLabel(article.date)} |`), publication);
       copy.append(
-        node('span', 'result-meta', `Published date: ${dateLabel(article.date)} | ${article.source}`),
+        meta,
         node('strong', 'result-title', article.title),
         node('span', 'result-snippet', article.excerpt),
       );
-      card.append(thumbnail, copy);
+      card.append(selection, thumbnail, copy);
       const previewButton = node('button', 'icon-button result-preview-button');
       previewButton.type = 'button';
       previewButton.disabled = true;
@@ -173,15 +188,13 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       svg.setAttribute('aria-hidden', 'true'); use.setAttribute('href', '#icon-open'); svg.append(use);
       previewButton.append(svg);
       item.append(card, previewButton);
-      if (state.selected.has(article.id)) {
-        const addition = node('div', 'result-addition');
-        addition.dataset.additionArticleId = article.id;
-        addition.setAttribute('role', 'status');
-        addition.setAttribute('aria-live', 'polite');
-        addition.setAttribute('aria-atomic', 'true');
-        renderAddition(addition, article);
-        item.append(addition);
-      }
+      const addition = node('div', 'result-addition');
+      addition.dataset.additionArticleId = article.id;
+      addition.setAttribute('role', 'status');
+      addition.setAttribute('aria-live', 'polite');
+      addition.setAttribute('aria-atomic', 'true');
+      card.append(addition);
+      renderAddition(addition, article);
       return item;
     }));
     $('#results-empty').hidden = filtered.length > 0;

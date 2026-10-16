@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261016-search-inspect');
+  await import('./app.js?v=20261016-inspect-eye');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

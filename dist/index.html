@@ -9,8 +9,8 @@
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0&amp;icon_names=left_panel_close">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="./styles.css?v=20261015-wordpress-button">
-    <script src="./demo-access.js?v=20261015-wordpress-button" type="module"></script>
+    <link rel="stylesheet" href="./styles.css?v=20261015-home-reveal">
+    <script src="./demo-access.js?v=20261015-home-reveal" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -76,10 +76,13 @@
 
     <main id="main" tabindex="-1">
       <section class="home" id="home" aria-labelledby="greeting">
-        <h1 id="greeting">Hello Julia, what are you making today?</h1>
-        <div class="dashboard-collections" id="dashboard-collections" role="group" aria-label="Project collection" hidden></div>
+        <header class="home-header">
+          <h1 id="greeting">Hello Julia, what are you making today?</h1>
+          <div class="dashboard-collections" id="dashboard-collections" role="group" aria-label="Project collection" hidden></div>
+        </header>
         <div class="dashboard-grid" id="dashboard-grid"></div>
       </section>
+      <div class="dashboard-bottom-fade" aria-hidden="true"></div>
 
       <section class="composer" id="composer" aria-labelledby="composer-heading" hidden>
         <h1 class="visually-hidden" id="composer-heading">New project</h1>

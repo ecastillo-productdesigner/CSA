@@ -22,6 +22,20 @@ function projectDate(timestamp) {
 export function createDashboard({ onNew, onOpen, onArchive, onTrash, onRestore }) {
   let collection = 'active';
   let currentProjects = [];
+  let revealTimer;
+  const home = document.querySelector('#home');
+  window.addEventListener('scroll', () => {
+    home.classList.toggle('is-scrolled', !home.hidden && window.scrollY > 0);
+  }, { passive: true });
+
+  function reveal() {
+    clearTimeout(revealTimer);
+    home.classList.remove('is-entering', 'is-scrolled');
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    void home.offsetWidth;
+    home.classList.add('is-entering');
+    revealTimer = setTimeout(() => home.classList.remove('is-entering'), 1400);
+  }
 
   function actionButton(label, symbol, callback, className = '') {
     const button = node('button', `project-action ${className}`.trim());
@@ -90,7 +104,8 @@ export function createDashboard({ onNew, onOpen, onArchive, onTrash, onRestore }
       grid.append(card);
     }
     if (!grid.children.length) grid.append(node('p', 'dashboard-empty', 'No projects here yet.'));
+    for (const [index, card] of [...grid.children].entries()) card.style.setProperty('--reveal-order', Math.min(index, 7));
   }
 
-  return { render };
+  return { render, reveal };
 }

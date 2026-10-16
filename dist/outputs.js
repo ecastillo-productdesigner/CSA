@@ -85,25 +85,70 @@ const storyParagraphs = [
   ],
 ];
 
+const extraStoryParagraphs = [
+  [
+    'The following afternoon, they listened to the recording on ordinary speakers instead of the studio monitors. The simpler setup helped them hear which moments carried the melody and which ideas needed a little more room.',
+    'Each musician brought one new suggestion to the next rehearsal. They tried a quieter introduction, changed the order of two verses, and agreed that the first version’s relaxed tempo should remain.',
+    'A short rehearsal recording became a useful reference for the group. It captured the decisions they wanted to keep without turning a spontaneous experiment into a rigid plan.',
+  ],
+  [
+    'The illustrator placed a blank card beside every drawing so that customers could add their own interpretation. Some wrote a sentence, while others sketched a small scene inspired by the music.',
+    'The owner gathered the recommendations into a shared listening list for the café. Familiar favorites sat beside songs that several regulars were hearing for the first time.',
+    'For the next exchange, the team plans to leave space for stories from visitors who are just passing through. The collection is becoming a portrait of the town seen from many different tables.',
+  ],
+  [
+    'During an early preview, visitors began describing memories of their own umbrellas and rainy walks. Those conversations became a fourth layer of the installation, recorded on cards beside the original pieces.',
+    'The collaborators rearranged the display so that people could enter through an image, a sound, or a paragraph. There was no required order, and each route offered a slightly different experience.',
+    'A small booklet now brings the separate contributions together. It includes a few unfinished sketches and notes, allowing readers to see how the idea changed as it passed between the three participants.',
+  ],
+  [
+    'The organizers collected suggestions before the audience left the courtyard. Several people offered to bring instruments, and others volunteered to arrange chairs or help with a small sound system.',
+    'They agreed that a future gathering should keep the same informal atmosphere. A short open invitation and a few familiar songs would give first-time performers an easy way to take part.',
+    'The film screening still finished as planned, but the conversations afterward kept returning to the unexpected opening act. People who had arrived separately left discussing a project they could shape together.',
+  ],
+  [
+    'Before publication, the team returned to each person in the collection to check names, dates, and context. A small correction to one account helped make the relationship between the stories clearer.',
+    'The designers gave each contribution enough space to stand on its own. A simple map and a few short captions helped readers connect the locations without interrupting the individual voices.',
+    'The editors also invited readers to suggest a change they had noticed on their own street. Those responses will provide starting points for the next meeting and keep the series grounded in everyday experience.',
+  ],
+  [
+    'As the work progressed, volunteers kept a simple list of what the courtyard would need next. Watering the planters and checking the repaired bench became small tasks that neighbors could share.',
+    'A few residents returned in the evening to try the space after the tools had been put away. Their suggestions led to a clearer path between the planters and a more comfortable arrangement of the seating.',
+    'Photographs from the two workdays will be displayed on the community noticeboard. The organizers hope they will help new volunteers understand both the changes already made and the work still to come.',
+  ],
+  [
+    'On the next walk, the photographer returned to the same route at a different time of day. The familiar subjects looked noticeably different, suggesting that a limited setting could still offer plenty to explore.',
+    'Notes in a small notebook recorded the light, location, and reason for each frame. Comparing those observations with the developed photographs helped turn unexpected results into useful lessons.',
+    'A few prints now sit together on a studio wall, arranged by mood instead of date. The sequence has become a starting point for a larger project about the details that make ordinary places feel personal.',
+  ],
+  [
+    'The owner moved a few tables closer together and left the rest of the café open for its usual visitors. The arrangement let people listen for a song or stay for the whole afternoon without feeling committed to a formal event.',
+    'Performers began keeping notes on the ideas they wanted to revisit. One unfinished chorus gained a new rhythm, while another song found a clearer opening after a conversation with a listener.',
+    'For the next session, the café will invite a different group of local musicians and keep a few places for returning performers. The changing mix should leave room for new voices while allowing existing ideas to develop.',
+  ],
+];
+
 export function populateOutputContent(output) {
-  if (output.contentVersion === 2) return false;
+  if (output.contentVersion === 3) return false;
   const ops = Array.isArray(output.document?.ops) ? output.document.ops : [];
   const hasRichText = ops.some(op => op && (typeof op.insert === 'string' ? op.insert.trim() : op.insert));
   const current = hasRichText ? ops.map(op => typeof op?.insert === 'string' ? op.insert : '\ufffc').join('') : output.draftText || '';
   const normalized = text => text.replace(/\s+/g, ' ').trim();
   const hasFormatting = ops.some(op => op && ((op.attributes && Object.keys(op.attributes).length) || (op.insert && typeof op.insert !== 'string')));
+  const index = sampleHeadlines.indexOf(output.title);
   const untouchedLegacy = !hasFormatting && normalized(current) === normalized(legacySampleContent(output.title));
-  if ((!current.trim() && !output.contentInitialized) || untouchedLegacy) {
-    const index = sampleHeadlines.indexOf(output.title);
-    const paragraphs = index >= 0 ? storyParagraphs[index] : [
+  const untouchedSample = !hasFormatting && index >= 0 && normalized(current) === normalized(storyParagraphs[index].join('\n\n'));
+  if ((!current.trim() && !output.contentInitialized) || untouchedLegacy || untouchedSample) {
+    const opening = index >= 0 ? storyParagraphs[index] : [
       `The story behind “${output.title}” begins with a small idea and an unexpected opportunity to explore it. A group of collaborators brings different perspectives to a project that continues to evolve as they work.`,
       ...storyParagraphs[2].slice(1),
     ];
+    const paragraphs = [...opening.slice(0, -1), ...extraStoryParagraphs[index >= 0 ? index : 2], opening.at(-1)];
     output.draftText = paragraphs.join('\n\n');
-    delete output.document;
+    output.document = { ops: paragraphs.map(paragraph => ({ insert: `${paragraph}\n` })) };
   }
   output.contentInitialized = true;
-  output.contentVersion = 2;
+  output.contentVersion = 3;
   return true;
 }
 

@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261015-wordpress-button');
+  await import('./app.js?v=20261015-home-reveal');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

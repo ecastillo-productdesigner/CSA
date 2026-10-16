@@ -1,8 +1,8 @@
 import { createSearchExperience } from './search.js?v=20261015-output-workspace';
-import { createDashboard } from './dashboard.js?v=20261015-draft';
+import { createDashboard } from './dashboard.js?v=20261015-home-reveal';
 import { createMaterialEditor } from './editor.js?v=20261015-wordpress-button';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261015-tools-menus';
-import { projectOutputs, sampleVariant, outputIsReady, populateOutputContent, renderOutputs, toggleOutputMenu } from './outputs.js?v=20261015-output-stories';
+import { projectOutputs, sampleVariant, outputIsReady, populateOutputContent, renderOutputs, toggleOutputMenu } from './outputs.js?v=20261015-home-reveal';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -182,6 +182,7 @@ function showHome(focusInput = true) {
   document.title = 'CSA — Your creative workspace';
   window.scrollTo({ top: 0 });
   if (focusInput) $('#dashboard-new-project')?.focus();
+  dashboard?.reveal();
 }
 
 function showSourceStart() {
@@ -814,6 +815,7 @@ dashboard = createDashboard({
   onRestore: restoreProject,
 });
 dashboard.render(projects);
+dashboard.reveal();
 for (const project of projects) resumeOutputProcessing(project);
 try {
   const savedEditor = sessionStorage.getItem('csa.editor.active.v1');

@@ -2,6 +2,7 @@ import { createSearchExperience } from './search.js?v=20261015-output-workspace'
 import { createDashboard } from './dashboard.js?v=20261015-draft';
 import { createMaterialEditor } from './editor.js?v=20261015-editor';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261015-tools-menus';
+import { projectOutputs, sampleVariant, renderOutputs, toggleOutputMenu } from './outputs.js?v=20261015-variant-cards';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -67,8 +68,15 @@ const richEditor = createMaterialEditor({
   onSave(snapshot) {
     const project = projects.find(entry => entry.id === snapshot.id);
     if (!project) return false;
-    Object.assign(project, snapshot);
-    return saveProjects();
+    const output = projectOutputs(project).find(entry => entry.id === project.selectedOutputId);
+    if (output) {
+      for (const key of ['title', 'document', 'draftText', 'metadata', 'updatedAt']) output[key] = snapshot[key];
+      project.toolPreferences = snapshot.toolPreferences;
+      project.updatedAt = snapshot.updatedAt;
+    } else Object.assign(project, snapshot);
+    const saved = saveProjects();
+    renderOutputs(project);
+    return saved;
   },
 });
 
@@ -222,6 +230,7 @@ function showProjectStart() {
   for (const select of document.querySelectorAll('.composer-field select')) select.value = '';
   toolDropdowns.refresh();
   updateComposerActions();
+  renderOutputs(null);
   closeProfile();
   renderRecentProjects();
   document.title = 'New project — CSA';
@@ -304,7 +313,8 @@ function showEditorProject(project) {
   document.body.classList.add('showing-composer');
   for (const section of ['home', 'workspace', 'project-start']) $(`#${section}`).hidden = true;
   $('#composer').hidden = false;
-  if (project.awaitingOutput) {
+  const selectedOutput = projectOutputs(project).find(output => output.id === project.selectedOutputId);
+  if (project.awaitingOutput && !selectedOutput) {
     $('#composer').classList.add('has-output');
     $('#composer-heading').textContent = 'Story workspace';
     $('#output-placeholder').hidden = false;
@@ -314,14 +324,15 @@ function showEditorProject(project) {
     document.body.classList.add('editing-material');
     $('#composer').classList.add('has-editor');
     $('#composer-heading').textContent = 'Story editor';
-    richEditor.open(project);
+    richEditor.open(selectedOutput ? { ...project, ...selectedOutput, id: project.id, toolPreferences: project.toolPreferences } : project);
   }
   toolDropdowns.refresh();
   updateComposerActions();
+  renderOutputs(project);
   $('#composer-direction-button').classList.toggle('has-direction', Boolean(project.editorialDirection));
   closeProfile();
   renderRecentProjects();
-  document.title = `${project.title} — CSA`;
+  document.title = `${selectedOutput?.title || project.title} — CSA`;
   try { sessionStorage.setItem('csa.editor.active.v1', project.id); } catch { /* Drafts still save to local project storage. */ }
   window.scrollTo({ top: 0 });
 }
@@ -337,6 +348,63 @@ function updateComposerActions() {
   $('#composer-direction-button').disabled = !enabled;
   $('.create-variant').title = enabled ? 'Create variant' : 'Select a format, audience, or voice to create a variant';
   $('#composer-direction-button').title = enabled ? 'Editorial direction' : 'Select a format, audience, or voice to add editorial direction';
+}
+
+$('.create-variant').addEventListener('click', () => {
+  const selections = ['format', 'audience', 'voice'].flatMap(key => {
+    const select = $(`#composer-${key}`);
+    return select.value ? [{ key, value: select.value, label: select.options[select.selectedIndex].textContent }] : [];
+  });
+  if (!selections.length) return;
+  richEditor.flush();
+  const project = projects.find(entry => entry.id === activeProjectId);
+  if (!project) return;
+  const output = sampleVariant(project, selections);
+  project.outputs = [output, ...projectOutputs(project)];
+  project.updatedAt = Date.now();
+  const saved = saveProjects();
+  renderOutputs(project);
+  $('#output-list').querySelector(`[data-output-id="${output.id}"]`).focus();
+  if (saved) notify('Variant created.');
+});
+
+$('#output-list').addEventListener('click', event => {
+  const project = projects.find(entry => entry.id === activeProjectId);
+  if (!project) return;
+  const menuButton = event.target.closest('[data-output-menu]');
+  if (menuButton) { toggleOutputMenu(menuButton); return; }
+  const removeButton = event.target.closest('[data-delete-output]');
+  if (removeButton) { deleteOutput(project, removeButton.dataset.deleteOutput); return; }
+  const card = event.target.closest('[data-output-id]');
+  if (!card) return;
+  const output = projectOutputs(project).find(entry => entry.id === card.dataset.outputId);
+  if (!output) return;
+  richEditor.flush();
+  if (project.selectedOutputId === output.id) delete project.selectedOutputId;
+  else project.selectedOutputId = output.id;
+  saveProjects();
+  showEditorProject(project);
+});
+
+function deleteOutput(project, id) {
+  richEditor.flush();
+  const outputs = projectOutputs(project);
+  const index = outputs.findIndex(output => output.id === id);
+  if (index < 0) return;
+  const removed = outputs[index];
+  const selected = project.selectedOutputId === id;
+  project.outputs = outputs.filter(output => output.id !== id);
+  if (selected) delete project.selectedOutputId;
+  saveProjects();
+  if (selected) showEditorProject(project); else renderOutputs(project);
+  notify('Variant deleted.', () => {
+    const current = projectOutputs(project);
+    current.splice(Math.min(index, current.length), 0, removed);
+    project.outputs = current;
+    saveProjects();
+    if (activeProjectId === project.id) renderOutputs(project);
+    notify('Variant restored.');
+  });
 }
 
 function openEditorialDirection(projectId) {

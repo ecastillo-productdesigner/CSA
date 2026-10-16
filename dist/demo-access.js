@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261015-button-states');
+  await import('./app.js?v=20261015-variant-cards');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

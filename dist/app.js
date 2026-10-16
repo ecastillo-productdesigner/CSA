@@ -1,7 +1,7 @@
-import { createSearchExperience } from './search.js?v=20261016-draft-selection';
+import { createSearchExperience } from './search.js?v=20261016-add-source';
 import { createDashboard } from './dashboard.js?v=20261016-cms-status';
 import { createRecentProjects } from './recent-projects.js?v=20261016-project-actions';
-import { createMaterialEditor } from './editor.js?v=20261016-source-selection';
+import { createMaterialEditor } from './editor.js?v=20261016-add-source';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
 import { createRailNavigation } from './navigation.js?v=20261016-hover-navigation';
@@ -57,6 +57,7 @@ let projects = [
   ...savedProjects,
 ];
 let activeProjectId = null;
+let sourceTargetProjectId = null;
 let materialMode = 'upload';
 let selectedFiles = [];
 let addingToProject = false;
@@ -73,6 +74,7 @@ const railNavigation = createRailNavigation({ onRecentsOpen: renderRecentProject
 const richEditor = createMaterialEditor({
   onDownloadSource: downloadSource,
   onSendToCms: markVariantSentToCms,
+  onAddSource: projectId => openProjectDialog(true, projectId),
   onContentChange: updateComposerActions,
   notify,
   onSave(snapshot) {
@@ -177,6 +179,7 @@ function createProject(sources, options = {}) {
 }
 
 function showHome(focusInput = true) {
+  sourceTargetProjectId = null;
   activeProjectId = null;
   closeComposer();
   railNavigation.close();
@@ -251,7 +254,11 @@ function showProjectStart() {
   openProjectDialog();
 }
 
-function openProjectDialog(reset = true) {
+function openProjectDialog(reset = true, sourceProjectId = null) {
+  sourceTargetProjectId = sourceProjectId;
+  $('#new-project-dialog-title').textContent = sourceProjectId ? 'Add source' : 'New Project';
+  $('.new-project-close').setAttribute('aria-label', sourceProjectId ? 'Close add source modal' : 'Close new project modal');
+  $('#new-project-use-material').textContent = sourceProjectId ? 'Add source' : 'Start creating';
   uploadContext = 'starter';
   materialMode = 'upload';
   selectedFiles = [];
@@ -264,7 +271,41 @@ function openProjectDialog(reset = true) {
   $('#new-project-query').focus();
 }
 
+function returnFromSourceAddition() {
+  const project = projects.find(entry => entry.id === sourceTargetProjectId);
+  sourceTargetProjectId = null;
+  if ($('#new-project-dialog').open) $('#new-project-dialog').close();
+  if ($('#material-dialog').open) $('#material-dialog').close();
+  if (project) { showEditorProject(project); richEditor.showSources(); }
+  else showHome();
+}
+
+function appendProjectSources(sources) {
+  const project = projects.find(entry => entry.id === sourceTargetProjectId);
+  if (!project) { sourceTargetProjectId = null; showHome(); return; }
+  const additions = sources.filter(source => !project.sources.some(existing => source.url ? existing.url === source.url : existing.type === source.type && existing.title === source.title && existing.text === source.text));
+  project.sources.push(...additions.map(source => ({ ...source, selected: true })));
+  project.updatedAt = Date.now();
+  saveProjects();
+  sourceTargetProjectId = null;
+  showEditorProject(project);
+  richEditor.showSources();
+  notify(additions.length ? `${additions.length} ${additions.length === 1 ? 'source' : 'sources'} added.` : 'These sources are already in your project.');
+}
+
+function showSourceAdditionResults(query) {
+  closeComposer();
+  railNavigation.close();
+  for (const id of ['home', 'workspace', 'project-start']) $(`#${id}`).hidden = true;
+  document.body.classList.add('showing-results');
+  searchExperience.show({ id: `add-source-${crypto.randomUUID()}`, sources: [{ type: 'search', title: query }] }, { addingSources: true });
+  document.title = `Add source — ${query} — CSA`;
+  $('#main').focus({ preventScroll: true });
+  window.scrollTo({ top: 0 });
+}
+
 function showProject(id) {
+  sourceTargetProjectId = null;
   const project = projects.find((entry) => entry.id === id);
   if (!project || project.deletedAt) return;
   if (project.kind === 'draft') { showEditorProject(project); return; }
@@ -558,6 +599,11 @@ function submitSource(input) {
   if (!input) return;
   const tokens = input.split(/\s+/);
   const urls = tokens.map(safeUrl);
+  if (sourceTargetProjectId) {
+    if (urls.every(Boolean)) appendProjectSources(urls.map(url => ({ type: 'link', title: url, url })));
+    else showSourceAdditionResults(input);
+    return;
+  }
   if (urls.every(Boolean)) {
     const sources = urls.map(url => ({ type: 'link', title: url, url }));
     const sample = sampleVariant({ sources }, []);
@@ -579,7 +625,11 @@ $('#new-project-search-form').addEventListener('submit', (event) => {
 });
 $('#new-project-material').addEventListener('click', () => {
   $('#new-project-dialog').close();
-  createProject([], { title: 'Untitled story', kind: 'draft', draftText: '' });
+  if (sourceTargetProjectId) {
+    openMaterial('paste', true);
+    $('#material-title').textContent = 'Add source';
+    $('#use-material').textContent = 'Add source';
+  } else createProject([], { title: 'Untitled story', kind: 'draft', draftText: '' });
 });
 async function downloadSource(source) {
   try { await downloadDocument(source); }
@@ -743,6 +793,7 @@ async function useMaterial() {
       sources = await saveDocuments(selectedFiles);
     }
     dialog.close();
+    if (sourceTargetProjectId) { appendProjectSources(sources); return; }
     const existing = !fromStarter && addingToProject && projects.find((project) => project.id === activeProjectId);
     if (existing) {
       existing.sources.push(...sources);
@@ -774,8 +825,13 @@ $('#new-project-use-material').addEventListener('click', useMaterial);
 
 for (const id of ['material-dialog', 'new-project-dialog']) $(`#${id}`).addEventListener('cancel', event => { if (materialBusy) event.preventDefault(); });
 
+for (const id of ['material-dialog', 'new-project-dialog']) $(`#${id}`).addEventListener('cancel', event => {
+  if (sourceTargetProjectId && !materialBusy) { event.preventDefault(); returnFromSourceAddition(); }
+});
+
 for (const button of document.querySelectorAll('[data-close]')) button.addEventListener('click', () => {
-  if (button.dataset.close === 'new-project-dialog') showHome();
+  if (sourceTargetProjectId && ['new-project-dialog', 'material-dialog'].includes(button.dataset.close)) returnFromSourceAddition();
+  else if (button.dataset.close === 'new-project-dialog') showHome();
   else $(`#${button.dataset.close}`).close();
 });
 for (const dialog of document.querySelectorAll('dialog')) {
@@ -783,12 +839,16 @@ for (const dialog of document.querySelectorAll('dialog')) {
     if (['material-dialog', 'new-project-dialog'].includes(dialog.id) && materialBusy) return;
     if (event.target !== dialog) return;
     const bounds = dialog.getBoundingClientRect();
-    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close();
+    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) {
+      if (sourceTargetProjectId && ['new-project-dialog', 'material-dialog'].includes(dialog.id)) returnFromSourceAddition();
+      else dialog.close();
+    }
   });
 }
 
 const searchExperience = createSearchExperience({
   onSearch: submitSource,
+  onCancelAddSources: returnFromSourceAddition,
   onDirectionChange(id, direction) {
     const project = projects.find(entry => entry.id === id);
     if (project) { project.editorialDirection = direction; saveProjects(); }
@@ -798,7 +858,9 @@ const searchExperience = createSearchExperience({
     if (project) { project.selectedArticleIds = selection; saveProjects(); }
   },
   onDraft({ query, articles, editorialDirection }) {
-    createProject(articles.map((article) => ({ type: 'text', title: article.title, text: `Fictional sample article · ${article.source} · ${article.date}\n\n${article.paragraphs.join('\n\n')}` })), { title: `${titleFrom(query)} — Draft`, kind: 'draft', awaitingOutput: true, editorialDirection });
+    const sources = articles.map((article) => ({ type: 'text', title: article.title, text: `Fictional sample article · ${article.source} · ${article.date}\n\n${article.paragraphs.join('\n\n')}` }));
+    if (sourceTargetProjectId) { appendProjectSources(sources); return; }
+    createProject(sources, { title: `${titleFrom(query)} — Draft`, kind: 'draft', awaitingOutput: true, editorialDirection });
   },
 });
 

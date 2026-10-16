@@ -8,8 +8,8 @@
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="./styles.css?v=20261016-cms-status">
-    <script src="./demo-access.js?v=20261016-cms-status" type="module"></script>
+    <link rel="stylesheet" href="./styles.css?v=20261016-add-source">
+    <script src="./demo-access.js?v=20261016-add-source" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -101,8 +101,7 @@
               <div class="editor-panel-heading"><h2 id="editor-sources-heading">Sources</h2><button class="text-button" type="button" data-editor-close="sources">Close</button></div>
               <p class="editor-source-selection-status" id="editor-source-selection-status" role="status"></p>
               <ul id="editor-source-list"></ul>
-              <form class="editor-source-form" id="editor-add-source"><label for="editor-source-url">Add a source link</label><div><input id="editor-source-url" type="url" placeholder="https://" required><button class="secondary-button" type="submit">Add source</button></div></form>
-              <p class="form-error" id="editor-source-error" role="alert" hidden></p>
+              <button class="secondary-button editor-add-source-button" id="editor-add-source-button" type="button">Add source</button>
             </div>
             </div>
             <div class="editor-context-panel editor-find-panel" id="editor-find" hidden>
@@ -196,6 +195,7 @@
           <textarea id="results-editorial-direction" rows="2" maxlength="8000" placeholder="Guide the CSA: Add additional facts, give directions on framing, etc."></textarea>
         </div>
         <div class="results-actions">
+          <button class="secondary-button" id="cancel-source-search" type="button" hidden>Cancel</button>
           <button class="draft-button" id="create-draft" type="button" disabled>Draft</button>
         </div>
       </section>

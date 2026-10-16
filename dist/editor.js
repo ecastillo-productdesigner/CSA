@@ -35,7 +35,7 @@ function savedDocument(value) {
   return { ops };
 }
 
-export function createMaterialEditor({ onSave, onDownloadSource, onSendToCms, onContentChange = () => {}, notify }) {
+export function createMaterialEditor({ onSave, onDownloadSource, onSendToCms, onAddSource, onContentChange = () => {}, notify }) {
   const $ = (selector) => document.querySelector(selector);
   const root = $('#material-editor');
   const title = $('#editor-title');
@@ -265,15 +265,11 @@ export function createMaterialEditor({ onSave, onDownloadSource, onSendToCms, on
       list.append(row);
     }
   }
-  $('#editor-add-source').addEventListener('submit', event => {
-    event.preventDefault();
+  $('#editor-add-source-button').addEventListener('click', () => {
     if (!project) return;
-    const url = safeLink($('#editor-source-url').value);
-    if (!url || !/^https?:/i.test(url)) { $('#editor-source-error').textContent = 'Enter a valid website URL.'; $('#editor-source-error').hidden = false; return; }
-    $('#editor-source-error').hidden = true;
-    if (!project.sources.some(source => source.url === url)) project.sources.push({ type: 'link', title: new URL(url).hostname.replace(/^www\./, ''), url });
-    $('#editor-source-url').value = '';
-    renderSources(); scheduleSave(); flush();
+    flush();
+    setPanel('sources', false);
+    onAddSource(project.id);
   });
 
   function openLink() {
@@ -392,7 +388,7 @@ export function createMaterialEditor({ onSave, onDownloadSource, onSendToCms, on
       const document = savedDocument(next.document);
       if (document) quill.setContents(document, 'silent'); else quill.setText(typeof next.draftText === 'string' ? next.draftText : '', 'silent');
       quill.history.clear(); selection = { index: 0, length: 0 }; findIndex = -1;
-      $('#editor-find-text').value = ''; $('#editor-replace-text').value = ''; $('#editor-source-error').hidden = true;
+      $('#editor-find-text').value = ''; $('#editor-replace-text').value = '';
       status.textContent = 'Saved on this device'; status.classList.remove('editor-save-error');
       for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = next.toolPreferences?.[key] || '';
       setPanel('', false); renderSources(); resizeTitle(); updateCounts(); updateToolbar(); updateFind();

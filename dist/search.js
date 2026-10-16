@@ -46,7 +46,7 @@ function dateLabel(value) {
   return new Date(`${value}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 }
 
-export function createSearchExperience({ onSearch, onSelectionChange, onDirectionChange, onDraft }) {
+export function createSearchExperience({ onSearch, onSelectionChange, onDirectionChange, onDraft, onCancelAddSources }) {
   const $ = (selector) => document.querySelector(selector);
   let state = null;
   let previewArticle = null;
@@ -204,7 +204,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     $('#load-more').textContent = visible.length >= filtered.length ? 'All results shown' : 'Load more';
     const chosen = chosenArticles();
     $('#create-draft').disabled = chosen.length === 0;
-    $('#create-draft').title = chosen.length ? `Draft from ${chosen.length} selected ${chosen.length === 1 ? 'story' : 'stories'}` : 'Select at least one story to create a draft';
+    $('#create-draft').title = chosen.length ? `${state.addingSources ? 'Add' : 'Draft from'} ${chosen.length} selected ${chosen.length === 1 ? 'story' : 'stories'}` : `Select at least one story to ${state.addingSources ? 'add a source' : 'create a draft'}`;
     $('#results-selection').hidden = state.selected.size === 0;
     $('#results-selection').textContent = `${state.selected.size} ${state.selected.size === 1 ? 'story' : 'stories'} selected`;
   }
@@ -246,6 +246,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     const id = card.dataset.articleId;
     toggleSelection(id);
   });
+  $('#cancel-source-search').addEventListener('click', () => onCancelAddSources?.());
   $('#create-draft').addEventListener('click', () => {
     if (!state) return;
     const articles = chosenArticles();
@@ -253,13 +254,17 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
   });
 
   return {
-    show(project) {
+    show(project, { addingSources = false } = {}) {
       clearAdditionTimers();
       const query = project.sources[0].title;
       const articles = sampleArticles(query);
       const savedSelection = Array.isArray(project.selectedArticleIds) ? project.selectedArticleIds : [];
       const selected = new Set(savedSelection.filter(id => articles.some(article => article.id === id)));
-      state = { projectId: project.id, query, articles, editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '', sort: 'newest', source: 'all', after: '', visibleCount: 4, selected, readyArticleIds: new Set(selected) };
+      state = { projectId: project.id, addingSources, query, articles, editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '', sort: 'newest', source: 'all', after: '', visibleCount: 4, selected, readyArticleIds: new Set(selected) };
+      $('#create-draft').textContent = addingSources ? 'Add sources' : 'Draft';
+      $('#cancel-source-search').hidden = !addingSources;
+      $('.results-direction').hidden = addingSources;
+      $('#results-help').textContent = addingSources ? 'Select at least one article to add it to your project.' : 'Select at least one article to enable Draft.';
       $('#search-results').hidden = false;
       $('#results-heading').textContent = `Search results for ${query}`;
       $('#results-query').value = query;

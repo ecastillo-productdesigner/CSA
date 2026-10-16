@@ -289,6 +289,11 @@ export function createMaterialEditor({ onSave, onHome, notify }) {
     $('#editor-download').open = false;
   });
   $('#editor-print').addEventListener('click', () => { $('#editor-download').open = false; flush(); window.print(); });
+  $('#editor-wordpress').addEventListener('click', () => {
+    if (!project) return;
+    flush();
+    notify('WordPress isn’t connected yet. This button is a demo.');
+  });
   document.addEventListener('keydown', event => {
     if (!project || root.hidden || linkDialog.open || !(event.metaKey || event.ctrlKey) || event.altKey) return;
     const key = event.key.toLowerCase();

@@ -1,6 +1,6 @@
 import { createSearchExperience } from './search.js?v=20261015-output-workspace';
 import { createDashboard } from './dashboard.js?v=20261015-draft';
-import { createMaterialEditor } from './editor.js?v=20261015-output-stories';
+import { createMaterialEditor } from './editor.js?v=20261015-wordpress-button';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261015-tools-menus';
 import { projectOutputs, sampleVariant, outputIsReady, populateOutputContent, renderOutputs, toggleOutputMenu } from './outputs.js?v=20261015-output-stories';
 

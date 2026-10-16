@@ -279,6 +279,9 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
 #rich-text-editor .ql-editor blockquote { margin: 20px 0; padding: 5px 0 5px 20px; border-left: 3px solid #ccd7e7; color: #68778e; }
 #rich-text-editor .ql-editor.ql-blank::before { left: 38px; right: 38px; color: #9aa5b5; font-style: normal; }
 .editor-footer { display: flex; flex-shrink: 0; align-items: center; flex-wrap: wrap; gap: 10px 20px; min-height: 48px; padding: 13px 24px; border-top: 1px solid var(--line); color: #7b879a; font-size: 11px; line-height: 18px; }
+.editor-publish-actions { display: flex; flex-shrink: 0; justify-content: center; padding: 12px 24px; }
+.editor-wordpress-button { width: min(300px, 100%); height: var(--button-height); padding: 0 24px; border: 1px solid var(--ink); border-radius: 10px; background: var(--ink); color: white; font-size: 16px; font-weight: 700; }
+.editor-wordpress-button:hover { background: #3d4c68; border-color: #3d4c68; }
 .editor-spellcheck { margin-left: auto; }
 .editor-context-panel { flex-shrink: 0; min-width: 0; max-height: 30svh; overflow-y: auto; overscroll-behavior-y: contain; margin-bottom: 20px; padding: 22px; border: 1px solid var(--line); border-radius: 12px; background: white; }
 .editor-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
@@ -329,7 +332,7 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
   .new-project-material-icon { width: 32px; height: 36px; }
 }
 @media print {
-  .editing-material .sidebar, .editing-material .sidebar-backdrop, .editing-material .composer-rail, .editing-material .editor-topbar, .editing-material .editor-context-panel, .editing-material .editor-toolbar, .editing-material .editor-footer, .editing-material .editor-document-status, .editing-material .toast { display: none !important; }
+  .editing-material .sidebar, .editing-material .sidebar-backdrop, .editing-material .composer-rail, .editing-material .editor-topbar, .editing-material .editor-context-panel, .editing-material .editor-toolbar, .editing-material .editor-publish-actions, .editing-material .editor-footer, .editing-material .editor-document-status, .editing-material .toast { display: none !important; }
   .editing-material main { padding: 0 !important; }
   .editing-material .composer { display: block; }
   .editing-material .material-editor { display: block; height: auto; max-width: none; padding: 0; }

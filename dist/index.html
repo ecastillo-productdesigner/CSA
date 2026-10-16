@@ -8,8 +8,8 @@
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="./styles.css?v=20261016-variant-cards">
-    <script src="./demo-access.js?v=20261016-modal-home" type="module"></script>
+    <link rel="stylesheet" href="./styles.css?v=20261016-search-inspect">
+    <script src="./demo-access.js?v=20261016-search-inspect" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -186,8 +186,12 @@
         <ul class="result-list" id="result-list" aria-describedby="results-help"></ul>
         <p class="results-empty" id="results-empty" role="status" hidden>No articles match these filters. Try another source or date.</p>
         <button class="load-more" id="load-more" type="button">Load more</button>
+        <div class="results-direction">
+          <label for="results-editorial-direction">Editorial Direction <span>(optional)</span></label>
+          <textarea id="results-editorial-direction" rows="3" maxlength="8000" placeholder="Guide the CSA: Add additional facts, give directions on framing, etc." aria-describedby="results-direction-help"></textarea>
+          <p id="results-direction-help">You can refine your direction here before continuing — it will guide every downstream step.</p>
+        </div>
         <div class="results-actions">
-          <button class="filter-button" id="results-filter-button" type="button" aria-label="Editorial direction" aria-haspopup="dialog" aria-controls="editorial-direction-dialog"><svg aria-hidden="true"><use href="#icon-filters"/></svg></button>
           <button class="draft-button" id="create-draft" type="button">Draft</button>
         </div>
       </section>
@@ -253,7 +257,7 @@
       <h2 id="article-preview-title"></h2><p class="article-preview-meta" id="article-preview-meta"></p>
       <p class="article-preview-notice" id="article-preview-notice">Made-up content for the CSA demo.</p>
       <div class="article-preview-body" id="article-preview-body" tabindex="0" role="region" aria-label="Article text"></div>
-      <div class="dialog-footer"><button class="secondary-button" type="button" data-close="article-preview-dialog">Back to results</button><button class="primary-button" id="article-preview-select" type="button">Select source</button></div>
+      <div class="dialog-footer"><button class="secondary-button" type="button" data-close="article-preview-dialog">Back to results</button></div>
     </dialog>
 
     <dialog class="editor-link-dialog" id="editor-link-dialog" aria-labelledby="editor-link-heading"><form id="editor-link-form"><div class="editor-panel-heading"><h2 id="editor-link-heading">Add a link</h2><button class="icon-button" type="button" data-close="editor-link-dialog" aria-label="Close link dialog"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></div><label for="editor-link-text">Link text<input id="editor-link-text" type="text" placeholder="Text to display" maxlength="2000"></label><label for="editor-link-url">URL<input id="editor-link-url" type="text" placeholder="https://" required></label><p class="form-error" id="editor-link-error" role="alert" hidden></p><div class="dialog-footer"><button class="secondary-button" id="editor-remove-link" type="button">Remove link</button><button class="primary-button" type="submit">Apply link</button></div></form></dialog>

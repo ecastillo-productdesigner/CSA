@@ -1,4 +1,4 @@
-import { createSearchExperience } from './search.js?v=20261016-search-controls';
+import { createSearchExperience } from './search.js?v=20261016-search-inspect';
 import { createDashboard } from './dashboard.js?v=20261016-variant-cards';
 import { createRecentProjects } from './recent-projects.js?v=20261016-project-actions';
 import { createMaterialEditor } from './editor.js?v=20261016-variant-cards';
@@ -792,7 +792,10 @@ for (const dialog of document.querySelectorAll('dialog')) {
 
 const searchExperience = createSearchExperience({
   onSearch: submitSource,
-  onDirection: openEditorialDirection,
+  onDirectionChange(id, direction) {
+    const project = projects.find(entry => entry.id === id);
+    if (project) { project.editorialDirection = direction; saveProjects(); }
+  },
   onSelectionChange(id, selection) {
     const project = projects.find((entry) => entry.id === id);
     if (project) { project.selectedArticleIds = selection; saveProjects(); }

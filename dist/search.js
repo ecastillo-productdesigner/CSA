@@ -46,37 +46,76 @@ function dateLabel(value) {
   return new Date(`${value}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 }
 
-export function createSearchExperience({ onSearch, onSelectionChange, onDirection, onDraft }) {
+export function createSearchExperience({ onSearch, onSelectionChange, onDirectionChange, onDraft }) {
   const $ = (selector) => document.querySelector(selector);
   let state = null;
   let previewArticle = null;
+  const additionTimers = new Map();
   const preview = $('#article-preview-dialog');
+
+  function clearAdditionTimers() {
+    for (const timer of additionTimers.values()) clearTimeout(timer);
+    additionTimers.clear();
+  }
+
+  function renderAddition(container, article) {
+    container.replaceChildren();
+    if (state.readyArticleIds.has(article.id)) {
+      const inspect = node('button', 'result-inspect-button', 'Inspect');
+      inspect.type = 'button';
+      inspect.dataset.inspectArticleId = article.id;
+      inspect.setAttribute('aria-label', `Inspect story ${article.id.split('-').pop()}: ${article.title}`);
+      inspect.setAttribute('aria-haspopup', 'dialog');
+      inspect.setAttribute('aria-controls', 'article-preview-dialog');
+      container.append(inspect);
+    } else {
+      const adding = node('span', 'result-adding');
+      const spinner = node('span', 'output-processing-spinner');
+      spinner.setAttribute('aria-hidden', 'true');
+      adding.append(spinner, node('span', '', 'Adding to CSA'));
+      container.append(adding);
+    }
+  }
+
+  function toggleSelection(id) {
+    if (state.selected.has(id)) {
+      state.selected.delete(id);
+      state.readyArticleIds.delete(id);
+      clearTimeout(additionTimers.get(id));
+      additionTimers.delete(id);
+    } else {
+      state.selected.add(id);
+      const selectionState = state;
+      additionTimers.set(id, setTimeout(() => {
+        additionTimers.delete(id);
+        if (state !== selectionState || !state.selected.has(id)) return;
+        state.readyArticleIds.add(id);
+        const container = $('#result-list').querySelector(`[data-addition-article-id="${id}"]`);
+        const article = state.articles.find(article => article.id === id);
+        if (container && article) renderAddition(container, article);
+      }, 3000));
+    }
+    onSelectionChange(state.projectId, [...state.selected]);
+    render();
+    $('#result-list').querySelector(`[data-article-id="${id}"]`)?.focus({ preventScroll: true });
+  }
 
   function openPreview(id) {
     const article = state?.articles.find(article => article.id === id);
-    if (!article) return;
+    if (!article || !state.selected.has(id) || !state.readyArticleIds.has(id)) return;
     previewArticle = { ...article, projectId: state.projectId };
     $('#article-preview-title').textContent = article.title;
     $('#article-preview-meta').textContent = `${article.source} · ${dateLabel(article.date)}`;
     $('#article-preview-body').replaceChildren(...article.paragraphs.map(paragraph => node('p', '', paragraph)));
-    $('#article-preview-select').textContent = state.selected.has(id) ? 'Remove source' : 'Select source';
     preview.showModal();
     $('#article-preview-body').scrollTop = 0;
   }
 
   preview.addEventListener('close', () => {
     if (state?.projectId === previewArticle?.projectId && !$('#search-results').hidden) {
-      $('#result-list').querySelector(`[data-preview-article-id="${previewArticle.id}"]`)?.focus({ preventScroll: true });
+      $('#result-list').querySelector(`[data-inspect-article-id="${previewArticle.id}"]`)?.focus({ preventScroll: true });
     }
     previewArticle = null;
-  });
-  $('#article-preview-select').addEventListener('click', () => {
-    if (!state || previewArticle?.projectId !== state.projectId) return;
-    const id = previewArticle.id;
-    if (state.selected.has(id)) state.selected.delete(id); else state.selected.add(id);
-    onSelectionChange(state.projectId, [...state.selected]);
-    render();
-    preview.close();
   });
 
   function filteredArticles() {
@@ -103,8 +142,6 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     const filtered = filteredArticles();
     const visible = filtered.slice(0, state.visibleCount);
     $('#results-count').textContent = `${filtered.length.toLocaleString()} ${filtered.length === 1 ? 'story' : 'stories'} found`;
-    $('#results-filter-button').classList.toggle('has-direction', Boolean(state.editorialDirection));
-    $('#results-filter-button').title = state.editorialDirection ? 'Edit saved editorial direction' : 'Add editorial direction';
     const list = $('#result-list');
     list.replaceChildren(...visible.map((article) => {
       const item = node('li', 'result-item');
@@ -136,6 +173,15 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       svg.setAttribute('aria-hidden', 'true'); use.setAttribute('href', '#icon-open'); svg.append(use);
       previewButton.append(svg);
       item.append(card, previewButton);
+      if (state.selected.has(article.id)) {
+        const addition = node('div', 'result-addition');
+        addition.dataset.additionArticleId = article.id;
+        addition.setAttribute('role', 'status');
+        addition.setAttribute('aria-live', 'polite');
+        addition.setAttribute('aria-atomic', 'true');
+        renderAddition(addition, article);
+        item.append(addition);
+      }
       return item;
     }));
     $('#results-empty').hidden = filtered.length > 0;
@@ -169,18 +215,21 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     $('#results-toggle-filters').setAttribute('aria-expanded', String(expanded));
     if (expanded) $('#results-source').focus();
   });
-  $('#results-filter-button').addEventListener('click', () => { if (state) onDirection(state.projectId); });
+  $('#results-editorial-direction').addEventListener('input', () => {
+    if (!state) return;
+    state.editorialDirection = $('#results-editorial-direction').value;
+    onDirectionChange(state.projectId, state.editorialDirection);
+  });
   $('#load-more').addEventListener('click', () => { if (state) { state.visibleCount += 4; render(); } });
   $('#result-list').addEventListener('click', (event) => {
+    const inspect = event.target.closest('.result-inspect-button');
+    if (inspect) { openPreview(inspect.dataset.inspectArticleId); return; }
     const previewButton = event.target.closest('.result-preview-button');
     if (previewButton) return;
     const card = event.target.closest('.result-card');
     if (!card || !state) return;
     const id = card.dataset.articleId;
-    if (state.selected.has(id)) state.selected.delete(id); else state.selected.add(id);
-    onSelectionChange(state.projectId, [...state.selected]);
-    render();
-    $('#result-list').querySelector(`[data-article-id="${id}"]`).focus({ preventScroll: true });
+    toggleSelection(id);
   });
   $('#create-draft').addEventListener('click', () => {
     if (!state) return;
@@ -190,13 +239,16 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
 
   return {
     show(project) {
+      clearAdditionTimers();
       const query = project.sources[0].title;
       const articles = sampleArticles(query);
       const savedSelection = Array.isArray(project.selectedArticleIds) ? project.selectedArticleIds : [];
-      state = { projectId: project.id, query, articles, editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '', sort: 'newest', source: 'all', after: '', visibleCount: 4, selected: new Set(savedSelection.filter((id) => articles.some((article) => article.id === id))) };
+      const selected = new Set(savedSelection.filter(id => articles.some(article => article.id === id)));
+      state = { projectId: project.id, query, articles, editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '', sort: 'newest', source: 'all', after: '', visibleCount: 4, selected, readyArticleIds: new Set(selected) };
       $('#search-results').hidden = false;
       $('#results-heading').textContent = `Search results for ${query}`;
       $('#results-query').value = query;
+      $('#results-editorial-direction').value = state.editorialDirection;
       $('#results-search-button').disabled = false;
       $('#results-sort').value = 'newest';
       $('#results-sort').dispatchEvent(new Event('change', { bubbles: true }));
@@ -212,8 +264,8 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     setEditorialDirection(projectId, direction) {
       if (state?.projectId !== projectId) return;
       state.editorialDirection = direction;
-      render();
+      $('#results-editorial-direction').value = direction;
     },
-    hide() { if (preview.open) preview.close(); previewArticle = null; state = null; $('#search-results').hidden = true; },
+    hide() { clearAdditionTimers(); if (preview.open) preview.close(); previewArticle = null; state = null; $('#search-results').hidden = true; },
   };
 }

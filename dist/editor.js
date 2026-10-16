@@ -314,6 +314,7 @@ export function createMaterialEditor({ onSave, onHome, notify }) {
       status.textContent = 'Saved on this device'; status.classList.remove('editor-save-error');
       for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = next.toolPreferences?.[key] || '';
       setPanel('', false); renderSources(); resizeTitle(); updateCounts(); updateToolbar(); updateFind();
+      quill.root.scrollTop = 0;
       loading = false; dirty = false;
       if (!next.draftText) title.focus(); else quill.setSelection(0, 0, 'silent');
     },

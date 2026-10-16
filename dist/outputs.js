@@ -17,11 +17,8 @@ export function outputIsReady(output) {
   return output.status === 'ready' || (!output.status && Boolean(output.document || output.draftText));
 }
 
-export function populateOutputContent(output) {
-  if (output.contentInitialized) return false;
-  const hasRichText = Array.isArray(output.document?.ops) && output.document.ops.some(op => typeof op.insert === 'string' ? op.insert.trim() : op.insert);
-  if (!hasRichText && !(typeof output.draftText === 'string' && output.draftText.trim())) {
-    const title = output.title.toLowerCase();
+function legacySampleContent(heading) {
+    const title = heading.toLowerCase();
     const opening = /camera|photo/.test(title)
       ? 'A vintage camera became the starting point for an unexpected creative project. What first appeared to be an interesting object soon encouraged its owner to slow down, look more closely at familiar places, and capture everyday moments from a different perspective.'
       : /café|cafe|neighborhood|community/.test(title)
@@ -29,15 +26,84 @@ export function populateOutputContent(output) {
         : /studio|performance|music/.test(title)
           ? 'A spontaneous session brought a small group of musicians together with no fixed plan beyond trying something new. As one idea led to another, an informal gathering developed into a creative project shaped by the people, sounds, and stories in the room.'
           : 'The collaboration began with a simple conversation and a shared interest in making something new. People with different experiences brought their own ideas to the project, turning a casual exchange into an opportunity to explore a fresh creative direction.';
-    output.draftText = [
+    return [
       opening,
       'The first steps were deliberately small. The group tested a few ideas, shared early versions, and paid attention to the details that felt most meaningful. Rather than working toward a polished result immediately, they gave themselves room to experiment and discover what the project could become.',
       'That approach made collaboration an essential part of the process. Each person contributed a different perspective, helping the team connect individual ideas into a more complete story. Some suggestions changed along the way, while others became the foundation for the next stage of the work.',
       'By the end of the project, the most memorable result was the connection it created between the people involved. Their experience offers a reminder that a compelling creative idea does not always require a large production. Sometimes it begins with curiosity, a familiar setting, and a willingness to see what happens next.',
     ].join('\n\n');
+}
+
+const storyParagraphs = [
+  [
+    'The studio was supposed to be quiet for the evening when a singer stopped by to collect a forgotten notebook. A guitarist was still rehearsing nearby, and a few improvised notes quickly turned into an unexpected recording session.',
+    'With no producer directing the room, the musicians traded ideas freely. A spare keyboard, a hand drum, and an old microphone gave the recording a warmer sound than either had originally imagined.',
+    'They decided to keep the small imperfections in the first take. A laugh between verses and the sound of a chair moving became part of the track, preserving the spontaneous mood of the evening.',
+    'By midnight, the group had the outline of a new song and plans to meet again. The session opened a creative direction that none of them had brought into the studio that morning.',
+  ],
+  [
+    'A small-town café found itself at the center of a surprising conversation after a handwritten sign in its window caught a visitor’s attention. The sign invited customers to exchange a favorite song for a cup of coffee.',
+    'The owner had created the idea to make a quiet afternoon feel more welcoming. Within hours, the café’s noticeboard was covered with song titles, brief memories, and recommendations from people passing through town.',
+    'A local illustrator began turning a few of those memories into drawings. Customers recognized pieces of their own lives in the sketches and returned with friends to add another story to the wall.',
+    'The café plans to keep the exchange going each month. What started as a modest gesture has given the neighborhood a new place to share its interests and discover unexpected connections.',
+  ],
+  [
+    'The collaboration started with a question at a community workshop: could a single everyday object inspire a piece of music, a photograph, and a short story? Three participants decided to test the idea together.',
+    'They chose a well-used blue umbrella and spent a week observing where it traveled. The photographer followed its changing surroundings, the musician collected sounds of rain, and the writer imagined the people who might have carried it.',
+    'When they reunited, the separate pieces revealed details each person had missed. They combined the photographs, recordings, and writing into a small installation that visitors could explore at their own pace.',
+    'The finished work kept the original question open rather than offering one explanation. For the collaborators, that shared curiosity became the most valuable result of an idea that had initially seemed almost too simple.',
+  ],
+  [
+    'An outdoor film screening took an unexpected turn when a brief technical delay left the audience waiting in a courtyard. A musician seated near the back offered to fill the silence with a song.',
+    'Someone brought over a guitar, and the first few listeners began singing along. The gathering soon became an informal performance, with neighbors suggesting familiar songs and keeping time on the edges of their chairs.',
+    'By the time the projector was ready, nobody seemed eager to interrupt the music. The organizers let the impromptu set finish before starting the film, adding an unplanned chapter to the evening.',
+    'The next morning, volunteers were already discussing a separate neighborhood music night. A frustrating pause had become the part of the event that people remembered most clearly.',
+  ],
+  [
+    'A weekly editorial meeting began with an unusual challenge: choose one story that readers might have overlooked. The team set aside the biggest headlines and looked instead at smaller changes happening close to home.',
+    'Their notes included a reopened community garden, a new evening class, and a volunteer who had quietly repaired a neighborhood reading box. Taken together, those details suggested a different way to understand the week.',
+    'The editors organized the coverage around the people affected by each change. Short interviews and carefully chosen photographs helped connect individual experiences without flattening them into a single narrative.',
+    'The resulting collection offered readers a broader view of familiar places. The exercise reminded the team that perspective often comes from asking a more precise question, rather than simply adding more information.',
+  ],
+  [
+    'A weekend project to repaint a neglected courtyard grew into something larger when volunteers arrived with extra plants, borrowed tools, and ideas of their own. The original plan quickly became a shared effort.',
+    'One group repaired a bench while another prepared a wall for a small mural. Neighbors who had never worked together began trading practical advice, dividing tasks according to the skills each person brought.',
+    'By Sunday afternoon, the courtyard had fresh color, a place to sit, and a collection of donated planters. Just as useful was the contact list volunteers created to help maintain the space.',
+    'The organizers hope to return for another workday next month. The visible improvements were completed in a weekend, but the relationships formed around them could support the neighborhood for much longer.',
+  ],
+  [
+    'A photographer found a vintage film camera at a secondhand shop and decided to use one roll of film to document an ordinary walk. With only a limited number of frames, every photograph required a more deliberate choice.',
+    'Familiar streets began to reveal details that were easy to overlook with a phone in hand. Reflections in a bakery window, a fading painted sign, and the changing afternoon light became subjects in their own right.',
+    'Waiting for the developed photographs added another surprise to the process. A few frames were imperfect, but their unexpected shadows and soft focus suggested a new visual style worth exploring.',
+    'The photographer now plans a small series built around the same slow approach. The old camera has become less of a collectible and more of a reason to pay attention to everyday surroundings.',
+  ],
+  [
+    'A neighborhood café invited local musicians to share unfinished songs during its quietest afternoon hours. The owner hoped a small listening session could connect performers with people who rarely attended formal concerts.',
+    'The first gathering brought together guitar players, a retired choir director, and customers who simply wanted to listen. Between songs, the musicians explained where an idea had begun and which parts they were still trying to solve.',
+    'Audience suggestions became part of the conversation rather than a review of the performance. A recalled melody or a story about the neighborhood sometimes gave a musician the missing detail needed to continue a song.',
+    'The café is making room for the sessions on its monthly calendar. Music has given the space a new rhythm, while the community has given the performers something equally useful: a patient audience willing to join the process.',
+  ],
+];
+
+export function populateOutputContent(output) {
+  if (output.contentVersion === 2) return false;
+  const ops = Array.isArray(output.document?.ops) ? output.document.ops : [];
+  const hasRichText = ops.some(op => op && (typeof op.insert === 'string' ? op.insert.trim() : op.insert));
+  const current = hasRichText ? ops.map(op => typeof op?.insert === 'string' ? op.insert : '\ufffc').join('') : output.draftText || '';
+  const normalized = text => text.replace(/\s+/g, ' ').trim();
+  const hasFormatting = ops.some(op => op && ((op.attributes && Object.keys(op.attributes).length) || (op.insert && typeof op.insert !== 'string')));
+  const untouchedLegacy = !hasFormatting && normalized(current) === normalized(legacySampleContent(output.title));
+  if ((!current.trim() && !output.contentInitialized) || untouchedLegacy) {
+    const index = sampleHeadlines.indexOf(output.title);
+    const paragraphs = index >= 0 ? storyParagraphs[index] : [
+      `The story behind “${output.title}” begins with a small idea and an unexpected opportunity to explore it. A group of collaborators brings different perspectives to a project that continues to evolve as they work.`,
+      ...storyParagraphs[2].slice(1),
+    ];
+    output.draftText = paragraphs.join('\n\n');
     delete output.document;
   }
   output.contentInitialized = true;
+  output.contentVersion = 2;
   return true;
 }
 

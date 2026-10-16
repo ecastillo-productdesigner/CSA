@@ -187,7 +187,7 @@ main:focus { outline: none; }
 .output-badge--format { background: #ffe2ce; color: #a9450d; }
 .output-badge--audience { background: #fac7ed; color: #a00072; }
 .output-badge--voice { background: #c9e9f3; color: #006f95; }
-.output-card-title { display: block; margin-top: 18px; font-size: 10px; line-height: 1.5; font-weight: 700; overflow-wrap: anywhere; }
+.output-card-title { display: block; margin-top: 18px; font-size: 12px; line-height: 1.5; font-weight: 700; overflow-wrap: anywhere; }
 .outputs-footer { position: relative; z-index: 1; margin-top: auto; padding-top: 20px; }
 .create-output { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: var(--button-height); border: 1px solid var(--ink); border-radius: 14px; background: var(--ink); color: white; font-size: 16px; font-weight: 700; }
 .create-output:hover:not(:disabled) { background: #35445e; }

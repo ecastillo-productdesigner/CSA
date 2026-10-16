@@ -17,6 +17,30 @@ export function outputIsReady(output) {
   return output.status === 'ready' || (!output.status && Boolean(output.document || output.draftText));
 }
 
+export function populateOutputContent(output) {
+  if (output.contentInitialized) return false;
+  const hasRichText = Array.isArray(output.document?.ops) && output.document.ops.some(op => typeof op.insert === 'string' ? op.insert.trim() : op.insert);
+  if (!hasRichText && !(typeof output.draftText === 'string' && output.draftText.trim())) {
+    const title = output.title.toLowerCase();
+    const opening = /camera|photo/.test(title)
+      ? 'A vintage camera became the starting point for an unexpected creative project. What first appeared to be an interesting object soon encouraged its owner to slow down, look more closely at familiar places, and capture everyday moments from a different perspective.'
+      : /café|cafe|neighborhood|community/.test(title)
+        ? 'An ordinary afternoon at a neighborhood café became an unexpected meeting of ideas. A casual conversation between a musician and a local artist led to a small collaborative project, bringing together people who might not otherwise have crossed paths.'
+        : /studio|performance|music/.test(title)
+          ? 'A spontaneous session brought a small group of musicians together with no fixed plan beyond trying something new. As one idea led to another, an informal gathering developed into a creative project shaped by the people, sounds, and stories in the room.'
+          : 'The collaboration began with a simple conversation and a shared interest in making something new. People with different experiences brought their own ideas to the project, turning a casual exchange into an opportunity to explore a fresh creative direction.';
+    output.draftText = [
+      opening,
+      'The first steps were deliberately small. The group tested a few ideas, shared early versions, and paid attention to the details that felt most meaningful. Rather than working toward a polished result immediately, they gave themselves room to experiment and discover what the project could become.',
+      'That approach made collaboration an essential part of the process. Each person contributed a different perspective, helping the team connect individual ideas into a more complete story. Some suggestions changed along the way, while others became the foundation for the next stage of the work.',
+      'By the end of the project, the most memorable result was the connection it created between the people involved. Their experience offers a reminder that a compelling creative idea does not always require a large production. Sometimes it begins with curiosity, a familiar setting, and a willingness to see what happens next.',
+    ].join('\n\n');
+    delete output.document;
+  }
+  output.contentInitialized = true;
+  return true;
+}
+
 export function sampleVariant(project, selections) {
   const used = new Set(projectOutputs(project).map(output => output.title));
   const available = sampleHeadlines.filter(title => !used.has(title));

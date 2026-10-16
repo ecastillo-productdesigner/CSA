@@ -2,7 +2,7 @@ import { createSearchExperience } from './search.js?v=20261015-output-workspace'
 import { createDashboard } from './dashboard.js?v=20261015-draft';
 import { createMaterialEditor } from './editor.js?v=20261015-editor';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261015-tools-menus';
-import { projectOutputs, sampleVariant, outputIsReady, renderOutputs, toggleOutputMenu } from './outputs.js?v=20261015-output-processing';
+import { projectOutputs, sampleVariant, outputIsReady, populateOutputContent, renderOutputs, toggleOutputMenu } from './outputs.js?v=20261015-output-content';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -316,6 +316,7 @@ function showEditorProject(project) {
   $('#composer').hidden = false;
   resumeOutputProcessing(project);
   const selectedOutput = projectOutputs(project).find(output => output.id === project.selectedOutputId && outputIsReady(output));
+  if (selectedOutput && populateOutputContent(selectedOutput)) saveProjects();
   if (project.awaitingOutput && !selectedOutput) {
     $('#composer').classList.add('has-output');
     $('#composer-heading').textContent = 'Story workspace';
@@ -399,7 +400,7 @@ function finishOutputProcessing(project) {
   outputTimers.delete(project.id);
   const ids = new Set(job.ids);
   for (const output of projectOutputs(project)) {
-    if (ids.has(output.id)) { output.status = 'ready'; output.processedAt = Date.now(); }
+    if (ids.has(output.id)) { output.status = 'ready'; output.processedAt = Date.now(); populateOutputContent(output); }
   }
   delete project.outputProcessing;
   saveProjects();

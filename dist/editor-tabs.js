@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261016-variant-tabs-drawer';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261016-tabs-inline-final';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');
@@ -40,7 +40,7 @@ export function createEditorTabs({ onSelect }) {
   return {
     render(project) {
       const outputs = projectOutputs(project).filter(outputIsReady).reverse();
-      const activeId = outputs.some(output => output.id === project?.selectedOutputId) ? project.selectedOutputId : '';
+      const activeId = outputs.some(output => output.id === project?.selectedOutputId) ? project.selectedOutputId : outputs[0]?.id;
       const nextSignature = JSON.stringify([project?.id, activeId, outputs.map(({ id, title }) => [id, title])]);
       if (signature === nextSignature) return;
       signature = nextSignature;
@@ -52,7 +52,7 @@ export function createEditorTabs({ onSelect }) {
         panel.removeAttribute('aria-labelledby');
         return;
       }
-      const entries = [{ id: '', title: 'Original draft' }, ...outputs];
+      const entries = outputs;
       root.replaceChildren(...entries.map(({ id, title }) => {
         const tab = document.createElement('button');
         tab.type = 'button';
@@ -62,7 +62,15 @@ export function createEditorTabs({ onSelect }) {
         tab.setAttribute('aria-controls', panel.id);
         tab.setAttribute('aria-selected', String(id === activeId));
         tab.tabIndex = id === activeId ? 0 : -1;
-        tab.textContent = title;
+        tab.setAttribute('aria-label', title);
+        const badge = document.createElement('span');
+        badge.className = 'editor-tab-draft';
+        badge.setAttribute('aria-hidden', 'true');
+        badge.textContent = 'Draft';
+        const label = document.createElement('span');
+        label.className = 'editor-tab-title';
+        label.textContent = title;
+        tab.append(badge, label);
         tab.title = title;
         return tab;
       }));

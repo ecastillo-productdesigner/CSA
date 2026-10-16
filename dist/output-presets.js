@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261016-variant-tabs-drawer';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261016-tabs-inline-final';
 
 export function createOutputPresets({ onSelect }) {
   const root = document.querySelector('#output-presets');

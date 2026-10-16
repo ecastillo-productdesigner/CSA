@@ -9,8 +9,8 @@
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=collapse_content,favorite,folder_open,right_panel_close,right_panel_open">
-    <link rel="stylesheet" href="./styles.css?v=20261016-variant-tabs-drawer">
-    <script src="./demo-access.js?v=20261016-variant-tabs-drawer" type="module"></script>
+    <link rel="stylesheet" href="./styles.css?v=20261016-tabs-inline-final">
+    <script src="./demo-access.js?v=20261016-tabs-inline-final" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -58,17 +58,36 @@
       <symbol id="icon-outputs" viewBox="0 0 24 24"><path d="M8 3v2m0 8v2M2 9h2m8 0h2M4 5l1.5 1.5m5 5L12 13M4 13l1.5-1.5m5-5L12 5m5 6v2m0 8v2m-6-6h2m8 0h2m-10-4 1.5 1.5m5 5L21 21m-8 0 1.5-1.5m5-5L21 13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="9" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
     </svg>
 
-    <aside class="sidebar" id="navigation-drawer" aria-label="Main navigation" data-expanded="false">
+    <aside class="sidebar" id="navigation-drawer" aria-label="Main navigation. Press Enter to open drawer." data-expanded="false" tabindex="0">
       <div class="sidebar-header">
         <button class="brand" type="button" aria-label="CSA home" title="Home">CSA</button>
+        <button class="icon-button drawer-toggle" id="toggle-navigation-drawer" type="button" aria-label="Close navigation drawer" aria-expanded="false" aria-controls="navigation-drawer"><span class="material-symbols-outlined" aria-hidden="true">right_panel_open</span></button>
       </div>
-      <button class="icon-button nav-button drawer-toggle" id="toggle-navigation-drawer" type="button" aria-label="Open navigation drawer" aria-expanded="false" aria-controls="navigation-drawer"><span class="material-symbols-outlined" aria-hidden="true">right_panel_close</span><span class="nav-label">Close drawer</span></button>
       <nav class="navigation" id="workspace-navigation" aria-label="Workspace">
         <button class="icon-button nav-button" id="new-project" type="button" aria-label="New project" data-tooltip="New project"><svg aria-hidden="true"><use href="#icon-plus"/></svg><span class="nav-label">New project</span></button>
-        <button class="icon-button nav-button" id="show-history" type="button" aria-label="Recent projects" aria-haspopup="dialog" aria-controls="recent-projects" aria-expanded="false"><svg aria-hidden="true"><use href="#icon-history"/></svg><span class="nav-label">History</span></button>
-        <button class="icon-button nav-button" id="show-sources" type="button" aria-label="Sources" aria-haspopup="dialog" aria-controls="editor-sources" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">folder_open</span><span class="nav-label">Sources</span></button>
+        <button class="icon-button nav-button" id="show-history" type="button" aria-label="Recent projects" aria-controls="recent-projects" aria-expanded="false"><svg aria-hidden="true"><use href="#icon-history"/></svg><span class="nav-label">History</span></button>
+    <section class="recents-panel" id="recent-projects" role="region" aria-labelledby="recent-projects-heading" hidden>
+      <header class="rail-panel-header"><h2 id="recent-projects-heading">Recent projects</h2><button class="icon-button" type="button" data-close-navigation="history" aria-label="Close recent projects"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></header>
+      <div id="history-content"></div>
+    </section>
+        <button class="icon-button nav-button" id="show-sources" type="button" aria-label="Sources" aria-controls="editor-sources" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">folder_open</span><span class="nav-label">Sources</span></button>
+    <section class="recents-panel sources-panel" id="editor-sources" role="region" aria-labelledby="editor-sources-heading" hidden>
+      <header class="rail-panel-header"><h2 id="editor-sources-heading">Sources</h2><button class="icon-button" type="button" data-close-navigation="sources" aria-label="Close sources"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></header>
+      <div class="sources-panel-content">
+        <button class="secondary-button editor-add-source-button" id="editor-add-source-button" type="button">Add new source</button>
+        <p class="editor-source-selection-status" id="editor-source-selection-status" role="status"></p>
+        <ul id="editor-source-list"></ul>
+      </div>
+    </section>
       </nav>
-      <button class="profile-button" id="show-profile" type="button" aria-label="Julia's profile" aria-haspopup="dialog" aria-controls="profile-menu" aria-expanded="false">
+      <div class="profile-menu" id="profile-menu" role="region" aria-labelledby="profile-name" hidden>
+      <button class="icon-button profile-close" type="button" data-close-navigation="profile" aria-label="Close profile"><svg aria-hidden="true"><use href="#icon-close"/></svg></button>
+      <img src="./avatar.svg" alt="" width="42" height="42">
+      <div><strong id="profile-name">Julia</strong><span>Personal workspace</span>
+        <button class="text-button profile-navigation" id="demo-lock" type="button">Lock demo</button>
+      </div>
+    </div>
+      <button class="profile-button" id="show-profile" type="button" aria-label="Julia's profile" aria-controls="profile-menu" aria-expanded="false">
         <img src="./avatar.svg" alt="" width="32" height="32"><span class="nav-label">Profile</span>
       </button>
     </aside>
@@ -104,7 +123,7 @@
               <div class="editor-find-actions"><span id="editor-find-count" role="status">Enter text to find</span><button class="secondary-button" id="editor-find-next" type="button">Next</button><button class="secondary-button" id="editor-replace-one" type="button">Replace</button><button class="secondary-button" id="editor-replace-all" type="button">Replace all</button></div>
             </div>
             <div class="editor-sheet">
-              <header class="editor-document-header"><div class="editor-document-status"><span class="editor-draft-badge">Draft</span><span id="editor-save-status" role="status">Saved on this device</span></div><label class="visually-hidden" for="editor-title">Story title</label><textarea id="editor-title" rows="1" maxlength="180" placeholder="Untitled story"></textarea></header>
+              <header class="editor-document-header"><div class="editor-document-status"><span class="editor-draft-badge">Draft</span></div><label class="visually-hidden" for="editor-title">Story title</label><textarea id="editor-title" rows="1" maxlength="180" placeholder="Untitled story"></textarea></header>
               <div class="editor-toolbar" id="editor-toolbar" role="toolbar" aria-label="Text formatting">
                 <div class="editor-toolbar-group"><button type="button" data-editor-action="undo" aria-label="Undo" title="Undo (⌘/Ctrl+Z)"><svg aria-hidden="true"><use href="#icon-undo"/></svg></button><button type="button" data-editor-action="redo" aria-label="Redo" title="Redo (⌘/Ctrl+Shift+Z)"><svg aria-hidden="true"><use href="#icon-redo"/></svg></button></div>
                 <div class="editor-toolbar-group"><select id="editor-block" aria-label="Text style"><option value="">Normal text</option><option value="1">Heading 1</option><option value="2">Heading 2</option><option value="3">Heading 3</option><option value="quote">Quote</option></select></div>
@@ -114,7 +133,7 @@
               </div>
               <div id="rich-text-editor"></div>
               <div class="editor-publish-actions"><button class="editor-wordpress-button" id="editor-wordpress" type="button">Send to WordPress</button></div>
-              <footer class="editor-footer"><button class="editor-metadata-trigger" id="editor-metadata-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-metadata">Metadata<svg class="editor-flyover-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span id="editor-word-count">0 words</span><span id="editor-character-count">0 characters</span><span id="editor-read-time">0 min read</span><span class="editor-spellcheck">Spellcheck on</span></footer>
+              <footer class="editor-footer"><button class="editor-metadata-trigger" id="editor-metadata-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-metadata">Metadata<svg class="editor-flyover-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span id="editor-word-count">0 words</span><span id="editor-character-count">0 characters</span><span id="editor-read-time">0 min read</span><span id="editor-save-status" role="status">Saved on this device</span><span class="editor-spellcheck">Spellcheck on</span></footer>
             </div>
             <div class="editor-context-panel editor-flyover" id="editor-metadata" role="dialog" aria-labelledby="editor-metadata-heading" tabindex="-1" hidden>
               <div class="editor-panel-heading"><h2 id="editor-metadata-heading">Metadata</h2><button class="text-button" type="button" data-editor-close="metadata">Close</button></div>
@@ -222,25 +241,7 @@
       </section>
     </main>
 
-    <section class="recents-panel" id="recent-projects" role="dialog" aria-labelledby="recent-projects-heading" hidden>
-      <header class="rail-panel-header"><h2 id="recent-projects-heading">Recent projects</h2><button class="icon-button" type="button" data-close-navigation="history" aria-label="Close recent projects"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></header>
-      <div id="history-content"></div>
-    </section>
-    <section class="recents-panel sources-panel" id="editor-sources" role="dialog" aria-labelledby="editor-sources-heading" hidden>
-      <header class="rail-panel-header"><h2 id="editor-sources-heading">Sources</h2><button class="icon-button" type="button" data-close-navigation="sources" aria-label="Close sources"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></header>
-      <div class="sources-panel-content">
-        <button class="secondary-button editor-add-source-button" id="editor-add-source-button" type="button">Add new source</button>
-        <p class="editor-source-selection-status" id="editor-source-selection-status" role="status"></p>
-        <ul id="editor-source-list"></ul>
-      </div>
-    </section>
-    <div class="profile-menu" id="profile-menu" role="dialog" aria-labelledby="profile-name" hidden>
-      <button class="icon-button profile-close" type="button" data-close-navigation="profile" aria-label="Close profile"><svg aria-hidden="true"><use href="#icon-close"/></svg></button>
-      <img src="./avatar.svg" alt="" width="42" height="42">
-      <div><strong id="profile-name">Julia</strong><span>Personal workspace</span>
-        <button class="text-button profile-navigation" id="demo-lock" type="button">Lock demo</button>
-      </div>
-    </div>
+
 
     <dialog class="new-project-dialog" id="new-project-dialog" aria-labelledby="new-project-dialog-title">
       <h2 id="new-project-dialog-title">New Project</h2>

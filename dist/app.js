@@ -1,14 +1,14 @@
 import { createSearchExperience } from './search.js?v=20261016-add-source';
-import { createDashboard } from './dashboard.js?v=20261016-variant-tabs-drawer';
-import { createRecentProjects } from './recent-projects.js?v=20261016-project-actions';
-import { createMaterialEditor } from './editor.js?v=20261016-variant-tabs-drawer';
+import { createDashboard } from './dashboard.js?v=20261016-tabs-inline-final';
+import { createRecentProjects } from './recent-projects.js?v=20261016-tabs-inline-final';
+import { createMaterialEditor } from './editor.js?v=20261016-tabs-inline-final';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
-import { createRailNavigation } from './navigation.js?v=20261016-variant-tabs-drawer';
+import { createRailNavigation } from './navigation.js?v=20261016-tabs-inline-final';
 import { createProjectSources } from './sources.js?v=20261016-sidebar-sources';
-import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261016-variant-tabs-drawer';
-import { createEditorTabs } from './editor-tabs.js?v=20261016-variant-tabs-drawer';
-import { createOutputPresets } from './output-presets.js?v=20261016-variant-tabs-drawer';
+import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261016-tabs-inline-final';
+import { createEditorTabs } from './editor-tabs.js?v=20261016-tabs-inline-final';
+import { createOutputPresets } from './output-presets.js?v=20261016-tabs-inline-final';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -72,7 +72,7 @@ let feedbackTarget = null;
 let dashboard = null;
 const outputTimers = new Map();
 const toolDropdowns = createToolDropdowns({ notify });
-const recentProjectsPanel = createRecentProjects({ onOpen: showProject, onArchive: id => moveProject(id, 'archive'), onTrash: id => moveProject(id, 'trash') });
+const recentProjectsPanel = createRecentProjects({ onOpen: showProject });
 const outputPresets = createOutputPresets({ onSelect: openSavedOutput });
 const editorTabs = createEditorTabs({ onSelect: openEditorTab });
 const projectSourcesPanel = createProjectSources({
@@ -118,16 +118,10 @@ function renderOutputs(project) {
 function openEditorTab(outputId) {
   richEditor.flush();
   const project = projects.find(entry => entry.id === activeProjectId);
-  if (!project) return;
-  if (outputId) {
-    if (!projectOutputs(project).some(output => output.id === outputId && outputIsReady(output))) return;
-    project.selectedOutputIds = [...new Set([...selectedOutputs(project).map(output => output.id), outputId])];
-    project.selectedOutputId = outputId;
-    project.viewOriginalDraft = false;
-  } else {
-    delete project.selectedOutputId;
-    project.viewOriginalDraft = true;
-  }
+  if (!project || !projectOutputs(project).some(output => output.id === outputId && outputIsReady(output))) return;
+  project.selectedOutputIds = [...new Set([...selectedOutputs(project).map(output => output.id), outputId])];
+  project.selectedOutputId = outputId;
+  project.viewOriginalDraft = false;
   saveProjects();
   showEditorProject(project);
 }
@@ -466,8 +460,15 @@ function showEditorProject(project) {
   for (const section of ['home', 'workspace', 'project-start']) $(`#${section}`).hidden = true;
   $('#composer').hidden = false;
   resumeOutputProcessing(project, false);
-  const selectedOutput = projectOutputs(project).find(output => output.id === project.selectedOutputId && outputIsReady(output));
-  if (selectedOutput && populateOutputContent(selectedOutput)) saveProjects();
+  const readyOutputs = projectOutputs(project).filter(outputIsReady);
+  const selectedOutput = readyOutputs.find(output => output.id === project.selectedOutputId) || readyOutputs[0];
+  if (selectedOutput) {
+    project.selectedOutputId = selectedOutput.id;
+    project.viewOriginalDraft = false;
+    project.selectedOutputIds = [...new Set([...selectedOutputs(project).map(output => output.id), selectedOutput.id])];
+    populateOutputContent(selectedOutput);
+    saveProjects();
+  }
   if (project.awaitingOutput && !selectedOutput) {
     $('#composer').classList.add('has-output');
     $('#composer-heading').textContent = 'Story workspace';
@@ -484,6 +485,15 @@ function showEditorProject(project) {
   toolDropdowns.refresh();
   updateComposerActions();
   renderOutputs(project);
+  requestAnimationFrame(() => {
+    const list = $('#output-list');
+    const activeCard = list.querySelector('[data-active="true"]');
+    if (!activeCard) return;
+    const viewport = list.getBoundingClientRect();
+    const card = activeCard.getBoundingClientRect();
+    if (card.top < viewport.top) list.scrollTop += card.top - viewport.top - 3;
+    else if (card.bottom > viewport.bottom) list.scrollTop += card.bottom - viewport.bottom + 3;
+  });
   setNewVariantCollapsed(Boolean(project.newVariantCollapsed));
   $('#composer-editorial-direction').value = typeof project.editorialDirection === 'string' ? project.editorialDirection : '';
   closeProfile();
@@ -601,15 +611,7 @@ $('#output-list').addEventListener('click', event => {
     [...$('#output-list').querySelectorAll(selector)].find(button => (button.dataset.selectOutput || button.dataset.outputId) === output.id)?.focus({ preventScroll: true });
     return;
   }
-  richEditor.flush();
-  if (project.selectedOutputId === output.id) { delete project.selectedOutputId; project.viewOriginalDraft = true; }
-  else {
-    project.viewOriginalDraft = false;
-    project.selectedOutputIds = [...new Set([...selectedOutputs(project).map(entry => entry.id), output.id])];
-    project.selectedOutputId = output.id;
-  }
-  saveProjects();
-  showEditorProject(project);
+  openEditorTab(output.id);
 });
 
 function finishOutputProcessing(project, renderWhenReady = true) {

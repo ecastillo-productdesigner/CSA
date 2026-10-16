@@ -1,5 +1,5 @@
 import { createSearchExperience } from './search.js';
-import { createDashboard } from './dashboard.js';
+import { createDashboard } from './dashboard.js?v=20261015-draft';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';

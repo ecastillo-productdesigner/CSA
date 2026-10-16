@@ -8,7 +8,7 @@
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="./styles.css?v=20261016-draft-flow">
+    <link rel="stylesheet" href="./styles.css?v=20261016-direction-clean">
     <script src="./demo-access.js?v=20261016-search-inspect" type="module"></script>
   </head>
   <body>
@@ -188,8 +188,7 @@
         <button class="load-more" id="load-more" type="button">Load more</button>
         <div class="results-direction">
           <label for="results-editorial-direction">Editorial Direction <span>(optional)</span></label>
-          <textarea id="results-editorial-direction" rows="2" maxlength="8000" placeholder="Guide the CSA: Add additional facts, give directions on framing, etc." aria-describedby="results-direction-help"></textarea>
-          <p id="results-direction-help">You can refine your direction here before continuing — it will guide every downstream step.</p>
+          <textarea id="results-editorial-direction" rows="2" maxlength="8000" placeholder="Guide the CSA: Add additional facts, give directions on framing, etc."></textarea>
         </div>
         <div class="results-actions">
           <button class="draft-button" id="create-draft" type="button">Draft</button>
@@ -242,12 +241,11 @@
       <p class="form-error" id="new-project-material-error" role="alert" hidden></p>
     </dialog>
 
-    <dialog class="editorial-direction-dialog" id="editorial-direction-dialog" aria-labelledby="editorial-direction-heading" aria-describedby="editorial-direction-help">
+    <dialog class="editorial-direction-dialog" id="editorial-direction-dialog" aria-labelledby="editorial-direction-heading">
       <form id="editorial-direction-form">
         <div class="panel-heading"><h2 id="editorial-direction-heading">Editorial Direction <span>(optional)</span></h2><button class="icon-button" type="button" data-close="editorial-direction-dialog" aria-label="Close editorial direction"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></div>
         <label class="visually-hidden" for="editorial-direction-text">Editorial direction</label>
-        <textarea id="editorial-direction-text" rows="5" maxlength="8000" placeholder="Guide the CSA: Add additional facts, give directions on framing, etc." aria-describedby="editorial-direction-help"></textarea>
-        <p id="editorial-direction-help">You can refine your direction here before continuing — it will guide every downstream step.</p>
+        <textarea id="editorial-direction-text" rows="5" maxlength="8000" placeholder="Guide the CSA: Add additional facts, give directions on framing, etc."></textarea>
         <div class="dialog-footer"><button class="secondary-button" type="button" data-close="editorial-direction-dialog">Cancel</button><button class="primary-button" type="submit">Save direction</button></div>
       </form>
     </dialog>

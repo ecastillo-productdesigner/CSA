@@ -383,7 +383,6 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
 .editorial-direction-dialog h2 { font-size: 20px; letter-spacing: -.3px; }
 .editorial-direction-dialog h2 span { color: var(--muted); font-weight: 500; }
 #editorial-direction-text { min-height: 160px; background: white; font-size: 15px; line-height: 1.6; }
-#editorial-direction-help { margin: 15px 0 0; font-size: 13px; line-height: 1.7; color: var(--muted); }
 .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 1.6px; margin: 0 0 9px; color: var(--muted); }
 .material-dialog { width: min(520px, calc(100% - 32px)); max-height: calc(100svh - 48px); border-radius: 23px; }
 .material-tabs { display: flex; gap: 5px; margin-bottom: 24px; border-bottom: 1px solid var(--line); }
@@ -503,7 +502,6 @@ select:focus-visible { outline: 3px solid #99abc6; outline-offset: 3px; }
 .results-direction label { display: block; margin-bottom: 10px; font-size: 14px; font-weight: 650; }
 .results-direction label span { color: var(--muted); font-weight: 500; }
 .results-direction textarea { display: block; width: 100%; min-height: 72px; max-height: 280px; resize: vertical; padding: 10px 14px; border: 1px solid #dce3ed; border-radius: 10px; background: white; color: var(--ink); font: inherit; font-size: 14px; line-height: 1.6; }
-.results-direction p { margin: 10px 0 0; color: var(--muted); font-size: 11px; line-height: 1.7; }
 .results-actions { display: flex; justify-content: center; margin: 22px auto 0; width: min(375px, 100%); }
 .draft-button { display: grid; place-items: center; flex: 1; height: var(--button-height); border: 1px solid #a8b6c9; border-radius: 11px; background: white; color: var(--ink); font-size: 16px; font-weight: 700; }
 .draft-button:hover:not(:disabled) { background: #f6f7f9; }

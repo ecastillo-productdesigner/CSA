@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261016-tabs-inline-final-2';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261016-square-output-checks';
 
 function node(tag, className, text) {
   const element = document.createElement(tag);

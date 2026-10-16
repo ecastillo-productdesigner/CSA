@@ -1,14 +1,14 @@
 import { createSearchExperience } from './search.js?v=20261016-add-source';
-import { createDashboard } from './dashboard.js?v=20261016-tabs-inline-final-2';
-import { createRecentProjects } from './recent-projects.js?v=20261016-tabs-inline-final-2';
-import { createMaterialEditor } from './editor.js?v=20261016-tabs-inline-final-2';
+import { createDashboard } from './dashboard.js?v=20261016-square-output-checks';
+import { createRecentProjects } from './recent-projects.js?v=20261016-square-output-checks';
+import { createMaterialEditor } from './editor.js?v=20261016-square-output-checks';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
-import { createRailNavigation } from './navigation.js?v=20261016-tabs-inline-final-2';
+import { createRailNavigation } from './navigation.js?v=20261016-square-output-checks';
 import { createProjectSources } from './sources.js?v=20261016-sidebar-sources';
-import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261016-tabs-inline-final-2';
-import { createEditorTabs } from './editor-tabs.js?v=20261016-tabs-inline-final-2';
-import { createOutputPresets } from './output-presets.js?v=20261016-tabs-inline-final-2';
+import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261016-square-output-checks';
+import { createEditorTabs } from './editor-tabs.js?v=20261016-square-output-checks';
+import { createOutputPresets } from './output-presets.js?v=20261016-square-output-checks';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';

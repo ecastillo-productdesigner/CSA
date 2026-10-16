@@ -263,7 +263,8 @@ export function renderOutputs(project) {
     selection.dataset.selectOutput = output.id;
     selection.disabled = processing;
     selection.setAttribute('aria-label', `${selected ? 'Deselect output' : 'Select output'}: ${output.title}`);
-    selection.setAttribute('aria-pressed', String(selected));
+    selection.setAttribute('role', 'checkbox');
+    selection.setAttribute('aria-checked', String(selected));
     selection.append(indicator);
     const heading = document.createElement('strong');
     heading.className = 'output-card-title';

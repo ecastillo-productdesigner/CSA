@@ -133,8 +133,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
   }
 
   function chosenArticles() {
-    if (state.selected.size) return state.articles.filter((article) => state.selected.has(article.id));
-    return filteredArticles().slice(0, state.visibleCount);
+    return state.articles.filter(article => state.selected.has(article.id));
   }
 
   function render() {
@@ -203,8 +202,9 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     $('#load-more').hidden = filtered.length === 0;
     $('#load-more').disabled = visible.length >= filtered.length;
     $('#load-more').textContent = visible.length >= filtered.length ? 'All results shown' : 'Load more';
-    $('#create-draft').disabled = chosenArticles().length === 0;
-    $('#create-draft').title = `Draft from ${chosenArticles().length} ${state.selected.size ? 'selected' : 'visible'} ${chosenArticles().length === 1 ? 'story' : 'stories'}`;
+    const chosen = chosenArticles();
+    $('#create-draft').disabled = chosen.length === 0;
+    $('#create-draft').title = chosen.length ? `Draft from ${chosen.length} selected ${chosen.length === 1 ? 'story' : 'stories'}` : 'Select at least one story to create a draft';
     $('#results-selection').hidden = state.selected.size === 0;
     $('#results-selection').textContent = `${state.selected.size} ${state.selected.size === 1 ? 'story' : 'stories'} selected`;
   }

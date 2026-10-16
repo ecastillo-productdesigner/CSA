@@ -8,8 +8,8 @@
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="./styles.css?v=20261016-variant-46">
-    <script src="./demo-access.js?v=20261016-editor-actions" type="module"></script>
+    <link rel="stylesheet" href="./styles.css?v=20261016-draft-selection">
+    <script src="./demo-access.js?v=20261016-draft-selection" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -185,7 +185,7 @@
           <label>Published on or after<input id="results-after" type="date"></label>
           <button class="text-button" id="results-reset-filters" type="button">Reset filters</button>
         </div>
-        <p class="visually-hidden" id="results-help">Click articles to select them, or choose Draft to use all currently visible articles.</p>
+        <p class="visually-hidden" id="results-help">Select at least one article to enable Draft.</p>
         <ul class="result-list" id="result-list" aria-describedby="results-help"></ul>
         <p class="results-empty" id="results-empty" role="status" hidden>No articles match these filters. Try another source or date.</p>
         <button class="load-more" id="load-more" type="button">Load more</button>
@@ -194,7 +194,7 @@
           <textarea id="results-editorial-direction" rows="2" maxlength="8000" placeholder="Guide the CSA: Add additional facts, give directions on framing, etc."></textarea>
         </div>
         <div class="results-actions">
-          <button class="draft-button" id="create-draft" type="button">Draft</button>
+          <button class="draft-button" id="create-draft" type="button" disabled>Draft</button>
         </div>
       </section>
 

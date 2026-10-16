@@ -169,7 +169,9 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       const eyeUse = document.createElementNS('http://www.w3.org/2000/svg', 'use');
       eye.setAttribute('aria-hidden', 'true'); eyeUse.setAttribute('href', '#icon-eye'); eye.append(eyeUse);
       inspect.append(eye);
-      publication.append(inspect);
+      const separator = node('span', '', '|');
+      separator.setAttribute('aria-hidden', 'true');
+      publication.append(separator, inspect);
       meta.append(node('span', '', `Published date: ${dateLabel(article.date)} |`), publication);
       copy.append(
         meta,

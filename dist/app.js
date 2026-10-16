@@ -1,4 +1,4 @@
-import { createSearchExperience } from './search.js?v=20261016-inspect-eye';
+import { createSearchExperience } from './search.js?v=20261016-inspect-divider';
 import { createDashboard } from './dashboard.js?v=20261016-variant-cards';
 import { createRecentProjects } from './recent-projects.js?v=20261016-project-actions';
 import { createMaterialEditor } from './editor.js?v=20261016-variant-cards';

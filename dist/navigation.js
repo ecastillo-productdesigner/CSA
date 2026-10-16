@@ -4,12 +4,31 @@ export function createRailNavigation({ onRecentsOpen, onSourcesOpen, onOpen }) {
     sources: { trigger: document.querySelector('#show-sources'), panel: document.querySelector('#editor-sources') },
     profile: { trigger: document.querySelector('#show-profile'), panel: document.querySelector('#profile-menu') },
   };
+  const sidebar = document.querySelector('#navigation-drawer');
+  const drawerToggle = document.querySelector('#toggle-navigation-drawer');
+  const drawerBackdrop = document.querySelector('#navigation-drawer-backdrop');
+  let drawerOpen = false;
   let active = null;
   let activation = '';
   let closeTimer;
   let restoringFocus = false;
 
   function clearCloseTimer() { clearTimeout(closeTimer); }
+
+  function setDrawer(open, restoreFocus = false) {
+    if (open === drawerOpen) return;
+    close();
+    if (open) onOpen?.();
+    drawerOpen = open;
+    sidebar.dataset.expanded = String(open);
+    document.body.classList.toggle('navigation-drawer-open', open);
+    drawerToggle.setAttribute('aria-expanded', String(open));
+    drawerToggle.setAttribute('aria-label', `${open ? 'Close' : 'Open'} navigation drawer`);
+    drawerToggle.querySelector('.material-symbols-outlined').textContent = open ? 'right_panel_open' : 'right_panel_close';
+    drawerBackdrop.hidden = !open;
+    if (restoreFocus) drawerToggle.focus({ preventScroll: true });
+  }
+  drawerToggle.addEventListener('click', () => setDrawer(!drawerOpen));
 
   function close(name = active, restoreFocus = false) {
     if (!name || !panels[name]) return;
@@ -80,14 +99,15 @@ export function createRailNavigation({ onRecentsOpen, onSourcesOpen, onOpen }) {
 
   for (const button of document.querySelectorAll('[data-close-navigation]')) button.addEventListener('click', () => close(button.dataset.closeNavigation, true));
   document.addEventListener('pointerdown', event => {
+    if (drawerOpen && !sidebar.contains(event.target) && !Object.values(panels).some(({ panel }) => !panel.hidden && panel.contains(event.target))) setDrawer(false);
     if (!active) return;
     const { trigger, panel } = panels[active];
     if (!trigger.contains(event.target) && !panel.contains(event.target)) close();
   });
   document.addEventListener('keydown', event => {
-    if (event.key !== 'Escape' || !active) return;
-    event.preventDefault();
-    close(active, true);
+    if (event.key !== 'Escape' || document.querySelector('dialog[open]')) return;
+    if (active) { event.preventDefault(); close(active, true); }
+    else if (drawerOpen) { event.preventDefault(); setDrawer(false, true); }
   });
   return { close, open: name => open(name, 'click') };
 }

@@ -1,13 +1,13 @@
 import { createSearchExperience } from './search.js?v=20261016-add-source';
-import { createDashboard } from './dashboard.js?v=20261016-multiple-outputs';
+import { createDashboard } from './dashboard.js?v=20261016-drawers-metadata';
 import { createRecentProjects } from './recent-projects.js?v=20261016-project-actions';
-import { createMaterialEditor } from './editor.js?v=20261016-multiple-outputs';
+import { createMaterialEditor } from './editor.js?v=20261016-drawers-metadata';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
-import { createRailNavigation } from './navigation.js?v=20261016-sidebar-sources';
+import { createRailNavigation } from './navigation.js?v=20261016-drawers-metadata';
 import { createProjectSources } from './sources.js?v=20261016-sidebar-sources';
-import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261016-multiple-outputs';
-import { createOutputPresets } from './output-presets.js?v=20261016-multiple-outputs';
+import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261016-drawers-metadata';
+import { createOutputPresets } from './output-presets.js?v=20261016-drawers-metadata';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -288,6 +288,7 @@ function showProjectStart() {
   toolDropdowns.refresh();
   updateComposerActions();
   renderOutputs(null);
+  setNewVariantCollapsed(false);
   closeProfile();
   renderRecentProjects();
   document.title = 'New project — CSA';
@@ -462,6 +463,7 @@ function showEditorProject(project) {
   toolDropdowns.refresh();
   updateComposerActions();
   renderOutputs(project);
+  setNewVariantCollapsed(Boolean(project.newVariantCollapsed));
   $('#composer-editorial-direction').value = typeof project.editorialDirection === 'string' ? project.editorialDirection : '';
   closeProfile();
   renderRecentProjects();
@@ -502,6 +504,23 @@ function ensureComposerProject() {
   return project;
 }
 
+function setNewVariantCollapsed(collapsed) {
+  $('#composer-variant-form').hidden = collapsed;
+  $('#toggle-new-variant').setAttribute('aria-expanded', String(!collapsed));
+  const label = `${collapsed ? 'Expand' : 'Collapse'} New Variant`;
+  $('#toggle-new-variant').setAttribute('aria-label', label);
+  $('#toggle-new-variant').title = label;
+  $('.composer-tools').dataset.collapsed = String(collapsed);
+  if (collapsed) toolDropdowns.close();
+}
+
+$('#toggle-new-variant').addEventListener('click', () => {
+  const collapsed = !$('#composer-variant-form').hidden;
+  const project = projects.find(entry => entry.id === activeProjectId);
+  if (project) { project.newVariantCollapsed = collapsed; saveProjects(); }
+  setNewVariantCollapsed(collapsed);
+});
+
 $('.create-variant').addEventListener('click', () => {
   if ($('.create-variant').disabled) return;
   const selections = ['format', 'audience', 'voice'].flatMap(key => {
@@ -514,6 +533,8 @@ $('.create-variant').addEventListener('click', () => {
   if (!project) return;
   const output = sampleVariant(project, selections);
   project.outputs = [output, ...projectOutputs(project)];
+  project.newVariantCollapsed = true;
+  setNewVariantCollapsed(true);
   project.toolPreferences = { format: '', audience: '', voice: '' };
   for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = '';
   toolDropdowns.refresh();

@@ -194,9 +194,15 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     const dropdown = $(`#editor-${name}`);
     if (dropdown.hidden) return;
     const trigger = $(`#editor-${name}-button`).getBoundingClientRect();
-    const bar = $('.editor-topbar').getBoundingClientRect();
-    dropdown.style.top = `${trigger.bottom - bar.top + 8}px`;
-    dropdown.style.left = `${Math.max(0, Math.min(trigger.left - bar.left, bar.width - dropdown.offsetWidth))}px`;
+    const width = Math.min(620, root.getBoundingClientRect().width, window.innerWidth - 24);
+    dropdown.style.width = `${width}px`;
+    const above = trigger.top - 12;
+    const below = window.innerHeight - trigger.bottom - 12;
+    const openAbove = above >= Math.min(dropdown.scrollHeight, 420) || above > below;
+    dropdown.style.maxHeight = `${Math.max(0, Math.min(420, (openAbove ? above : below) - 8))}px`;
+    const top = openAbove ? trigger.top - dropdown.offsetHeight - 8 : trigger.bottom + 8;
+    dropdown.style.top = `${Math.max(8, Math.min(top, window.innerHeight - dropdown.offsetHeight - 8))}px`;
+    dropdown.style.left = `${Math.max(12, Math.min(trigger.left, window.innerWidth - width - 12))}px`;
   }
   document.addEventListener('pointerdown', event => {
     for (const name of ['metadata']) {
@@ -211,7 +217,8 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     setPanel(name, false);
     $(`#editor-${name}-button`).focus();
   });
-  window.addEventListener('resize', () => { for (const name of ['metadata']) positionEditorFlyover(name); });
+  window.addEventListener('resize', () => positionEditorFlyover('metadata'));
+  window.addEventListener('scroll', () => positionEditorFlyover('metadata'), { passive: true, capture: true });
   for (const name of ['metadata', 'find']) $(`#editor-${name}-button`).addEventListener('click', () => setPanel(name, $(`#editor-${name}`).hidden));
   for (const button of root.querySelectorAll('[data-editor-close]')) button.addEventListener('click', () => { setPanel(button.dataset.editorClose, false); $(`#editor-${button.dataset.editorClose}-button`).focus(); });
 

@@ -8,9 +8,9 @@
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=favorite,folder_open">
-    <link rel="stylesheet" href="./styles.css?v=20261016-multiple-outputs">
-    <script src="./demo-access.js?v=20261016-multiple-outputs" type="module"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=collapse_content,favorite,folder_open,right_panel_close,right_panel_open">
+    <link rel="stylesheet" href="./styles.css?v=20261016-drawers-metadata">
+    <script src="./demo-access.js?v=20261016-drawers-metadata" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -58,19 +58,21 @@
       <symbol id="icon-outputs" viewBox="0 0 24 24"><path d="M8 3v2m0 8v2M2 9h2m8 0h2M4 5l1.5 1.5m5 5L12 13M4 13l1.5-1.5m5-5L12 5m5 6v2m0 8v2m-6-6h2m8 0h2m-10-4 1.5 1.5m5 5L21 21m-8 0 1.5-1.5m5-5L21 13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="9" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
     </svg>
 
-    <aside class="sidebar" aria-label="Main navigation">
+    <aside class="sidebar" id="navigation-drawer" aria-label="Main navigation" data-expanded="false">
       <div class="sidebar-header">
         <button class="brand" type="button" aria-label="CSA home" title="Home">CSA</button>
       </div>
+      <button class="icon-button nav-button drawer-toggle" id="toggle-navigation-drawer" type="button" aria-label="Open navigation drawer" aria-expanded="false" aria-controls="navigation-drawer"><span class="material-symbols-outlined" aria-hidden="true">right_panel_close</span><span class="nav-label">Close drawer</span></button>
       <nav class="navigation" id="workspace-navigation" aria-label="Workspace">
-        <button class="icon-button nav-button" id="new-project" type="button" aria-label="New project" data-tooltip="New project"><svg aria-hidden="true"><use href="#icon-plus"/></svg></button>
-        <button class="icon-button nav-button" id="show-history" type="button" aria-label="Recent projects" aria-haspopup="dialog" aria-controls="recent-projects" aria-expanded="false"><svg aria-hidden="true"><use href="#icon-history"/></svg></button>
-        <button class="icon-button nav-button" id="show-sources" type="button" aria-label="Sources" aria-haspopup="dialog" aria-controls="editor-sources" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">folder_open</span></button>
+        <button class="icon-button nav-button" id="new-project" type="button" aria-label="New project" data-tooltip="New project"><svg aria-hidden="true"><use href="#icon-plus"/></svg><span class="nav-label">New project</span></button>
+        <button class="icon-button nav-button" id="show-history" type="button" aria-label="Recent projects" aria-haspopup="dialog" aria-controls="recent-projects" aria-expanded="false"><svg aria-hidden="true"><use href="#icon-history"/></svg><span class="nav-label">History</span></button>
+        <button class="icon-button nav-button" id="show-sources" type="button" aria-label="Sources" aria-haspopup="dialog" aria-controls="editor-sources" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">folder_open</span><span class="nav-label">Sources</span></button>
       </nav>
       <button class="profile-button" id="show-profile" type="button" aria-label="Julia's profile" aria-haspopup="dialog" aria-controls="profile-menu" aria-expanded="false">
-        <img src="./avatar.svg" alt="" width="32" height="32">
+        <img src="./avatar.svg" alt="" width="32" height="32"><span class="nav-label">Profile</span>
       </button>
     </aside>
+    <div class="navigation-drawer-backdrop" id="navigation-drawer-backdrop" aria-hidden="true" hidden></div>
 
     <main id="main" tabindex="-1">
       <section class="home" id="home" aria-labelledby="greeting">
@@ -86,18 +88,14 @@
         <div class="composer-canvas" role="region" aria-label="Project canvas">
           <article class="output-placeholder" id="output-placeholder" aria-labelledby="source-story-title" tabindex="0" hidden><h2 id="source-story-title"></h2><div id="source-story-body"></div></article>
           <section class="material-editor" id="material-editor" aria-label="Story editor" hidden>
-            <div class="editor-topbar">
+            <div class="editor-topbar" hidden>
               <div class="editor-navigation">
-                <button class="editor-nav-button" id="editor-metadata-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-metadata"><svg aria-hidden="true"><use href="#icon-file"/></svg>Metadata<svg class="editor-flyover-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               </div>
               <div class="editor-document-actions" hidden>
                 <button class="editor-nav-button" id="editor-find-button" type="button" aria-label="Find and replace" aria-expanded="false" aria-controls="editor-find"><svg aria-hidden="true"><use href="#icon-search"/></svg></button>
                 <details class="editor-download" id="editor-download"><summary>Download <span aria-hidden="true">⌄</span></summary><div><button type="button" data-export="html">Formatted document (.html)</button><button type="button" data-export="text">Plain text (.txt)</button><button type="button" id="editor-copy">Copy text</button><button type="button" id="editor-print">Print / Save as PDF</button></div></details>
               </div>
-            <div class="editor-context-panel editor-flyover" id="editor-metadata" role="dialog" aria-labelledby="editor-metadata-heading" tabindex="-1" hidden>
-              <div class="editor-panel-heading"><h2 id="editor-metadata-heading">Metadata</h2><button class="text-button" type="button" data-editor-close="metadata">Close</button></div>
-              <dl class="editor-seo-metadata"><div><dt>SEO title:</dt> <dd id="editor-seo-title">—</dd></div><div><dt>Meta description:</dt> <dd id="editor-meta-description">—</dd></div><div><dt>SEO keywords:</dt> <dd id="editor-seo-keywords">—</dd></div></dl>
-            </div>
+
             </div>
             <div class="editor-context-panel editor-find-panel" id="editor-find" hidden>
               <div class="editor-panel-heading"><h2>Find and replace</h2><button class="text-button" type="button" data-editor-close="find">Close</button></div>
@@ -115,13 +113,18 @@
               </div>
               <div id="rich-text-editor"></div>
               <div class="editor-publish-actions"><button class="editor-wordpress-button" id="editor-wordpress" type="button">Send to WordPress</button></div>
-              <footer class="editor-footer"><span id="editor-word-count">0 words</span><span id="editor-character-count">0 characters</span><span id="editor-read-time">0 min read</span><span class="editor-spellcheck">Spellcheck on</span></footer>
+              <footer class="editor-footer"><button class="editor-metadata-trigger" id="editor-metadata-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-metadata">Metadata<svg class="editor-flyover-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span id="editor-word-count">0 words</span><span id="editor-character-count">0 characters</span><span id="editor-read-time">0 min read</span><span class="editor-spellcheck">Spellcheck on</span></footer>
+            </div>
+            <div class="editor-context-panel editor-flyover" id="editor-metadata" role="dialog" aria-labelledby="editor-metadata-heading" tabindex="-1" hidden>
+              <div class="editor-panel-heading"><h2 id="editor-metadata-heading">Metadata</h2><button class="text-button" type="button" data-editor-close="metadata">Close</button></div>
+              <dl class="editor-seo-metadata"><div><dt>SEO title:</dt> <dd id="editor-seo-title">—</dd></div><div><dt>Meta description:</dt> <dd id="editor-meta-description">—</dd></div><div><dt>SEO keywords:</dt> <dd id="editor-seo-keywords">—</dd></div></dl>
             </div>
           </section>
         </div>
         <aside class="composer-rail" aria-label="Project tools and outputs">
           <section class="composer-panel composer-tools" aria-labelledby="composer-tools-heading">
-            <div class="composer-tools-header"><h2 id="composer-tools-heading"><svg aria-hidden="true"><use href="#icon-tools"/></svg>New Variant</h2><button class="icon-button tool-share-button" id="composer-share-button" type="button" aria-label="Share tools" title="Share tools"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8V3l8 8-8 8v-5C7 14 3.5 16.5 2 21 2 13.5 5.5 8 14 8Z" fill="currentColor"/></svg></button></div>
+            <div class="composer-tools-header"><h2 id="composer-tools-heading">New Variant</h2><div class="composer-tools-actions"><button class="icon-button tool-share-button" id="composer-share-button" type="button" aria-label="Share tools" title="Share tools"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8V3l8 8-8 8v-5C7 14 3.5 16.5 2 21 2 13.5 5.5 8 14 8Z" fill="currentColor"/></svg></button><button class="icon-button tool-collapse-button" id="toggle-new-variant" type="button" aria-label="Collapse New Variant" aria-expanded="true" aria-controls="composer-variant-form" title="Collapse New Variant"><span class="material-symbols-outlined" aria-hidden="true">collapse_content</span></button></div></div>
+            <div id="composer-variant-form">
             <div class="composer-fields">
               <div class="composer-field" data-label="Format">
                 <select id="composer-format" aria-label="Format" hidden><option value="">None Selected</option><option value="what-to-know">What to know</option><option value="listicle">Listicle</option><option value="news-story">News story</option><option value="social-post">Social post</option></select>
@@ -140,9 +143,10 @@
             <div class="composer-actions">
               <button class="create-variant" type="button" disabled title="Select a format, audience, or voice to create a variant">Create Variant</button>
             </div>
+            </div>
           </section>
           <section class="composer-panel composer-outputs" aria-labelledby="composer-outputs-heading">
-            <div class="composer-outputs-header"><h2 id="composer-outputs-heading"><svg aria-hidden="true"><use href="#icon-outputs"/></svg>Outputs</h2>
+            <div class="composer-outputs-header"><h2 id="composer-outputs-heading">Outputs</h2>
             <div class="output-presets" id="output-presets" hidden>
               <button class="tool-dropdown-trigger" id="output-presets-trigger" type="button" aria-haspopup="listbox" aria-controls="output-presets-options" aria-expanded="false"><span>Presets</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
               <div class="output-presets-menu" id="output-presets-options" role="listbox" aria-label="Saved outputs" hidden></div>

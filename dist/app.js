@@ -148,10 +148,12 @@ function createProject(sources, options = {}) {
     ...(options.draftText !== undefined ? { draftText: options.draftText } : {}),
     ...(options.awaitingOutput ? { awaitingOutput: true } : {}),
     ...(typeof options.editorialDirection === 'string' ? { editorialDirection: options.editorialDirection } : {}),
+    ...(options.toolPreferences ? { toolPreferences: options.toolPreferences } : {}),
   };
   projects.unshift(project);
   saveProjects();
-  showProject(project.id);
+  if (options.open !== false) showProject(project.id);
+  return project;
 }
 
 function showHome(focusInput = true) {
@@ -199,6 +201,7 @@ function closeComposer() {
   $('#composer').hidden = true;
   $('#composer').classList.remove('has-editor', 'has-output');
   $('#output-placeholder').hidden = true;
+  $('.create-variant').disabled = true;
   $('#composer-direction-button').disabled = true;
   $('#composer-direction-button').classList.remove('has-direction');
   document.body.classList.remove('showing-composer', 'editing-material');
@@ -218,6 +221,7 @@ function showProjectStart() {
   $('#composer-heading').textContent = 'New project';
   for (const select of document.querySelectorAll('.composer-field select')) select.value = '';
   toolDropdowns.refresh();
+  updateComposerActions();
   closeProfile();
   renderRecentProjects();
   document.title = 'New project — CSA';
@@ -313,7 +317,7 @@ function showEditorProject(project) {
     richEditor.open(project);
   }
   toolDropdowns.refresh();
-  $('#composer-direction-button').disabled = false;
+  updateComposerActions();
   $('#composer-direction-button').classList.toggle('has-direction', Boolean(project.editorialDirection));
   closeProfile();
   renderRecentProjects();
@@ -325,6 +329,14 @@ function showEditorProject(project) {
 function closeProfile() {
   $('#profile-menu').hidden = true;
   $('#show-profile').setAttribute('aria-expanded', 'false');
+}
+
+function updateComposerActions() {
+  const enabled = ['format', 'audience', 'voice'].some(key => $(`#composer-${key}`).value);
+  $('.create-variant').disabled = !enabled;
+  $('#composer-direction-button').disabled = !enabled;
+  $('.create-variant').title = enabled ? 'Create variant' : 'Select a format, audience, or voice to create a variant';
+  $('#composer-direction-button').title = enabled ? 'Editorial direction' : 'Select a format, audience, or voice to add editorial direction';
 }
 
 function openEditorialDirection(projectId) {
@@ -351,9 +363,17 @@ $('#editorial-direction-form').addEventListener('submit', event => {
   if (saved) notify(project.editorialDirection ? 'Editorial direction saved.' : 'Editorial direction cleared.');
 });
 for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).addEventListener('change', () => {
-  const project = projects.find(entry => entry.id === activeProjectId);
+  updateComposerActions();
+  const preferences = Object.fromEntries(['format', 'audience', 'voice'].map(name => [name, $(`#composer-${name}`).value]));
+  let project = projects.find(entry => entry.id === activeProjectId);
+  if (!project && !$('#composer').hidden && Object.values(preferences).some(Boolean)) {
+    project = createProject([], { kind: 'draft', awaitingOutput: true, toolPreferences: preferences, open: false });
+    activeProjectId = project.id;
+    document.title = `${project.title} — CSA`;
+    try { sessionStorage.setItem('csa.editor.active.v1', project.id); } catch { /* Project storage still keeps the selections. */ }
+  }
   if (!project?.awaitingOutput) return;
-  project.toolPreferences = Object.fromEntries(['format', 'audience', 'voice'].map(name => [name, $(`#composer-${name}`).value]));
+  project.toolPreferences = preferences;
   saveProjects();
 });
 

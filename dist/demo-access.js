@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261015-tools-menus');
+  await import('./app.js?v=20261015-button-states');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

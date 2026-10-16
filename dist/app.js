@@ -1,4 +1,4 @@
-import { createSearchExperience } from './search.js';
+import { createSearchExperience } from './search.js?v=20261015-results-count';
 import { createDashboard } from './dashboard.js?v=20261015-draft';
 import { createMaterialEditor } from './editor.js?v=20261015-editor';
 

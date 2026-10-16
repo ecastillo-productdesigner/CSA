@@ -357,7 +357,7 @@ textarea::placeholder { color: var(--muted); }
 .results-sort { display: inline-flex; align-items: center; font-size: 12px; font-weight: 600; white-space: nowrap; }
 .results-sort select { appearance: none; border: 0; border-radius: 4px; padding: 0 3px; background: transparent; color: inherit; font: inherit; cursor: pointer; }
 select:focus-visible { outline: 3px solid #99abc6; outline-offset: 3px; }
-.demo-results-label { color: var(--muted); font-size: 10px; }
+.results-count { color: var(--muted); font-size: 12px; }
 .result-list { display: grid; gap: 18px; margin: 0; padding: 0; list-style: none; }
 .result-list li { min-width: 0; }
 .result-card { display: grid; grid-template-columns: 104px minmax(0, 1fr); align-items: center; gap: 15px; width: 100%; min-height: 116px; padding: 10px; border: 1px solid var(--line); border-radius: 9px; background: white; text-align: left; color: #111; transition: border-color .15s, box-shadow .15s; }

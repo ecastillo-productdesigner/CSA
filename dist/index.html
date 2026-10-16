@@ -9,8 +9,8 @@
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0&amp;icon_names=left_panel_close">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="./styles.css?v=20261015-home-spacing">
-    <script src="./demo-access.js?v=20261015-sidebar" type="module"></script>
+    <link rel="stylesheet" href="./styles.css?v=20261015-results-count">
+    <script src="./demo-access.js?v=20261015-results-count" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -173,7 +173,7 @@
         </form>
         <div class="results-toolbar">
           <label class="results-sort">Sort by: <select id="results-sort" aria-label="Sort articles"><option value="newest">Newest</option><option value="oldest">Oldest</option></select></label>
-          <span class="demo-results-label">Sample results</span>
+          <span class="results-count" id="results-count" role="status" aria-live="polite"></span>
         </div>
         <div class="results-filter-panel" id="results-filter-panel" hidden>
           <label>Source<select id="results-source"><option value="all">All sources</option></select></label>

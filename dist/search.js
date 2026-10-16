@@ -54,6 +54,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDraft })
     if (!state) return;
     const filtered = filteredArticles();
     const visible = filtered.slice(0, state.visibleCount);
+    $('#results-count').textContent = `${filtered.length.toLocaleString()} ${filtered.length === 1 ? 'story' : 'stories'} found`;
     const list = $('#result-list');
     list.replaceChildren(...visible.map((article) => {
       const item = node('li');

@@ -8,8 +8,8 @@
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="./styles.css?v=20261016-metadata-dropdown">
-    <script src="./demo-access.js?v=20261016-metadata-dropdown" type="module"></script>
+    <link rel="stylesheet" href="./styles.css?v=20261016-source-selection">
+    <script src="./demo-access.js?v=20261016-source-selection" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -86,23 +86,24 @@
           <section class="material-editor" id="material-editor" aria-label="Story editor" hidden>
             <div class="editor-topbar">
               <div class="editor-navigation">
-                <button class="editor-nav-button" id="editor-sources-button" type="button" aria-expanded="false" aria-controls="editor-sources"><svg aria-hidden="true"><use href="#icon-link"/></svg>Sources <span class="editor-source-count" id="editor-source-count">0</span></button>
-                <button class="editor-nav-button" id="editor-metadata-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-metadata"><svg aria-hidden="true"><use href="#icon-file"/></svg>Metadata<svg class="editor-metadata-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button class="editor-nav-button" id="editor-sources-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-sources"><svg aria-hidden="true"><use href="#icon-link"/></svg>Sources <span class="editor-source-count" id="editor-source-count">0</span><svg class="editor-flyover-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button class="editor-nav-button" id="editor-metadata-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-metadata"><svg aria-hidden="true"><use href="#icon-file"/></svg>Metadata<svg class="editor-flyover-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               </div>
-              <div class="editor-document-actions">
+              <div class="editor-document-actions" hidden>
                 <button class="editor-nav-button" id="editor-find-button" type="button" aria-label="Find and replace" aria-expanded="false" aria-controls="editor-find"><svg aria-hidden="true"><use href="#icon-search"/></svg></button>
                 <details class="editor-download" id="editor-download"><summary>Download <span aria-hidden="true">⌄</span></summary><div><button type="button" data-export="html">Formatted document (.html)</button><button type="button" data-export="text">Plain text (.txt)</button><button type="button" id="editor-copy">Copy text</button><button type="button" id="editor-print">Print / Save as PDF</button></div></details>
               </div>
-            <div class="editor-context-panel" id="editor-metadata" role="dialog" aria-labelledby="editor-metadata-heading" tabindex="-1" hidden>
+            <div class="editor-context-panel editor-flyover" id="editor-metadata" role="dialog" aria-labelledby="editor-metadata-heading" tabindex="-1" hidden>
               <div class="editor-panel-heading"><h2 id="editor-metadata-heading">Metadata</h2><button class="text-button" type="button" data-editor-close="metadata">Close</button></div>
               <dl class="editor-seo-metadata"><div><dt>SEO title:</dt> <dd id="editor-seo-title">—</dd></div><div><dt>Meta description:</dt> <dd id="editor-meta-description">—</dd></div><div><dt>SEO keywords:</dt> <dd id="editor-seo-keywords">—</dd></div></dl>
             </div>
-            </div>
-            <div class="editor-context-panel" id="editor-sources" hidden>
-              <div class="editor-panel-heading"><h2>Sources</h2><button class="text-button" type="button" data-editor-close="sources">Close</button></div>
+            <div class="editor-context-panel editor-flyover" id="editor-sources" role="dialog" aria-labelledby="editor-sources-heading" tabindex="-1" hidden>
+              <div class="editor-panel-heading"><h2 id="editor-sources-heading">Sources</h2><button class="text-button" type="button" data-editor-close="sources">Close</button></div>
+              <p class="editor-source-selection-status" id="editor-source-selection-status" role="status"></p>
               <ul id="editor-source-list"></ul>
               <form class="editor-source-form" id="editor-add-source"><label for="editor-source-url">Add a source link</label><div><input id="editor-source-url" type="url" placeholder="https://" required><button class="secondary-button" type="submit">Add source</button></div></form>
               <p class="form-error" id="editor-source-error" role="alert" hidden></p>
+            </div>
             </div>
             <div class="editor-context-panel editor-find-panel" id="editor-find" hidden>
               <div class="editor-panel-heading"><h2>Find and replace</h2><button class="text-button" type="button" data-editor-close="find">Close</button></div>

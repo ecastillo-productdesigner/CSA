@@ -163,6 +163,7 @@ export function sampleVariant(project, selections) {
     status: 'pending',
     labels: selections.map(({ key, label }) => ({ key, label })),
     toolPreferences: Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, selections.find(selection => selection.key === key)?.value || ''])),
+    selectedSourceIndexes: (project.sources || []).flatMap((source, index) => source.selected !== false ? [index] : []),
     editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '',
     draftText: '',
     metadata: { author: '', tags: '' },

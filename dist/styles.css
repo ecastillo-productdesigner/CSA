@@ -316,10 +316,13 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
 .editor-wordpress-button:disabled { background: #f5f7fa; border-color: #dfe3e9; color: #cfdaea; }
 .editor-spellcheck { margin-left: auto; }
 .editor-context-panel { flex-shrink: 0; min-width: 0; max-height: 30svh; overflow-y: auto; overscroll-behavior-y: contain; margin-bottom: 20px; padding: 22px; border: 1px solid var(--line); border-radius: 12px; background: white; }
-#editor-metadata { position: absolute; z-index: 12; width: min(620px, 100%); max-height: min(420px, 65svh); margin: 0; padding: 20px; border-radius: 8px; box-shadow: 0 10px 35px #2535501f; }
-#editor-metadata:focus { outline: none; }
-.editor-nav-button .editor-metadata-chevron { width: 12px; height: 12px; transition: transform .15s ease; }
-#editor-metadata-button[aria-expanded="true"] .editor-metadata-chevron { transform: rotate(180deg); }
+.editor-flyover { position: absolute; z-index: 12; width: min(620px, 100%); max-height: min(420px, 65svh); margin: 0; padding: 20px; border-radius: 8px; box-shadow: 0 10px 35px #2535501f; }
+.editor-flyover:focus { outline: none; }
+#editor-sources.editor-flyover { display: flex; flex-direction: column; max-height: min(600px, calc(100svh - 110px)); overflow: hidden; }
+#editor-sources > .editor-panel-heading, #editor-sources > p, #editor-sources > form { flex-shrink: 0; }
+#editor-sources #editor-source-list { flex: 1; min-height: 0; max-height: none; margin-bottom: 16px; }
+.editor-nav-button .editor-flyover-chevron { width: 12px; height: 12px; transition: transform .15s ease; }
+.editor-nav-button[aria-expanded="true"] .editor-flyover-chevron { transform: rotate(180deg); }
 .editor-seo-metadata { display: grid; gap: 14px; margin: 0; color: #26344a; font-size: 14px; line-height: 1.65; overflow-wrap: anywhere; }
 .editor-seo-metadata dt { display: inline; color: var(--muted); font-weight: 700; }
 .editor-seo-metadata dd { display: inline; margin: 0; }
@@ -329,7 +332,11 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
 .editor-context-panel input, .editor-link-dialog input { width: 100%; min-width: 0; height: 40px; padding: 9px 11px; border: 1px solid #dfe4eb; border-radius: 8px; background: #fcfcfd; color: #34445d; font-size: 13px; font-weight: 400; }
 .editor-find-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 #editor-source-list { display: grid; gap: 15px; max-height: 300px; overflow-y: auto; margin: 0 0 20px; padding: 0; list-style: none; }
-#editor-source-list li { min-width: 0; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+#editor-source-list li { display: flex; align-items: flex-start; gap: 12px; min-width: 0; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+#editor-source-list .editor-source-checkbox { flex-shrink: 0; width: 18px; height: 18px; margin: 2px 0 0; padding: 0; accent-color: var(--ink); cursor: pointer; }
+.editor-source-content { flex: 1; min-width: 0; }
+.editor-source-selection-status { margin: -4px 0 16px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.editor-source-selection-status:empty { display: none; }
 #editor-source-list strong, #editor-source-list a { font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
 #editor-source-list p, .editor-sources-empty { margin: 6px 0 0; color: #7b879a; font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
 .editor-source-form>div { display: flex; gap: 10px; margin-top: 8px; }

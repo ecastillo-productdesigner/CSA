@@ -1,11 +1,11 @@
 import { createSearchExperience } from './search.js?v=20261016-draft-selection';
 import { createDashboard } from './dashboard.js?v=20261016-variant-cards';
 import { createRecentProjects } from './recent-projects.js?v=20261016-project-actions';
-import { createMaterialEditor } from './editor.js?v=20261016-metadata-dropdown';
+import { createMaterialEditor } from './editor.js?v=20261016-source-selection';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
 import { createRailNavigation } from './navigation.js?v=20261016-hover-navigation';
-import { projectOutputs, sampleVariant, outputIsReady, populateOutputContent, renderOutputs, toggleOutputMenu } from './outputs.js?v=20261015-home-reveal';
+import { projectOutputs, sampleVariant, outputIsReady, populateOutputContent, renderOutputs, toggleOutputMenu } from './outputs.js?v=20261016-source-selection';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -78,6 +78,7 @@ const richEditor = createMaterialEditor({
   onSave(snapshot) {
     const project = projects.find(entry => entry.id === snapshot.id);
     if (!project) return false;
+    project.sources = snapshot.sources;
     const output = projectOutputs(project).find(entry => entry.id === project.selectedOutputId);
     if (output) {
       for (const key of ['title', 'document', 'draftText', 'metadata', 'updatedAt']) output[key] = snapshot[key];

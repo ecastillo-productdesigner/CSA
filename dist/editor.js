@@ -82,6 +82,7 @@ export function createMaterialEditor({ onSave, onDownloadSource, onSendToCms, on
     const snapshot = {
       id: project.id, title: title.value.trim() || 'Untitled story', kind: 'draft',
       document: quill.getContents(), draftText: quill.getText().replace(/\n$/, ''),
+      sources: project.sources,
       metadata: { ...project.metadata, ...storyMetadata() },
       toolPreferences: Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, $(`#composer-${key}`).value])),
       updatedAt: Date.now(),
@@ -188,53 +189,79 @@ export function createMaterialEditor({ onSave, onDownloadSource, onSendToCms, on
       $(`#editor-${key}-button`).setAttribute('aria-expanded', String(active));
     }
     if (name === 'sources' && open) renderSources();
-    if (name === 'metadata' && open) { updateMetadata(); positionMetadataDropdown(); $('#editor-download').open = false; $('#editor-metadata').focus({ preventScroll: true }); }
+    if (name === 'metadata' && open) updateMetadata();
+    if (['sources', 'metadata'].includes(name) && open) { positionEditorFlyover(name); $('#editor-download').open = false; $(`#editor-${name}`).focus({ preventScroll: true }); }
     if (name === 'find' && open) $('#editor-find-text').focus();
   }
-  function positionMetadataDropdown() {
-    const dropdown = $('#editor-metadata');
+  function positionEditorFlyover(name) {
+    const dropdown = $(`#editor-${name}`);
     if (dropdown.hidden) return;
-    const trigger = $('#editor-metadata-button').getBoundingClientRect();
+    const trigger = $(`#editor-${name}-button`).getBoundingClientRect();
     const bar = $('.editor-topbar').getBoundingClientRect();
     dropdown.style.top = `${trigger.bottom - bar.top + 8}px`;
     dropdown.style.left = `${Math.max(0, Math.min(trigger.left - bar.left, bar.width - dropdown.offsetWidth))}px`;
   }
   document.addEventListener('pointerdown', event => {
-    if (!$('#editor-metadata').hidden && !event.target.closest('#editor-metadata, #editor-metadata-button')) setPanel('metadata', false);
+    for (const name of ['sources', 'metadata']) {
+      if (!$(`#editor-${name}`).hidden && !event.target.closest(`#editor-${name}, #editor-${name}-button`)) setPanel(name, false);
+    }
   });
   document.addEventListener('keydown', event => {
-    if (event.key !== 'Escape' || $('#editor-metadata').hidden || document.querySelector('dialog[open]')) return;
+    if (event.key !== 'Escape' || document.querySelector('dialog[open]')) return;
+    const name = ['sources', 'metadata'].find(key => !$(`#editor-${key}`).hidden);
+    if (!name) return;
     event.preventDefault();
-    setPanel('metadata', false);
-    $('#editor-metadata-button').focus();
+    setPanel(name, false);
+    $(`#editor-${name}-button`).focus();
   });
-  window.addEventListener('resize', positionMetadataDropdown);
+  window.addEventListener('resize', () => { for (const name of ['sources', 'metadata']) positionEditorFlyover(name); });
   for (const name of ['sources', 'metadata', 'find']) $(`#editor-${name}-button`).addEventListener('click', () => setPanel(name, $(`#editor-${name}`).hidden));
   for (const button of root.querySelectorAll('[data-editor-close]')) button.addEventListener('click', () => { setPanel(button.dataset.editorClose, false); $(`#editor-${button.dataset.editorClose}-button`).focus(); });
+
+  function updateSourceCount() {
+    const sources = project?.sources || [];
+    const selected = sources.filter(source => source.selected !== false).length;
+    $('#editor-source-count').textContent = selected;
+    $('#editor-source-selection-status').textContent = sources.length ? `${selected} of ${sources.length} selected for new variants` : '';
+  }
 
   function renderSources() {
     const list = $('#editor-source-list');
     list.replaceChildren();
     const sources = project?.sources || [];
-    $('#editor-source-count').textContent = sources.length;
+    updateSourceCount();
     if (!sources.length) { const empty = document.createElement('li'); empty.className = 'editor-sources-empty'; empty.textContent = 'Your own material is the starting point for this draft. Add reference links here whenever you need them.'; list.append(empty); }
     for (const source of sources) {
       const row = document.createElement('li');
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.className = 'editor-source-checkbox';
+      checkbox.checked = source.selected !== false;
+      checkbox.setAttribute('aria-label', `Include source: ${source.title}`);
+      checkbox.addEventListener('change', () => {
+        source.selected = checkbox.checked;
+        updateSourceCount();
+        scheduleSave();
+        flush();
+      });
+      const content = document.createElement('div');
+      content.className = 'editor-source-content';
       const href = source.type === 'link' && safeLink(source.url || '');
       const heading = document.createElement(href ? 'a' : 'strong');
       heading.textContent = source.title;
       if (href) { heading.href = href; heading.target = '_blank'; heading.rel = 'noopener noreferrer'; }
       const detail = document.createElement('p');
       detail.textContent = source.text ? source.text.slice(0, 260) + (source.text.length > 260 ? '…' : '') : href || (source.attachmentId ? 'Document saved in this browser' : 'Local source');
-      row.append(heading, detail);
+      content.append(heading, detail);
       if (source.attachmentId && onDownloadSource) {
         const download = document.createElement('button');
         download.type = 'button'; download.className = 'text-button document-download';
         download.textContent = 'Download document';
         download.setAttribute('aria-label', `Download ${source.title}`);
         download.addEventListener('click', () => onDownloadSource(source));
-        row.append(download);
+        content.append(download);
       }
+      row.append(checkbox, content);
       list.append(row);
     }
   }

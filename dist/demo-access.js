@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261016-tabs-inline-final');
+  await import('./app.js?v=20261016-tabs-inline-final-2');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

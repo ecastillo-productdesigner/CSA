@@ -73,7 +73,7 @@ body:has(#home:not([hidden])) #new-project { display: none; }
 .navigation-drawer-open { --workspace-sidebar-width: var(--panel-width); }
 .navigation-drawer-open .sidebar { z-index: 20; width: var(--panel-width); align-items: flex-start; box-shadow: 8px 0 32px #25355016; }
 .navigation-drawer-open .nav-label { display: block; }
-.navigation-drawer-open .nav-button { display: flex; align-items: center; justify-content: flex-start; gap: 12px; width: calc(100% - 16px); margin-left: 8px; padding: 9px; --icon-circle: radial-gradient(circle closest-side, var(--icon-circle-color) calc(100% - .75px), transparent) 0 center / 40px 40px no-repeat; }
+.navigation-drawer-open .nav-button { display: flex; align-items: center; justify-content: flex-start; gap: 12px; width: calc(100% - 16px); margin-left: 8px; padding: 9px; border-radius: 8px; --icon-circle: radial-gradient(circle closest-side, var(--icon-circle-color) calc(100% - .75px), transparent) 0 center / 40px 40px no-repeat; }
 .navigation-drawer-open .nav-button svg, .navigation-drawer-open .nav-button .material-symbols-outlined { flex-shrink: 0; }
 .navigation-drawer-open .navigation { align-items: flex-start; }
 .navigation-drawer-open .profile-button { display: flex; align-items: center; gap: 12px; width: calc(100% - 16px); height: 40px; margin-left: 8px; padding: 4px; border-radius: 20px; }

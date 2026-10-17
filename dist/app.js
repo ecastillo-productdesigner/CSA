@@ -1,15 +1,15 @@
-import { createProfile } from './profile.js?v=20261017-profile-menu';
-import { createSearchExperience } from './search.js?v=20261017-profile-menu';
-import { createDashboard } from './dashboard.js?v=20261017-profile-menu';
-import { createMaterialEditor } from './editor.js?v=20261017-profile-menu';
+import { createProfile } from './profile.js?v=20261017-preset-primary';
+import { createSearchExperience } from './search.js?v=20261017-preset-primary';
+import { createDashboard } from './dashboard.js?v=20261017-preset-primary';
+import { createMaterialEditor } from './editor.js?v=20261017-preset-primary';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
-import { createRailNavigation } from './navigation.js?v=20261017-profile-menu';
-import { createProjectSources } from './sources.js?v=20261017-profile-menu';
-import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261017-profile-menu';
-import { createEditorTabs } from './editor-tabs.js?v=20261017-profile-menu';
-import { createOutputSettings } from './output-settings.js?v=20261017-profile-menu';
-import { createOutputPresets } from './output-presets.js?v=20261017-profile-menu';
+import { createRailNavigation } from './navigation.js?v=20261017-preset-primary';
+import { createProjectSources } from './sources.js?v=20261017-preset-primary';
+import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261017-preset-primary';
+import { createEditorTabs } from './editor-tabs.js?v=20261017-preset-primary';
+import { createOutputSettings } from './output-settings.js?v=20261017-preset-primary';
+import { createOutputPresets } from './output-presets.js?v=20261017-preset-primary';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -73,7 +73,7 @@ let feedbackTarget = null;
 let dashboard = null;
 const outputTimers = new Map();
 const toolDropdowns = createToolDropdowns({ notify });
-const outputPresets = createOutputPresets({ onSelect: openSavedOutput });
+const outputPresets = createOutputPresets({ onSelect: applyOutputPreset });
 const outputSettings = createOutputSettings({ onSave: saveOutputSettings });
 const editorTabs = createEditorTabs({ onSelect: openEditorTab });
 const projectSourcesPanel = createProjectSources({
@@ -123,7 +123,7 @@ function renderOutputs(project) {
   $('#show-sources').hidden = project?.kind !== 'draft';
   renderProjectOutputs(project);
   outputSettings.sync(project);
-  outputPresets.render(projects, project?.id || null);
+  outputPresets.render(projects, project?.variantPreset || null);
   editorTabs.render(project);
 }
 
@@ -159,26 +159,32 @@ function openEditorTab(outputId) {
   showEditorProject(project);
 }
 
-function openSavedOutput(projectId, outputId) {
+function applyOutputPreset(projectId, outputId) {
   richEditor.flush();
-  const project = projects.find(entry => entry.id === projectId && !entry.archivedAt && !entry.deletedAt);
-  const output = projectOutputs(project).find(entry => entry.id === outputId && entry.isFavorite);
-  if (!output) return;
-  project.selectedOutputIds = [...new Set([...selectedOutputs(project).map(entry => entry.id), output.id])];
-  if (outputIsReady(output)) {
-    project.viewOriginalDraft = false;
-    project.selectedOutputId = output.id;
-    saveProjects();
-    showEditorProject(project);
-    return;
+  const project = projects.find(entry => entry.id === activeProjectId);
+  if (!project) return;
+  const source = projects.find(entry => entry.id === projectId && !entry.archivedAt && !entry.deletedAt);
+  const output = projectOutputs(source).find(entry => entry.id === outputId && entry.isFavorite);
+  if (outputId && !output) return;
+  for (const key of ['format', 'audience', 'voice']) {
+    const select = $(`#composer-${key}`);
+    const options = [...select.options];
+    const selected = options.find(option => option.value && option.value === output?.toolPreferences?.[key])
+      || options.find(option => option.value && output?.labels?.some(label => label.key === key && label.label === option.textContent));
+    select.value = selected?.value || '';
   }
-  if (project.outputProcessing) {
-    if (!project.outputProcessing.ids.includes(output.id)) project.outputProcessing.ids.push(output.id);
-    project.outputProcessing.openOutputId = output.id;
-  } else project.outputProcessing = { ids: [output.id], readyAt: Date.now() + 4000, openOutputId: output.id };
+  if (output) {
+    project.variantPreset = { projectId, outputId, title: output.title, tone: typeof output.tone === 'string' ? output.tone : output.labels?.find(label => label.key === 'tone')?.label || '' };
+    project.editorialDirection = typeof output.editorialDirection === 'string' ? output.editorialDirection : '';
+    $('#composer-editorial-direction').value = project.editorialDirection;
+  } else delete project.variantPreset;
+  project.toolPreferences = Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, $(`#composer-${key}`).value]));
+  project.updatedAt = Date.now();
+  toolDropdowns.refresh();
+  updateComposerActions();
   saveProjects();
-  showEditorProject(project);
-  notify('Preparing your saved output…');
+  const focusTarget = $('.create-variant').disabled ? $('#output-presets-trigger') : $('.create-variant');
+  focusTarget.focus({ preventScroll: true });
 }
 
 function loadProjects() {
@@ -199,7 +205,7 @@ function saveProjects() {
     saved = false;
     notify('Browser storage is unavailable or full. This project will last for this session.');
   }
-  outputPresets.render(projects, activeProjectId);
+  outputPresets.render(projects, projects.find(project => project.id === activeProjectId)?.variantPreset || null);
   dashboard?.render(projects);
   return saved;
 }
@@ -545,9 +551,10 @@ function updateComposerActions() {
     select.title = hasContent ? '' : 'Add content to the editor first';
   }
   if (changed) toolDropdowns.refresh();
-  const enabled = hasContent && ['format', 'audience', 'voice'].some(key => $(`#composer-${key}`).value);
+  const preset = projects.find(project => project.id === activeProjectId)?.variantPreset;
+  const enabled = hasContent && (Boolean(preset) || ['format', 'audience', 'voice'].some(key => $(`#composer-${key}`).value));
   $('.create-variant').disabled = !enabled;
-  $('.create-variant').title = !hasContent ? 'Add content to the editor first' : enabled ? 'Create variant' : 'Select a format, audience, or voice to create a variant';
+  $('.create-variant').title = !hasContent ? 'Add content to the editor first' : enabled ? 'Create variant' : 'Select a preset, format, audience, or voice to create a variant';
 }
 
 function ensureComposerProject() {
@@ -588,11 +595,15 @@ $('.create-variant').addEventListener('click', () => {
     const select = $(`#composer-${key}`);
     return select.value ? [{ key, value: select.value, label: select.options[select.selectedIndex].textContent }] : [];
   });
-  if (!selections.length) return;
   richEditor.flush();
   const project = projects.find(entry => entry.id === activeProjectId);
-  if (!project) return;
+  if (!project || (!selections.length && !project.variantPreset)) return;
   const output = sampleVariant(project, selections);
+  if (project.variantPreset?.tone) {
+    output.tone = project.variantPreset.tone;
+    output.labels.push({ key: 'tone', label: output.tone });
+  }
+  delete project.variantPreset;
   project.outputs = [output, ...projectOutputs(project)];
   project.newVariantCollapsed = true;
   setNewVariantCollapsed(true);

@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261017-profile-menu';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261017-preset-primary';
 
 function node(tag, className, text) {
   const element = document.createElement(tag);

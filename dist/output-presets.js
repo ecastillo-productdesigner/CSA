@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261017-profile-menu';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261017-preset-primary';
 
 export function createOutputPresets({ onSelect }) {
   const root = document.querySelector('#output-presets');
@@ -43,21 +43,32 @@ export function createOutputPresets({ onSelect }) {
 
   return {
     close,
-    render(projects, activeProjectId) {
+    render(projects, selection = null) {
       const entries = projects.filter(project => !project.archivedAt && !project.deletedAt)
         .flatMap(project => projectOutputs(project).filter(output => output.isFavorite).map(output => ({ project, output })))
         .sort((a, b) => (b.output.favoritedAt || 0) - (a.output.favoritedAt || 0));
-      const signature = JSON.stringify(entries.map(({ project, output }) => [project.id, project.title, output.id, output.title, outputIsReady(output), project.id === activeProjectId && project.selectedOutputId === output.id]));
-      root.hidden = entries.length === 0;
+      const signature = JSON.stringify([selection, entries.map(({ project, output }) => [project.id, project.title, output.id, output.title, outputIsReady(output)])]);
+      root.hidden = entries.length === 0 && !selection;
       if (signature === lastSignature) return;
       lastSignature = signature;
       close();
-      menu.replaceChildren(...entries.map(({ project, output }) => {
+      trigger.querySelector('span').textContent = selection ? `Preset: ${selection.title}` : 'Presets';
+      trigger.title = selection ? `Preset: ${selection.title}` : 'Presets';
+      trigger.setAttribute('aria-label', selection ? `Preset: ${selection.title}` : 'Presets');
+      const clear = document.createElement('button');
+      clear.type = 'button';
+      clear.className = 'output-preset-option';
+      clear.setAttribute('role', 'option');
+      clear.setAttribute('aria-selected', String(!selection));
+      clear.tabIndex = -1;
+      clear.textContent = 'None Selected';
+      clear.addEventListener('click', () => { close(); onSelect(null, null); });
+      menu.replaceChildren(clear, ...entries.map(({ project, output }) => {
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'output-preset-option';
         button.setAttribute('role', 'option');
-        button.setAttribute('aria-selected', String(project.id === activeProjectId && project.selectedOutputId === output.id));
+        button.setAttribute('aria-selected', String(project.id === selection?.projectId && output.id === selection?.outputId));
         button.tabIndex = -1;
         const heading = document.createElement('strong');
         heading.textContent = output.title;

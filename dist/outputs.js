@@ -311,7 +311,7 @@ export function renderOutputs(project) {
     if (showCreatedLabel && index === pendingOutputs.length) {
       const label = document.createElement('div');
       label.className = 'output-created-label';
-      label.textContent = 'CREATED';
+      label.textContent = 'DRAFTED';
       item.append(label);
     }
     item.append(card);

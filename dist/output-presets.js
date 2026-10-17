@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261017-created-label';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261017-drafted-label';
 
 export function createOutputPresets({ onSelect }) {
   const root = document.querySelector('#output-presets');

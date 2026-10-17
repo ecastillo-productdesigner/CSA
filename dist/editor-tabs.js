@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261017-created-label';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261017-drafted-label';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');

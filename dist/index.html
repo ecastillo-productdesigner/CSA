@@ -9,8 +9,8 @@
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=favorite,folder_open,keyboard_arrow_down,keyboard_arrow_up,right_panel_close,right_panel_open">
-    <link rel="stylesheet" href="./styles.css?v=20261017-sidebar-sources">
-    <script src="./demo-access.js?v=20261017-sidebar-sources" type="module"></script>
+    <link rel="stylesheet" href="./styles.css?v=20261017-presets-first">
+    <script src="./demo-access.js?v=20261017-presets-first" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -140,6 +140,10 @@
             <div class="composer-tools-header"><h2 id="composer-tools-heading">New Variant</h2><div class="composer-tools-actions"><button class="icon-button tool-collapse-button" id="toggle-new-variant" type="button" aria-label="Collapse New Variant" aria-expanded="true" aria-controls="composer-variant-form" title="Collapse New Variant"><span class="material-symbols-outlined" aria-hidden="true">keyboard_arrow_up</span></button></div></div>
             <div id="composer-variant-form">
             <div class="composer-fields">
+            <div class="output-presets" id="output-presets" hidden>
+              <button class="tool-dropdown-trigger" id="output-presets-trigger" type="button" aria-haspopup="listbox" aria-controls="output-presets-options" aria-expanded="false"><span>Presets</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+              <div class="output-presets-menu" id="output-presets-options" role="listbox" aria-label="Saved outputs" hidden></div>
+            </div>
               <div class="composer-field" data-label="Format">
                 <select id="composer-format" aria-label="Format" hidden><option value="">None Selected</option><option value="what-to-know">What to know</option><option value="listicle">Listicle</option><option value="news-story">News story</option><option value="social-post">Social post</option></select>
               </div>
@@ -161,10 +165,7 @@
           </section>
           <section class="composer-panel composer-outputs" aria-labelledby="composer-outputs-heading">
             <div class="composer-outputs-header"><h2 id="composer-outputs-heading">Outputs</h2>
-            <div class="output-presets" id="output-presets" hidden>
-              <button class="tool-dropdown-trigger" id="output-presets-trigger" type="button" aria-haspopup="listbox" aria-controls="output-presets-options" aria-expanded="false"><span>Presets</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
-              <div class="output-presets-menu" id="output-presets-options" role="listbox" aria-label="Saved outputs" hidden></div>
-            </div>
+
             </div>
             <div class="composer-empty" id="outputs-empty" role="status"><p>Outputs will appear here once<br>content is selected</p></div>
             <ul class="output-list" id="output-list" aria-label="Created variants" hidden></ul>

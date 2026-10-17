@@ -533,7 +533,7 @@ function setNewVariantCollapsed(collapsed) {
   $('#toggle-new-variant').title = label;
   $('#toggle-new-variant .material-symbols-outlined').textContent = collapsed ? 'keyboard_arrow_down' : 'keyboard_arrow_up';
   $('.composer-tools').dataset.collapsed = String(collapsed);
-  if (collapsed) toolDropdowns.close();
+  if (collapsed) { toolDropdowns.close(); outputPresets.close(); }
 }
 
 $('#toggle-new-variant').addEventListener('click', () => {

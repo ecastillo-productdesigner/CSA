@@ -1,6 +1,5 @@
-export function createRailNavigation({ onRecentsOpen, onSourcesOpen, onOpen }) {
+export function createRailNavigation({ onSourcesOpen, onOpen }) {
   const panels = {
-    history: { trigger: document.querySelector('#show-history'), panel: document.querySelector('#recent-projects') },
     sources: { trigger: document.querySelector('#show-sources'), panel: document.querySelector('#editor-sources') },
     profile: { trigger: document.querySelector('#show-profile'), panel: document.querySelector('#profile-menu') },
   };
@@ -37,7 +36,6 @@ export function createRailNavigation({ onRecentsOpen, onSourcesOpen, onOpen }) {
     if (active === name) return;
     close();
     onOpen?.();
-    if (name === 'history') onRecentsOpen();
     if (name === 'sources') onSourcesOpen();
     panels[name].panel.hidden = false;
     panels[name].trigger.setAttribute('aria-expanded', 'true');
@@ -61,7 +59,7 @@ export function createRailNavigation({ onRecentsOpen, onSourcesOpen, onOpen }) {
       if (!['ArrowRight', 'ArrowDown'].includes(event.key)) return;
       event.preventDefault();
       open(name);
-      (panel.querySelector(name === 'history' ? '.history-item' : name === 'sources' ? '#editor-add-source-button:not(:disabled), .editor-source-checkbox' : '.profile-navigation') || panel.querySelector('[data-close-navigation]'))?.focus();
+      (panel.querySelector(name === 'sources' ? '#editor-add-source-button:not(:disabled), .editor-source-checkbox' : '.profile-navigation') || panel.querySelector('[data-close-navigation]'))?.focus();
     });
   }
   document.querySelector('#new-project').addEventListener('click', () => setDrawer(true));

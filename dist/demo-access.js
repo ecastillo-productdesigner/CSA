@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261016-square-output-checks');
+  await import('./app.js?v=20261017-sidebar-sources');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

@@ -8,9 +8,9 @@
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=collapse_content,favorite,folder_open,right_panel_close,right_panel_open">
-    <link rel="stylesheet" href="./styles.css?v=20261016-square-output-checks">
-    <script src="./demo-access.js?v=20261016-square-output-checks" type="module"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=favorite,folder_open,keyboard_arrow_down,keyboard_arrow_up,right_panel_close,right_panel_open">
+    <link rel="stylesheet" href="./styles.css?v=20261017-sidebar-sources">
+    <script src="./demo-access.js?v=20261017-sidebar-sources" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -35,7 +35,6 @@
     <a class="skip-link" href="#main">Skip to content</a>
     <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <symbol id="icon-plus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M12 7v10M7 12h10" stroke="var(--icon-cutout, white)" stroke-width="2" stroke-linecap="round"/></symbol>
-      <symbol id="icon-history" viewBox="0 0 24 24"><path d="M4.5 8A8.3 8.3 0 1 1 4 15M4 3.5V8h4.5M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h13M12 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
       <symbol id="icon-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="19" cy="12" r="1.8" fill="currentColor"/></symbol>
@@ -65,11 +64,6 @@
       </div>
       <nav class="navigation" id="workspace-navigation" aria-label="Workspace">
         <button class="icon-button nav-button" id="new-project" type="button" aria-label="New project" data-tooltip="New project"><svg aria-hidden="true"><use href="#icon-plus"/></svg><span class="nav-label">New project</span></button>
-        <button class="icon-button nav-button" id="show-history" type="button" aria-label="Recent projects" aria-controls="recent-projects" aria-expanded="false"><svg aria-hidden="true"><use href="#icon-history"/></svg><span class="nav-label">History</span></button>
-    <section class="recents-panel" id="recent-projects" role="region" aria-labelledby="recent-projects-heading" hidden>
-      <header class="rail-panel-header"><h2 id="recent-projects-heading">Recent projects</h2><button class="icon-button" type="button" data-close-navigation="history" aria-label="Close recent projects"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></header>
-      <div id="history-content"></div>
-    </section>
         <button class="icon-button nav-button" id="show-sources" type="button" aria-label="Sources" aria-controls="editor-sources" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">folder_open</span><span class="nav-label">Sources</span></button>
     <section class="recents-panel sources-panel" id="editor-sources" role="region" aria-labelledby="editor-sources-heading" hidden>
       <header class="rail-panel-header"><h2 id="editor-sources-heading">Sources</h2><button class="icon-button" type="button" data-close-navigation="sources" aria-label="Close sources"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></header>
@@ -143,7 +137,7 @@
         </div>
         <aside class="composer-rail" aria-label="Project tools and outputs">
           <section class="composer-panel composer-tools" aria-labelledby="composer-tools-heading">
-            <div class="composer-tools-header"><h2 id="composer-tools-heading">New Variant</h2><div class="composer-tools-actions"><button class="icon-button tool-share-button" id="composer-share-button" type="button" aria-label="Share tools" title="Share tools"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8V3l8 8-8 8v-5C7 14 3.5 16.5 2 21 2 13.5 5.5 8 14 8Z" fill="currentColor"/></svg></button><button class="icon-button tool-collapse-button" id="toggle-new-variant" type="button" aria-label="Collapse New Variant" aria-expanded="true" aria-controls="composer-variant-form" title="Collapse New Variant"><span class="material-symbols-outlined" aria-hidden="true">collapse_content</span></button></div></div>
+            <div class="composer-tools-header"><h2 id="composer-tools-heading">New Variant</h2><div class="composer-tools-actions"><button class="icon-button tool-collapse-button" id="toggle-new-variant" type="button" aria-label="Collapse New Variant" aria-expanded="true" aria-controls="composer-variant-form" title="Collapse New Variant"><span class="material-symbols-outlined" aria-hidden="true">keyboard_arrow_up</span></button></div></div>
             <div id="composer-variant-form">
             <div class="composer-fields">
               <div class="composer-field" data-label="Format">

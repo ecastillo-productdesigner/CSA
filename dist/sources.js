@@ -50,9 +50,20 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
         const heading = document.createElement(href ? 'a' : 'strong');
         heading.textContent = source.title;
         if (href) { heading.href = href; heading.target = '_blank'; heading.rel = 'noopener noreferrer'; }
+        content.append(heading);
+        let preview = source.text || '';
+        if (preview.startsWith('Fictional sample article · ') && preview.includes('\n\n')) {
+          const divider = preview.indexOf('\n\n');
+          const metadata = document.createElement('p');
+          metadata.className = 'editor-source-meta';
+          metadata.textContent = preview.slice(0, divider);
+          content.append(metadata);
+          preview = preview.slice(divider + 2);
+        }
         const detail = document.createElement('p');
-        detail.textContent = source.text ? source.text.slice(0, 260) + (source.text.length > 260 ? '…' : '') : href || (source.attachmentId ? 'Document saved in this browser' : 'Local source');
-        content.append(heading, detail);
+        detail.className = 'editor-source-preview';
+        detail.textContent = preview ? preview.slice(0, 260) + (preview.length > 260 ? '…' : '') : href || (source.attachmentId ? 'Document saved in this browser' : 'Local source');
+        content.append(detail);
         if (source.attachmentId) {
           const download = document.createElement('button');
           download.type = 'button';

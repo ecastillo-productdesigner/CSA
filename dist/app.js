@@ -1,11 +1,10 @@
 import { createSearchExperience } from './search.js?v=20261016-add-source';
 import { createDashboard } from './dashboard.js?v=20261016-square-output-checks';
-import { createRecentProjects } from './recent-projects.js?v=20261016-square-output-checks';
 import { createMaterialEditor } from './editor.js?v=20261016-square-output-checks';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
-import { createRailNavigation } from './navigation.js?v=20261016-square-output-checks';
-import { createProjectSources } from './sources.js?v=20261016-sidebar-sources';
+import { createRailNavigation } from './navigation.js?v=20261017-sidebar-sources';
+import { createProjectSources } from './sources.js?v=20261017-sidebar-sources';
 import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261016-square-output-checks';
 import { createEditorTabs } from './editor-tabs.js?v=20261016-square-output-checks';
 import { createOutputPresets } from './output-presets.js?v=20261016-square-output-checks';
@@ -72,7 +71,6 @@ let feedbackTarget = null;
 let dashboard = null;
 const outputTimers = new Map();
 const toolDropdowns = createToolDropdowns({ notify });
-const recentProjectsPanel = createRecentProjects({ onOpen: showProject });
 const outputPresets = createOutputPresets({ onSelect: openSavedOutput });
 const editorTabs = createEditorTabs({ onSelect: openEditorTab });
 const projectSourcesPanel = createProjectSources({
@@ -85,9 +83,8 @@ const projectSourcesPanel = createProjectSources({
   onAddSource(projectId) { richEditor.flush(); railNavigation.close(); openProjectDialog(true, projectId); },
 });
 const railNavigation = createRailNavigation({
-  onRecentsOpen: renderRecentProjects,
   onSourcesOpen() { projectSourcesPanel.render(projects.find(project => project.id === activeProjectId && project.kind === 'draft') || null); },
-  onOpen: () => { toolDropdowns.close(); outputPresets.close(); recentProjectsPanel.close(); richEditor.closePanels(); },
+  onOpen: () => { toolDropdowns.close(); outputPresets.close(); richEditor.closePanels(); },
 });
 const richEditor = createMaterialEditor({
   onSendToCms: markVariantSentToCms,
@@ -166,7 +163,6 @@ function saveProjects() {
     saved = false;
     notify('Browser storage is unavailable or full. This project will last for this session.');
   }
-  renderRecentProjects();
   outputPresets.render(projects, activeProjectId);
   dashboard?.render(projects);
   return saved;
@@ -247,7 +243,6 @@ function showHome(focusInput = true) {
   $('#source-input').value = '';
   $('#start-button').disabled = true;
   closeProfile();
-  renderRecentProjects();
   dashboard?.render(projects);
   document.title = 'CSA — Your creative workspace';
   window.scrollTo({ top: 0 });
@@ -267,7 +262,6 @@ function showSourceStart() {
   $('#source-input').value = '';
   $('#start-button').disabled = true;
   closeProfile();
-  renderRecentProjects();
   document.title = 'New project — CSA';
   window.scrollTo({ top: 0 });
   $('#source-input').focus();
@@ -305,7 +299,6 @@ function showProjectStart() {
   renderOutputs(null);
   setNewVariantCollapsed(false);
   closeProfile();
-  renderRecentProjects();
   document.title = 'New project — CSA';
   window.scrollTo({ top: 0 });
   $('#main').focus({ preventScroll: true });
@@ -378,7 +371,6 @@ function showProject(id) {
     document.body.classList.add('showing-results');
     searchExperience.show(project);
     document.title = `${project.title} — Search — CSA`;
-    renderRecentProjects();
     closeProfile();
     $('#main').focus({ preventScroll: true });
     window.scrollTo({ top: 0 });
@@ -422,7 +414,6 @@ function showProject(id) {
     card.append(icon(source.type === 'link' ? 'link' : source.type === 'search' ? 'search' : 'file'), info);
     return card;
   }));
-  renderRecentProjects();
   closeProfile();
   $('#main').focus({ preventScroll: true });
   window.scrollTo({ top: 0 });
@@ -497,7 +488,6 @@ function showEditorProject(project) {
   setNewVariantCollapsed(Boolean(project.newVariantCollapsed));
   $('#composer-editorial-direction').value = typeof project.editorialDirection === 'string' ? project.editorialDirection : '';
   closeProfile();
-  renderRecentProjects();
   document.title = `${selectedOutput?.title || project.title} — CSA`;
   try { sessionStorage.setItem('csa.editor.active.v1', project.id); } catch { /* Drafts still save to local project storage. */ }
   window.scrollTo({ top: 0 });
@@ -541,6 +531,7 @@ function setNewVariantCollapsed(collapsed) {
   const label = `${collapsed ? 'Expand' : 'Collapse'} New Variant`;
   $('#toggle-new-variant').setAttribute('aria-label', label);
   $('#toggle-new-variant').title = label;
+  $('#toggle-new-variant .material-symbols-outlined').textContent = collapsed ? 'keyboard_arrow_down' : 'keyboard_arrow_up';
   $('.composer-tools').dataset.collapsed = String(collapsed);
   if (collapsed) toolDropdowns.close();
 }
@@ -655,7 +646,6 @@ $('#create-output').addEventListener('click', () => {
   resumeOutputProcessing(project);
 });
 
-$('#composer-share-button').addEventListener('click', () => notify('Tool sharing is coming soon.'));
 $('#composer-editorial-direction').addEventListener('input', () => {
   const project = ensureComposerProject();
   if (!project) return;
@@ -733,10 +723,6 @@ $('.brand').addEventListener('click', () => showHome());
 $('#new-project').addEventListener('click', showProjectStart);
 $('#back-home').addEventListener('click', () => showHome());
 $('#back-dashboard').addEventListener('click', () => showHome());
-
-function renderRecentProjects() {
-  recentProjectsPanel.render(projects, activeProjectId);
-}
 
 function setMaterialMode(mode) {
   materialMode = mode;

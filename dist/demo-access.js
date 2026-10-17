@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261017-variant-settings');
+  await import('./app.js?v=20261017-profile-menu');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;
@@ -73,8 +73,11 @@ visibility.addEventListener('click', () => {
   password.focus();
 });
 
-document.querySelector('#demo-lock').addEventListener('click', () => {
-  try { sessionStorage.removeItem(sessionKey); } catch { /* No saved access to clear. */ }
+document.addEventListener('csa:end-demo-session', event => {
+  try {
+    sessionStorage.removeItem(sessionKey);
+    if (event.detail?.logout) sessionStorage.removeItem('csa.editor.active.v1');
+  } catch { /* No saved access to clear. */ }
   window.location.reload();
 });
 

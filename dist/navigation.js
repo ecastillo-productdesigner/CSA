@@ -53,6 +53,7 @@ export function createRailNavigation({ onSourcesOpen, onOpen }) {
   });
   for (const [name, { trigger, panel }] of Object.entries(panels)) {
     trigger.addEventListener('click', () => {
+      if (name === 'profile' && !drawerOpen) { setDrawer(true); return; }
       if (active === name) close(name); else open(name);
     });
     trigger.addEventListener('keydown', event => {
@@ -65,6 +66,7 @@ export function createRailNavigation({ onSourcesOpen, onOpen }) {
   document.querySelector('#new-project').addEventListener('click', () => setDrawer(true));
   for (const button of document.querySelectorAll('[data-close-navigation]')) button.addEventListener('click', () => close(button.dataset.closeNavigation, true));
   document.addEventListener('pointerdown', event => {
+    if (document.querySelector('dialog[open]')) return;
     if (drawerOpen && !sidebar.contains(event.target)) setDrawer(false);
   });
   document.addEventListener('keydown', event => {

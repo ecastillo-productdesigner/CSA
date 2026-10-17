@@ -1,14 +1,15 @@
-import { createSearchExperience } from './search.js?v=20261016-add-source';
-import { createDashboard } from './dashboard.js?v=20261017-variant-settings';
-import { createMaterialEditor } from './editor.js?v=20261017-variant-settings';
+import { createProfile } from './profile.js?v=20261017-profile-menu';
+import { createSearchExperience } from './search.js?v=20261017-profile-menu';
+import { createDashboard } from './dashboard.js?v=20261017-profile-menu';
+import { createMaterialEditor } from './editor.js?v=20261017-profile-menu';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
-import { createRailNavigation } from './navigation.js?v=20261017-sidebar-sources';
-import { createProjectSources } from './sources.js?v=20261017-sidebar-sources';
-import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261017-variant-settings';
-import { createEditorTabs } from './editor-tabs.js?v=20261017-variant-settings';
-import { createOutputSettings } from './output-settings.js?v=20261017-variant-settings';
-import { createOutputPresets } from './output-presets.js?v=20261017-variant-settings';
+import { createRailNavigation } from './navigation.js?v=20261017-profile-menu';
+import { createProjectSources } from './sources.js?v=20261017-profile-menu';
+import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261017-profile-menu';
+import { createEditorTabs } from './editor-tabs.js?v=20261017-profile-menu';
+import { createOutputSettings } from './output-settings.js?v=20261017-profile-menu';
+import { createOutputPresets } from './output-presets.js?v=20261017-profile-menu';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -87,6 +88,16 @@ const projectSourcesPanel = createProjectSources({
 const railNavigation = createRailNavigation({
   onSourcesOpen() { projectSourcesPanel.render(projects.find(project => project.id === activeProjectId && project.kind === 'draft') || null); },
   onOpen: () => { toolDropdowns.close(); outputPresets.close(); outputSettings.close(); richEditor.closePanels(); },
+});
+createProfile({
+  notify,
+  onClose: restoreFocus => railNavigation.close('profile', restoreFocus),
+  onSessionEnd(logout) {
+    richEditor.flush();
+    outputSettings.close();
+    railNavigation.close('profile');
+    document.dispatchEvent(new CustomEvent('csa:end-demo-session', { detail: { logout } }));
+  },
 });
 const richEditor = createMaterialEditor({
   onSendToCms: markVariantSentToCms,
@@ -1012,6 +1023,7 @@ function markVariantSentToCms(projectId) {
   variant.cmsSentAt = Date.now();
   project.updatedAt = variant.cmsSentAt;
   const saved = saveProjects();
+  editorTabs.render(project);
   notify(saved ? 'Demo: variant marked as sent to CMS. WordPress is not connected.' : 'Demo: variant marked as sent for this session only. WordPress is not connected.');
   openExperienceFeedback(project, variant);
 }

@@ -8,9 +8,9 @@
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=edit,favorite,folder_open,keyboard_arrow_down,keyboard_arrow_up,right_panel_close,right_panel_open">
-    <link rel="stylesheet" href="./styles.css?v=20261017-variant-settings">
-    <script src="./demo-access.js?v=20261017-variant-settings" type="module"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=edit,expand_all,favorite,folder_open,keyboard_arrow_down,keyboard_arrow_up,right_panel_close,right_panel_open">
+    <link rel="stylesheet" href="./styles.css?v=20261017-profile-menu">
+    <script src="./demo-access.js?v=20261017-profile-menu" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -44,6 +44,7 @@
       <symbol id="icon-undo" viewBox="0 0 24 24"><path d="m9 4-5 5 5 5M4 9h9a6 6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-redo" viewBox="0 0 24 24"><path d="m15 4 5 5-5 5m5-5h-9a6 6 0 0 0 0 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-history" viewBox="0 0 24 24"><path d="M4.5 8A8.3 8.3 0 1 1 4 15M4 3.5V8h4.5M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-file" viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8Zm0 0v5h5M9 13h6M9 17h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="icon-document" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8h-4a2 2 0 0 1-2-2Zm2 0v4h4Z" fill="currentColor"/><path d="M9 14h6m-6 4h3" fill="none" stroke="var(--icon-cutout, white)" stroke-width="1.8" stroke-linecap="round"/></symbol>
       <symbol id="icon-link" viewBox="0 0 24 24"><path d="m10 13 4-4m-5 7-2 2a3.5 3.5 0 0 1-5-5l4-4a3.5 3.5 0 0 1 5 0m2 0 2-2a3.5 3.5 0 1 1 5 5l-4 4a3.5 3.5 0 0 1-5 0" transform="translate(1 -1)" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
@@ -74,14 +75,15 @@
       </div>
     </section>
       </nav>
-      <div class="profile-menu" id="profile-menu" role="region" aria-labelledby="profile-name" hidden>
-      <button class="icon-button profile-close" type="button" data-close-navigation="profile" aria-label="Close profile"><svg aria-hidden="true"><use href="#icon-close"/></svg></button>
-      <div><strong id="profile-name">Julia</strong><span>Personal workspace</span>
-        <button class="text-button profile-navigation" id="demo-lock" type="button">Lock demo</button>
+      <div class="profile-menu" id="profile-menu" role="menu" aria-label="Profile options" hidden>
+        <button class="profile-navigation" id="profile-settings" type="button" role="menuitem">Settings</button>
+        <button class="profile-navigation" id="profile-change-photo" type="button" role="menuitem">Change photo</button>
+        <button class="profile-navigation" id="demo-lock" type="button" role="menuitem">Lock demo</button>
+        <button class="profile-navigation profile-logout" id="profile-logout" type="button" role="menuitem">Log out</button>
       </div>
-    </div>
-      <button class="profile-button" id="show-profile" type="button" aria-label="Julia's profile" aria-controls="profile-menu" aria-expanded="false">
-        <img src="./avatar.svg" alt="" width="32" height="32"><span class="nav-label">Profile</span>
+      <input id="profile-photo-input" class="visually-hidden" type="file" accept="image/png,image/jpeg,image/webp" aria-label="Choose profile photo" tabindex="-1">
+      <button class="profile-button" id="show-profile" type="button" aria-label="Profile options for Julia" aria-haspopup="menu" aria-controls="profile-menu" aria-expanded="false">
+        <img id="profile-photo" src="./assets/profile-photo.png" alt="" width="32" height="32"><span class="nav-label" id="profile-name">Julia</span><span class="material-symbols-outlined profile-expand" aria-hidden="true">expand_all</span>
       </button>
     </aside>
 
@@ -91,6 +93,8 @@
           <h1 id="greeting">Hello Julia, what are you making today?</h1>
         </header>
         <div class="dashboard-grid" id="dashboard-grid"></div>
+        <button class="load-more" id="dashboard-load-more" type="button" aria-controls="dashboard-grid" hidden>Load more</button>
+        <p class="visually-hidden" id="dashboard-load-status" role="status" aria-live="polite"></p>
       </section>
       <div class="dashboard-bottom-fade" aria-hidden="true"></div>
 
@@ -258,7 +262,7 @@
       <h2 id="article-preview-title"></h2><p class="article-preview-meta" id="article-preview-meta"></p>
       <p class="article-preview-notice" id="article-preview-notice">Made-up content for the CSA demo.</p>
       <div class="article-preview-body" id="article-preview-body" tabindex="0" role="region" aria-label="Article text"></div>
-      <div class="dialog-footer"><button class="secondary-button" type="button" data-close="article-preview-dialog">Back to results</button></div>
+      <div class="dialog-footer"><button class="secondary-button" id="article-preview-back" type="button" data-close="article-preview-dialog">Back to results</button></div>
     </dialog>
 
     <dialog class="experience-feedback-dialog" id="experience-feedback-dialog" aria-labelledby="experience-feedback-heading" aria-describedby="experience-feedback-prompt">
@@ -292,6 +296,14 @@
       </div>
       <p class="form-error" id="material-error" role="alert" hidden></p>
       <div class="dialog-footer"><button class="secondary-button" id="material-cancel" type="button" data-close="material-dialog">Cancel</button><button class="primary-button" id="use-material" type="button" disabled>Start creating</button></div>
+    </dialog>
+    <dialog class="profile-settings-dialog" id="profile-settings-dialog" aria-labelledby="profile-settings-heading">
+      <form id="profile-settings-form">
+        <div class="panel-heading"><h2 id="profile-settings-heading">Settings</h2><button class="icon-button" type="button" data-close-profile-settings aria-label="Close profile settings"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></div>
+        <label for="profile-settings-name">Name<input id="profile-settings-name" type="text" maxlength="60" autocomplete="name" required></label>
+        <button class="text-button profile-reset-photo" id="profile-reset-photo" type="button">Reset photo</button>
+        <div class="dialog-footer"><button class="secondary-button" type="button" data-close-profile-settings>Cancel</button><button class="primary-button" type="submit">Save changes</button></div>
+      </form>
     </dialog>
     <section class="output-edit-menu" id="output-edit-menu" role="dialog" aria-labelledby="output-edit-heading" aria-describedby="output-edit-context" tabindex="-1" hidden>
       <form id="output-edit-form">

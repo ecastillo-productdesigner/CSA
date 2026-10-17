@@ -17,6 +17,10 @@ export function outputIsReady(output) {
   return output.status === 'ready' || (!output.status && Boolean(output.document || output.draftText));
 }
 
+export function outputIsSent(output) {
+  return Number.isFinite(output?.cmsSentAt) && output.cmsSentAt > 0;
+}
+
 export function selectedOutputs(project) {
   const legacyIds = [...(Array.isArray(project?.selectedPendingOutputIds) ? project.selectedPendingOutputIds : []), ...(project?.selectedOutputId ? [project.selectedOutputId] : [])];
   const selectedIds = new Set(Array.isArray(project?.selectedOutputIds) ? project.selectedOutputIds : legacyIds);
@@ -269,6 +273,7 @@ export function renderOutputs(project) {
     const heading = document.createElement('strong');
     heading.className = 'output-card-title';
     heading.textContent = output.title;
+    heading.title = output.title;
     open.append(top, heading);
     const edit = document.createElement('button');
     edit.type = 'button';

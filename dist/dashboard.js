@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261017-variant-settings';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261017-profile-menu';
 
 function node(tag, className, text) {
   const element = document.createElement(tag);
@@ -24,6 +24,30 @@ function projectDate(timestamp) {
 export function createDashboard({ onNew, onOpen }) {
   let revealTimer;
   const home = document.querySelector('#home');
+  const grid = document.querySelector('#dashboard-grid');
+  const loadMore = document.querySelector('#dashboard-load-more');
+  const status = document.querySelector('#dashboard-load-status');
+  let visibleRows = 6;
+  let columns = 3;
+
+  function updateVisible(announce = false) {
+    if (home.clientWidth) {
+      const tracks = getComputedStyle(grid).gridTemplateColumns.match(/[\d.]+px/g);
+      if (tracks?.length) columns = tracks.length;
+    }
+    const tiles = [...grid.children];
+    const limit = visibleRows * columns;
+    tiles.forEach((tile, index) => { tile.hidden = index >= limit; });
+    loadMore.hidden = tiles.length <= limit;
+    if (announce || status.textContent) status.textContent = `Showing ${Math.max(0, Math.min(tiles.length, limit) - 1)} of ${Math.max(0, tiles.length - 1)} projects.`;
+  }
+  loadMore.addEventListener('click', () => {
+    const next = grid.querySelector('[hidden] .project-open');
+    visibleRows += 6;
+    updateVisible(true);
+    next?.focus({ preventScroll: true });
+  });
+  new ResizeObserver(() => updateVisible()).observe(home);
   window.addEventListener('scroll', () => {
     home.classList.toggle('is-scrolled', !home.hidden && window.scrollY > 0);
   }, { passive: true });
@@ -39,7 +63,6 @@ export function createDashboard({ onNew, onOpen }) {
 
   function render(projects) {
     const dashboardProjects = projects.filter(project => project.dashboard === true && !project.archivedAt && !project.deletedAt);
-    const grid = document.querySelector('#dashboard-grid');
     grid.replaceChildren();
     const button = node('button', 'new-project-tile');
     button.id = 'dashboard-new-project';
@@ -52,7 +75,7 @@ export function createDashboard({ onNew, onOpen }) {
       const card = node('article', 'dashboard-project');
       card.setAttribute('aria-label', project.title);
       const variants = projectOutputs(project).filter(outputIsReady);
-      const sentCount = variants.filter(variant => Number.isFinite(variant.cmsSentAt) && variant.cmsSentAt > 0).length;
+      const sentCount = variants.filter(outputIsSent).length;
       const badges = node('div', 'project-badges');
       badges.append(node('span', `project-badge${sentCount ? ' project-badge--sent' : ''}`, sentCount ? `${sentCount} ${sentCount === 1 ? 'variant' : 'variants'} sent to CMS` : 'Draft'));
       const title = node('h2', '', project.title);
@@ -70,6 +93,7 @@ export function createDashboard({ onNew, onOpen }) {
       card.append(badges, title, meta, actions);
       grid.append(card);
     }
+    updateVisible();
     for (const [index, card] of [...grid.children].entries()) card.style.setProperty('--reveal-order', Math.min(index, 7));
   }
 

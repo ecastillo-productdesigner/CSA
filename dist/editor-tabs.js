@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261017-variant-settings';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261017-profile-menu';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');
@@ -41,7 +41,7 @@ export function createEditorTabs({ onSelect }) {
     render(project) {
       const outputs = projectOutputs(project).filter(outputIsReady).reverse();
       const activeId = outputs.some(output => output.id === project?.selectedOutputId) ? project.selectedOutputId : outputs[0]?.id;
-      const nextSignature = JSON.stringify([project?.id, activeId, outputs.map(({ id, title }) => [id, title])]);
+      const nextSignature = JSON.stringify([project?.id, activeId, outputs.map(({ id, title, cmsSentAt }) => [id, title, cmsSentAt])]);
       if (signature === nextSignature) return;
       signature = nextSignature;
       root.hidden = !outputs.length;
@@ -53,7 +53,9 @@ export function createEditorTabs({ onSelect }) {
         return;
       }
       const entries = outputs;
-      root.replaceChildren(...entries.map(({ id, title }) => {
+      root.replaceChildren(...entries.map(({ id, title, cmsSentAt }) => {
+        const sent = outputIsSent({ cmsSentAt });
+        const status = sent ? 'Sent to WordPress' : 'Draft';
         const tab = document.createElement('button');
         tab.type = 'button';
         tab.id = `editor-tab-${id || 'original'}`;
@@ -66,12 +68,14 @@ export function createEditorTabs({ onSelect }) {
         const badge = document.createElement('span');
         badge.className = 'editor-tab-draft';
         badge.setAttribute('aria-hidden', 'true');
-        badge.textContent = 'Draft';
+        badge.textContent = status;
+        badge.dataset.sent = String(sent);
+        tab.setAttribute('aria-description', status);
         const label = document.createElement('span');
         label.className = 'editor-tab-title';
         label.textContent = title;
         tab.append(badge, label);
-        tab.title = title;
+        tab.title = `${title} · ${status}`;
         return tab;
       }));
       panel.setAttribute('role', 'tabpanel');

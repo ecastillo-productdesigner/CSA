@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261017-variant-settings';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261017-profile-menu';
 
 export function createOutputPresets({ onSelect }) {
   const root = document.querySelector('#output-presets');

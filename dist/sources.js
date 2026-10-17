@@ -10,6 +10,45 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
   const status = document.querySelector('#editor-source-selection-status');
   const add = document.querySelector('#editor-add-source-button');
   let project = null;
+  const previewDialog = document.querySelector('#article-preview-dialog');
+  let previewTrigger = null;
+  previewDialog.addEventListener('close', () => {
+    previewTrigger?.focus({ preventScroll: true });
+    previewTrigger = null;
+  });
+
+  function openPreview(source, button) {
+    previewTrigger = button;
+    let text = source.text || '';
+    const fictional = text.startsWith('Fictional ');
+    const meta = document.querySelector('#article-preview-meta');
+    meta.replaceChildren();
+    meta.hidden = false;
+    if (text.startsWith('Fictional sample article · ') && text.includes('\n\n')) {
+      const divider = text.indexOf('\n\n');
+      const parts = text.slice(0, divider).split('·').map(part => part.trim());
+      const date = /^\d{4}-\d{2}-\d{2}$/.test(parts[2] || '') ? new Date(`${parts[2]}T12:00:00`) : null;
+      meta.textContent = [parts[1], date ? date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : parts[2]].filter(Boolean).join(' · ');
+      text = text.slice(divider + 2);
+    } else if (sourceUrl(source.url || '')) {
+      const link = document.createElement('a');
+      link.href = sourceUrl(source.url);
+      link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = source.url;
+      meta.append(link);
+    } else meta.textContent = source.type === 'file' ? 'Document source' : 'Project source';
+    document.querySelector('#article-preview-title').textContent = source.title;
+    document.querySelector('.article-preview-badge').textContent = fictional ? 'Fictional article preview' : 'Source preview';
+    document.querySelector('#article-preview-notice').hidden = !fictional;
+    const paragraphs = text.split(/\n\s*\n/).map(value => value.trim()).filter(Boolean);
+    if (!paragraphs.length) paragraphs.push(source.attachmentId ? 'Download this document from Sources to read the original.' : 'No preview text is available for this source.');
+    document.querySelector('#article-preview-body').replaceChildren(...paragraphs.map(value => {
+      const paragraph = document.createElement('p'); paragraph.textContent = value; return paragraph;
+    }));
+    document.querySelector('#article-preview-back').textContent = 'Back to sources';
+    previewDialog.showModal();
+    document.querySelector('#article-preview-body').scrollTop = 0;
+  }
+
 
   function updateSelectionStatus() {
     const sources = project?.sources || [];
@@ -47,23 +86,22 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
         const content = document.createElement('div');
         content.className = 'editor-source-content';
         const href = source.type === 'link' && sourceUrl(source.url || '');
-        const heading = document.createElement(href ? 'a' : 'strong');
+        const open = document.createElement('button');
+        open.type = 'button';
+        open.className = 'editor-source-open';
+        open.setAttribute('aria-label', `Preview source: ${source.title}`);
+        open.setAttribute('aria-haspopup', 'dialog');
+        open.setAttribute('aria-controls', 'article-preview-dialog');
+        open.addEventListener('click', () => openPreview(source, open));
+        const heading = document.createElement('strong');
         heading.textContent = source.title;
-        if (href) { heading.href = href; heading.target = '_blank'; heading.rel = 'noopener noreferrer'; }
-        content.append(heading);
-        let preview = source.text || '';
-        if (preview.startsWith('Fictional sample article · ') && preview.includes('\n\n')) {
-          const divider = preview.indexOf('\n\n');
-          const metadata = document.createElement('p');
-          metadata.className = 'editor-source-meta';
-          metadata.textContent = preview.slice(0, divider);
-          content.append(metadata);
-          preview = preview.slice(divider + 2);
-        }
-        const detail = document.createElement('p');
+        open.append(heading);
+        const preview = source.text || '';
+        const detail = document.createElement('span');
         detail.className = 'editor-source-preview';
         detail.textContent = preview ? preview.slice(0, 260) + (preview.length > 260 ? '…' : '') : href || (source.attachmentId ? 'Document saved in this browser' : 'Local source');
-        content.append(detail);
+        open.append(detail);
+        content.append(open);
         if (source.attachmentId) {
           const download = document.createElement('button');
           download.type = 'button';

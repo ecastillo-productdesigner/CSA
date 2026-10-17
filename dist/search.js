@@ -104,6 +104,10 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     const article = state?.articles.find(article => article.id === id);
     if (!article || !state.selected.has(id) || !state.readyArticleIds.has(id)) return;
     previewArticle = { ...article, projectId: state.projectId };
+    document.querySelector('.article-preview-badge').textContent = 'Fictional article preview';
+    $('#article-preview-notice').hidden = false;
+    $('#article-preview-meta').hidden = false;
+    $('#article-preview-back').textContent = 'Back to results';
     $('#article-preview-title').textContent = article.title;
     $('#article-preview-meta').textContent = `${article.source} · ${dateLabel(article.date)}`;
     $('#article-preview-body').replaceChildren(...article.paragraphs.map(paragraph => node('p', '', paragraph)));

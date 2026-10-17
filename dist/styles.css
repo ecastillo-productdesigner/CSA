@@ -3,6 +3,7 @@
   --background: #fbf6f4;
   --surface: #ffffff;
   --ink: #4d5d79;
+  --heading: #1e293b;
   --muted: #7e8999;
   --line: #e8e8e9;
   --accent: #4d5d79;
@@ -176,7 +177,7 @@ main:focus { outline: none; }
 .tool-collapse-button { width: 40px; height: 40px; padding: 9px; }
 .tool-collapse-button .material-symbols-outlined { font-size: 22px; }
 .composer-tools[data-collapsed="true"] { padding-block: 20px; }
-.composer-tools h2, .composer-outputs h2 { gap: 10px; font-size: 18px; line-height: 24px; }
+.composer-tools h2, .composer-outputs h2 { color: var(--heading); gap: 10px; font-size: 18px; line-height: 24px; }
 .composer-tools h2 .material-symbols-outlined { flex-shrink: 0; font-size: 20px; }
 .composer-tools h2 svg, .composer-outputs h2 svg { width: 20px; height: 20px; }
 .composer-fields { display: grid; gap: 14px; margin-top: 30px; }
@@ -269,7 +270,7 @@ main:focus { outline: none; }
 .output-badge--audience { background: #fac7ed; color: #a00072; }
 .output-badge--tone { background: #edf0f5; color: var(--ink); }
 .output-badge--voice { background: #c9e9f3; color: #006f95; }
-.output-card-title { display: block; margin-top: 18px; font-size: 14px; line-height: 1.5; font-weight: 700; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.output-card-title { color: var(--heading); display: block; margin-top: 18px; font-size: 14px; line-height: 1.5; font-weight: 700; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .outputs-footer { position: relative; z-index: 1; margin-top: auto; padding-top: 20px; }
 .create-output { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; border: 1px solid var(--color-button-primary); border-radius: 14px; background: var(--color-button-primary); color: white; }
 .create-output:hover:not(:disabled) { background: var(--color-button-primary); }
@@ -351,7 +352,7 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
 .editor-document-status { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; font-size: 11px; line-height: 18px; color: #7b879a; }
 .editor-draft-badge { display: inline-flex; align-items: center; height: 24px; padding: 3px 11px; border-radius: 20px; background: var(--draft-background); color: var(--draft-foreground); font-size: 11px; font-weight: 650; }
 .editor-save-error { color: #a74646; }
-#editor-title { display: block; width: 100%; min-height: 44px; max-height: none; padding: 0; resize: none; overflow: hidden; border: 0; border-radius: 0; background: transparent; color: #28364d; font-size: 29px; line-height: 1.35; font-weight: 650; letter-spacing: -.7px; }
+#editor-title { display: block; width: 100%; min-height: 44px; max-height: none; padding: 0; resize: none; overflow: hidden; border: 0; border-radius: 0; background: transparent; color: var(--heading); font-size: 29px; line-height: 1.35; font-weight: 650; letter-spacing: -.7px; }
 #editor-title::placeholder { color: #9ca7b8; }
 #editor-title:focus-visible { outline-offset: 8px; }
 .editor-toolbar { position: relative; z-index: 2; display: flex; flex-shrink: 0; align-items: center; flex-wrap: wrap; gap: 6px 0; padding: 10px 17px; border-block: 1px solid var(--line); background: #fcfcfd; }
@@ -591,7 +592,7 @@ select:focus-visible { outline: 3px solid #99abc6; outline-offset: 3px; }
 .load-more:disabled { color: var(--muted); font-weight: 400; }
 .results-direction { margin-top: 28px; }
 .composer-direction { margin-top: 24px; }
-.results-direction label, .composer-direction label { display: block; margin-bottom: 10px; font-size: 14px; font-weight: 650; }
+.results-direction label, .composer-direction label { color: var(--heading); display: block; margin-bottom: 10px; font-size: 14px; font-weight: 650; }
 .results-direction label span, .composer-direction label span { color: var(--muted); font-weight: 500; }
 .results-direction textarea, .composer-direction textarea { display: block; width: 100%; min-height: 72px; max-height: 280px; resize: vertical; padding: 10px 14px; border: 1px solid #dce3ed; border-radius: 10px; background: white; color: var(--ink); font: inherit; font-size: 14px; line-height: 1.6; }
 .results-actions { display: flex; gap: 12px; justify-content: center; margin: 22px auto 0; width: min(375px, 100%); }

@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261017-drafted-label';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261017-disabled-sent';
 
 export function createOutputPresets({ onSelect }) {
   const root = document.querySelector('#output-presets');

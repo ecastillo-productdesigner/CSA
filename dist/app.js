@@ -1,15 +1,15 @@
-import { createProfile } from './profile.js?v=20261017-drafted-label';
-import { createSearchExperience } from './search.js?v=20261017-drafted-label';
-import { createDashboard } from './dashboard.js?v=20261017-drafted-label';
-import { createMaterialEditor } from './editor.js?v=20261017-drafted-label';
+import { createProfile } from './profile.js?v=20261017-disabled-sent';
+import { createSearchExperience } from './search.js?v=20261017-disabled-sent';
+import { createDashboard } from './dashboard.js?v=20261017-disabled-sent';
+import { createMaterialEditor } from './editor.js?v=20261017-disabled-sent';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
-import { createRailNavigation } from './navigation.js?v=20261017-drafted-label';
-import { createProjectSources } from './sources.js?v=20261017-drafted-label';
-import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261017-drafted-label';
-import { createEditorTabs } from './editor-tabs.js?v=20261017-drafted-label';
-import { createOutputSettings } from './output-settings.js?v=20261017-drafted-label';
-import { createOutputPresets } from './output-presets.js?v=20261017-drafted-label';
+import { createRailNavigation } from './navigation.js?v=20261017-disabled-sent';
+import { createProjectSources } from './sources.js?v=20261017-disabled-sent';
+import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261017-disabled-sent';
+import { createEditorTabs } from './editor-tabs.js?v=20261017-disabled-sent';
+import { createOutputSettings } from './output-settings.js?v=20261017-disabled-sent';
+import { createOutputPresets } from './output-presets.js?v=20261017-disabled-sent';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';

@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261017-drafted-label';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261017-disabled-sent';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');
@@ -55,7 +55,7 @@ export function createEditorTabs({ onSelect }) {
       const entries = outputs;
       root.replaceChildren(...entries.map(({ id, title, cmsSentAt }) => {
         const sent = outputIsSent({ cmsSentAt });
-        const status = sent ? 'Sent to WordPress' : 'Draft';
+        const status = sent ? 'Sent' : 'Draft';
         const tab = document.createElement('button');
         tab.type = 'button';
         tab.id = `editor-tab-${id || 'original'}`;

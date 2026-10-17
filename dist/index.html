@@ -8,9 +8,9 @@
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=favorite,folder_open,keyboard_arrow_down,keyboard_arrow_up,right_panel_close,right_panel_open">
-    <link rel="stylesheet" href="./styles.css?v=20261017-presets-first">
-    <script src="./demo-access.js?v=20261017-presets-first" type="module"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=edit,favorite,folder_open,keyboard_arrow_down,keyboard_arrow_up,right_panel_close,right_panel_open">
+    <link rel="stylesheet" href="./styles.css?v=20261017-variant-settings">
+    <script src="./demo-access.js?v=20261017-variant-settings" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -64,7 +64,7 @@
       </div>
       <nav class="navigation" id="workspace-navigation" aria-label="Workspace">
         <button class="icon-button nav-button" id="new-project" type="button" aria-label="New project" data-tooltip="New project"><svg aria-hidden="true"><use href="#icon-plus"/></svg><span class="nav-label">New project</span></button>
-        <button class="icon-button nav-button" id="show-sources" type="button" aria-label="Sources" aria-controls="editor-sources" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">folder_open</span><span class="nav-label">Sources</span></button>
+        <button class="icon-button nav-button" id="show-sources" type="button" aria-label="Sources" hidden aria-controls="editor-sources" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">folder_open</span><span class="nav-label">Sources</span></button>
     <section class="recents-panel sources-panel" id="editor-sources" role="region" aria-labelledby="editor-sources-heading" hidden>
       <header class="rail-panel-header"><h2 id="editor-sources-heading">Sources</h2><button class="icon-button" type="button" data-close-navigation="sources" aria-label="Close sources"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></header>
       <div class="sources-panel-content">
@@ -293,6 +293,17 @@
       <p class="form-error" id="material-error" role="alert" hidden></p>
       <div class="dialog-footer"><button class="secondary-button" id="material-cancel" type="button" data-close="material-dialog">Cancel</button><button class="primary-button" id="use-material" type="button" disabled>Start creating</button></div>
     </dialog>
+    <section class="output-edit-menu" id="output-edit-menu" role="dialog" aria-labelledby="output-edit-heading" aria-describedby="output-edit-context" tabindex="-1" hidden>
+      <form id="output-edit-form">
+        <div class="output-edit-heading"><h2 id="output-edit-heading">Edit variant</h2><button class="icon-button" type="button" data-close-output-edit aria-label="Close variant settings"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></div>
+        <p class="output-edit-context" id="output-edit-context"></p>
+        <label for="output-edit-tone">Tone<input id="output-edit-tone" type="text" maxlength="80" placeholder="e.g., Informative, upbeat, or direct" autocomplete="off"></label>
+        <label for="output-edit-voice">Voice<select id="output-edit-voice"><option value="">None selected</option><option value="neutral">Neutral</option><option value="conversational">Conversational</option><option value="professional">Professional</option><option value="playful">Playful</option></select></label>
+        <label for="output-edit-direction">Editorial Direction<textarea id="output-edit-direction" rows="3" maxlength="8000" placeholder="Add facts or guidance for this variant"></textarea></label>
+        <p class="form-error" id="output-edit-error" role="alert" hidden></p>
+        <div class="output-edit-actions"><button class="secondary-button" type="button" data-close-output-edit>Cancel</button><button class="primary-button" type="submit">Save changes</button></div>
+      </form>
+    </section>
     <div class="toast" id="toast" role="status" hidden><span id="toast-message"></span><button id="toast-undo" type="button" hidden>Undo</button></div>
     </div>
   </body>

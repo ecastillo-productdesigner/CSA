@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261016-square-output-checks';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261017-variant-settings';
 
 function node(tag, className, text) {
   const element = document.createElement(tag);

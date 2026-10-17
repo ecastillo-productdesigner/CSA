@@ -1,0 +1,84 @@
+export function createOutputSettings({ onSave }) {
+  const menu = document.querySelector('#output-edit-menu');
+  const form = document.querySelector('#output-edit-form');
+  const tone = document.querySelector('#output-edit-tone');
+  const voice = document.querySelector('#output-edit-voice');
+  const direction = document.querySelector('#output-edit-direction');
+  const error = document.querySelector('#output-edit-error');
+  let active = null;
+
+  function trigger() {
+    return active && [...document.querySelectorAll('[data-edit-output]')].find(button => button.dataset.editOutput === active.outputId);
+  }
+
+  function close(restoreFocus = false) {
+    const button = trigger();
+    button?.setAttribute('aria-expanded', 'false');
+    active = null;
+    menu.hidden = true;
+    if (restoreFocus && button?.isConnected) button.focus({ preventScroll: true });
+  }
+
+  function position() {
+    const button = trigger();
+    if (!button || menu.hidden) return;
+    const anchor = button.getBoundingClientRect();
+    const bounds = menu.getBoundingClientRect();
+    const width = document.documentElement.clientWidth;
+    const height = document.documentElement.clientHeight;
+    const left = Math.max(12, Math.min(anchor.right - bounds.width, width - bounds.width - 12));
+    const below = anchor.bottom + 8;
+    const preferredTop = below + bounds.height <= height - 12 ? below : anchor.top - bounds.height - 8;
+    const top = Math.max(12, Math.min(preferredTop, height - bounds.height - 12));
+    menu.style.left = `${left}px`;
+    menu.style.top = `${top}px`;
+    button.setAttribute('aria-expanded', 'true');
+  }
+
+  function open(projectId, output) {
+    if (active?.projectId === projectId && active.outputId === output.id) { close(true); return; }
+    close();
+    active = { projectId, outputId: output.id };
+    document.querySelector('#output-edit-context').textContent = output.title;
+    tone.value = typeof output.tone === 'string' ? output.tone : '';
+    voice.value = output.toolPreferences?.voice || '';
+    direction.value = typeof output.editorialDirection === 'string' ? output.editorialDirection : '';
+    error.hidden = true;
+    menu.hidden = false;
+    position();
+    tone.focus({ preventScroll: true });
+  }
+
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    if (!active) return;
+    const saved = onSave({ ...active, tone: tone.value.trim(), voice: voice.value, editorialDirection: direction.value });
+    if (saved) close(true);
+    else { error.textContent = 'Changes could not be saved. Please try again.'; error.hidden = false; position(); }
+  });
+  for (const button of menu.querySelectorAll('[data-close-output-edit]')) button.addEventListener('click', () => close(true));
+  menu.addEventListener('keydown', event => {
+    if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(true); }
+  });
+  menu.addEventListener('focusout', event => {
+    if (active && event.relatedTarget && !menu.contains(event.relatedTarget) && event.relatedTarget !== trigger()) close();
+  });
+  document.addEventListener('pointerdown', event => {
+    if (active && !menu.contains(event.target) && !event.target.closest('[data-edit-output]')) close();
+  });
+  document.addEventListener('scroll', event => {
+    if (active && !menu.contains(event.target)) position();
+  }, true);
+  window.addEventListener('resize', position);
+
+  return {
+    open,
+    close,
+    sync(project) {
+      if (!active) return;
+      const output = project?.outputs?.find(entry => entry.id === active.outputId);
+      if (project?.id !== active.projectId || !output || project.outputProcessing || !trigger()) close();
+      else position();
+    },
+  };
+}

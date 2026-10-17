@@ -247,7 +247,7 @@ export function renderOutputs(project) {
     });
     const labels = Array.isArray(output.labels) ? output.labels : [];
     for (const label of labels) {
-      if (!label || !['format', 'audience', 'voice'].includes(label.key) || typeof label.label !== 'string') continue;
+      if (!label || !['format', 'audience', 'tone', 'voice'].includes(label.key) || typeof label.label !== 'string') continue;
       const badge = document.createElement('span');
       badge.className = `output-badge output-badge--${label.key}`;
       badge.textContent = label.label;
@@ -270,6 +270,21 @@ export function renderOutputs(project) {
     heading.className = 'output-card-title';
     heading.textContent = output.title;
     open.append(top, heading);
+    const edit = document.createElement('button');
+    edit.type = 'button';
+    edit.className = 'icon-button output-edit-button';
+    edit.dataset.editOutput = output.id;
+    edit.disabled = processing;
+    edit.setAttribute('aria-label', `Edit variant settings: ${output.title}`);
+    edit.setAttribute('aria-haspopup', 'dialog');
+    edit.setAttribute('aria-controls', 'output-edit-menu');
+    edit.setAttribute('aria-expanded', 'false');
+    edit.title = 'Edit variant settings';
+    const editIcon = document.createElement('span');
+    editIcon.className = 'material-symbols-outlined';
+    editIcon.setAttribute('aria-hidden', 'true');
+    editIcon.textContent = 'edit';
+    edit.append(editIcon);
     const favorite = document.createElement('button');
     favorite.type = 'button';
     favorite.className = 'output-favorite-button';
@@ -284,7 +299,7 @@ export function renderOutputs(project) {
     favorite.append(heart);
     card.append(open);
     if (!ready) card.append(selection);
-    card.append(badges, favorite);
+    card.append(badges, edit, favorite);
     item.append(card);
     return item;
   }));

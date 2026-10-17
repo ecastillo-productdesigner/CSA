@@ -1,13 +1,14 @@
 import { createSearchExperience } from './search.js?v=20261016-add-source';
-import { createDashboard } from './dashboard.js?v=20261016-square-output-checks';
-import { createMaterialEditor } from './editor.js?v=20261016-square-output-checks';
+import { createDashboard } from './dashboard.js?v=20261017-variant-settings';
+import { createMaterialEditor } from './editor.js?v=20261017-variant-settings';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
 import { createRailNavigation } from './navigation.js?v=20261017-sidebar-sources';
 import { createProjectSources } from './sources.js?v=20261017-sidebar-sources';
-import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261016-square-output-checks';
-import { createEditorTabs } from './editor-tabs.js?v=20261016-square-output-checks';
-import { createOutputPresets } from './output-presets.js?v=20261016-square-output-checks';
+import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261017-variant-settings';
+import { createEditorTabs } from './editor-tabs.js?v=20261017-variant-settings';
+import { createOutputSettings } from './output-settings.js?v=20261017-variant-settings';
+import { createOutputPresets } from './output-presets.js?v=20261017-variant-settings';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -72,6 +73,7 @@ let dashboard = null;
 const outputTimers = new Map();
 const toolDropdowns = createToolDropdowns({ notify });
 const outputPresets = createOutputPresets({ onSelect: openSavedOutput });
+const outputSettings = createOutputSettings({ onSave: saveOutputSettings });
 const editorTabs = createEditorTabs({ onSelect: openEditorTab });
 const projectSourcesPanel = createProjectSources({
   onDownloadSource: downloadSource,
@@ -84,7 +86,7 @@ const projectSourcesPanel = createProjectSources({
 });
 const railNavigation = createRailNavigation({
   onSourcesOpen() { projectSourcesPanel.render(projects.find(project => project.id === activeProjectId && project.kind === 'draft') || null); },
-  onOpen: () => { toolDropdowns.close(); outputPresets.close(); richEditor.closePanels(); },
+  onOpen: () => { toolDropdowns.close(); outputPresets.close(); outputSettings.close(); richEditor.closePanels(); },
 });
 const richEditor = createMaterialEditor({
   onSendToCms: markVariantSentToCms,
@@ -107,9 +109,32 @@ const richEditor = createMaterialEditor({
 });
 
 function renderOutputs(project) {
+  $('#show-sources').hidden = project?.kind !== 'draft';
   renderProjectOutputs(project);
+  outputSettings.sync(project);
   outputPresets.render(projects, project?.id || null);
   editorTabs.render(project);
+}
+
+function saveOutputSettings({ projectId, outputId, tone, voice, editorialDirection }) {
+  richEditor.flush();
+  const project = projects.find(entry => entry.id === projectId);
+  const output = projectOutputs(project).find(entry => entry.id === outputId);
+  if (!output || project.outputProcessing) return false;
+  const before = { tone: output.tone, toolPreferences: output.toolPreferences, labels: output.labels, editorialDirection: output.editorialDirection, updatedAt: output.updatedAt };
+  const projectUpdatedAt = project.updatedAt;
+  output.tone = tone;
+  output.toolPreferences = { ...output.toolPreferences, voice };
+  output.editorialDirection = editorialDirection;
+  output.labels = (Array.isArray(output.labels) ? output.labels : []).filter(label => label && !['tone', 'voice'].includes(label.key));
+  if (tone) output.labels.push({ key: 'tone', label: tone });
+  const option = [...$('#composer-voice').options].find(entry => entry.value === voice);
+  if (voice && option) output.labels.push({ key: 'voice', label: option.textContent });
+  output.updatedAt = project.updatedAt = Date.now();
+  if (!saveProjects()) { Object.assign(output, before); project.updatedAt = projectUpdatedAt; return false; }
+  renderOutputs(project);
+  notify('Variant settings saved.');
+  return true;
 }
 
 function openEditorTab(outputId) {
@@ -268,9 +293,11 @@ function showSourceStart() {
 }
 
 function closeComposer() {
+  outputSettings.close();
   outputPresets.close();
   toolDropdowns.close();
   richEditor.close();
+  $('#show-sources').hidden = true;
   try { sessionStorage.removeItem('csa.editor.active.v1'); } catch { /* Navigation still works without storage. */ }
   if ($('#new-project-dialog').open) $('#new-project-dialog').close();
   $('#composer').hidden = true;
@@ -520,6 +547,7 @@ function ensureComposerProject() {
   if (!Object.values(preferences).some(Boolean) && !direction.trim()) return null;
   project = createProject([], { kind: 'draft', awaitingOutput: true, toolPreferences: preferences, editorialDirection: direction, open: false });
   activeProjectId = project.id;
+  $('#show-sources').hidden = false;
   document.title = `${project.title} — CSA`;
   try { sessionStorage.setItem('csa.editor.active.v1', project.id); } catch { /* Project storage still keeps the guidance and selections. */ }
   return project;
@@ -571,6 +599,20 @@ $('.create-variant').addEventListener('click', () => {
 $('#output-list').addEventListener('click', event => {
   const project = projects.find(entry => entry.id === activeProjectId);
   if (!project) return;
+  const edit = event.target.closest('[data-edit-output]');
+  if (edit) {
+    if (project.outputProcessing) return;
+    richEditor.flush();
+    const output = projectOutputs(project).find(entry => entry.id === edit.dataset.editOutput);
+    if (output) {
+      railNavigation.close();
+      toolDropdowns.close();
+      outputPresets.close();
+      richEditor.closePanels();
+      outputSettings.open(project.id, output);
+    }
+    return;
+  }
   const favorite = event.target.closest('[data-favorite-output]');
   if (favorite) {
     richEditor.flush();

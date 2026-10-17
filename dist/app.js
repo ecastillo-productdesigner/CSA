@@ -1,15 +1,15 @@
-import { createProfile } from './profile.js?v=20261017-preset-primary';
-import { createSearchExperience } from './search.js?v=20261017-preset-primary';
-import { createDashboard } from './dashboard.js?v=20261017-preset-primary';
-import { createMaterialEditor } from './editor.js?v=20261017-preset-primary';
+import { createProfile } from './profile.js?v=20261017-created-label';
+import { createSearchExperience } from './search.js?v=20261017-created-label';
+import { createDashboard } from './dashboard.js?v=20261017-created-label';
+import { createMaterialEditor } from './editor.js?v=20261017-created-label';
 import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
-import { createRailNavigation } from './navigation.js?v=20261017-preset-primary';
-import { createProjectSources } from './sources.js?v=20261017-preset-primary';
-import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261017-preset-primary';
-import { createEditorTabs } from './editor-tabs.js?v=20261017-preset-primary';
-import { createOutputSettings } from './output-settings.js?v=20261017-preset-primary';
-import { createOutputPresets } from './output-presets.js?v=20261017-preset-primary';
+import { createRailNavigation } from './navigation.js?v=20261017-created-label';
+import { createProjectSources } from './sources.js?v=20261017-created-label';
+import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261017-created-label';
+import { createEditorTabs } from './editor-tabs.js?v=20261017-created-label';
+import { createOutputSettings } from './output-settings.js?v=20261017-created-label';
+import { createOutputPresets } from './output-presets.js?v=20261017-created-label';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';

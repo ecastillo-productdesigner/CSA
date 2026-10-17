@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261017-preset-primary');
+  await import('./app.js?v=20261017-created-label');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

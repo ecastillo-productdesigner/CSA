@@ -195,6 +195,9 @@ export function sampleVariant(project, selections) {
 
 export function renderOutputs(project) {
   const outputs = projectOutputs(project);
+  const pendingOutputs = outputs.filter(output => !outputIsReady(output));
+  const createdOutputs = outputs.filter(outputIsReady);
+  const showCreatedLabel = pendingOutputs.length > 0 && createdOutputs.length > 0;
   const processing = Boolean(project?.outputProcessing);
   const selectedPending = selectedPendingOutputs(project);
   const selectedIds = new Set(selectedOutputs(project).map(output => output.id));
@@ -208,7 +211,7 @@ export function renderOutputs(project) {
   document.querySelector('#output-processing-status').textContent = processing ? 'Processing your selected outputs. This takes about four seconds.' : `${selectedPending.length} pending output${selectedPending.length === 1 ? '' : 's'} selected.`;
   document.querySelector('#outputs-empty').hidden = outputs.length > 0;
   list.hidden = outputs.length === 0;
-  list.replaceChildren(...outputs.map(output => {
+  list.replaceChildren(...[...pendingOutputs, ...createdOutputs].map((output, index) => {
     const item = document.createElement('li');
     const card = document.createElement('article');
     const ready = outputIsReady(output);
@@ -305,6 +308,12 @@ export function renderOutputs(project) {
     card.append(open);
     if (!ready) card.append(selection);
     card.append(badges, edit, favorite);
+    if (showCreatedLabel && index === pendingOutputs.length) {
+      const label = document.createElement('div');
+      label.className = 'output-created-label';
+      label.textContent = 'CREATED';
+      item.append(label);
+    }
     item.append(card);
     return item;
   }));

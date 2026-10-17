@@ -156,7 +156,7 @@ main:focus { outline: none; }
 .editor-variant-tabs button:focus-visible { outline-offset: -4px; }
 .editor-tab-draft { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; min-height: 24px; padding: 2px 10px; border-radius: 999px; background: var(--draft-background); color: var(--draft-foreground); font-size: 12px; line-height: 20px; font-weight: 500; }
 .editor-tab-draft[data-sent="true"] { background: #bbf7d0; color: #14532d; white-space: nowrap; }
-.editor-tab-title { color: rgb(0 0 0 / 50%); flex: 1; min-width: 0; overflow: hidden; font-size: 15px; line-height: 22px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+.editor-tab-title { color: rgb(0 0 0 / 50%); flex: 1; min-width: 0; overflow: hidden; font-size: 15px; line-height: 22px; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
 .has-variant-tabs .material-editor { height: calc(100svh - 20px - var(--editor-tabs-height)); padding-top: 0; }
 .has-variant-tabs .editor-sheet { border-top: 0; border-radius: 0 0 15px 15px; box-shadow: none; }
 .has-variant-tabs .editor-document-status { display: none; }

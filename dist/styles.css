@@ -162,9 +162,9 @@ main:focus { outline: none; }
 .composer-canvas { min-width: 0; }
 .editor-canvas-content { min-width: 0; }
 .composer-canvas { --editor-frame-inset: 8px; --editor-tabs-height: 48px; }
-.editor-variant-tabs { display: flex; align-items: stretch; gap: 4px; width: calc(100% - var(--editor-frame-inset) - var(--editor-frame-inset)); max-width: calc(980px - var(--editor-frame-inset) - var(--editor-frame-inset)); height: var(--editor-tabs-height); margin: 0 auto; padding: 0; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: none; border-radius: 22px 22px 0 0; background: #fbf6f4; box-shadow: inset 0 -1px 0 var(--line); }
+.editor-variant-tabs { display: flex; align-items: stretch; gap: 4px; width: calc(100% - var(--editor-frame-inset) - var(--editor-frame-inset)); max-width: calc(980px - var(--editor-frame-inset) - var(--editor-frame-inset)); height: var(--editor-tabs-height); margin: 0 auto; padding: 0; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: none; border-radius: 11px 11px 0 0; background: #fbf6f4; box-shadow: inset 0 -1px 0 var(--line); }
 .editor-variant-tabs::-webkit-scrollbar { display: none; }
-.editor-variant-tabs button { position: relative; display: flex; flex: 0 0 260px; align-items: center; gap: 16px; min-width: 0; max-width: calc(100% - 8px); height: var(--editor-tabs-height); padding: 11px 14px; border: 1px solid var(--line); border-bottom: 0; border-radius: 22px 22px 0 0; background: transparent; color: var(--muted); text-align: left; }
+.editor-variant-tabs button { position: relative; display: flex; flex: 0 0 260px; align-items: center; gap: 16px; min-width: 0; max-width: calc(100% - 8px); height: var(--editor-tabs-height); padding: 11px 14px; border: 1px solid var(--line); border-bottom: 0; border-radius: 11px 11px 0 0; background: transparent; color: var(--muted); text-align: left; }
 .editor-variant-tabs button:hover { background: white; }
 .editor-variant-tabs button[aria-selected="true"] { background: white; }
 .editor-variant-tabs button:focus-visible { outline-offset: -4px; }

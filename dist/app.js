@@ -178,11 +178,11 @@ function openEditorTab(outputId) {
 
 function applyOutputPreset(projectId, outputId) {
   richEditor.flush();
-  const project = projects.find(entry => entry.id === activeProjectId);
-  if (!project) return;
   const source = projects.find(entry => entry.id === projectId && !entry.archivedAt && !entry.deletedAt);
   const output = projectOutputs(source).find(entry => entry.id === outputId && entry.isFavorite);
   if (outputId && !output) return;
+  const project = projects.find(entry => entry.id === activeProjectId) || (output ? ensureComposerProject(true) : null);
+  if (!project) return;
   for (const key of ['format', 'audience', 'voice']) {
     const select = $(`#composer-${key}`);
     const options = [...select.options];
@@ -568,26 +568,28 @@ function closeProfile() {
 
 function updateComposerActions() {
   const hasContent = !$('#material-editor').hidden ? richEditor.hasContent() : !$('#output-placeholder').hidden && ($('#content-preview').hidden || contentPreview.hasContent());
+  const preset = projects.find(project => project.id === activeProjectId)?.variantPreset;
+  const hasPreset = Boolean(preset);
+  const canConfigure = hasContent || hasPreset;
   let changed = false;
   for (const key of ['format', 'audience', 'voice']) {
     const select = $(`#composer-${key}`);
-    if (select.disabled !== !hasContent) changed = true;
-    select.disabled = !hasContent;
-    select.title = hasContent ? '' : 'Add content to the editor first';
+    if (select.disabled !== !canConfigure) changed = true;
+    select.disabled = !canConfigure;
+    select.title = canConfigure ? '' : 'Add content or select a preset first';
   }
   if (changed) toolDropdowns.refresh();
-  const preset = projects.find(project => project.id === activeProjectId)?.variantPreset;
-  const enabled = hasContent && (Boolean(preset) || ['format', 'audience', 'voice'].some(key => $(`#composer-${key}`).value));
+  const enabled = hasPreset || (hasContent && ['format', 'audience', 'voice'].some(key => $(`#composer-${key}`).value));
   $('.create-variant').disabled = !enabled;
-  $('.create-variant').title = !hasContent ? 'Add content to the editor first' : enabled ? 'Create variant' : 'Select a preset, format, audience, or voice to create a variant';
+  $('.create-variant').title = enabled ? 'Create variant' : !hasContent ? 'Add content or select a preset first' : 'Select a preset, format, audience, or voice to create a variant';
 }
 
-function ensureComposerProject() {
+function ensureComposerProject(allowEmpty = false) {
   let project = projects.find(entry => entry.id === activeProjectId);
   if (project || $('#composer').hidden) return project;
   const preferences = Object.fromEntries(['format', 'audience', 'voice'].map(name => [name, $(`#composer-${name}`).value]));
   const direction = $('#composer-editorial-direction').value;
-  if (!Object.values(preferences).some(Boolean) && !direction.trim()) return null;
+  if (!allowEmpty && !Object.values(preferences).some(Boolean) && !direction.trim()) return null;
   project = createProject([], { kind: 'draft', awaitingOutput: true, toolPreferences: preferences, editorialDirection: direction, open: false });
   activeProjectId = project.id;
   $('#show-sources').hidden = false;

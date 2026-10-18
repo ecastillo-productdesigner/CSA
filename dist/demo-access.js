@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261018-editor-labels-navigation');
+  await import('./app.js?v=20261018-preset-enable');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

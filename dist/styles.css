@@ -9,7 +9,7 @@
   --accent: #4d5d79;
   /* Design token: color/button/primary */
   --color-button-primary: #60a5fa;
-  --color-button-primary-interaction: #1d4ed8;
+  --color-button-primary-interaction: var(--color-button-primary);
   --color-button-disabled-label: #9ca3af;
   --draft-background: #e7e5e4;
   --draft-foreground: #1c1917;

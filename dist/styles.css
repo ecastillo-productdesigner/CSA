@@ -190,7 +190,7 @@ main:focus { outline: none; }
 .tool-dropdown-trigger:disabled { color: #a3adbd; background: #f5f6f8; border-color: #e3e6ec; cursor: default; }
 .tool-dropdown-trigger:not(:disabled):hover { border-color: #c4cbd5; background: #f7f8fa; }
 .tool-dropdown-trigger[aria-expanded="true"] { border-color: #a8b6c9; background: white; }
-.composer-fields .tool-dropdown-trigger:not(:disabled) { background: #f8f1ee; }
+.composer-fields .tool-dropdown-trigger:not(:disabled) { background: white; }
 .tool-dropdown-trigger[aria-expanded="true"] svg { transform: rotate(180deg); }
 .tool-dropdown-menu { position: absolute; top: calc(100% + 8px); left: 0; right: 0; z-index: 10; display: flex; flex-direction: column; max-height: min(360px, 50svh); overflow: hidden; border: 1px solid #d5dce6; border-radius: 18px; background: white; box-shadow: 0 8px 36px #29354c0d; }
 .tool-dropdown-list { min-height: 0; padding: 6px; overflow-y: auto; overscroll-behavior-y: contain; }
@@ -356,7 +356,7 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
 #editor-title { display: block; width: 100%; min-height: 44px; max-height: none; padding: 0; resize: none; overflow: hidden; border: 0; border-radius: 0; background: transparent; color: var(--heading); font-size: 29px; line-height: 1.35; font-weight: 650; letter-spacing: -.7px; }
 #editor-title::placeholder { color: #9ca7b8; }
 #editor-title:focus-visible { outline-offset: 8px; }
-.editor-toolbar { position: relative; z-index: 2; display: flex; flex-shrink: 0; align-items: center; flex-wrap: wrap; gap: 6px 0; padding: 10px 17px; border-block: 1px solid var(--line); background: #fcfcfd; }
+.editor-toolbar { position: relative; z-index: 2; display: flex; flex-shrink: 0; align-items: center; flex-wrap: wrap; gap: 6px 0; padding: 10px 17px; border-block: 1px solid var(--line); background: white; }
 .editor-toolbar-group { display: flex; align-items: center; flex-wrap: wrap; max-width: 100%; gap: 3px; padding: 0 8px; border-right: 1px solid #e5e8ee; }
 .editor-toolbar-group:first-child { padding-left: 0; }
 .editor-toolbar-group:last-child { border: 0; padding-right: 0; }

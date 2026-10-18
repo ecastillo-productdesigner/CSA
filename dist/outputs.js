@@ -205,8 +205,8 @@ export function renderOutputs(project) {
   document.querySelector('.composer-outputs').setAttribute('aria-busy', String(processing));
   const create = document.querySelector('#create-output');
   create.disabled = processing || !selectedPending.length;
-  create.title = processing ? 'Preparing selected outputs' : selectedPending.length ? `Draft ${selectedPending.length} selected variant${selectedPending.length === 1 ? '' : 's'}` : 'Select at least one pending output';
-  document.querySelector('#create-output-label').textContent = processing ? 'Processing…' : 'Draft Variant';
+  create.title = processing ? 'Preparing selected outputs' : selectedPending.length ? `Create ${selectedPending.length} selected output${selectedPending.length === 1 ? '' : 's'}` : 'Select at least one pending output';
+  document.querySelector('#create-output-label').textContent = processing ? 'Processing…' : 'Create Output';
   document.querySelector('#output-processing-spinner').hidden = !processing;
   document.querySelector('#output-processing-status').textContent = processing ? 'Processing your selected outputs. This takes about four seconds.' : `${selectedPending.length} pending output${selectedPending.length === 1 ? '' : 's'} selected.`;
   document.querySelector('#outputs-empty').hidden = outputs.length > 0;

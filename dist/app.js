@@ -6,9 +6,9 @@ import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js
 import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
 import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261018-content-preview';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
-import { createRailNavigation } from './navigation.js?v=20261017-disabled-sent';
+import { createRailNavigation } from './navigation.js?v=20261018-editor-labels';
 import { createProjectSources } from './sources.js?v=20261017-disabled-sent';
-import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261018-output-terminology';
+import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261018-editor-labels';
 import { createEditorTabs } from './editor-tabs.js?v=20261017-disabled-sent';
 import { createOutputSettings } from './output-settings.js?v=20261017-disabled-sent';
 import { createOutputPresets } from './output-presets.js?v=20261017-disabled-sent';
@@ -138,6 +138,10 @@ function renderOutputs(project) {
   outputSettings.sync(project);
   outputPresets.render(projects, project?.variantPreset || null);
   editorTabs.render(project);
+  const selectedOutput = projectOutputs(project).find(output => output.id === project?.selectedOutputId && outputIsReady(output));
+  const labels = $('#editor-variant-labels');
+  labels.replaceChildren(...createOutputBadges(selectedOutput));
+  labels.hidden = !labels.childElementCount;
 }
 
 function saveOutputSettings({ projectId, outputId, tone, voice, editorialDirection }) {

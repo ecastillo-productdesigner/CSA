@@ -21,6 +21,17 @@ export function outputIsSent(output) {
   return Number.isFinite(output?.cmsSentAt) && output.cmsSentAt > 0;
 }
 
+export function createOutputBadges(output) {
+  return (Array.isArray(output?.labels) ? output.labels : [])
+    .filter(label => label && ['format', 'audience', 'tone', 'voice'].includes(label.key) && typeof label.label === 'string')
+    .map(label => {
+      const badge = document.createElement('span');
+      badge.className = `output-badge output-badge--${label.key}`;
+      badge.textContent = label.label;
+      return badge;
+    });
+}
+
 export function selectedOutputs(project) {
   const legacyIds = [...(Array.isArray(project?.selectedPendingOutputIds) ? project.selectedPendingOutputIds : []), ...(project?.selectedOutputId ? [project.selectedOutputId] : [])];
   const selectedIds = new Set(Array.isArray(project?.selectedOutputIds) ? project.selectedOutputIds : legacyIds);
@@ -252,14 +263,7 @@ export function renderOutputs(project) {
       drag = null;
       delete badges.dataset.dragging;
     });
-    const labels = Array.isArray(output.labels) ? output.labels : [];
-    for (const label of labels) {
-      if (!label || !['format', 'audience', 'tone', 'voice'].includes(label.key) || typeof label.label !== 'string') continue;
-      const badge = document.createElement('span');
-      badge.className = `output-badge output-badge--${label.key}`;
-      badge.textContent = label.label;
-      badges.append(badge);
-    }
+    badges.append(...createOutputBadges(output));
     const indicator = document.createElement('span');
     indicator.className = 'output-selection-indicator';
     indicator.setAttribute('aria-hidden', 'true');

@@ -5,8 +5,24 @@ export function createRailNavigation({ onSourcesOpen, onOpen }) {
   };
   const sidebar = document.querySelector('#navigation-drawer');
   const drawerToggle = document.querySelector('#toggle-navigation-drawer');
+  const newProject = document.querySelector('#new-project');
+  const newProjectTooltip = document.querySelector('#new-project-tooltip');
   let drawerOpen = false;
   let active = null;
+
+  function hideNewProjectTooltip() { newProjectTooltip.hidden = true; }
+  function showNewProjectTooltip() {
+    if (drawerOpen || document.querySelector('dialog[open]')) return;
+    const bounds = newProject.getBoundingClientRect();
+    if (!bounds.width) return;
+    newProjectTooltip.style.left = `${bounds.right + 12}px`;
+    newProjectTooltip.style.top = `${bounds.top + bounds.height / 2}px`;
+    newProjectTooltip.hidden = false;
+  }
+  newProject.addEventListener('mouseenter', showNewProjectTooltip);
+  newProject.addEventListener('focus', showNewProjectTooltip);
+  for (const eventName of ['mouseleave', 'blur', 'click']) newProject.addEventListener(eventName, hideNewProjectTooltip);
+  window.addEventListener('resize', hideNewProjectTooltip);
 
   function close(name = active, restoreFocus = false) {
     if (!name || !panels[name]) return;
@@ -18,6 +34,7 @@ export function createRailNavigation({ onSourcesOpen, onOpen }) {
   }
 
   function setDrawer(open, restoreFocus = false) {
+    hideNewProjectTooltip();
     if (open === drawerOpen) return;
     close();
     if (open) onOpen?.();
@@ -63,7 +80,6 @@ export function createRailNavigation({ onSourcesOpen, onOpen }) {
       (panel.querySelector(name === 'sources' ? '#editor-add-source-button:not(:disabled), .editor-source-checkbox' : '.profile-navigation') || panel.querySelector('[data-close-navigation]'))?.focus();
     });
   }
-  document.querySelector('#new-project').addEventListener('click', () => setDrawer(true));
   for (const button of document.querySelectorAll('[data-close-navigation]')) button.addEventListener('click', () => close(button.dataset.closeNavigation, true));
   document.addEventListener('pointerdown', event => {
     if (document.querySelector('dialog[open]')) return;

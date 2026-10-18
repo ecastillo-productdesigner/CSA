@@ -70,6 +70,7 @@ body:has(#home:not([hidden])) #new-project { display: none; }
 .nav-button[aria-expanded="true"] { --icon-circle-color: #eef1f6; background: var(--icon-circle); }
 [data-tooltip]::after { content: attr(data-tooltip); position: absolute; top: 50%; left: calc(100% + 12px); transform: translateY(-50%); padding: 7px 10px; background: var(--ink); border-radius: 6px; color: white; font-size: 12px; font-weight: 500; white-space: nowrap; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .15s; }
 [data-tooltip]:hover::after { opacity: 1; visibility: visible; }
+.navigation-tooltip { position: fixed; z-index: 50; transform: translateY(-50%); padding: 7px 10px; border-radius: 6px; background: var(--ink); color: white; font-size: 12px; font-weight: 500; white-space: nowrap; pointer-events: none; }
 .profile-button { position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin: 8px auto 18px; width: 40px; height: 40px; padding: 4px; border: 0; border-radius: 50%; background: transparent; }
 .profile-button:hover { background: #f2f3f5; }
 .profile-expand { display: none; }
@@ -382,6 +383,7 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
 .editor-download button:hover { background: #f3f5f9; }
 .editor-sheet { display: flex; flex-direction: column; flex: 1; min-width: 0; min-height: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 15px; background: white; box-shadow: 0 4px 26px #25355005; }
 .editor-document-header { flex-shrink: 0; padding: 30px 38px 24px; }
+.editor-variant-labels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .editor-document-status { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; font-size: 11px; line-height: 18px; color: var(--muted); }
 .editor-draft-badge { display: inline-flex; align-items: center; height: 24px; padding: 3px 11px; border-radius: 20px; background: var(--draft-background); color: var(--draft-foreground); font-size: 11px; font-weight: 650; }
 .editor-save-error { color: #a74646; }
@@ -724,6 +726,9 @@ select:focus-visible { outline: 3px solid #99abc6; outline-offset: 3px; }
 .output-edit-menu label { display: grid; gap: 6px; margin-top: 14px; font-size: 12px; font-weight: 600; }
 .output-edit-menu input, .output-edit-menu select, .output-edit-menu textarea { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 10px; background: #fafafa; color: var(--ink); font: inherit; font-size: 14px; font-weight: 400; }
 .output-edit-menu input, .output-edit-menu select { height: 40px; padding: 8px 10px; }
+.output-edit-voice-control { position: relative; display: block; width: 100%; }
+.output-edit-voice-control select { display: block; appearance: none; -webkit-appearance: none; padding-right: 40px; }
+.output-edit-voice-control > svg { position: absolute; top: 50%; right: 12px; width: 16px; height: 16px; transform: translateY(-50%); pointer-events: none; fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .output-edit-menu textarea { min-height: 88px; max-height: 30svh; padding: 10px; line-height: 1.5; }
 .output-edit-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
 

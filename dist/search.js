@@ -61,9 +61,11 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
   function renderAddition(container, article) {
     container.replaceChildren();
     const selected = state.selected.has(article.id);
-    const ready = selected && state.readyArticleIds.has(article.id);
+    const ready = state.readyArticleIds.has(article.id);
     const inspect = container.closest('.result-card').querySelector('.result-inspect-button');
     inspect.disabled = !ready;
+    inspect.hidden = !ready;
+    inspect.previousElementSibling.hidden = !ready;
     inspect.title = ready ? 'Inspect article' : selected ? 'Adding to CSA' : 'Select this story to inspect';
     container.hidden = !selected;
     container.classList.toggle('is-loading', selected && !ready);
@@ -77,32 +79,38 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     }
   }
 
-  function toggleSelection(id) {
-    if (state.selected.has(id)) {
-      state.selected.delete(id);
-      state.readyArticleIds.delete(id);
-      clearTimeout(additionTimers.get(id));
-      additionTimers.delete(id);
-    } else {
-      state.selected.add(id);
+  function startAddition(id) {
+    if (!state.readyArticleIds.has(id) && !additionTimers.has(id)) {
       const selectionState = state;
       additionTimers.set(id, setTimeout(() => {
         additionTimers.delete(id);
         if (state !== selectionState || !state.selected.has(id)) return;
         state.readyArticleIds.add(id);
+        onSelectionChange(state.projectId, [...state.selected], [...state.readyArticleIds]);
         const container = $('#result-list').querySelector(`[data-addition-article-id="${id}"]`);
         const article = state.articles.find(article => article.id === id);
         if (container && article) renderAddition(container, article);
       }, 3000));
     }
-    onSelectionChange(state.projectId, [...state.selected]);
+  }
+
+  function toggleSelection(id) {
+    if (state.selected.has(id)) {
+      state.selected.delete(id);
+      clearTimeout(additionTimers.get(id));
+      additionTimers.delete(id);
+    } else {
+      state.selected.add(id);
+      startAddition(id);
+    }
+    onSelectionChange(state.projectId, [...state.selected], [...state.readyArticleIds]);
     render();
     $('#result-list').querySelector(`[data-article-id="${id}"] .result-select-button`)?.focus({ preventScroll: true });
   }
 
   function openPreview(id) {
     const article = state?.articles.find(article => article.id === id);
-    if (!article || !state.selected.has(id) || !state.readyArticleIds.has(id)) return;
+    if (!article || !state.readyArticleIds.has(id)) return;
     previewArticle = { ...article, projectId: state.projectId };
     document.querySelector('.article-preview-badge').textContent = 'Fictional article preview';
     $('#article-preview-notice').hidden = false;
@@ -264,7 +272,9 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       const articles = sampleArticles(query);
       const savedSelection = Array.isArray(project.selectedArticleIds) ? project.selectedArticleIds : [];
       const selected = new Set(savedSelection.filter(id => articles.some(article => article.id === id)));
-      state = { projectId: project.id, addingSources, query, articles, editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '', sort: 'newest', source: 'all', after: '', visibleCount: 4, selected, readyArticleIds: new Set(selected) };
+      const savedAdded = Array.isArray(project.addedArticleIds) ? project.addedArticleIds : savedSelection;
+      const readyArticleIds = new Set(savedAdded.filter(id => articles.some(article => article.id === id)));
+      state = { projectId: project.id, addingSources, query, articles, editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '', sort: 'newest', source: 'all', after: '', visibleCount: 4, selected, readyArticleIds };
       $('#create-draft').textContent = addingSources ? 'Add sources' : 'Draft';
       $('#cancel-source-search').hidden = !addingSources;
       $('.results-direction').hidden = addingSources;
@@ -284,6 +294,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       $('#results-filter-panel').hidden = true;
       $('#results-toggle-filters').setAttribute('aria-expanded', 'false');
       render();
+      for (const id of selected) startAddition(id);
     },
     hide() { clearAdditionTimers(); if (preview.open) preview.close(); previewArticle = null; state = null; $('#search-results').hidden = true; },
   };

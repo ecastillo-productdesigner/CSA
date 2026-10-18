@@ -1,9 +1,10 @@
 import { createProfile } from './profile.js?v=20261017-disabled-sent';
-import { createSearchExperience } from './search.js?v=20261017-disabled-sent';
+import { createSearchExperience } from './search.js?v=20261018-content-preview';
 import { createDashboard } from './dashboard.js?v=20261018-project-delete';
 import { createMaterialEditor } from './editor.js?v=20261017-disabled-sent';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261018-project-delete';
 import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
+import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261018-content-preview';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
 import { createRailNavigation } from './navigation.js?v=20261017-disabled-sent';
 import { createProjectSources } from './sources.js?v=20261017-disabled-sent';
@@ -76,6 +77,17 @@ const outputTimers = new Map();
 const toolDropdowns = createToolDropdowns({ notify });
 const outputPresets = createOutputPresets({ onSelect: applyOutputPreset });
 const outputSettings = createOutputSettings({ onSave: saveOutputSettings });
+const contentPreview = createContentPreview({
+  onChange(text) {
+    const project = projects.find(entry => entry.id === activeProjectId);
+    if (!project?.contentPreview) return;
+    project.contentPreview.text = text;
+    if (project.sources[0]) project.sources[0].text = text;
+    project.updatedAt = Date.now();
+    saveProjects();
+    updateComposerActions();
+  },
+});
 const editorTabs = createEditorTabs({ onSelect: openEditorTab });
 const projectSourcesPanel = createProjectSources({
   onDownloadSource: downloadSource,
@@ -260,10 +272,12 @@ function createProject(sources, options = {}) {
     createdAt: Date.now(),
     sources,
     dashboard: first?.type !== 'search',
+    ...(first?.type === 'search' ? { addedArticleIds: [] } : {}),
     ...(options.kind ? { kind: options.kind } : {}),
     ...(options.draftText !== undefined ? { draftText: options.draftText } : {}),
     ...(options.document ? { document: options.document } : {}),
     ...(options.awaitingOutput ? { awaitingOutput: true } : {}),
+    ...(options.contentPreview ? { contentPreview: options.contentPreview } : {}),
     ...(typeof options.editorialDirection === 'string' ? { editorialDirection: options.editorialDirection } : {}),
     ...(options.toolPreferences ? { toolPreferences: options.toolPreferences } : {}),
   };
@@ -466,6 +480,12 @@ function showProject(id) {
 
 function renderSourceStory(project) {
   const latestOutput = project.viewOriginalDraft ? null : projectOutputs(project).filter(outputIsReady).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))[0];
+  if (project.contentPreview && !latestOutput) {
+    contentPreview.render(project.contentPreview);
+    $('#output-placeholder').scrollTop = 0;
+    return;
+  }
+  contentPreview.hide();
   let story;
   if (latestOutput) {
     if (populateOutputContent(latestOutput)) saveProjects();
@@ -543,7 +563,7 @@ function closeProfile() {
 }
 
 function updateComposerActions() {
-  const hasContent = !$('#material-editor').hidden ? richEditor.hasContent() : !$('#output-placeholder').hidden;
+  const hasContent = !$('#material-editor').hidden ? richEditor.hasContent() : !$('#output-placeholder').hidden && ($('#content-preview').hidden || contentPreview.hasContent());
   let changed = false;
   for (const key of ['format', 'audience', 'voice']) {
     const select = $(`#composer-${key}`);
@@ -750,8 +770,18 @@ function submitSource(input) {
     const sources = urls.map(url => ({ type: 'link', title: url, url }));
     const sample = sampleVariant({ sources }, []);
     populateOutputContent(sample);
-    createProject(sources, { title: sample.title, kind: 'draft', draftText: `Fictional sample story for the CSA demo.\n\n${sample.draftText}`, document: { ops: [{ insert: 'Fictional sample story for the CSA demo.\n' }, ...sample.document.ops] } });
-    notify('A fictional sample story is ready. Your link is saved in Sources.');
+    const preview = {
+      title: sample.title,
+      publishedDate: null,
+      source: [...new Set(urls.map(url => new URL(url).hostname.replace(/^www\./, '')))].join(', '),
+      paragraphs: sample.draftText.split(/\n\s*\n/).map(value => value.trim()).filter(Boolean),
+      photoCaptions: [], headings: [],
+    };
+    preview.text = formatContentPreview(preview);
+    sources[0].title = sample.title;
+    sources[0].text = preview.text;
+    createProject(sources, { title: sample.title, kind: 'draft', awaitingOutput: true, contentPreview: preview });
+    notify('Demo Content Preview ready. Your link is saved in Sources.');
   } else startSearch(input);
 }
 
@@ -992,9 +1022,13 @@ const searchExperience = createSearchExperience({
     const project = projects.find(entry => entry.id === id);
     if (project) { project.editorialDirection = direction; saveProjects(); }
   },
-  onSelectionChange(id, selection) {
+  onSelectionChange(id, selection, addedArticleIds) {
     const project = projects.find((entry) => entry.id === id);
-    if (project) { project.selectedArticleIds = selection; saveProjects(); }
+    if (project) {
+      project.selectedArticleIds = selection;
+      if (Array.isArray(addedArticleIds)) project.addedArticleIds = addedArticleIds;
+      saveProjects();
+    }
   },
   onDraft({ query, articles, editorialDirection }) {
     const sources = articles.map((article) => ({ type: 'text', title: article.title, text: `Fictional sample article · ${article.source} · ${article.date}\n\n${article.paragraphs.join('\n\n')}` }));

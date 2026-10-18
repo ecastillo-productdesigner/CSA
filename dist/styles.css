@@ -2,10 +2,10 @@
   color-scheme: light;
   --background: #fbf6f4;
   --surface: #ffffff;
-  --ink: #4d5d79;
-  --heading: #1e293b;
+  --ink: #171717;
+  --heading: #171717;
   --muted: #7e8999;
-  --line: #d4d4d4;
+  --line: #e5e5e5;
   --accent: #4d5d79;
   /* Design token: color/button/primary */
   --color-button-primary: #3b82f6;
@@ -361,7 +361,7 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
 .editor-toolbar-group { display: flex; align-items: center; flex-wrap: wrap; max-width: 100%; gap: 3px; padding: 0 8px; border-right: 1px solid var(--line); }
 .editor-toolbar-group:first-child { padding-left: 0; }
 .editor-toolbar-group:last-child { border: 0; padding-right: 0; }
-.editor-toolbar button, .editor-color-control { display: inline-grid; position: relative; place-items: center; flex-shrink: 0; width: 31px; height: 32px; padding: 6px; border: 0; border-radius: 5px; background: transparent; color: #52617a; font-size: 17px; line-height: 20px; }
+.editor-toolbar button, .editor-color-control { display: inline-grid; position: relative; place-items: center; flex-shrink: 0; width: 31px; height: 32px; padding: 6px; border: 0; border-radius: 5px; background: transparent; color: var(--ink); font-size: 17px; line-height: 20px; }
 .editor-toolbar button { width: 32px; border-radius: 50%; }
 .editor-toolbar button:hover { --icon-circle-color: #eaf0f7; background: var(--icon-circle); }
 .editor-color-control:hover { background: #eaf0f7; }
@@ -370,18 +370,18 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
 .editor-toolbar .ql-stroke { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .editor-toolbar .ql-fill { fill: currentColor; }
 .editor-toolbar .ql-thin { stroke-width: 1; }
-.editor-toolbar select { max-width: 125px; min-width: 0; height: 32px; padding: 4px 20px 4px 7px; border: 0; border-radius: 5px; background-color: transparent; color: #52617a; font: inherit; font-size: 12px; }
+.editor-toolbar select { max-width: 125px; min-width: 0; height: 32px; padding: 4px 20px 4px 7px; border: 0; border-radius: 5px; background-color: transparent; color: var(--ink); font: inherit; font-size: 12px; }
 #editor-size { max-width: 85px; }
 .editor-color-control { border-bottom: 3px solid var(--line); height: 28px; padding-bottom: 2px; font-size: 15px; font-weight: 650; }
 .editor-color-control input { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; opacity: 0; cursor: pointer; }
 .editor-color-control:focus-within { outline: 3px solid #99abc6; outline-offset: 2px; }
-.editor-toolbar mark { padding: 0 2px; background: #fff0a8; color: #52617a; font-size: 14px; }
+.editor-toolbar mark { padding: 0 2px; background: #fff0a8; color: var(--ink); font-size: 14px; }
 .editor-clear-mark { position: absolute; right: 2px; bottom: 0; font-size: 12px; }
 .editor-list-dot { position: absolute; left: 3px; font-size: 13px; }
 #rich-text-editor.ql-container { flex: 1; min-height: 0; height: 0; border: 0; font-family: inherit; font-size: 16px; }
-#rich-text-editor .ql-editor { min-height: 0; height: 100%; padding: 30px 38px 60px; overflow-y: auto; overscroll-behavior-y: contain; overflow-wrap: anywhere; color: #303d50; line-height: 1.7; }
+#rich-text-editor .ql-editor { min-height: 0; height: 100%; padding: 30px 38px 60px; overflow-y: auto; overscroll-behavior-y: contain; overflow-wrap: anywhere; color: var(--ink); line-height: 1.7; }
 #rich-text-editor .ql-editor>p { margin: 0 0 20px; }
-#rich-text-editor .ql-editor h1, #rich-text-editor .ql-editor h2, #rich-text-editor .ql-editor h3 { margin: 25px 0 15px; color: #28364d; line-height: 1.4; font-weight: 650; }
+#rich-text-editor .ql-editor h1, #rich-text-editor .ql-editor h2, #rich-text-editor .ql-editor h3 { margin: 25px 0 15px; color: var(--ink); line-height: 1.4; font-weight: 650; }
 #rich-text-editor .ql-editor h1 { font-size: 27px; }
 #rich-text-editor .ql-editor h2 { font-size: 23px; }
 #rich-text-editor .ql-editor h3 { font-size: 19px; }
@@ -390,7 +390,7 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
 #rich-text-editor .ql-editor.ql-blank::before { left: 38px; right: 38px; color: #9aa5b5; font-style: normal; }
 .editor-footer { display: flex; flex-shrink: 0; align-items: center; flex-wrap: wrap; gap: 10px 20px; min-height: 48px; padding: 13px 24px; border-top: 1px solid var(--line); color: #7b879a; font-size: 11px; line-height: 18px; }
 .editor-metadata-trigger { display: inline-flex; flex-shrink: 0; align-items: center; gap: 5px; padding: 0; border: 0; background: transparent; color: var(--ink); font: inherit; font-weight: 550; }
-.editor-metadata-trigger:hover { color: #263852; }
+.editor-metadata-trigger:hover { color: var(--ink); }
 .editor-publish-actions { display: flex; flex-shrink: 0; justify-content: center; padding: 12px 24px; }
 .editor-wordpress-button { width: min(300px, 100%); padding: 0 24px; border: 1px solid var(--line); border-radius: 10px; background: var(--color-button-primary); color: white; }
 .editor-wordpress-button:not(:disabled):hover { background: var(--color-button-primary); border-color: var(--line); }
@@ -401,13 +401,13 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
 .editor-flyover:focus { outline: none; }
 .editor-nav-button .editor-flyover-chevron, .editor-metadata-trigger .editor-flyover-chevron { width: 12px; height: 12px; transition: transform .15s ease; }
 .editor-nav-button[aria-expanded="true"] .editor-flyover-chevron, .editor-metadata-trigger[aria-expanded="true"] .editor-flyover-chevron { transform: rotate(180deg); }
-.editor-seo-metadata { display: grid; gap: 14px; margin: 0; color: #26344a; font-size: 14px; line-height: 1.65; overflow-wrap: anywhere; }
+.editor-seo-metadata { display: grid; gap: 14px; margin: 0; color: var(--ink); font-size: 14px; line-height: 1.65; overflow-wrap: anywhere; }
 .editor-seo-metadata dt { display: inline; color: var(--muted); font-weight: 700; }
 .editor-seo-metadata dd { display: inline; margin: 0; }
 .editor-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
 .editor-panel-heading h2 { margin: 0; font-size: 15px; font-weight: 650; }
 .editor-context-panel label, .editor-link-dialog label { display: grid; gap: 8px; font-size: 12px; font-weight: 600; }
-.editor-context-panel input, .editor-link-dialog input { width: 100%; min-width: 0; height: 40px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; background: #fcfcfd; color: #34445d; font-size: 13px; font-weight: 400; }
+.editor-context-panel input, .editor-link-dialog input { width: 100%; min-width: 0; height: 40px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; background: #fcfcfd; color: var(--ink); font-size: 13px; font-weight: 400; }
 .editor-find-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 #editor-source-list { display: grid; gap: 15px; max-height: 300px; overflow-y: auto; margin: 0 0 20px; padding: 0; list-style: none; }
 #editor-source-list li { display: flex; align-items: flex-start; gap: 12px; min-width: 0; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
@@ -531,7 +531,7 @@ textarea::placeholder { color: var(--muted); }
 @keyframes rail-panel-reveal { from { opacity: 0; transform: translateX(-5px); } to { opacity: 1; transform: translateX(0); } }
 .workspace { width: 100%; min-width: 0; max-width: 670px; align-self: start; margin-top: min(15vh, 130px); padding-bottom: 50px; }
 .text-button { border: 0; padding: 4px 0; background: transparent; font-size: 12px; font-weight: 600; }
-.text-button:hover { color: #263852; }
+.text-button:hover { color: var(--ink); }
 .back-button { display: block; margin-bottom: 36px; color: var(--muted); }
 .workspace h1 { overflow-wrap: anywhere; font-size: clamp(23px, 3vw, 30px); line-height: 1.35; letter-spacing: -.6px; margin: 0; }
 .workspace-intro { font-size: 14px; margin: 12px 0 42px; color: var(--muted); }
@@ -577,7 +577,7 @@ select:focus-visible { outline: 3px solid #99abc6; outline-offset: 3px; }
 .result-preview-button svg { width: 16px; height: 16px; }
 .result-preview-button:hover { --icon-circle-color: #edf0f5; background: var(--icon-circle); }
 .result-item .result-copy { padding-right: 30px; }
-.result-card { position: relative; display: grid; grid-template-columns: 104px minmax(0, 1fr); align-items: center; gap: 15px; width: 100%; min-height: 116px; padding: 10px; border: 1px solid var(--line); border-radius: 9px; background: white; text-align: left; color: #111; transition: border-color .15s, box-shadow .15s; }
+.result-card { position: relative; display: grid; grid-template-columns: 104px minmax(0, 1fr); align-items: center; gap: 15px; width: 100%; min-height: 116px; padding: 10px; border: 1px solid var(--line); border-radius: 9px; background: white; text-align: left; color: var(--ink); transition: border-color .15s, box-shadow .15s; }
 .result-select-button { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; padding: 0; border: 0; border-radius: inherit; background: transparent; }
 .result-card:hover { border-color: var(--line); box-shadow: 0 3px 12px #4d5d7909; }
 .result-card[data-selected="true"] { border-color: var(--line); box-shadow: 0 0 0 1px var(--line); }

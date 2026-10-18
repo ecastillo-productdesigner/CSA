@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261018-output-terminology');
+  await import('./app.js?v=20261018-project-delete');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

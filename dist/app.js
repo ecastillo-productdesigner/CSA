@@ -1,8 +1,9 @@
 import { createProfile } from './profile.js?v=20261017-disabled-sent';
 import { createSearchExperience } from './search.js?v=20261017-disabled-sent';
-import { createDashboard } from './dashboard.js?v=20261017-disabled-sent';
+import { createDashboard } from './dashboard.js?v=20261018-project-delete';
 import { createMaterialEditor } from './editor.js?v=20261017-disabled-sent';
-import { saveDocuments, downloadDocument } from './documents.js?v=20261016-document-upload';
+import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261018-project-delete';
+import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
 import { createRailNavigation } from './navigation.js?v=20261017-disabled-sent';
 import { createProjectSources } from './sources.js?v=20261017-disabled-sent';
@@ -973,6 +974,7 @@ for (const button of document.querySelectorAll('[data-close]')) button.addEventL
 });
 for (const dialog of document.querySelectorAll('dialog')) {
   dialog.addEventListener('click', (event) => {
+    if (dialog.id === 'delete-project-dialog' && dialog.getAttribute('aria-busy') === 'true') return;
     if (['material-dialog', 'new-project-dialog'].includes(dialog.id) && materialBusy) return;
     if (event.target !== dialog) return;
     const bounds = dialog.getBoundingClientRect();
@@ -1074,9 +1076,32 @@ $('#toast-undo').addEventListener('click', () => {
   action?.();
 });
 
+async function deleteProjectPermanently(id) {
+  richEditor.flush();
+  let removal;
+  try {
+    removal = removeProjectContent(projects, id, next => localStorage.setItem(storageKey, JSON.stringify(next)));
+  } catch { return false; }
+  if (!removal) return false;
+  projects = removal.projects;
+  clearTimeout(outputTimers.get(id));
+  outputTimers.delete(id);
+  outputPresets.render(projects, null);
+  dashboard.render(projects);
+  if (activeProjectId === id) showHome(false);
+  try { await deleteDocuments(removal.attachmentIds); }
+  catch {
+    notify('Project deleted. Some uploaded files could not be cleared from browser storage.');
+    return true;
+  }
+  notify('Project deleted permanently.');
+  return true;
+}
+
 dashboard = createDashboard({
   onNew: showProjectStart,
   onOpen: showProject,
+  onDelete: deleteProjectPermanently,
 });
 dashboard.render(projects);
 dashboard.reveal();

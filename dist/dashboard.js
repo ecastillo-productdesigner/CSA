@@ -21,7 +21,7 @@ function projectDate(timestamp) {
   return day.format(timestamp) === day.format(Date.now()) ? 'Today' : new Date(timestamp).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric' });
 }
 
-export function createDashboard({ onNew, onOpen }) {
+export function createDashboard({ onNew, onOpen, onDelete }) {
   let revealTimer;
   const home = document.querySelector('#home');
   const grid = document.querySelector('#dashboard-grid');
@@ -29,6 +29,67 @@ export function createDashboard({ onNew, onOpen }) {
   const status = document.querySelector('#dashboard-load-status');
   let visibleRows = 6;
   let columns = 3;
+  let openMenu = null;
+  let pendingDelete = null;
+  let deleting = false;
+  const deleteDialog = document.querySelector('#delete-project-dialog');
+  const deleteConfirm = document.querySelector('#delete-project-confirm');
+  const deleteCancel = document.querySelector('#delete-project-cancel');
+  const deleteError = document.querySelector('#delete-project-error');
+
+  function closeMenu(restoreFocus = false) {
+    if (!openMenu) return;
+    const { trigger, menu } = openMenu;
+    menu.hidden = true;
+    trigger.setAttribute('aria-expanded', 'false');
+    openMenu = null;
+    if (restoreFocus) trigger.focus();
+  }
+
+  function showMenu(trigger, menu) {
+    closeMenu();
+    menu.hidden = false;
+    trigger.setAttribute('aria-expanded', 'true');
+    openMenu = { trigger, menu };
+    menu.querySelector('button').focus();
+  }
+
+  document.addEventListener('pointerdown', event => {
+    if (openMenu && !openMenu.menu.contains(event.target) && !openMenu.trigger.contains(event.target)) closeMenu();
+  });
+  document.addEventListener('keydown', event => {
+    if (!openMenu) return;
+    if (event.key === 'Escape') { event.preventDefault(); closeMenu(true); }
+    else if (event.key === 'Tab') closeMenu(true);
+  });
+
+  deleteCancel.addEventListener('click', () => deleteDialog.close());
+  deleteDialog.addEventListener('cancel', event => { if (deleting) event.preventDefault(); });
+  deleteDialog.addEventListener('close', () => {
+    const trigger = pendingDelete?.trigger;
+    pendingDelete = null;
+    (trigger?.isConnected ? trigger : grid.querySelector('.project-card-menu-button') || grid.querySelector('#dashboard-new-project'))?.focus({ preventScroll: true });
+  });
+  deleteConfirm.addEventListener('click', async () => {
+    if (!pendingDelete || deleting) return;
+    deleting = true;
+    deleteDialog.setAttribute('aria-busy', 'true');
+    deleteCancel.disabled = deleteConfirm.disabled = true;
+    deleteConfirm.querySelector('span').textContent = 'Deleting…';
+    try {
+      if (!await onDelete(pendingDelete.id)) throw new Error('Deletion failed');
+      deleteDialog.close();
+    } catch {
+      deleteError.textContent = 'This project could not be deleted. Please try again.';
+      deleteError.hidden = false;
+    } finally {
+      deleting = false;
+      deleteDialog.removeAttribute('aria-busy');
+      deleteCancel.disabled = deleteConfirm.disabled = false;
+      deleteConfirm.querySelector('span').textContent = 'Delete project';
+      if (deleteDialog.open) deleteCancel.focus();
+    }
+  });
 
   function updateVisible(announce = false) {
     if (home.clientWidth) {
@@ -62,6 +123,7 @@ export function createDashboard({ onNew, onOpen }) {
   }
 
   function render(projects) {
+    closeMenu();
     const dashboardProjects = projects.filter(project => project.dashboard === true && !project.archivedAt && !project.deletedAt);
     grid.replaceChildren();
     const button = node('button', 'new-project-tile');
@@ -78,6 +140,38 @@ export function createDashboard({ onNew, onOpen }) {
       const sentCount = variants.filter(outputIsSent).length;
       const badges = node('div', 'project-badges');
       badges.append(node('span', `project-badge${sentCount ? ' project-badge--sent' : ''}`, sentCount ? `${sentCount} ${sentCount === 1 ? 'variant' : 'variants'} sent to CMS` : 'Draft'));
+      const more = node('button', 'icon-button project-card-menu-button');
+      more.type = 'button';
+      more.setAttribute('aria-label', `Project options: ${project.title}`);
+      more.setAttribute('aria-haspopup', 'menu');
+      more.setAttribute('aria-expanded', 'false');
+      more.append(icon('more'));
+      const menu = node('div', 'project-card-menu');
+      menu.id = `project-menu-${project.id}`;
+      menu.setAttribute('role', 'menu');
+      menu.setAttribute('aria-label', `Options for ${project.title}`);
+      menu.hidden = true;
+      more.setAttribute('aria-controls', menu.id);
+      const remove = node('button', 'project-card-delete');
+      remove.type = 'button';
+      remove.setAttribute('role', 'menuitem');
+      remove.append(icon('delete-project'), node('span', '', 'Delete'));
+      remove.addEventListener('click', () => {
+        closeMenu();
+        pendingDelete = { id: project.id, trigger: more };
+        document.querySelector('#delete-project-name').textContent = project.title;
+        deleteError.hidden = true;
+        deleteDialog.showModal();
+        deleteCancel.focus();
+      });
+      menu.append(remove);
+      menu.addEventListener('keydown', event => {
+        if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) { event.preventDefault(); remove.focus(); }
+      });
+      more.addEventListener('click', () => openMenu?.trigger === more ? closeMenu(true) : showMenu(more, menu));
+      more.addEventListener('keydown', event => {
+        if (['ArrowDown', 'ArrowUp'].includes(event.key)) { event.preventDefault(); showMenu(more, menu); }
+      });
       const title = node('h2', '', project.title);
       title.title = project.title;
       const meta = node('div', 'project-meta');
@@ -88,9 +182,9 @@ export function createDashboard({ onNew, onOpen }) {
       const open = node('button', 'project-open', 'Open');
       open.type = 'button';
       open.setAttribute('aria-label', `Open ${project.title}`);
-      open.addEventListener('click', () => onOpen(project.id));
+      open.addEventListener('click', () => { closeMenu(); onOpen(project.id); });
       actions.append(open);
-      card.append(badges, title, meta, actions);
+      card.append(badges, more, menu, title, meta, actions);
       grid.append(card);
     }
     updateVisible();

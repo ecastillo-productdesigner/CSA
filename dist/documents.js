@@ -52,3 +52,16 @@ export async function downloadDocument(source) {
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
+
+export async function deleteDocuments(attachmentIds) {
+  if (!attachmentIds.length) return;
+  const database = await openDatabase();
+  await new Promise((resolve, reject) => {
+    const transaction = database.transaction('documents', 'readwrite');
+    const store = transaction.objectStore('documents');
+    attachmentIds.forEach(id => store.delete(id));
+    transaction.oncomplete = resolve;
+    transaction.onabort = () => reject(transaction.error || new Error('Uploaded documents could not be removed.'));
+    transaction.onerror = () => {};
+  });
+}

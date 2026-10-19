@@ -441,7 +441,6 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
 .editor-document-header { flex-shrink: 0; padding: 30px 38px 24px; }
 .editor-variant-labels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .editor-document-status { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; font-size: 11px; line-height: 18px; color: var(--muted); }
-.editor-draft-badge { display: inline-flex; align-items: center; height: 24px; padding: 3px 11px; border-radius: 20px; background: var(--draft-background); color: var(--draft-foreground); font-size: 11px; font-weight: 650; }
 .editor-save-error { color: #a74646; }
 #editor-title { display: block; width: 100%; min-height: 44px; max-height: none; padding: 0; resize: none; overflow: hidden; border: 0; border-radius: 0; background: transparent; color: var(--heading); font-size: 29px; line-height: 1.35; font-weight: 650; letter-spacing: -.7px; }
 #editor-title::placeholder { color: var(--muted); }
@@ -863,4 +862,3 @@ button:disabled:not(.output-open):not(.output-selection-button) { color: var(--c
 .editor-source-menu svg { width: 18px; height: 18px; }
 
 .editor-source-variant-context { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px; margin: 0 0 12px; color: var(--muted); font-size: 11px; line-height: 1.5; }
-.editor-source-variant-context .text-button { font-size: 11px; color: var(--ink); }

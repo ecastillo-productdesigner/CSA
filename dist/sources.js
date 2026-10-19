@@ -1,3 +1,20 @@
+export function sourceSelectionFor(project, variant = null) {
+  const available = project?.sources || [];
+  if (!variant) return { sources: available, selectedSources: new Set(available.filter(source => source.selected !== false)) };
+  const saved = Array.isArray(variant.sourceSnapshots) ? variant.sourceSnapshots
+    : (variant.selectedSourceIndexes || []).map(index => available[index]).filter(Boolean);
+  const selectedSources = new Set();
+  const historical = [];
+  for (const snapshot of saved) {
+    const match = available.find(source => !selectedSources.has(source) && (snapshot.attachmentId
+      ? source.attachmentId === snapshot.attachmentId
+      : source.type === snapshot.type && source.title === snapshot.title && source.url === snapshot.url && source.text === snapshot.text));
+    selectedSources.add(match || snapshot);
+    if (!match) historical.push(snapshot);
+  }
+  return { sources: [...available, ...historical], selectedSources };
+}
+
 function sourceUrl(value) {
   try {
     const url = new URL(value);
@@ -13,13 +30,11 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
   context.className = 'editor-source-variant-context';
   context.hidden = true;
   const contextText = document.createElement('span');
-  const showAll = document.createElement('button');
-  showAll.className = 'text-button';
-  showAll.type = 'button';
-  showAll.textContent = 'Show all sources';
-  context.append(contextText, showAll);
+  context.append(contextText);
   add.after(context);
   let visibleSources = [];
+  let selectedSources = new Set();
+  let sourceVariant = null;
   let project = null;
   let menuTarget = null;
   const menu = document.createElement('div');
@@ -110,21 +125,23 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
 
   function updateSelectionStatus() {
     const sources = visibleSources;
-    const selected = sources.filter(source => source.selected !== false).length;
-    status.textContent = sources.length ? `${selected} of ${sources.length} selected for new variants` : '';
+    const selected = selectedSources.size;
+    status.textContent = sources.length ? `${selected} of ${sources.length} selected ${sourceVariant ? 'for this variant' : 'for new variants'}` : '';
   }
 
   add.addEventListener('click', () => { if (project) onAddSource(project.id); });
-  showAll.addEventListener('click', () => render(project));
 
   function render(next, { variant = null } = {}) {
     closeMenu();
     project = next;
+    sourceVariant = variant;
     context.hidden = !variant;
     contextText.textContent = variant ? `${variant.sourceCount || 0} ${variant.sourceCount === 1 ? 'source' : 'sources'} used for this variant` : '';
     onVariantContextChange(variant?.id || null);
     const allSources = project?.sources || [];
-    visibleSources = variant ? (variant.sourceSnapshots || []).map(saved => allSources.find(source => saved.attachmentId ? source.attachmentId === saved.attachmentId : source.type === saved.type && source.title === saved.title && source.url === saved.url && source.text === saved.text) || saved) : allSources;
+    const selection = sourceSelectionFor(project, variant);
+    visibleSources = selection.sources;
+    selectedSources = selection.selectedSources;
     add.disabled = !project;
     list.replaceChildren();
     updateSelectionStatus();
@@ -140,11 +157,20 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
       checkbox.className = 'editor-source-checkbox';
-      checkbox.checked = source.selected !== false;
+      checkbox.checked = selectedSources.has(source);
       const available = allSources.includes(source);
       if (!available) { checkbox.checked = true; checkbox.disabled = true; }
       checkbox.setAttribute('aria-label', `Include source: ${source.title}`);
       checkbox.addEventListener('change', () => {
+        if (checkbox.checked) selectedSources.add(source); else selectedSources.delete(source);
+        if (sourceVariant) {
+          const index = allSources.indexOf(source);
+          allSources.forEach(entry => { entry.selected = selectedSources.has(entry); });
+          onSelectionChange(project.id);
+          render(project);
+          list.querySelectorAll('.editor-source-checkbox')[index]?.focus({ preventScroll: true });
+          return;
+        }
         source.selected = checkbox.checked;
         updateSelectionStatus();
         onSelectionChange(project.id);

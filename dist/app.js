@@ -1140,12 +1140,15 @@ async function deleteProjectPermanently(id) {
 
 function renameProject(id, title) {
   const name = title.trim();
-  if (!name || name.length > 200 || !projects.some(project => project.id === id && !project.deletedAt && !project.archivedAt)) return false;
-  const next = projects.map(project => project.id === id ? { ...project, title: name, updatedAt: Date.now() } : project);
+  const project = projects.find(entry => entry.id === id && !entry.deletedAt && !entry.archivedAt);
+  if (!name || name.length > 200 || !project) return false;
+  const renamed = { ...project, title: name, updatedAt: Date.now() };
+  const next = projects.map(entry => entry === project ? renamed : entry);
   // Keep the current name if browser storage cannot save the change.
   try { localStorage.setItem(storageKey, JSON.stringify(next)); }
   catch { return false; }
-  projects = next;
+  // Preserve references held by any output processing already in progress.
+  Object.assign(project, renamed);
   outputPresets.render(projects, null);
   dashboard.render(projects);
   notify('Project name updated.');

@@ -5204,9 +5204,9 @@
       "type": "dimension",
       "layer": "component",
       "category": "editor-toolbar",
-      "value": "18px",
-      "reference": "foundation.radius.18",
-      "description": "User-requested 18 px corner radius for the editor toolbar.",
+      "value": "10px",
+      "reference": "foundation.radius.10",
+      "description": "User-requested 10 px corner radius, matching dropdown fields and menus.",
       "status": "approved-update"
     },
     {

@@ -5204,9 +5204,9 @@
       "type": "dimension",
       "layer": "component",
       "category": "editor-toolbar",
-      "value": "999px",
-      "reference": "foundation.radius.999",
-      "description": "Pill outline requested for the compact editor toolbar.",
+      "value": "18px",
+      "reference": "foundation.radius.18",
+      "description": "User-requested 18 px corner radius for the editor toolbar.",
       "status": "approved-update"
     },
     {

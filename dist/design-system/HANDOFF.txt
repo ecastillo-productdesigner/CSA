@@ -53,7 +53,7 @@ COMPONENT CONTRACTS
   Source checkbox: 18 px, outside photo area at top left.
   Icons: Material Symbols Outlined font with FILL 1 throughout.
     Keep custom SVG geometry where already supplied.
-  Editor toolbar: compact pill, 2 px top/bottom padding, document-aligned;
+  Editor toolbar: 18 px radius, 2 px top/bottom padding, document-aligned;
     horizontally scrollable
     on small screens. The text-style menu reuses the shared dropdown.
   Navigation: hover and active surfaces use neutral gray #f5f5f5,

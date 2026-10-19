@@ -362,7 +362,7 @@
   --csa-component-icon-size-sent: 16px;
   --csa-component-icon-hover-background: var(--csa-semantic-color-surface-hover);
   --csa-component-icon-fill: 1;
-  --csa-component-editor-toolbar-radius: var(--csa-foundation-radius-999);
+  --csa-component-editor-toolbar-radius: var(--csa-foundation-radius-18);
   --csa-component-editor-toolbar-inset-desktop: 38px;
   --csa-component-editor-toolbar-inset-mobile: var(--csa-foundation-space-16);
   --csa-component-editor-toolbar-padding-inline: var(--csa-foundation-space-14);

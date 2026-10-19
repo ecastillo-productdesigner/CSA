@@ -954,7 +954,7 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
 .output-edit-heading h2 { margin: 0; font-size: var(--csa-foundation-font-size-16); line-height: var(--csa-foundation-line-height-24); }
 .output-edit-menu label { display: grid; gap: var(--csa-foundation-space-6); margin-top: var(--csa-foundation-space-14); font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-600); }
 .output-edit-menu .field-optional { color: var(--muted); font-weight: var(--csa-foundation-font-weight-400); }
-.output-edit-menu input, .output-edit-menu select, .output-edit-menu textarea { width: 100%; min-width: 0; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-10); background: var(--csa-foundation-color-neutral-50); color: var(--ink); font: inherit; font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-400); }
+.output-edit-menu input, .output-edit-menu select, .output-edit-menu textarea { width: 100%; min-width: 0; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-10); background: var(--csa-foundation-color-neutral-0); color: var(--ink); font: inherit; font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-400); }
 .output-edit-menu input, .output-edit-menu select { height: 40px; padding: var(--csa-foundation-space-8) var(--csa-foundation-space-10); }
 .output-edit-voice-field { margin-top: var(--csa-foundation-space-14); }
 .output-edit-voice-control { position: relative; display: block; width: 100%; }

@@ -6,6 +6,9 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onOpen }) 
   const sidebar = document.querySelector('#navigation-drawer');
   const drawerToggle = document.querySelector('#toggle-navigation-drawer');
   const newProject = document.querySelector('#new-project');
+  const home = document.querySelector('#home');
+  const mobile = window.matchMedia('(max-width: 768px)');
+  const mobileHomepage = () => mobile.matches && !home.hidden;
   const tooltips = [
     { trigger: newProject, tooltip: document.querySelector('#new-project-tooltip') },
     { trigger: panels.sources.trigger, tooltip: document.querySelector('#sources-tooltip') },
@@ -17,7 +20,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onOpen }) 
   function hideTooltips() { for (const { tooltip } of tooltips) tooltip.hidden = true; }
   function showTooltip(trigger, tooltip) {
     hideTooltips();
-    if (drawerOpen || document.querySelector('dialog[open]')) return;
+    if (drawerOpen || mobileHomepage() || document.querySelector('dialog[open]')) return;
     const bounds = trigger.getBoundingClientRect();
     if (!bounds.width || !bounds.height) return;
     tooltip.style.left = `${bounds.right + 12}px`;
@@ -56,7 +59,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onOpen }) 
 
   function open(name) {
     if (document.querySelector('dialog[open]') || !panels[name]) return;
-    setDrawer(true);
+    setDrawer(!mobileHomepage());
     if (active === name) return;
     close();
     onOpen?.();
@@ -68,17 +71,21 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onOpen }) 
 
   drawerToggle.addEventListener('click', () => setDrawer(false, true));
   sidebar.addEventListener('click', event => {
-    if (!drawerOpen && !event.target.closest('button, a, input, textarea, select')) setDrawer(true);
+    if (!mobileHomepage() && !drawerOpen && !event.target.closest('button, a, input, textarea, select')) setDrawer(true);
   });
   sidebar.addEventListener('keydown', event => {
-    if (event.target !== sidebar || !['Enter', ' '].includes(event.key)) return;
+    if (mobileHomepage() || event.target !== sidebar || !['Enter', ' '].includes(event.key)) return;
     event.preventDefault();
     setDrawer(!drawerOpen, true);
   });
   for (const [name, { trigger, panel }] of Object.entries(panels)) {
     trigger.addEventListener('click', () => {
-      if (name === 'profile' && !drawerOpen) { setDrawer(true); return; }
-      if (active === name) close(name); else open(name);
+      if (name === 'profile' && !drawerOpen && !mobileHomepage()) { setDrawer(true); return; }
+      if (active === name) close(name);
+      else {
+        open(name);
+        if (name === 'profile' && mobileHomepage()) panel.querySelector('.profile-navigation')?.focus({ preventScroll: true });
+      }
     });
     trigger.addEventListener('keydown', event => {
       if (!['ArrowRight', 'ArrowDown'].includes(event.key)) return;
@@ -87,10 +94,14 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onOpen }) 
       (panel.querySelector(name === 'sources' ? '#editor-add-source-button:not(:disabled), .editor-source-checkbox' : '.profile-navigation') || panel.querySelector('[data-close-navigation]'))?.focus();
     });
   }
+  panels.profile.panel.addEventListener('keydown', event => {
+    if (event.key === 'Tab' && mobileHomepage()) close('profile', true);
+  });
   for (const button of document.querySelectorAll('[data-close-navigation]')) button.addEventListener('click', () => close(button.dataset.closeNavigation, true));
   document.addEventListener('pointerdown', event => {
     if (document.querySelector('dialog[open]')) return;
-    if (drawerOpen && !sidebar.contains(event.target) && !event.target.closest('[data-variant-sources]')) setDrawer(false);
+    if (mobileHomepage() && !sidebar.contains(event.target)) close();
+    else if (drawerOpen && !sidebar.contains(event.target) && !event.target.closest('[data-variant-sources]')) setDrawer(false);
   });
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape' || event.defaultPrevented || document.querySelector('dialog[open]')) return;
@@ -98,5 +109,15 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onOpen }) 
     if (active) { event.preventDefault(); close(active, true); }
     else if (drawerOpen) { event.preventDefault(); setDrawer(false, true); }
   });
+  let topBarMode = false;
+  function syncLayout() {
+    const next = mobileHomepage();
+    if (next !== topBarMode) { hideTooltips(); setDrawer(false); close(); topBarMode = next; }
+    sidebar.tabIndex = next ? -1 : 0;
+    sidebar.setAttribute('aria-label', next || drawerOpen ? 'Main navigation' : 'Main navigation. Press Enter to open drawer.');
+  }
+  mobile.addEventListener('change', syncLayout);
+  new MutationObserver(syncLayout).observe(home, { attributes: true, attributeFilter: ['hidden'] });
+  syncLayout();
   return { close, open, closeDrawer: () => setDrawer(false) };
 }

@@ -789,6 +789,27 @@ select:focus-visible { outline: 3px solid #99abc6; outline-offset: 3px; }
   .material-card { width: calc(50% - 4px); padding: 13px 10px; font-size: 11px; }
   .material-dialog { padding: 22px; }
 }
+
+@media (max-width: 768px) {
+  body:has(#home:not([hidden])) .sidebar { z-index: 20; top: 10px; right: 10px; bottom: auto; left: 10px; display: flex; flex-direction: row; align-items: center; justify-content: space-between; width: auto; height: 64px; padding: 8px 12px; cursor: default; transition: none; box-shadow: none; }
+  body:has(#home:not([hidden])) .sidebar-header { width: auto; height: 100%; border: 0; }
+  body:has(#home:not([hidden])) .brand { width: 54px; height: 44px; border-radius: 8px; }
+  body:has(#home:not([hidden])) .navigation,
+  body:has(#home:not([hidden])) .drawer-toggle,
+  body:has(#home:not([hidden])) .nav-label,
+  body:has(#home:not([hidden])) .profile-expand { display: none; }
+  body:has(#home:not([hidden])) .profile-button { justify-content: center; width: 44px; height: 44px; margin: 0; padding: 6px; border-radius: 50%; }
+  body:has(#home:not([hidden])) .profile-button:is(:hover, [aria-expanded="true"]) { background: var(--icon-hover-background); }
+  body:has(#home:not([hidden])) .profile-menu { position: absolute; top: calc(100% + 8px); right: 0; width: min(280px, calc(100vw - 20px)); max-height: calc(100svh - 100px); margin: 0; border-radius: 11px; box-shadow: 0 8px 28px #25355020; }
+  body:has(#home:not([hidden])) main { padding: 98px 20px 24px; transition: none; }
+  body:has(#home:not([hidden])) .home-header { top: 90px; padding: 8px 0 24px; }
+  body:has(#home:not([hidden])) .home-header::before { height: 90px; }
+  body:has(#home:not([hidden])) .home h1 { max-width: 100%; margin: 0 auto; }
+  body:has(#home:not([hidden])) .dashboard-grid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  body:has(#home:not([hidden])) .dashboard-bottom-fade { left: 0; }
+  body:has(#home:not([hidden])) .toast { left: 50%; max-width: calc(100% - 32px); }
+}
+
 @media (max-height: 520px) and (min-width: 651px) {
   main { padding-block: 40px; }
   .home { transform: none; }

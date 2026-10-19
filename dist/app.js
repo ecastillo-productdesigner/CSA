@@ -7,7 +7,7 @@ import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js
 import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
 import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261018-search-preview';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261018-feedback-report';
-import { createRailNavigation } from './navigation.js?v=20261018-connected-sources';
+import { createRailNavigation } from './navigation.js?v=20261018-home-mobile-bar';
 import { createProjectSources } from './sources.js?v=20261018-variant-source-selection';
 import { projectOutputs, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261018-variant-source-panel';
 import { createEditorTabs } from './editor-tabs.js?v=20261018-status-icons';

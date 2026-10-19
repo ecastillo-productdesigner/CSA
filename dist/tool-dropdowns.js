@@ -21,12 +21,13 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
     if (stored && typeof stored === 'object' && !Array.isArray(stored)) savedFavorites = stored;
   } catch { /* Start with no saved choices when storage is unavailable. */ }
 
-  const controls = [...document.querySelectorAll('.composer-field, .results-sort-field, .feedback-select-field')].map(field => {
+  const controls = [...document.querySelectorAll('.composer-field, .results-sort-field, .feedback-select-field, .editor-style-field')].map(field => {
     const select = field.querySelector('select');
     const label = field.dataset.label;
     const key = select.id.replace(/^(composer-|output-edit-)/, '');
     field.dataset.tool = key;
-    const floating = select.id === 'output-edit-voice' || field.matches('.feedback-select-field');
+    const editorStyle = field.matches('.editor-style-field');
+    const floating = select.id === 'output-edit-voice' || field.matches('.feedback-select-field') || editorStyle;
     const inWorkspacePanel = Boolean(field.closest('#composer-tools'));
     const mobileWorkspacePanel = () => inWorkspacePanel && window.matchMedia('(max-width: 768px)').matches;
     const placeholder = field.dataset.placeholder || (['format', 'audience', 'voice'].includes(key) ? `Select ${label}` : label);
@@ -175,7 +176,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
       if (select.disabled) return;
       closeAll();
       refresh();
-      if (mobileWorkspacePanel()) {
+      if (mobileWorkspacePanel() || editorStyle) {
         document.body.append(menu);
         menu.dataset.workspaceDropdown = 'true';
         menu.style.zIndex = '30';
@@ -189,10 +190,11 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
         const topLimit = mobileWorkspacePanel() ? 90 : 12;
         const above = bounds.top - topLimit;
         const opensUp = below < 160 && above > below;
+        const menuWidth = editorStyle ? Math.min(220, document.documentElement.clientWidth - 24) : bounds.width;
         menu.style.position = 'fixed';
-        menu.style.left = `${bounds.left}px`;
+        menu.style.left = `${editorStyle ? Math.max(12, Math.min(bounds.left, document.documentElement.clientWidth - menuWidth - 12)) : bounds.left}px`;
         menu.style.right = 'auto';
-        menu.style.width = `${bounds.width}px`;
+        menu.style.width = `${menuWidth}px`;
         menu.style.maxHeight = `${Math.max(80, Math.min(360, opensUp ? above : below))}px`;
         menu.style.top = `${opensUp ? Math.max(topLimit, bounds.top - menu.getBoundingClientRect().height - 8) : bounds.bottom + 8}px`;
       }

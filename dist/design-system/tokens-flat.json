@@ -3534,19 +3534,19 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#eff6ff",
-      "reference": "foundation.color.blue.50",
-      "description": "Selected navigation and selected field surface.",
-      "status": "observed",
+      "value": "#f5f5f5",
+      "reference": "foundation.color.neutral.100",
+      "description": "Neutral gray navigation selected surface, matching hover.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.9372549019607843,
-          0.9647058823529412,
-          1
+          0.9607843137254902,
+          0.9607843137254902,
+          0.9607843137254902
         ],
         "alpha": 1,
-        "hex": "#eff6ff"
+        "hex": "#f5f5f5"
       }
     },
     {
@@ -3556,19 +3556,19 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#dbeafe",
-      "reference": "foundation.color.blue.100",
-      "description": "Hover surface for selected navigation.",
-      "status": "observed",
+      "value": "#f5f5f5",
+      "reference": "foundation.color.neutral.100",
+      "description": "Neutral gray navigation selected hover surface, matching hover.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.8588235294117647,
-          0.9176470588235294,
-          0.996078431372549
+          0.9607843137254902,
+          0.9607843137254902,
+          0.9607843137254902
         ],
         "alpha": 1,
-        "hex": "#dbeafe"
+        "hex": "#f5f5f5"
       }
     },
     {
@@ -5252,9 +5252,9 @@
       "type": "dimension",
       "layer": "component",
       "category": "editor-toolbar",
-      "value": "4px",
-      "reference": "foundation.space.4",
-      "description": "User-requested 4 px top and bottom padding of the compact toolbar.",
+      "value": "2px",
+      "reference": "foundation.space.2",
+      "description": "User-requested 2 px top and bottom padding of the compact toolbar.",
       "status": "approved-update"
     }
   ]

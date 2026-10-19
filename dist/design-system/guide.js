@@ -1,4 +1,6 @@
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261019-toolbar-style';
 const $ = selector => document.querySelector(selector);
+createToolDropdowns();
 let toastTimer;
 function notify(message) {
   const toast = $('#ds-toast');

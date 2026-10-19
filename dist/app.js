@@ -4,11 +4,11 @@ import { createVariantFeedback } from './variant-feedback.js?v=20261018-connecte
 import { createProfile } from './profile.js?v=20261019-saved-variant-names';
 import { createSearchExperience } from './search.js?v=20261019-saved-variant-names';
 import { createDashboard } from './dashboard.js?v=20261019-saved-variant-names';
-import { createMaterialEditor } from './editor.js?v=20261019-created-time';
+import { createMaterialEditor } from './editor.js?v=20261019-toolbar-style';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261018-project-delete';
 import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
 import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261018-search-preview';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261019-mobile-option-taps';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261019-toolbar-style';
 import { createRailNavigation } from './navigation.js?v=20261019-mobile-option-taps';
 import { createProjectSources } from './sources.js?v=20261018-variant-source-selection';
 import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, createOutputEditButton, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261019-saved-variant-names';
@@ -123,6 +123,7 @@ createProfile({
 const richEditor = createMaterialEditor({
   onSendToCms: markVariantSentToCms,
   onContentChange: updateComposerActions,
+  onToolbarChange: toolDropdowns.refresh,
   notify,
   onSave(snapshot) {
     const project = projects.find(entry => entry.id === snapshot.id);

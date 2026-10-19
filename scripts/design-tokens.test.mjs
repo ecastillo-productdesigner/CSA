@@ -51,3 +51,11 @@ test('mobile viewport thresholds stay in sync with documented tokens',async()=>{
     assert.ok(css.includes(`(${query}: ${value})`),`${name}: ${value}`);
   }
 });
+
+test('embedded SVG images keep literal colors because CSS variables cannot cross into assets',async()=>{
+  const css=await readFile(new URL('../dist/styles.css',import.meta.url),'utf8');
+  const assets=[...css.matchAll(/url\("(data:[^"]+)"\)/g)].map(match=>decodeURIComponent(match[1]));
+  assert.ok(assets.length>0);
+  for(const asset of assets) assert.ok(!asset.includes('var('),'Custom property inside an isolated data URL');
+  assert.ok(assets.some(asset=>asset.includes("stroke='#ffffff'")&&asset.includes('m5 12 4 4L19 6')),'Checkbox retains its visible white tick');
+});

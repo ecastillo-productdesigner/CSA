@@ -35,7 +35,7 @@ function savedDocument(value) {
   return { ops };
 }
 
-export function createMaterialEditor({ onSave, onSendToCms, onContentChange = () => {}, notify }) {
+export function createMaterialEditor({ onSave, onSendToCms, onContentChange = () => {}, onToolbarChange = () => {}, notify }) {
   const $ = (selector) => document.querySelector(selector);
   const root = $('#material-editor');
   const title = $('#editor-title');
@@ -135,6 +135,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     $('#editor-block').value = value.blockquote ? 'quote' : String(value.header || '');
     $('#editor-align').value = typeof value.align === 'string' ? value.align : '';
     if (typeof value.color === 'string' && /^#[\da-f]{6}$/i.test(value.color)) $('#editor-color').value = value.color;
+    onToolbarChange();
   }
 
   function restoreSelection() {

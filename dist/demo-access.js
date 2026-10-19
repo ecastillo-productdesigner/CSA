@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261019-multiple-links');
+  await import('./app.js?v=20261019-toolbar-dropdown');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

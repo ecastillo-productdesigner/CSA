@@ -1023,9 +1023,9 @@ button:disabled:not(.output-open):not(.output-selection-button):not(.icon-button
 
 .editor-content-note { flex: 0 0 100%; width: 100%; margin: 0; color: inherit; font: inherit; line-height: var(--csa-foundation-line-height-18); text-align: left; }
 .output-edit-delete { margin-top: var(--csa-foundation-space-16); padding-top: var(--csa-foundation-space-8); border-top: var(--csa-foundation-border-width-1) solid var(--line); }
-.output-delete-button { display: inline-grid; place-items: center; width: 44px; min-height: 44px; padding: var(--csa-foundation-space-10); border: 0; border-radius: var(--csa-foundation-radius-8); background: transparent; color: var(--color-red-700); font: inherit; font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-600); }
+.output-delete-button { display: inline-grid; place-items: center; width: 44px; min-height: 44px; padding: var(--csa-foundation-space-10); border: 0; border-radius: var(--csa-foundation-radius-999); background: transparent; color: var(--color-red-700); font: inherit; font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-600); }
 .output-delete-button svg { width: 20px; height: 20px; }
-.output-delete-button:hover { background: var(--csa-foundation-color-red-50); }
+.output-delete-button:is(:hover, :focus-visible) { background: var(--csa-foundation-color-red-50); }
 .result-selection-indicator { position: relative; z-index: var(--csa-foundation-layer-4); align-self: start; margin-top: 3px; display: grid; place-items: center; width: 18px; height: 18px; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-2); background: var(--csa-foundation-color-neutral-0); pointer-events: none; }
 .result-card[data-selected="true"] .result-selection-indicator { background: var(--color-button-primary); color: var(--csa-foundation-color-neutral-0); }
 .result-selection-indicator svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: square; stroke-linejoin: miter; }

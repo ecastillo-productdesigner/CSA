@@ -187,7 +187,7 @@ main:focus { outline: none; }
 .editor-variant-tabs button[aria-selected="true"] { background: white; }
 .editor-variant-tabs button[data-editor-output=""] { background: var(--content-preview-background); }
 .editor-variant-tabs button:focus-visible { outline-offset: -4px; }
-.editor-tab-draft { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; gap: 6px; min-height: 28px; padding: 2px 8px; border-radius: 0; background: var(--draft-background); color: var(--ink); font-size: 12px; line-height: 20px; font-weight: 700; text-transform: uppercase; }
+.editor-tab-draft { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; gap: 6px; min-height: 28px; padding: 2px 8px; border-radius: 2px; background: var(--draft-background); color: var(--ink); font-size: 12px; line-height: 20px; font-weight: 700; text-transform: uppercase; }
 .editor-tab-draft > svg, .editor-tab-draft > .material-symbols-outlined { flex-shrink: 0; width: 18px; height: 18px; font-size: 18px; line-height: 1; }
 .editor-tab-draft[data-sent="true"] { background: var(--color-green-200); color: var(--color-green-600); white-space: nowrap; }
 .editor-tab-title { color: var(--muted); flex: 1; min-width: 0; overflow: hidden; font-size: 15px; line-height: 22px; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }

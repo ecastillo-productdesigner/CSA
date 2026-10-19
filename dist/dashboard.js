@@ -169,8 +169,13 @@ export function createDashboard({ onNew, onOpen, onDelete, onRename }) {
       const variants = projectOutputs(project).filter(outputIsReady);
       const sentCount = variants.filter(outputIsSent).length;
       const badges = node('div', 'project-badges');
-      const badge = node('span', `project-badge${sentCount ? ' project-badge--sent' : ''}`, sentCount ? `${sentCount} ${sentCount === 1 ? 'variant' : 'variants'} sent to CMS` : 'Draft');
+      const badge = node('span', `project-badge${sentCount ? ' project-badge--sent' : ' project-badge--draft'}`, sentCount ? `${sentCount} ${sentCount === 1 ? 'variant' : 'variants'} sent to CMS` : 'Draft');
       if (sentCount) badge.prepend(icon('sent'));
+      else {
+        const draw = node('span', 'material-symbols-outlined', 'draw');
+        draw.setAttribute('aria-hidden', 'true');
+        badge.prepend(draw);
+      }
       badges.append(badge);
       const more = node('button', 'icon-button project-card-menu-button');
       more.type = 'button';

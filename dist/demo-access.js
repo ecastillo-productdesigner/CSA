@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261018-home-sent-plane');
+  await import('./app.js?v=20261018-home-draft-label');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

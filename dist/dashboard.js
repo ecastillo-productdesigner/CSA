@@ -239,7 +239,8 @@ export function createDashboard({ onNew, onOpen, onDelete, onRename }) {
       separator.setAttribute('aria-hidden', 'true');
       meta.append(date, separator, count);
       const actions = node('div', 'project-actions');
-      const open = node('button', 'project-open', 'Open');
+      const open = node('button', 'project-open');
+      open.append(node('span', 'project-open-label', 'Open'), icon('arrow'));
       open.type = 'button';
       open.setAttribute('aria-label', `Open ${project.title}`);
       open.addEventListener('click', () => { closeMenu(); onOpen(project.id); });

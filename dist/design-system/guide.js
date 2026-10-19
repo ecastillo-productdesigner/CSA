@@ -31,7 +31,7 @@ function luminance(hex) {
 }
 const ratio = (a,b) => { const values=[luminance(a),luminance(b)].sort((x,y)=>y-x); return ((values[0]+.05)/(values[1]+.05)).toFixed(2)+':1'; };
 try {
-  const response = await fetch('tokens-flat.json');
+  const response = await fetch('tokens-flat.json', {cache: 'no-cache'});
   if (!response.ok) throw new Error('Token inventory unavailable');
   const {tokens} = await response.json();
   const byName = new Map(tokens.map(token => [token.name,token]));

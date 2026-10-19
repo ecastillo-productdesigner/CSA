@@ -1,3 +1,4 @@
+import { parseSourceLinks, formatSourceLinks } from './source-links.js';
 import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261019-saved-variant-names';
 import { createVariantFeedback } from './variant-feedback.js?v=20261018-connected-sources';
 import { createProfile } from './profile.js?v=20261019-saved-variant-names';
@@ -441,17 +442,6 @@ function icon(name) {
   return svg;
 }
 
-function safeUrl(value) {
-  try {
-    const candidate = /^https?:\/\//i.test(value) ? value : /^(?:[a-z\d-]+\.)+[a-z]{2,}(?::\d+)?(?:[/?#].*)?$/i.test(value) ? `https://${value}` : null;
-    if (!candidate) return null;
-    const url = new URL(candidate);
-    return ['http:', 'https:'].includes(url.protocol) ? url.href : null;
-  } catch {
-    return null;
-  }
-}
-
 function titleFrom(text) {
   const line = text.trim().split('\n')[0].replace(/^#+\s*/, '');
   return line.length > 70 ? `${line.slice(0, 67)}…` : line;
@@ -555,8 +545,8 @@ function openProjectDialog(reset = true, sourceProjectId = null) {
   clearError();
   renderFiles();
   if (reset) $('#new-project-query').value = '';
-  $('#new-project-submit').disabled = !$('#new-project-query').value.trim();
   if (!$('#new-project-dialog').open) $('#new-project-dialog').showModal();
+  updateStarterInput();
   const focusTarget = window.matchMedia('(max-width: 768px)').matches ? $('.new-project-close') : $('#new-project-query');
   focusTarget.focus({ preventScroll: true });
 }
@@ -988,14 +978,13 @@ $('#start-form').addEventListener('submit', (event) => {
 
 function submitSource(input) {
   if (!input) return;
-  const tokens = input.split(/\s+/);
-  const urls = tokens.map(safeUrl);
+  const urls = parseSourceLinks(input);
   if (sourceTargetProjectId) {
-    if (urls.every(Boolean)) appendProjectSources(urls.map(url => ({ type: 'link', title: url, url })));
+    if (urls) appendProjectSources(urls.map(url => ({ type: 'link', title: url, url })));
     else showSourceAdditionResults(input);
     return;
   }
-  if (urls.every(Boolean)) {
+  if (urls) {
     const sources = urls.map(url => ({ type: 'link', title: url, url }));
     const sample = sampleVariant({ sources }, []);
     populateOutputContent(sample);
@@ -1014,8 +1003,25 @@ function submitSource(input) {
   } else startSearch(input);
 }
 
-$('#new-project-query').addEventListener('input', () => {
-  $('#new-project-submit').disabled = !$('#new-project-query').value.trim();
+function updateStarterInput() {
+  const field = $('#new-project-query');
+  const formatted = formatSourceLinks(field.value);
+  if (formatted !== field.value) {
+    const caret = field.selectionStart + formatted.length - field.value.length;
+    field.value = formatted;
+    field.setSelectionRange(Math.max(0, caret), Math.max(0, caret));
+  }
+  field.style.height = 'auto';
+  field.style.height = `${Math.max(24, Math.min(144, field.scrollHeight))}px`;
+  $('#new-project-submit').disabled = !field.value.trim();
+}
+$('#new-project-query').addEventListener('input', updateStarterInput);
+$('#new-project-query').addEventListener('keydown', event => {
+  if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return;
+  if (event.metaKey || event.ctrlKey || !parseSourceLinks(event.currentTarget.value)) {
+    event.preventDefault();
+    $('#new-project-search-form').requestSubmit();
+  }
 });
 $('#new-project-search-form').addEventListener('submit', (event) => {
   event.preventDefault();

@@ -1038,3 +1038,12 @@ button:disabled:not(.output-open):not(.output-selection-button) { color: var(--c
 @media (max-width: 768px) {
   .editor-toolbar { --toolbar-inset: var(--csa-component-editor-toolbar-inset-mobile); }
 }
+
+.new-project-input { align-items: flex-start; height: auto; min-height: 52px; padding-block: 13px; }
+.new-project-input > svg { margin-top: 3px; }
+.new-project-input textarea { display: block; flex: 1; min-width: 0; width: 100%; min-height: 24px; max-height: 144px; padding: 0; resize: none; border: 0; background: transparent; color: var(--ink); font-size: var(--csa-foundation-font-size-15); line-height: var(--csa-foundation-line-height-24); overflow: auto; }
+.new-project-input textarea:focus-visible { outline: none; }
+.new-project-input textarea::placeholder { color: var(--muted); opacity: 1; }
+@media (max-width: 768px) {
+  .new-project-input textarea { font-size: var(--csa-foundation-font-size-16); }
+}

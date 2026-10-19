@@ -1,4 +1,4 @@
-import { projectOutputs, createOutputBadges } from './outputs.js?v=20261018-active-revision';
+import { projectOutputs, createOutputBadges } from './outputs.js?v=20261018-dash-spacing';
 
 export function createOutputPresets({ onSelect }) {
   const root = document.querySelector('#output-presets');

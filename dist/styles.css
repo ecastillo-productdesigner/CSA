@@ -276,6 +276,9 @@ main:focus { outline: none; }
 .output-card[data-ready="true"] { border-style: solid; background: #fff; }
 .output-card:hover { border-color: var(--line); background: white; }
 .output-card[data-selected="true"] { border-color: var(--line); background: #f8f1ee; }
+.output-card[data-ready="false"] { border-color: transparent; }
+.output-card-dash { position: absolute; inset: -1px; width: calc(100% + 2px); height: calc(100% + 2px); overflow: visible; pointer-events: none; }
+.output-card-dash rect { width: calc(100% - 1px); height: calc(100% - 1px); fill: none; stroke: var(--line); stroke-width: 1px; stroke-dasharray: 4px 4px; }
 .output-open { display: block; width: 100%; padding: 10px; border: 0; border-radius: 7px; background: transparent; color: inherit; text-align: left; }
 .output-open:focus-visible { outline-offset: -3px; }
 .output-open:disabled { color: inherit; opacity: 1; cursor: default; }
@@ -619,7 +622,7 @@ textarea::placeholder { color: var(--muted); }
 .rail-panel-header h2 { margin: 0; font-size: 20px; line-height: 28px; font-weight: 700; letter-spacing: -.3px; }
 .rail-panel-header .icon-button { width: 28px; height: 28px; padding: 5px; }
 .sources-panel-content { display: flex; flex: 1; flex-direction: column; min-height: 0; padding: 0 24px 24px; }
-.sources-panel #editor-source-list { align-content: start; flex: 1; min-height: 0; max-height: none; margin: 0; padding-right: 4px; overscroll-behavior-y: contain; scrollbar-width: thin; }
+.sources-panel #editor-source-list { align-content: start; flex: 1; min-height: 0; max-height: none; margin: 0; padding-right: 8px; overscroll-behavior-y: contain; scrollbar-width: thin; }
 @keyframes rail-panel-reveal { from { opacity: 0; transform: translateX(-5px); } to { opacity: 1; transform: translateX(0); } }
 .workspace { width: 100%; min-width: 0; max-width: 670px; align-self: start; margin-top: min(15vh, 130px); padding-bottom: 50px; }
 .text-button { border: 0; padding: 4px 0; background: transparent; font-size: 12px; font-weight: 600; }
@@ -832,7 +835,7 @@ button:disabled:not(.output-open):not(.output-selection-button) { color: var(--c
 .ql-container.ql-snow { border-color: var(--line); }
 
 /* Source actions stay aligned with each source title. */
-#editor-source-list { overflow-x: hidden; }
+#editor-source-list { overflow-x: hidden; padding-top: 18px; }
 #editor-source-list li:not(.editor-sources-empty) { position: relative; }
 #editor-source-list .editor-source-content { padding-right: 30px; }
 #editor-source-list .editor-source-more { position: absolute; top: -10px; right: 0; color: var(--color-neutral-400); }

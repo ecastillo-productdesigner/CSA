@@ -9,10 +9,10 @@ import { createContentPreview, formatContentPreview } from './content-preview.js
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261018-feedback-report';
 import { createRailNavigation } from './navigation.js?v=20261018-nav-tooltips';
 import { createProjectSources } from './sources.js?v=20261018-source-actions';
-import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261018-active-revision';
+import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261018-dash-spacing';
 import { createEditorTabs } from './editor-tabs.js?v=20261018-active-revision';
 import { createOutputSettings } from './output-settings.js?v=20261018-variant-controls';
-import { createOutputPresets } from './output-presets.js?v=20261018-active-revision';
+import { createOutputPresets } from './output-presets.js?v=20261018-dash-spacing';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';

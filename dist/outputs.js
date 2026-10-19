@@ -235,6 +235,18 @@ export function renderOutputs(project) {
     card.dataset.selected = String(selected);
     card.dataset.active = String(active);
     card.dataset.ready = String(ready);
+    if (!ready) {
+      const border = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      border.classList.add('output-card-dash');
+      border.setAttribute('aria-hidden', 'true');
+      border.setAttribute('focusable', 'false');
+      const outline = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      outline.setAttribute('x', '.5');
+      outline.setAttribute('y', '.5');
+      outline.setAttribute('rx', '7.5');
+      border.append(outline);
+      card.append(border);
+    }
     const open = document.createElement('button');
     open.type = 'button';
     open.className = 'output-open';

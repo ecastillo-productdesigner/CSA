@@ -1,3 +1,5 @@
+import { bindTapActivation } from './tap-activation.js?v=20261019-mobile-option-taps';
+
 const favoritesStorageKey = 'csa.tool-favorites.v1';
 
 function toolIcon(name) {
@@ -73,7 +75,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
       savedToggle.className = 'tool-saved-toggle';
       savedToggle.setAttribute('aria-controls', list.id);
       savedToggle.append(toolIcon('heart'));
-      savedToggle.addEventListener('click', () => { savedOnly = !savedOnly; refreshFavorites(); });
+      bindTapActivation(savedToggle, () => { savedOnly = !savedOnly; refreshFavorites(); });
       const filter = document.createElement('button');
       filter.type = 'button';
       filter.className = 'tool-filter-placeholder';
@@ -96,7 +98,8 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
       button.className = 'tool-dropdown-option';
       if (!supportsFavorites) { button.setAttribute('role', 'option'); button.tabIndex = -1; }
       button.textContent = option.textContent;
-      button.addEventListener('click', () => {
+      bindTapActivation(button, () => {
+        if (menu.hidden || select.disabled) return;
         select.value = option.value;
         select.dispatchEvent(new Event('change', { bubbles: true }));
         close(true);
@@ -108,7 +111,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
         favorite.type = 'button';
         favorite.className = 'tool-option-favorite';
         favorite.append(toolIcon('heart'));
-        favorite.addEventListener('click', () => {
+        bindTapActivation(favorite, () => {
           if (favorites.has(option.value)) favorites.delete(option.value); else favorites.add(option.value);
           savedFavorites[key] = [...favorites];
           try { localStorage.setItem(favoritesStorageKey, JSON.stringify(savedFavorites)); }
@@ -161,6 +164,8 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
     }
     function close(restoreFocus = false) {
       menu.hidden = true;
+      if (menu.parentElement !== field) field.append(menu);
+      delete menu.dataset.workspaceDropdown;
       menu.removeAttribute('style');
       field.classList.remove('is-open');
       trigger.setAttribute('aria-expanded', 'false');
@@ -170,6 +175,11 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
       if (select.disabled) return;
       closeAll();
       refresh();
+      if (mobileWorkspacePanel()) {
+        document.body.append(menu);
+        menu.dataset.workspaceDropdown = 'true';
+        menu.style.zIndex = '30';
+      }
       menu.hidden = false;
       field.classList.add('is-open');
       trigger.setAttribute('aria-expanded', 'true');
@@ -215,7 +225,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
       window.addEventListener('resize', () => close());
     }
     refresh();
-    return { field, close, refresh };
+    return { contains: target => field.contains(target) || menu.contains(target), close, refresh };
   });
 
   function closeAll() { controls.forEach(control => control.close()); }
@@ -223,7 +233,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
   // Close on an actual outside interaction, not that temporary loss of focus.
   for (const eventName of ['pointerdown', 'focusin']) {
     document.addEventListener(eventName, event => {
-      controls.forEach(control => { if (!control.field.contains(event.target)) control.close(); });
+      controls.forEach(control => { if (!control.contains(event.target)) control.close(); });
     });
   }
   return { close: closeAll, refresh: () => controls.forEach(control => control.refresh()) };

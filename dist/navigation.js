@@ -107,7 +107,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
   for (const button of document.querySelectorAll('[data-close-navigation]')) button.addEventListener('click', () => close(button.dataset.closeNavigation, true));
   document.addEventListener('pointerdown', event => {
     if (document.querySelector('dialog[open]')) return;
-    if (mobileTopBar() && !sidebar.contains(event.target) && !panels[active]?.panel.contains(event.target) && !event.target.closest('.output-edit-menu, .editor-flyover, [data-variant-sources]')) close();
+    if (mobileTopBar() && !sidebar.contains(event.target) && !panels[active]?.panel.contains(event.target) && !event.target.closest('.output-edit-menu, .editor-flyover, [data-variant-sources], [data-workspace-dropdown]')) close();
     else if (drawerOpen && !sidebar.contains(event.target) && !event.target.closest('[data-variant-sources]')) setDrawer(false);
   });
   document.addEventListener('keydown', event => {

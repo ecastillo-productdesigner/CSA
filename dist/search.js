@@ -183,7 +183,9 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       const separator = node('span', '', '|');
       separator.setAttribute('aria-hidden', 'true');
       publication.append(separator, inspect);
-      meta.append(node('span', '', `Published date: ${dateLabel(article.date)} |`), publication);
+      const date = node('span', 'result-date');
+      date.append(node('span', 'result-date-label', 'Published date: '), document.createTextNode(dateLabel(article.date)), node('span', 'result-date-separator', ' |'));
+      meta.append(date, publication);
       copy.append(
         meta,
         node('strong', 'result-title', article.title),

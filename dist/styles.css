@@ -950,7 +950,7 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
 .output-edit-menu input, .output-edit-menu select { height: 40px; padding: var(--csa-foundation-space-8) var(--csa-foundation-space-10); }
 .output-edit-voice-field { margin-top: var(--csa-foundation-space-14); }
 .output-edit-voice-control { position: relative; display: block; width: 100%; }
-.output-edit-voice-control .tool-dropdown-trigger { background: var(--csa-foundation-color-neutral-0); }
+.output-edit-voice-control .tool-dropdown-trigger { background: var(--csa-foundation-color-neutral-0); font-weight: var(--csa-foundation-font-weight-400); }
 .output-edit-menu textarea { min-height: 88px; max-height: 30svh; padding: var(--csa-foundation-space-10); line-height: 1.5; }
 .output-edit-actions { display: flex; justify-content: flex-end; gap: var(--csa-foundation-space-10); margin-top: var(--csa-foundation-space-18); }
 

@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261018-project-rename-2');
+  await import('./app.js?v=20261018-story-tooltips');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

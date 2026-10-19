@@ -6,23 +6,29 @@ export function createRailNavigation({ onSourcesOpen, onOpen }) {
   const sidebar = document.querySelector('#navigation-drawer');
   const drawerToggle = document.querySelector('#toggle-navigation-drawer');
   const newProject = document.querySelector('#new-project');
-  const newProjectTooltip = document.querySelector('#new-project-tooltip');
+  const tooltips = [
+    { trigger: newProject, tooltip: document.querySelector('#new-project-tooltip') },
+    { trigger: panels.sources.trigger, tooltip: document.querySelector('#sources-tooltip') },
+    { trigger: panels.profile.trigger, tooltip: document.querySelector('#account-tooltip') },
+  ];
   let drawerOpen = false;
   let active = null;
 
-  function hideNewProjectTooltip() { newProjectTooltip.hidden = true; }
-  function showNewProjectTooltip() {
+  function hideTooltips() { for (const { tooltip } of tooltips) tooltip.hidden = true; }
+  function showTooltip(trigger, tooltip) {
+    hideTooltips();
     if (drawerOpen || document.querySelector('dialog[open]')) return;
-    const bounds = newProject.getBoundingClientRect();
-    if (!bounds.width) return;
-    newProjectTooltip.style.left = `${bounds.right + 12}px`;
-    newProjectTooltip.style.top = `${bounds.top + bounds.height / 2}px`;
-    newProjectTooltip.hidden = false;
+    const bounds = trigger.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) return;
+    tooltip.style.left = `${bounds.right + 12}px`;
+    tooltip.style.top = `${bounds.top + bounds.height / 2}px`;
+    tooltip.hidden = false;
   }
-  newProject.addEventListener('mouseenter', showNewProjectTooltip);
-  newProject.addEventListener('focus', showNewProjectTooltip);
-  for (const eventName of ['mouseleave', 'blur', 'click']) newProject.addEventListener(eventName, hideNewProjectTooltip);
-  window.addEventListener('resize', hideNewProjectTooltip);
+  for (const { trigger, tooltip } of tooltips) {
+    for (const eventName of ['mouseenter', 'focus']) trigger.addEventListener(eventName, () => showTooltip(trigger, tooltip));
+    for (const eventName of ['mouseleave', 'blur', 'click']) trigger.addEventListener(eventName, hideTooltips);
+  }
+  window.addEventListener('resize', hideTooltips);
 
   function close(name = active, restoreFocus = false) {
     if (!name || !panels[name]) return;
@@ -34,7 +40,7 @@ export function createRailNavigation({ onSourcesOpen, onOpen }) {
   }
 
   function setDrawer(open, restoreFocus = false) {
-    hideNewProjectTooltip();
+    hideTooltips();
     if (open === drawerOpen) return;
     close();
     if (open) onOpen?.();
@@ -87,6 +93,7 @@ export function createRailNavigation({ onSourcesOpen, onOpen }) {
   });
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape' || event.defaultPrevented || document.querySelector('dialog[open]')) return;
+    if (tooltips.some(({ tooltip }) => !tooltip.hidden)) { event.preventDefault(); hideTooltips(); return; }
     if (active) { event.preventDefault(); close(active, true); }
     else if (drawerOpen) { event.preventDefault(); setDrawer(false, true); }
   });

@@ -215,7 +215,7 @@
   --csa-semantic-color-danger-subtle: var(--csa-foundation-color-red-50);
   --csa-semantic-color-navigation-selected: var(--csa-foundation-color-neutral-100);
   --csa-semantic-color-navigation-selected-hover: var(--csa-foundation-color-neutral-100);
-  --csa-semantic-color-navigation-selected-foreground: var(--csa-foundation-color-blue-600);
+  --csa-semantic-color-navigation-selected-foreground: var(--csa-foundation-color-neutral-700);
   --csa-semantic-typography-greeting-desktop-font-family: var(--csa-foundation-font-family-editorial);
   --csa-semantic-typography-greeting-desktop-font-size: var(--csa-foundation-font-size-32);
   --csa-semantic-typography-greeting-desktop-font-weight: var(--csa-foundation-font-weight-700);

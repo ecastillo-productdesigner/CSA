@@ -103,7 +103,7 @@ body:has(#home:not([hidden])) #new-project { display: none; }
 .navigation-drawer-open .nav-label { display: block; }
 .navigation-drawer-open .nav-button { display: flex; align-items: center; justify-content: flex-start; gap: var(--csa-foundation-space-12); width: calc(100% - 16px); margin-left: var(--csa-foundation-space-8); padding: 9px; border-radius: var(--csa-foundation-radius-8); --icon-circle: radial-gradient(circle closest-side, var(--icon-circle-color) calc(100% - .75px), transparent) 0 center / 40px 40px no-repeat; }
 .navigation-drawer-open .nav-button:not(:disabled):hover { background: var(--icon-hover-background); }
-.navigation-drawer-open .nav-button[aria-expanded="true"], .navigation-drawer-open .profile-button[aria-expanded="true"] { background: var(--csa-semantic-color-navigation-selected); color: var(--color-button-primary-interaction); }
+.navigation-drawer-open .nav-button[aria-expanded="true"], .navigation-drawer-open .profile-button[aria-expanded="true"] { background: var(--csa-semantic-color-navigation-selected); color: var(--csa-semantic-color-navigation-selected-foreground); }
 .navigation-drawer-open .nav-button[aria-expanded="true"]:not(:disabled):hover, .navigation-drawer-open .profile-button[aria-expanded="true"]:not(:disabled):hover { background: var(--csa-semantic-color-navigation-selected-hover); }
 .navigation-drawer-open .nav-button svg, .navigation-drawer-open .nav-button .material-symbols-outlined { flex-shrink: 0; }
 .navigation-drawer-open .navigation { align-items: flex-start; }
@@ -898,7 +898,7 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
   body.showing-composer #show-variants { order: 2; }
   body.showing-composer #show-sources { order: 3; }
   body.showing-composer #new-project { order: 4; }
-  body.showing-composer .nav-button[aria-expanded="true"] { background: var(--csa-semantic-color-navigation-selected); color: var(--color-button-primary-interaction); }
+  body.showing-composer .nav-button[aria-expanded="true"] { background: var(--csa-semantic-color-navigation-selected); color: var(--csa-semantic-color-navigation-selected-foreground); }
   body.showing-composer .composer { display: block; min-height: 0; }
   body.showing-composer .composer-canvas { display: block; --editor-frame-inset: 0px; }
   body.showing-composer .composer-rail { display: block; height: 0; min-height: 0; padding: 0; }

@@ -3578,19 +3578,19 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#2563eb",
-      "reference": "foundation.color.blue.600",
-      "description": "Foreground accent for selected navigation.",
-      "status": "observed",
+      "value": "#404040",
+      "reference": "foundation.color.neutral.700",
+      "description": "Selected navigation label and icon retain the standard dark gray, matching the reference.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.1450980392156863,
-          0.38823529411764707,
-          0.9215686274509803
+          0.25098039215686274,
+          0.25098039215686274,
+          0.25098039215686274
         ],
         "alpha": 1,
-        "hex": "#2563eb"
+        "hex": "#404040"
       }
     },
     {

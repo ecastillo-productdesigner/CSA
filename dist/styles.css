@@ -245,6 +245,7 @@ main:focus { outline: none; }
 .tool-dropdown-trigger:disabled { color: var(--muted); background: var(--csa-foundation-color-observed-hex-f5f6f8); border-color: var(--line); cursor: default; }
 .tool-dropdown-trigger:not(:disabled):hover { border-color: var(--line); background: var(--csa-foundation-color-observed-hex-f7f8fa); }
 .tool-dropdown-trigger[aria-expanded="true"] { border-color: var(--line); background: var(--csa-foundation-color-neutral-0); }
+.composer-fields .tool-dropdown-trigger, .output-presets .tool-dropdown-trigger { font-weight: var(--csa-foundation-font-weight-400); }
 .composer-fields .tool-dropdown-trigger:not(:disabled) { background: var(--csa-foundation-color-neutral-0); }
 .composer-field[data-tool="format"][data-has-value="true"] > .tool-dropdown-trigger { background: var(--color-rose-100); }
 .composer-field[data-tool="audience"][data-has-value="true"] > .tool-dropdown-trigger { background: var(--color-indigo-50); }

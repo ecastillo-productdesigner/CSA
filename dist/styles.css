@@ -377,6 +377,7 @@ dialog::backdrop { background: var(--csa-foundation-color-observed-hex-27354c28)
 .rename-project-dialog label { display: grid; gap: var(--csa-foundation-space-8); font-size: var(--csa-foundation-font-size-13); font-weight: var(--csa-foundation-font-weight-600); }
 .rename-project-dialog input { width: 100%; min-width: 0; height: 44px; padding: var(--csa-foundation-space-10) var(--csa-foundation-space-12); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-10); background: var(--csa-foundation-color-neutral-0); color: var(--ink); font: inherit; font-size: var(--csa-foundation-font-size-16); font-weight: var(--csa-foundation-font-weight-400); }
 .rename-project-dialog .dialog-footer { flex-wrap: wrap; }
+.rename-project-dialog .dialog-footer .secondary-button { color: var(--color-button-disabled-label); }
 .rename-project-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--csa-foundation-space-20); margin-bottom: 22px; }
 .rename-project-heading h2 { margin: 0; }
 .rename-project-heading .icon-button { flex-shrink: 0; }

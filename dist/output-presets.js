@@ -1,10 +1,55 @@
 import { projectOutputs, createOutputBadges } from './outputs.js?v=20261018-variant-source-panel';
 
-export function createOutputPresets({ onSelect }) {
+export function createOutputPresets({ onSelect, onDelete }) {
   const root = document.querySelector('#output-presets');
   const trigger = document.querySelector('#output-presets-trigger');
   const menu = document.querySelector('#output-presets-options');
   let lastSignature = '';
+  let actionTarget = null;
+  const actions = document.createElement('div');
+  actions.id = 'output-preset-actions';
+  actions.className = 'output-preset-actions';
+  actions.setAttribute('role', 'menu');
+  actions.setAttribute('aria-label', 'Preset actions');
+  actions.hidden = true;
+  const remove = document.createElement('button');
+  remove.type = 'button';
+  remove.setAttribute('role', 'menuitem');
+  remove.innerHTML = '<svg aria-hidden="true"><use href="#icon-delete-project"/></svg><span>Delete</span>';
+  actions.append(remove);
+  root.append(actions);
+
+  function closeActions(restoreFocus = false) {
+    const button = actionTarget?.button;
+    actionTarget = null;
+    actions.hidden = true;
+    button?.setAttribute('aria-expanded', 'false');
+    if (restoreFocus && button?.isConnected) button.focus({ preventScroll: true });
+  }
+  function openActions(projectId, outputId, button) {
+    if (actionTarget?.button === button) { closeActions(true); return; }
+    closeActions();
+    actionTarget = { projectId, outputId, button };
+    button.setAttribute('aria-expanded', 'true');
+    actions.hidden = false;
+    const anchor = button.getBoundingClientRect();
+    const bounds = actions.getBoundingClientRect();
+    actions.style.left = `${Math.max(12, Math.min(anchor.right - bounds.width, window.innerWidth - bounds.width - 12))}px`;
+    actions.style.top = `${Math.max(12, Math.min(anchor.bottom + 4, window.innerHeight - bounds.height - 12))}px`;
+    remove.focus({ preventScroll: true });
+  }
+  remove.addEventListener('click', () => {
+    const target = actionTarget;
+    close();
+    if (target) onDelete(target.projectId, target.outputId);
+  });
+  actions.addEventListener('keydown', event => {
+    if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeActions(true); }
+    else if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) { event.preventDefault(); remove.focus(); }
+    else if (event.key === 'Tab') close(true);
+  });
+  menu.addEventListener('scroll', () => closeActions(), { passive: true });
+  window.addEventListener('resize', () => closeActions());
 
   function settingsFor(output) {
     return ['format', 'audience', 'voice'].flatMap(key => {
@@ -20,6 +65,7 @@ export function createOutputPresets({ onSelect }) {
   }
 
   function close(restoreFocus = false) {
+    closeActions();
     menu.hidden = true;
     trigger.setAttribute('aria-expanded', 'false');
     if (restoreFocus && !root.hidden) trigger.focus({ preventScroll: true });
@@ -35,7 +81,7 @@ export function createOutputPresets({ onSelect }) {
     menu.style.bottom = opensUp ? 'calc(100% + 8px)' : 'auto';
     menu.style.maxHeight = `${Math.max(80, Math.min(320, opensUp ? above : below))}px`;
     trigger.setAttribute('aria-expanded', 'true');
-    (menu.querySelector('[aria-selected="true"]') || menu.querySelector('button'))?.focus();
+    (menu.querySelector('[aria-checked="true"]') || menu.querySelector('button'))?.focus();
   }
   trigger.addEventListener('click', () => { if (menu.hidden) open(); else close(true); });
   trigger.addEventListener('keydown', event => {
@@ -44,6 +90,7 @@ export function createOutputPresets({ onSelect }) {
   menu.addEventListener('keydown', event => {
     if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(true); return; }
     if (event.key === 'Tab') { close(true); return; }
+    closeActions();
     const items = [...menu.querySelectorAll('button')];
     const index = items.indexOf(document.activeElement);
     const next = event.key === 'ArrowDown' ? (index + 1) % items.length
@@ -74,17 +121,20 @@ export function createOutputPresets({ onSelect }) {
       const clear = document.createElement('button');
       clear.type = 'button';
       clear.className = 'output-preset-option';
-      clear.setAttribute('role', 'option');
-      clear.setAttribute('aria-selected', String(!selection));
+      clear.setAttribute('role', 'menuitemradio');
+      clear.setAttribute('aria-checked', String(!selection));
       clear.tabIndex = -1;
       clear.textContent = 'None Selected';
       clear.addEventListener('click', () => { close(); onSelect(null, null); });
       menu.replaceChildren(clear, ...entries.flatMap(({ project, output, settings }) => {
+        const row = document.createElement('div');
+        row.className = 'output-preset-row';
+        row.setAttribute('role', 'none');
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'output-preset-option';
-        button.setAttribute('role', 'option');
-        button.setAttribute('aria-selected', String(project.id === selection?.projectId && output.id === selection?.outputId));
+        button.setAttribute('role', 'menuitemradio');
+        button.setAttribute('aria-checked', String(project.id === selection?.projectId && output.id === selection?.outputId));
         button.tabIndex = -1;
         button.setAttribute('aria-label', settings.map(setting => `${setting.key[0].toUpperCase() + setting.key.slice(1)}: ${setting.label}`).join(', ') || summaryFor(output, settings));
         const choices = document.createElement('span');
@@ -98,10 +148,25 @@ export function createOutputPresets({ onSelect }) {
           button.append(detail);
         }
         button.addEventListener('click', () => { close(); onSelect(project.id, output.id); });
+        const more = document.createElement('button');
+        more.type = 'button';
+        more.className = 'icon-button output-preset-more';
+        more.tabIndex = -1;
+        more.setAttribute('role', 'menuitem');
+        more.setAttribute('aria-label', `Preset options: ${summaryFor(output, settings)}`);
+        more.setAttribute('aria-haspopup', 'menu');
+        more.setAttribute('aria-expanded', 'false');
+        more.setAttribute('aria-controls', actions.id);
+        more.innerHTML = '<svg aria-hidden="true"><use href="#icon-more"/></svg>';
+        more.addEventListener('click', () => openActions(project.id, output.id, more));
+        more.addEventListener('keydown', event => {
+          if (['ArrowRight', 'Enter', ' '].includes(event.key)) { event.preventDefault(); event.stopPropagation(); openActions(project.id, output.id, more); }
+        });
+        row.append(button, more);
         const divider = document.createElement('hr');
         divider.className = 'output-preset-divider';
         divider.setAttribute('aria-hidden', 'true');
-        return [divider, button];
+        return [divider, row];
       }));
     },
   };

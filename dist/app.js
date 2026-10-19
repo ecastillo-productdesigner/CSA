@@ -12,7 +12,7 @@ import { createProjectSources } from './sources.js?v=20261018-connected-sources'
 import { projectOutputs, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261018-variant-source-panel';
 import { createEditorTabs } from './editor-tabs.js?v=20261018-status-icons';
 import { createOutputSettings } from './output-settings.js?v=20261018-variant-controls';
-import { createOutputPresets } from './output-presets.js?v=20261018-variant-source-panel';
+import { createOutputPresets } from './output-presets.js?v=20261018-preset-actions';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -77,7 +77,7 @@ let dashboard = null;
 const outputTimers = new Map();
 const toolDropdowns = createToolDropdowns({ notify });
 const variantFeedback = createVariantFeedback({ save: saveProjects, refreshDropdowns: toolDropdowns.refresh, closeDropdowns: toolDropdowns.close });
-const outputPresets = createOutputPresets({ onSelect: applyOutputPreset });
+const outputPresets = createOutputPresets({ onSelect: applyOutputPreset, onDelete: deleteOutputPreset });
 const outputSettings = createOutputSettings({ onSave: saveOutputSettings, closeDropdowns: toolDropdowns.close });
 const contentPreview = createContentPreview({
   onChange(text) {
@@ -260,6 +260,49 @@ function openEditorTab(outputId) {
   project.viewOriginalDraft = false;
   saveProjects();
   showEditorProject(project);
+}
+
+function deleteOutputPreset(projectId, outputId) {
+  richEditor.flush();
+  const source = projects.find(project => project.id === projectId);
+  const output = projectOutputs(source).find(output => output.id === outputId && output.isFavorite);
+  if (!output) return;
+  const favoritedAt = output.favoritedAt;
+  const references = projects.filter(project => project.variantPreset?.projectId === projectId && project.variantPreset?.outputId === outputId);
+  output.isFavorite = false;
+  delete output.favoritedAt;
+  references.forEach(project => { delete project.variantPreset; });
+  const refresh = () => {
+    renderOutputs(projects.find(project => project.id === activeProjectId));
+    updateComposerActions();
+  };
+  if (!saveProjects()) {
+    output.isFavorite = true;
+    output.favoritedAt = favoritedAt;
+    references.forEach(project => { project.variantPreset = { projectId, outputId }; });
+    refresh();
+    notify('Could not delete this preset. Please try again.');
+    return;
+  }
+  refresh();
+  const focusTarget = $('#output-presets').hidden ? $('#composer-format-trigger') : $('#output-presets-trigger');
+  focusTarget?.focus({ preventScroll: true });
+  notify('Preset deleted.', () => {
+    output.isFavorite = true;
+    output.favoritedAt = favoritedAt;
+    const restored = references.filter(project => !project.variantPreset);
+    restored.forEach(project => { project.variantPreset = { projectId, outputId }; });
+    if (!saveProjects()) {
+      output.isFavorite = false;
+      delete output.favoritedAt;
+      restored.forEach(project => { delete project.variantPreset; });
+      refresh();
+      notify('Could not restore this preset. Please try again.');
+      return;
+    }
+    refresh();
+    notify('Preset restored.');
+  });
 }
 
 function applyOutputPreset(projectId, outputId) {
@@ -727,6 +770,9 @@ $('.create-variant').addEventListener('click', () => {
   if (!project || (!selections.length && !project.variantPreset)) return;
   const output = sampleVariant(project, selections);
   project.lastPendingOutputId = output.id;
+  project.selectedOutputIds = [...selectedPendingOutputs(project).map(entry => entry.id), output.id];
+  project.selectedOutputId = null;
+  project.viewOriginalDraft = true;
   delete project.variantPreset;
   project.outputs = [output, ...projectOutputs(project)];
   project.newVariantCollapsed = true;
@@ -737,8 +783,8 @@ $('.create-variant').addEventListener('click', () => {
   updateComposerActions();
   project.updatedAt = Date.now();
   const saved = saveProjects();
-  renderOutputs(project);
-  [...$('#output-list').querySelectorAll('[data-output-id]')].find(button => button.dataset.outputId === output.id)?.focus();
+  showEditorProject(project);
+  [...$('#output-list').querySelectorAll('[data-output-id]')].find(button => button.dataset.outputId === output.id)?.focus({ preventScroll: true });
   if (saved) notify('Variant added.');
 });
 

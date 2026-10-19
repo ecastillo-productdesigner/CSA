@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261018-status-icons');
+  await import('./app.js?v=20261018-preset-actions');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

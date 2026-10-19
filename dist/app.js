@@ -4,7 +4,7 @@ import { createDashboard } from './dashboard.js?v=20261018-project-rename';
 import { createMaterialEditor } from './editor.js?v=20261017-disabled-sent';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261018-project-delete';
 import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
-import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261018-content-preview';
+import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261018-search-preview';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261016-content-feedback';
 import { createRailNavigation } from './navigation.js?v=20261018-nav-tooltips';
 import { createProjectSources } from './sources.js?v=20261017-disabled-sent';
@@ -505,8 +505,7 @@ function renderSourceStory(project) {
     project.sourceStory = story;
     saveProjects();
   }
-  $('#source-story-title').textContent = story.title;
-  $('#source-story-body').replaceChildren(...story.paragraphs.map(paragraph => element('p', '', paragraph)));
+  contentPreview.render({ text: [`# ${story.title}`, ...story.paragraphs].join('\n\n') }, { readOnly: true });
   $('#output-placeholder').scrollTop = 0;
 }
 

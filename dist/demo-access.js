@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261018-story-tooltips');
+  await import('./app.js?v=20261018-search-preview');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

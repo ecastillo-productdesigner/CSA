@@ -30,11 +30,12 @@ export function createContentPreview({ onChange }) {
   }
   input.addEventListener('input', () => { updateCount(); onChange(input.value); });
   return {
-    render(preview) {
+    render(preview, { readOnly = false } = {}) {
       container.hidden = false;
       original.hidden = true;
       frame.classList.add('has-content-preview');
       frame.setAttribute('aria-labelledby', 'content-preview-heading');
+      input.readOnly = readOnly;
       input.value = typeof preview.text === 'string' ? preview.text : formatContentPreview(preview);
       input.scrollTop = 0;
       updateCount();

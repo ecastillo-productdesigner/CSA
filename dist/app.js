@@ -1,5 +1,5 @@
 import { createVariantFeedback } from './variant-feedback.js?v=20261018-connected-sources';
-import { createProfile } from './profile.js?v=20261017-disabled-sent';
+import { createProfile } from './profile.js?v=20261019-mobile-greeting';
 import { createSearchExperience } from './search.js?v=20261018-mobile-results';
 import { createDashboard } from './dashboard.js?v=20261018-home-compact-cards';
 import { createMaterialEditor } from './editor.js?v=20261018-active-revision';

@@ -811,6 +811,7 @@ select:focus-visible { outline: 3px solid #99abc6; outline-offset: 3px; }
   body:has(#home:not([hidden])) .home-header { top: 90px; padding: 8px 0 24px; }
   body:has(#home:not([hidden])) .home-header::before { height: 90px; }
   body:has(#home:not([hidden])) .home h1 { max-width: 100%; margin: 0 auto; font-size: 24px; line-height: 30px; }
+  #greeting .greeting-prompt { display: block; }
   body:has(#home:not([hidden])) .dashboard-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
   body:has(#home:not([hidden])) .new-project-tile { flex-direction: row; gap: 12px; height: 64px; border-radius: 16px; font-size: 16px; line-height: 22px; }
   body:has(#home:not([hidden])) .new-project-tile svg { width: 24px; height: 24px; }

@@ -21,7 +21,7 @@ function projectDate(timestamp) {
   return day.format(timestamp) === day.format(Date.now()) ? 'Today' : new Date(timestamp).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric' });
 }
 
-export function createDashboard({ onNew, onOpen, onDelete }) {
+export function createDashboard({ onNew, onOpen, onDelete, onRename }) {
   let revealTimer;
   const home = document.querySelector('#home');
   const grid = document.querySelector('#dashboard-grid');
@@ -36,6 +36,12 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
   const deleteConfirm = document.querySelector('#delete-project-confirm');
   const deleteCancel = document.querySelector('#delete-project-cancel');
   const deleteError = document.querySelector('#delete-project-error');
+  let pendingRename = null;
+  const renameDialog = document.querySelector('#rename-project-dialog');
+  const renameForm = document.querySelector('#rename-project-form');
+  const renameInput = document.querySelector('#rename-project-name');
+  const renameSave = document.querySelector('#rename-project-save');
+  const renameError = document.querySelector('#rename-project-error');
 
   function closeMenu(restoreFocus = false) {
     if (!openMenu) return;
@@ -61,6 +67,30 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
     if (!openMenu) return;
     if (event.key === 'Escape') { event.preventDefault(); closeMenu(true); }
     else if (event.key === 'Tab') closeMenu(true);
+  });
+
+  renameInput.addEventListener('input', () => {
+    renameSave.disabled = !renameInput.value.trim() || renameInput.value.trim() === pendingRename?.title;
+    renameInput.removeAttribute('aria-invalid');
+    renameError.hidden = true;
+  });
+  renameDialog.addEventListener('close', () => {
+    const trigger = pendingRename?.trigger;
+    const replacement = document.getElementById(pendingRename?.menuId)?.previousElementSibling;
+    pendingRename = null;
+    (trigger?.isConnected ? trigger : replacement)?.focus({ preventScroll: true });
+  });
+  renameForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const title = renameInput.value.trim();
+    if (!pendingRename || !title || title === pendingRename.title) return;
+    if (onRename(pendingRename.id, title)) renameDialog.close();
+    else {
+      renameError.textContent = 'The name could not be saved. Please try again.';
+      renameError.hidden = false;
+      renameInput.setAttribute('aria-invalid', 'true');
+      renameInput.focus();
+    }
   });
 
   deleteCancel.addEventListener('click', () => deleteDialog.close());
@@ -152,7 +182,23 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
       menu.setAttribute('aria-label', `Options for ${project.title}`);
       menu.hidden = true;
       more.setAttribute('aria-controls', menu.id);
-      const remove = node('button', 'project-card-delete');
+      const rename = node('button', 'project-card-menu-item');
+      rename.type = 'button';
+      rename.setAttribute('role', 'menuitem');
+      rename.append(icon('edit-output'), node('span', '', 'Edit name'));
+      rename.addEventListener('click', () => {
+        closeMenu();
+        pendingRename = { id: project.id, title: project.title, trigger: more, menuId: menu.id };
+        renameForm.reset();
+        renameInput.value = project.title;
+        renameInput.removeAttribute('aria-invalid');
+        renameError.hidden = true;
+        renameSave.disabled = true;
+        renameDialog.showModal();
+        renameInput.focus();
+        renameInput.select();
+      });
+      const remove = node('button', 'project-card-menu-item project-card-delete');
       remove.type = 'button';
       remove.setAttribute('role', 'menuitem');
       remove.append(icon('delete-project'), node('span', '', 'Delete'));
@@ -164,9 +210,14 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
         deleteDialog.showModal();
         deleteCancel.focus();
       });
-      menu.append(remove);
+      menu.append(rename, remove);
       menu.addEventListener('keydown', event => {
-        if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) { event.preventDefault(); remove.focus(); }
+        if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
+        event.preventDefault();
+        const items = [...menu.querySelectorAll('button')];
+        const current = items.indexOf(document.activeElement);
+        const next = event.key === 'Home' ? 0 : event.key === 'End' ? items.length - 1 : (current + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
+        items[next].focus();
       });
       more.addEventListener('click', () => openMenu?.trigger === more ? closeMenu(true) : showMenu(more, menu));
       more.addEventListener('keydown', event => {
@@ -177,7 +228,9 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
       const meta = node('div', 'project-meta');
       const date = node('span'); date.append(icon('history'), document.createTextNode(projectDate(project.createdAt)));
       const count = node('span'); count.append(icon('file'), document.createTextNode(`${variants.length} ${variants.length === 1 ? 'variant' : 'variants'}`));
-      meta.append(date, node('span', 'meta-dot', '·'), count);
+      const separator = node('span', 'meta-dot', '·');
+      separator.setAttribute('aria-hidden', 'true');
+      meta.append(date, separator, count);
       const actions = node('div', 'project-actions');
       const open = node('button', 'project-open', 'Open');
       open.type = 'button';

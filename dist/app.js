@@ -1,6 +1,6 @@
 import { createProfile } from './profile.js?v=20261017-disabled-sent';
 import { createSearchExperience } from './search.js?v=20261018-content-preview';
-import { createDashboard } from './dashboard.js?v=20261018-project-delete';
+import { createDashboard } from './dashboard.js?v=20261018-project-rename';
 import { createMaterialEditor } from './editor.js?v=20261017-disabled-sent';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261018-project-delete';
 import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
@@ -1138,10 +1138,25 @@ async function deleteProjectPermanently(id) {
   return true;
 }
 
+function renameProject(id, title) {
+  const name = title.trim();
+  if (!name || name.length > 200 || !projects.some(project => project.id === id && !project.deletedAt && !project.archivedAt)) return false;
+  const next = projects.map(project => project.id === id ? { ...project, title: name, updatedAt: Date.now() } : project);
+  // Keep the current name if browser storage cannot save the change.
+  try { localStorage.setItem(storageKey, JSON.stringify(next)); }
+  catch { return false; }
+  projects = next;
+  outputPresets.render(projects, null);
+  dashboard.render(projects);
+  notify('Project name updated.');
+  return true;
+}
+
 dashboard = createDashboard({
   onNew: showProjectStart,
   onOpen: showProject,
   onDelete: deleteProjectPermanently,
+  onRename: renameProject,
 });
 dashboard.render(projects);
 dashboard.reveal();

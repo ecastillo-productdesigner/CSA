@@ -966,7 +966,7 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
 @media print { .output-edit-menu { display: none !important; } }
 
 .profile-settings-dialog { width: min(400px, calc(100vw - 32px)); padding: var(--csa-foundation-space-24); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-20); background: var(--csa-foundation-color-neutral-0); }
-.profile-settings-dialog .dialog-footer .secondary-button, #profile-settings-form .primary-button:disabled { color: var(--color-button-disabled-label); }
+.profile-settings-dialog .dialog-footer .secondary-button, .experience-feedback-dialog .dialog-footer .secondary-button, #profile-settings-form .primary-button:disabled { color: var(--color-button-disabled-label); }
 .profile-settings-dialog h2 { margin: 0; font-size: var(--csa-foundation-font-size-20); }
 .profile-settings-photo { position: relative; width: var(--csa-foundation-space-64); height: var(--csa-foundation-space-64); margin-bottom: var(--csa-foundation-space-24); }
 .profile-settings-photo img { width: var(--csa-foundation-space-64); height: var(--csa-foundation-space-64); border-radius: var(--csa-foundation-radius-999); object-fit: cover; }

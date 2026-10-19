@@ -12,6 +12,9 @@
   --color-blue-50: #eff6ff;
   --color-blue-100: #dbeafe;
   --color-rose-400: #fb7185;
+  --color-green-200: #bbf7d0;
+  --color-green-900: #14532d;
+  --color-red-700: #b91c1c;
   --line: #e5e5e5;
   --icon-hover-background: #f5f5f5;
   --accent: #4d5d79;
@@ -148,7 +151,7 @@ main:focus { outline: none; }
 .project-meta { display: flex; align-items: center; gap: 11px; color: var(--color-neutral-400); font-size: 14px; line-height: 20px; }
 .project-meta span { display: inline-flex; align-items: center; gap: 6px; }
 .project-meta svg { width: 15px; height: 15px; flex-shrink: 0; }
-.project-badge--sent { background: #bbf7d0; color: #14532d; }
+.project-badge--sent { background: var(--color-green-200); color: var(--ink); }
 .project-meta .meta-dot { width: 3px; height: 3px; flex-shrink: 0; border-radius: 50%; background: currentColor; font-size: 0; }
 .project-actions { display: flex; gap: 16px; margin-top: auto; }
 .project-open { display: grid; place-items: center; flex: 1; height: var(--button-height); border: 1px solid var(--line); border-radius: 10px; background: white; font-size: 16px; font-weight: 700; }
@@ -182,7 +185,7 @@ main:focus { outline: none; }
 .editor-variant-tabs button[aria-selected="true"] { background: white; }
 .editor-variant-tabs button:focus-visible { outline-offset: -4px; }
 .editor-tab-draft { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; min-height: 24px; padding: 2px 10px; border-radius: 999px; background: var(--draft-background); color: var(--draft-foreground); font-size: 12px; line-height: 20px; font-weight: 500; }
-.editor-tab-draft[data-sent="true"] { background: #bbf7d0; color: #14532d; white-space: nowrap; }
+.editor-tab-draft[data-sent="true"] { background: var(--color-green-200); color: var(--ink); white-space: nowrap; }
 .editor-tab-title { color: var(--muted); flex: 1; min-width: 0; overflow: hidden; font-size: 15px; line-height: 22px; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
 .has-variant-tabs .material-editor { height: calc(100svh - 20px - var(--editor-tabs-height)); padding-top: 0; }
 .has-variant-tabs .editor-sheet { border-top: 0; border-radius: 0 0 15px 15px; box-shadow: none; }
@@ -484,18 +487,45 @@ dialog::backdrop { background: #27354c28; backdrop-filter: blur(3px); }
 .editor-find-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 .editor-find-actions>span { margin-right: auto; color: var(--muted); font-size: 12px; }
 .editor-find-actions .secondary-button { min-height: var(--button-height); padding: 6px 11px; }
-.experience-feedback-dialog { width: min(400px, calc(100vw - 32px)); max-height: calc(100svh - 32px); border-radius: 20px; padding: 24px; box-shadow: 0 16px 65px #25355024; }
-.experience-feedback-dialog .panel-heading { align-items: flex-start; gap: 12px; margin-bottom: 10px; }
-.experience-feedback-dialog .panel-heading h2 { margin: 2px 0 0; font-size: 20px; line-height: 1.35; letter-spacing: -.35px; }
-.experience-feedback-dialog .panel-heading .icon-button { flex-shrink: 0; width: 28px; height: 28px; }
-.experience-feedback-dialog p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
-.experience-feedback-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
-.experience-feedback-options button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-height: 90px; padding: 14px 8px; border: 1px solid var(--line); border-radius: 12px; background: white; color: var(--ink); font-size: 13px; font-weight: 600; }
-.experience-feedback-options button:hover, .experience-feedback-options button[aria-pressed="true"] { border-color: var(--line); background: #edf0f5; }
-.experience-feedback-options svg { width: 25px; height: 25px; }
+.experience-feedback-dialog { width: min(600px, calc(100vw - 32px)); max-height: calc(100svh - 32px); overflow: hidden; border-radius: 20px; padding: 0; box-shadow: 0 16px 65px #25355024; }
+.experience-feedback-dialog[open] { display: flex; flex-direction: column; }
+.experience-feedback-dialog > .panel-heading { flex-shrink: 0; align-items: center; gap: 12px; margin: 0; padding: 20px 24px 14px; }
+.experience-feedback-dialog .panel-heading h2 { margin: 0; font-size: 20px; line-height: 1.35; letter-spacing: -.35px; }
+.experience-feedback-dialog .panel-heading .icon-button { margin: -5px -7px -5px 0; }
+#experience-feedback-form { display: flex; flex-direction: column; min-height: 0; }
+.experience-feedback-body { display: grid; gap: 22px; min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; padding: 8px 24px 24px; }
+.feedback-draft-context { display: flex; align-items: flex-start; gap: 12px; min-width: 0; padding: 16px; border: 1px solid var(--line); border-radius: 10px; background: #fafafa; }
+.feedback-draft-context > svg { flex-shrink: 0; width: 20px; height: 20px; margin-top: 1px; color: var(--muted); }
+.feedback-draft-context > div { min-width: 0; }
+.feedback-draft-context strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; line-height: 1.5; font-weight: 600; }
+.feedback-draft-context span { display: block; margin-top: 2px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.feedback-rating-field { min-width: 0; margin: 0; padding: 0; border: 0; }
+.feedback-rating-field legend, .feedback-form-field > label { padding: 0; font-size: 14px; line-height: 1.5; font-weight: 600; }
+.feedback-required { color: var(--color-red-700); }
+.experience-feedback-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+.experience-feedback-options button { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 46px; padding: 11px 10px; border: 1px solid var(--line); border-radius: 10px; background: white; color: var(--ink); font-size: 14px; font-weight: 600; }
+.experience-feedback-options button:hover { background: var(--icon-hover-background); }
+.experience-feedback-options button[data-experience-rating="up"][aria-pressed="true"] { background: var(--color-green-200); color: var(--color-green-900); }
+.experience-feedback-options button[data-experience-rating="down"][aria-pressed="true"] { background: var(--color-red-700); color: white; }
+.experience-feedback-options svg { flex-shrink: 0; width: 20px; height: 20px; }
 .experience-feedback-options .thumb-down { transform: rotate(180deg); }
-.experience-feedback-dialog .experience-feedback-thanks { margin-top: 24px; color: var(--ink); font-weight: 600; }
-.experience-feedback-dialog .experience-feedback-done { display: grid; place-items: center; width: 100%; margin-top: 24px; text-align: center; }
+.feedback-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.feedback-form-field { display: grid; align-content: start; gap: 8px; min-width: 0; }
+.feedback-form-field input, .feedback-form-field textarea { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; background: #fafafa; color: var(--ink); font: inherit; font-size: 14px; line-height: 1.5; }
+.feedback-form-field input { height: 44px; }
+.feedback-form-field textarea { min-height: 90px; max-height: 180px; resize: vertical; }
+.feedback-form-field :is(input, textarea)::placeholder { color: var(--muted); }
+.feedback-select-field { position: relative; min-width: 0; }
+.feedback-select-field .tool-dropdown-trigger { height: 44px; background: white; font-size: 14px; font-weight: 400; }
+.feedback-select-field .tool-dropdown-menu { z-index: 30; border-radius: 12px; }
+.feedback-character-count { margin: -2px 0 0; color: var(--muted); text-align: right; font-size: 12px; line-height: 1.4; }
+.experience-feedback-dialog .form-error { margin: 0; color: var(--color-red-700); }
+.experience-feedback-dialog .dialog-footer { flex-shrink: 0; flex-wrap: wrap; gap: 10px; margin: 0; padding: 16px 24px; border-top: 1px solid var(--line); }
+.experience-feedback-dialog .dialog-footer button { min-height: var(--button-height); }
+.experience-feedback-complete { padding: 8px 24px 24px; }
+.experience-feedback-thanks { margin: 0; font-size: 14px; line-height: 1.6; }
+.experience-feedback-done { display: grid; place-items: center; width: 100%; margin-top: 24px; }
+@media (max-width: 480px) { .feedback-field-row { grid-template-columns: 1fr; gap: 18px; } .experience-feedback-dialog > .panel-heading { padding: 18px 18px 14px; } .experience-feedback-body { padding: 8px 18px 20px; } .experience-feedback-dialog .dialog-footer { padding: 14px 18px; } }
 .editor-link-dialog { width: min(460px, calc(100vw - 32px)); border-radius: 16px; }
 .editor-link-dialog label+label { margin-top: 16px; }
 @media (max-width: 1100px) {

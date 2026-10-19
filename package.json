@@ -8,6 +8,6 @@
     "dev": "node scripts/serve.mjs",
     "start": "node scripts/serve.mjs",
     "test": "node --test scripts/*.test.mjs",
-    "check": "node --check dist/demo-access.js && node --check dist/app.js && node --check dist/documents.js && node --check dist/editor.js && node --check dist/editor-tabs.js && node --check dist/search.js && node --check dist/outputs.js && node --check dist/output-presets.js && node --check dist/output-settings.js && node --check dist/tool-dropdowns.js && node --check dist/navigation.js && node --check dist/profile.js && node --check dist/sources.js && node --check dist/dashboard.js && node --check dist/project-deletion.js && node --check dist/content-preview.js && node --check scripts/serve.mjs"
+    "check": "node --check dist/demo-access.js && node --check dist/app.js && node --check dist/variant-feedback.js && node --check dist/documents.js && node --check dist/editor.js && node --check dist/editor-tabs.js && node --check dist/search.js && node --check dist/outputs.js && node --check dist/output-presets.js && node --check dist/output-settings.js && node --check dist/tool-dropdowns.js && node --check dist/navigation.js && node --check dist/profile.js && node --check dist/sources.js && node --check dist/dashboard.js && node --check dist/project-deletion.js && node --check dist/content-preview.js && node --check scripts/serve.mjs"
   }
 }

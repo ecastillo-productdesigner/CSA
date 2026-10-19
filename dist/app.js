@@ -1,11 +1,12 @@
+import { createVariantFeedback } from './variant-feedback.js?v=20261018-feedback-report';
 import { createProfile } from './profile.js?v=20261017-disabled-sent';
 import { createSearchExperience } from './search.js?v=20261018-content-preview';
-import { createDashboard } from './dashboard.js?v=20261018-project-rename';
+import { createDashboard } from './dashboard.js?v=20261018-feedback-report';
 import { createMaterialEditor } from './editor.js?v=20261017-disabled-sent';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261018-project-delete';
 import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
 import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261018-search-preview';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261018-variant-controls';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261018-feedback-report';
 import { createRailNavigation } from './navigation.js?v=20261018-nav-tooltips';
 import { createProjectSources } from './sources.js?v=20261017-disabled-sent';
 import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261018-variant-controls';
@@ -71,10 +72,10 @@ let uploadContext = 'material';
 let materialBusy = false;
 let toastTimer;
 let toastAction = null;
-let feedbackTarget = null;
 let dashboard = null;
 const outputTimers = new Map();
 const toolDropdowns = createToolDropdowns({ notify });
+const variantFeedback = createVariantFeedback({ save: saveProjects, refreshDropdowns: toolDropdowns.refresh, closeDropdowns: toolDropdowns.close });
 const outputPresets = createOutputPresets({ onSelect: applyOutputPreset });
 const outputSettings = createOutputSettings({ onSave: saveOutputSettings, closeDropdowns: toolDropdowns.close });
 const contentPreview = createContentPreview({
@@ -1075,31 +1076,8 @@ function markVariantSentToCms(projectId) {
 }
 
 function openExperienceFeedback(project, variant) {
-  feedbackTarget = { projectId: project.id, outputId: variant.id };
-  $('#experience-feedback-options').hidden = false;
-  $('#experience-feedback-thanks').hidden = true;
-  $('#experience-feedback-done').hidden = true;
-  for (const button of document.querySelectorAll('[data-experience-rating]')) {
-    button.setAttribute('aria-pressed', String(button.dataset.experienceRating === variant.experienceFeedback?.rating));
-  }
-  $('#experience-feedback-dialog').showModal();
+  variantFeedback.open(project, variant);
 }
-
-$('#experience-feedback-options').addEventListener('click', event => {
-  const button = event.target.closest('[data-experience-rating]');
-  if (!button || !feedbackTarget) return;
-  const project = projects.find(entry => entry.id === feedbackTarget.projectId);
-  const variant = projectOutputs(project).find(output => output.id === feedbackTarget.outputId);
-  if (!variant) return;
-  variant.experienceFeedback = { rating: button.dataset.experienceRating, submittedAt: Date.now() };
-  const saved = saveProjects();
-  $('#experience-feedback-thanks').textContent = saved ? 'Thanks for your feedback!' : 'Thanks! Your feedback is saved for this session.';
-  $('#experience-feedback-options').hidden = true;
-  $('#experience-feedback-thanks').hidden = false;
-  $('#experience-feedback-done').hidden = false;
-  $('#experience-feedback-done').focus();
-});
-$('#experience-feedback-dialog').addEventListener('close', () => { feedbackTarget = null; });
 
 $('#toast-undo').addEventListener('click', () => {
   const action = toastAction;

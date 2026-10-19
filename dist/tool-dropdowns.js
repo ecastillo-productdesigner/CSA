@@ -19,12 +19,12 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
     if (stored && typeof stored === 'object' && !Array.isArray(stored)) savedFavorites = stored;
   } catch { /* Start with no saved choices when storage is unavailable. */ }
 
-  const controls = [...document.querySelectorAll('.composer-field, .results-sort-field')].map(field => {
+  const controls = [...document.querySelectorAll('.composer-field, .results-sort-field, .feedback-select-field')].map(field => {
     const select = field.querySelector('select');
     const label = field.dataset.label;
     const key = select.id.replace(/^(composer-|output-edit-)/, '');
-    const floating = select.id === 'output-edit-voice';
-    const placeholder = ['format', 'audience', 'voice'].includes(key) ? `Select ${label}` : label;
+    const floating = select.id === 'output-edit-voice' || field.matches('.feedback-select-field');
+    const placeholder = field.dataset.placeholder || (['format', 'audience', 'voice'].includes(key) ? `Select ${label}` : label);
     const supportsFavorites = ['format', 'audience'].includes(key);
     const plural = key === 'format' ? 'formats' : 'audiences';
     const allowed = new Set([...select.options].map(option => option.value).filter(Boolean));

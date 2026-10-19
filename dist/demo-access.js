@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261019-profile-settings');
+  await import('./app.js?v=20261019-edit-dirty-state');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

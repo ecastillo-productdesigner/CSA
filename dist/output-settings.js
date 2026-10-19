@@ -52,23 +52,28 @@ export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
     voice.value = output.toolPreferences?.voice || '';
     voice.dispatchEvent(new Event('change', { bubbles: true }));
     direction.value = typeof output.editorialDirection === 'string' ? output.editorialDirection : '';
-    initialSettings = { voice: voice.value, editorialDirection: direction.value };
-    updateSaveLabel();
+    initialSettings = { name: name.value.trim(), voice: voice.value, editorialDirection: direction.value };
+    updateSaveState();
     error.hidden = true;
     menu.hidden = false;
     position();
     document.querySelector('#output-edit-voice-trigger').focus({ preventScroll: true });
   }
 
-  function updateSaveLabel() {
-    submit.textContent = voice.value !== initialSettings.voice || direction.value !== initialSettings.editorialDirection ? 'Recreate variant' : 'Save changes';
+  function updateSaveState() {
+    const settingsChanged = voice.value !== initialSettings.voice || direction.value !== initialSettings.editorialDirection;
+    const nameChanged = name.value.trim() !== initialSettings.name;
+    submit.textContent = settingsChanged ? 'Recreate variant' : 'Save changes';
+    submit.disabled = !active || !(settingsChanged || nameChanged);
   }
-  voice.addEventListener('change', updateSaveLabel);
-  direction.addEventListener('input', updateSaveLabel);
+  name.addEventListener('input', updateSaveState);
+  voice.addEventListener('change', updateSaveState);
+  direction.addEventListener('input', updateSaveState);
 
   form.addEventListener('submit', event => {
     event.preventDefault();
-    if (!active) return;
+    updateSaveState();
+    if (!active || submit.disabled) return;
     const variantName = name.value.trim();
     const saved = onSave({ ...active, name: variantName, voice: voice.value, editorialDirection: direction.value });
     if (saved) close(true);

@@ -13,7 +13,7 @@ import { createRailNavigation } from './navigation.js?v=20261019-mobile-option-t
 import { createProjectSources } from './sources.js?v=20261018-variant-source-selection';
 import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, createOutputEditButton, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261019-saved-variant-names';
 import { createEditorTabs } from './editor-tabs.js?v=20261019-saved-variant-names';
-import { createOutputSettings } from './output-settings.js?v=20261019-saved-variant-names';
+import { createOutputSettings } from './output-settings.js?v=20261019-edit-dirty-state';
 import { createOutputPresets } from './output-presets.js?v=20261019-saved-variant-names';
 
 const $ = (selector) => document.querySelector(selector);

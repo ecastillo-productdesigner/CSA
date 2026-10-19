@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261019-independent-variant-names';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261019-saved-variant-names';
 
 function node(tag, className, text) {
   const element = document.createElement(tag);

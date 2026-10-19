@@ -1,4 +1,4 @@
-import { projectOutputs, createOutputBadges } from './outputs.js?v=20261019-independent-variant-names';
+import { projectOutputs, createOutputBadges, savedVariantName } from './outputs.js?v=20261019-saved-variant-names';
 
 export function createOutputPresets({ onSelect, onDelete }) {
   const root = document.querySelector('#output-presets');
@@ -81,7 +81,7 @@ export function createOutputPresets({ onSelect, onDelete }) {
     menu.style.bottom = opensUp ? 'calc(100% + 8px)' : 'auto';
     menu.style.maxHeight = `${Math.max(80, Math.min(320, opensUp ? above : below))}px`;
     trigger.setAttribute('aria-expanded', 'true');
-    (menu.querySelector('[aria-checked="true"]') || menu.querySelector('button'))?.focus();
+    (menu.querySelector('[aria-checked="true"]') || menu.querySelector('button'))?.focus({ preventScroll: true });
   }
   trigger.addEventListener('click', () => { if (menu.hidden) open(); else close(true); });
   trigger.addEventListener('keydown', event => {
@@ -98,8 +98,9 @@ export function createOutputPresets({ onSelect, onDelete }) {
       : event.key === 'Home' ? 0 : event.key === 'End' ? items.length - 1 : null;
     if (next !== null) { event.preventDefault(); items[next]?.focus(); }
   });
-  root.addEventListener('focusout', event => { if (!root.contains(event.relatedTarget)) close(); });
-  document.addEventListener('pointerdown', event => { if (!root.contains(event.target)) close(); });
+  for (const eventName of ['pointerdown', 'focusin']) {
+    document.addEventListener(eventName, event => { if (!root.contains(event.target)) close(); });
+  }
 
   return {
     close,
@@ -109,12 +110,12 @@ export function createOutputPresets({ onSelect, onDelete }) {
         .sort((a, b) => (b.output.favoritedAt || 0) - (a.output.favoritedAt || 0));
       const selectedOutput = selection && projectOutputs(projects.find(project => project.id === selection.projectId)).find(output => output.id === selection.outputId);
       const selectedSettings = settingsFor(selectedOutput);
-      const signature = JSON.stringify([selection?.projectId, selection?.outputId, selectedSettings, entries.map(({ project, output, settings }) => [project.id, output.id, settings, Boolean(output.editorialDirection?.trim())])]);
+      const signature = JSON.stringify([selection?.projectId, selection?.outputId, selectedOutput && savedVariantName(selectedOutput), selectedSettings, entries.map(({ project, output, settings }) => [project.id, output.id, savedVariantName(output), settings, Boolean(output.editorialDirection?.trim())])]);
       root.hidden = entries.length === 0 && !selection;
       if (signature === lastSignature) return;
       lastSignature = signature;
       close();
-      const triggerLabel = selection ? `Saved Variant: ${summaryFor(selectedOutput, selectedSettings)}` : 'Saved Variants';
+      const triggerLabel = selectedOutput ? savedVariantName(selectedOutput) : 'Saved Variants';
       trigger.querySelector('span').textContent = triggerLabel;
       trigger.title = triggerLabel;
       trigger.setAttribute('aria-label', triggerLabel);
@@ -136,12 +137,15 @@ export function createOutputPresets({ onSelect, onDelete }) {
         button.setAttribute('role', 'menuitemradio');
         button.setAttribute('aria-checked', String(project.id === selection?.projectId && output.id === selection?.outputId));
         button.tabIndex = -1;
-        button.setAttribute('aria-label', settings.map(setting => `${setting.key[0].toUpperCase() + setting.key.slice(1)}: ${setting.label}`).join(', ') || summaryFor(output, settings));
+        button.setAttribute('aria-label', [savedVariantName(output), ...settings.map(setting => `${setting.key[0].toUpperCase() + setting.key.slice(1)}: ${setting.label}`)].join(', '));
         const choices = document.createElement('span');
         choices.className = 'output-preset-settings';
         if (settings.length) choices.append(...createOutputBadges({ labels: settings }, { maxLabelLength: 20, includeSourceCount: false }));
         else choices.textContent = summaryFor(output, settings);
-        button.append(choices);
+        const name = document.createElement('strong');
+        name.className = 'output-preset-name';
+        name.textContent = savedVariantName(output);
+        button.append(name, choices);
         if (output.editorialDirection?.trim() && settings.length) {
           const detail = document.createElement('small');
           detail.textContent = 'Editorial direction included';
@@ -153,7 +157,7 @@ export function createOutputPresets({ onSelect, onDelete }) {
         more.className = 'icon-button output-preset-more';
         more.tabIndex = -1;
         more.setAttribute('role', 'menuitem');
-        more.setAttribute('aria-label', `Saved variant options: ${summaryFor(output, settings)}`);
+        more.setAttribute('aria-label', `Saved variant options: ${savedVariantName(output)}`);
         more.setAttribute('aria-haspopup', 'menu');
         more.setAttribute('aria-expanded', 'false');
         more.setAttribute('aria-controls', actions.id);

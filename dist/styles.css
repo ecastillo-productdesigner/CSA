@@ -322,6 +322,7 @@ main:focus { outline: none; }
 .output-preset-option small { display: block; color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
 .output-preset-option:hover, .output-preset-option[aria-checked="true"] { background: #edf0f5; }
 .output-preset-option:focus-visible { outline-offset: -3px; }
+.output-preset-name { display: block; margin-bottom: 8px; font-size: 14px; line-height: 20px; font-weight: 600; overflow-wrap: anywhere; }
 .output-preset-settings { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
 .output-preset-settings .output-badge { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
 .output-preset-row { position: relative; }
@@ -409,6 +410,7 @@ body:has(#new-project-dialog[open]) { overflow: hidden; }
 #new-project-use-material { margin-top: 16px; }
 .new-project-material-icon { display: grid; place-items: center; width: 40px; height: 40px; flex-shrink: 0; border-radius: 10px; background: #f3f5f8; }
 .new-project-material-icon svg, .new-project-material-icon .material-symbols-outlined { width: 20px; height: 20px; font-size: 20px; }
+.new-project-material-icon .material-symbols-outlined { font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24; }
 .new-project-material>span:nth-child(2) { display: grid; gap: 5px; flex: 1; min-width: 0; }
 .new-project-material strong { font-size: 14px; line-height: 1.4; font-weight: 600; }
 .new-project-material small { color: var(--muted); font-size: 12px; line-height: 1.5; }

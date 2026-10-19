@@ -13,8 +13,25 @@ export function projectOutputs(project) {
   return Array.isArray(project?.outputs) ? project.outputs.filter(output => output && typeof output.id === 'string' && typeof output.title === 'string') : [];
 }
 
-export function outputName(output) {
-  return typeof output?.name === 'string' && output.name.trim() ? output.name.trim() : output?.title || 'Untitled variant';
+export function customVariantName(output) {
+  const name = typeof output?.name === 'string' ? output.name.trim() : '';
+  const edited = output?.nameEdited ?? Boolean(name && name !== output?.title);
+  return edited ? name : '';
+}
+
+export function savedVariantName(output) {
+  return customVariantName(output) || `Saved Variant ${output?.savedVariantNumber || 1}`;
+}
+
+export function initializeVariantNames(projects) {
+  const outputs = projects.flatMap(projectOutputs);
+  for (const output of outputs) {
+    if (typeof output.nameEdited !== 'boolean') output.nameEdited = Boolean(customVariantName(output));
+  }
+  let next = outputs.reduce((max, output) => Number.isInteger(output.savedVariantNumber) && output.savedVariantNumber > max ? output.savedVariantNumber : max, 0) + 1;
+  for (const output of outputs.filter(output => output.isFavorite).sort((a, b) => (a.favoritedAt || a.createdAt || 0) - (b.favoritedAt || b.createdAt || 0))) {
+    if (!customVariantName(output) && !(Number.isInteger(output.savedVariantNumber) && output.savedVariantNumber > 0)) output.savedVariantNumber = next++;
+  }
 }
 
 export function outputIsReady(output) {
@@ -71,7 +88,7 @@ export function createOutputEditButton(output, { disabled = false, inEditor = fa
   edit.className = `icon-button output-edit-button${inEditor ? ' editor-variant-edit' : ''}`;
   edit.dataset.editOutput = output.id;
   edit.disabled = disabled;
-  edit.setAttribute('aria-label', `Edit variant settings: ${outputName(output)}`);
+  edit.setAttribute('aria-label', `Edit variant settings: ${output.title}`);
   edit.setAttribute('aria-haspopup', 'dialog');
   edit.setAttribute('aria-controls', 'output-edit-menu');
   edit.setAttribute('aria-expanded', 'false');
@@ -246,7 +263,8 @@ export function sampleVariant(project, selections) {
   const title = choices[Math.floor(Math.random() * choices.length)];
   return {
     id: crypto.randomUUID(),
-    name: title,
+    name: '',
+    nameEdited: false,
     title,
     createdAt: Date.now(),
     status: 'pending',
@@ -307,7 +325,7 @@ export function renderOutputs(project) {
     open.className = 'output-open';
     open.dataset.outputId = output.id;
     open.disabled = !ready && processing;
-    open.setAttribute('aria-label', `${!ready ? 'Pending variant' : 'Open variant'}: ${outputName(output)}`);
+    open.setAttribute('aria-label', `${!ready ? 'Pending variant' : 'Open variant'}: ${output.title}`);
     open.setAttribute('aria-pressed', String(ready ? active : selected));
     open.title = !ready ? output.needsRegeneration ? 'Open this variant in the editor' : 'View content preview for this variant' : active ? 'This variant is open in the editor' : 'Open this variant in the editor';
     const top = document.createElement('span');
@@ -344,21 +362,21 @@ export function renderOutputs(project) {
     selection.className = 'output-selection-button';
     selection.dataset.selectOutput = output.id;
     selection.disabled = processing;
-    selection.setAttribute('aria-label', `${selected ? 'Deselect variant' : 'Select variant'}: ${outputName(output)}`);
+    selection.setAttribute('aria-label', `${selected ? 'Deselect variant' : 'Select variant'}: ${output.title}`);
     selection.setAttribute('role', 'checkbox');
     selection.setAttribute('aria-checked', String(selected));
     selection.append(indicator);
     const heading = document.createElement('strong');
     heading.className = 'output-card-title';
-    heading.textContent = outputName(output);
-    heading.title = outputName(output);
+    heading.textContent = output.title;
+    heading.title = output.title;
     open.append(top, heading);
     const edit = createOutputEditButton(output, { disabled: processing });
     const favorite = document.createElement('button');
     favorite.type = 'button';
     favorite.className = 'output-favorite-button';
     favorite.dataset.favoriteOutput = output.id;
-    favorite.setAttribute('aria-label', `${output.isFavorite ? 'Remove preset' : 'Save preset'}: ${outputName(output)}`);
+    favorite.setAttribute('aria-label', `${output.isFavorite ? 'Remove preset' : 'Save preset'}: ${output.title}`);
     favorite.setAttribute('aria-pressed', String(Boolean(output.isFavorite)));
     favorite.title = output.isFavorite ? 'Remove from presets' : 'Save to presets';
     const heart = document.createElement('span');

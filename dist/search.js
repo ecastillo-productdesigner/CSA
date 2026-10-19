@@ -46,7 +46,7 @@ function dateLabel(value) {
   return new Date(`${value}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 }
 
-export function createSearchExperience({ onSearch, onSelectionChange, onDirectionChange, onDraft, onCancelAddSources }) {
+export function createSearchExperience({ onSearch, onSelectionChange, onDirectionChange, onDraft }) {
   const $ = (selector) => document.querySelector(selector);
   let state = null;
   let previewArticle = null;
@@ -264,7 +264,6 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     const id = card.dataset.articleId;
     toggleSelection(id);
   });
-  $('#cancel-source-search').addEventListener('click', () => onCancelAddSources?.());
   $('#create-draft').addEventListener('click', () => {
     if (!state) return;
     const articles = chosenArticles();
@@ -282,7 +281,6 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       const readyArticleIds = new Set(savedAdded.filter(id => articles.some(article => article.id === id)));
       state = { projectId: project.id, addingSources, query, articles, editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '', sort: 'newest', source: 'all', after: '', visibleCount: 4, selected, readyArticleIds };
       $('#create-draft').textContent = addingSources ? 'Add sources' : 'Draft';
-      $('#cancel-source-search').hidden = !addingSources;
       $('.results-direction').hidden = addingSources;
       $('#results-help').textContent = addingSources ? 'Select at least one article to add it to your project.' : 'Select at least one article to enable Draft.';
       $('#search-results').hidden = false;

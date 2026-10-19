@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261019-independent-variant-names');
+  await import('./app.js?v=20261019-saved-variant-names');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

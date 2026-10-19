@@ -1,4 +1,4 @@
-import { outputName } from './outputs.js?v=20261019-independent-variant-names';
+import { customVariantName, savedVariantName } from './outputs.js?v=20261019-saved-variant-names';
 
 export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
   const menu = document.querySelector('#output-edit-menu');
@@ -47,7 +47,8 @@ export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
     close();
     active = { projectId, outputId: output.id };
     triggerContainer = container;
-    name.value = outputName(output);
+    name.value = customVariantName(output);
+    name.placeholder = output.savedVariantNumber ? savedVariantName(output) : 'Name this saved variant';
     voice.value = output.toolPreferences?.voice || '';
     voice.dispatchEvent(new Event('change', { bubbles: true }));
     direction.value = typeof output.editorialDirection === 'string' ? output.editorialDirection : '';
@@ -69,7 +70,6 @@ export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
     event.preventDefault();
     if (!active) return;
     const variantName = name.value.trim();
-    if (!variantName) { error.textContent = 'Enter a variant name.'; error.hidden = false; name.focus(); return; }
     const saved = onSave({ ...active, name: variantName, voice: voice.value, editorialDirection: direction.value });
     if (saved) close(true);
     else { error.textContent = 'Changes could not be saved. Please try again.'; error.hidden = false; position(); }

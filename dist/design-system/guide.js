@@ -23,6 +23,8 @@ for (const button of document.querySelectorAll('[data-card-state]')) button.addE
   $('#ds-variant').dataset.selected = String(state === 'selected');
   $('#ds-variant').dataset.ready = String(state !== 'pending');
 });
+$('#ds-heart').addEventListener('click', () => { const heart=$('#ds-heart'); heart.setAttribute('aria-pressed', String(heart.getAttribute('aria-pressed') !== 'true')); });
+for (const button of document.querySelectorAll('[data-format-preview]')) button.addEventListener('click', () => button.setAttribute('aria-pressed', String(button.getAttribute('aria-pressed') !== 'true')));
 function luminance(hex) {
   const values = hex.slice(1,7).match(/../g).map(byte => parseInt(byte,16)/255).map(v => v <= .04045 ? v/12.92 : ((v+.055)/1.055)**2.4);
   return values[0]*.2126+values[1]*.7152+values[2]*.0722;

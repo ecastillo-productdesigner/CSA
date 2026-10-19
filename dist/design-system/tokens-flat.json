@@ -5196,6 +5196,66 @@
       "reference": "",
       "description": "Always use filled Material Symbols throughout CSA. Custom supplied SVG assets retain their own geometry.",
       "status": "observed"
+    },
+    {
+      "name": "component.editor-toolbar.radius",
+      "designName": "component/editor-toolbar/radius",
+      "cssVariable": "--csa-component-editor-toolbar-radius",
+      "type": "dimension",
+      "layer": "component",
+      "category": "editor-toolbar",
+      "value": "999px",
+      "reference": "foundation.radius.999",
+      "description": "Pill outline requested for the compact editor toolbar.",
+      "status": "approved-update"
+    },
+    {
+      "name": "component.editor-toolbar.inset.desktop",
+      "designName": "component/editor-toolbar/inset/desktop",
+      "cssVariable": "--csa-component-editor-toolbar-inset-desktop",
+      "type": "dimension",
+      "layer": "component",
+      "category": "editor-toolbar",
+      "value": "38px",
+      "reference": "",
+      "description": "Align toolbar with the desktop document text inset.",
+      "status": "approved-update"
+    },
+    {
+      "name": "component.editor-toolbar.inset.mobile",
+      "designName": "component/editor-toolbar/inset/mobile",
+      "cssVariable": "--csa-component-editor-toolbar-inset-mobile",
+      "type": "dimension",
+      "layer": "component",
+      "category": "editor-toolbar",
+      "value": "16px",
+      "reference": "foundation.space.16",
+      "description": "Align toolbar with the mobile document text inset.",
+      "status": "approved-update"
+    },
+    {
+      "name": "component.editor-toolbar.padding-inline",
+      "designName": "component/editor-toolbar/padding-inline",
+      "cssVariable": "--csa-component-editor-toolbar-padding-inline",
+      "type": "dimension",
+      "layer": "component",
+      "category": "editor-toolbar",
+      "value": "14px",
+      "reference": "foundation.space.14",
+      "description": "Inner horizontal space of the compact toolbar.",
+      "status": "approved-update"
+    },
+    {
+      "name": "component.editor-toolbar.padding-block",
+      "designName": "component/editor-toolbar/padding-block",
+      "cssVariable": "--csa-component-editor-toolbar-padding-block",
+      "type": "dimension",
+      "layer": "component",
+      "category": "editor-toolbar",
+      "value": "8px",
+      "reference": "foundation.space.8",
+      "description": "Inner vertical space of the compact toolbar.",
+      "status": "approved-update"
     }
   ]
 }

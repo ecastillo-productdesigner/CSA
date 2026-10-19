@@ -166,3 +166,6 @@
   .ds-end span { flex: 1; font-size: 9px; }
   .ds-end a { margin-left: 0; }
 }
+
+.ds-heart { position: static; width: 40px; height: 40px; }
+.ds-toolbar { margin: 0; max-width: 100%; }

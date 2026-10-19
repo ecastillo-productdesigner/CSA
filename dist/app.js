@@ -1,7 +1,7 @@
 import { parseSourceLinks, formatSourceLinks } from './source-links.js';
 import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261019-saved-variant-names';
 import { createVariantFeedback } from './variant-feedback.js?v=20261018-connected-sources';
-import { createProfile } from './profile.js?v=20261019-profile-settings';
+import { createProfile } from './profile.js?v=20261019-profile-dirty-state';
 import { createSearchExperience } from './search.js?v=20261019-saved-variant-names';
 import { createDashboard } from './dashboard.js?v=20261019-profile-settings';
 import { createMaterialEditor } from './editor.js?v=20261019-toolbar-style';

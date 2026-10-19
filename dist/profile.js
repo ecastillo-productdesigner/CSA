@@ -22,6 +22,12 @@ export function createProfile({ notify, onClose, onSessionEnd }) {
   let profile = readProfile();
   let pendingPhoto = profile.photo;
   let photoSequence = 0;
+  let photoLoading = false;
+
+  function updateSaveState() {
+    const changed = name.value.trim() !== profile.name || pendingPhoto !== profile.photo;
+    submit.disabled = !dialog.open || photoLoading || !changed;
+  }
 
   function apply() {
     document.querySelector('#profile-name').textContent = profile.name;
@@ -53,25 +59,31 @@ export function createProfile({ notify, onClose, onSessionEnd }) {
     name.setCustomValidity('');
     pendingPhoto = profile.photo;
     preview.src = pendingPhoto || './assets/profile-photo.png';
-    submit.disabled = false;
+    photoLoading = false;
     dialog.showModal();
+    updateSaveState();
     name.focus();
   });
   for (const button of dialog.querySelectorAll('[data-close-profile-settings]')) button.addEventListener('click', () => dialog.close());
   form.addEventListener('submit', event => {
     event.preventDefault();
+    updateSaveState();
     const nextName = name.value.trim();
     name.setCustomValidity(nextName ? '' : 'Enter your name.');
     if (submit.disabled || !form.reportValidity()) return;
     if (save({ ...profile, name: nextName, photo: pendingPhoto })) { dialog.close(); notify('Profile saved.'); }
   });
-  name.addEventListener('input', () => name.setCustomValidity(''));
+  name.addEventListener('input', () => {
+    name.setCustomValidity('');
+    updateSaveState();
+  });
   dialog.addEventListener('close', () => {
     photoSequence += 1;
     pendingPhoto = profile.photo;
     preview.src = pendingPhoto || './assets/profile-photo.png';
     photo.value = '';
-    submit.disabled = false;
+    photoLoading = false;
+    updateSaveState();
     trigger.focus({ preventScroll: true });
   });
 
@@ -85,7 +97,8 @@ export function createProfile({ notify, onClose, onSessionEnd }) {
       notify('Choose a PNG, JPG, or WebP photo up to 5 MB.'); return;
     }
     const sequence = ++photoSequence;
-    submit.disabled = true;
+    photoLoading = true;
+    updateSaveState();
     let bitmap;
     try {
       bitmap = await createImageBitmap(file);
@@ -101,7 +114,10 @@ export function createProfile({ notify, onClose, onSessionEnd }) {
       if (dialog.open && sequence === photoSequence) notify('This photo could not be opened. Try another image.');
     } finally {
       bitmap?.close();
-      if (sequence === photoSequence) submit.disabled = false;
+      if (sequence === photoSequence) {
+        photoLoading = false;
+        updateSaveState();
+      }
     }
   });
   document.querySelector('#demo-lock').addEventListener('click', () => onSessionEnd(false));

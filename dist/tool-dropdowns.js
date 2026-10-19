@@ -23,6 +23,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
     const select = field.querySelector('select');
     const label = field.dataset.label;
     const key = select.id.replace('composer-', '');
+    const placeholder = ['format', 'audience', 'voice'].includes(key) ? `Select ${label}` : label;
     const supportsFavorites = ['format', 'audience'].includes(key);
     const plural = key === 'format' ? 'formats' : 'audiences';
     const allowed = new Set([...select.options].map(option => option.value).filter(Boolean));
@@ -145,8 +146,8 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
       trigger.title = select.title;
       if (select.disabled) close();
       const selected = select.options[select.selectedIndex];
-      text.textContent = select.value ? selected.textContent : label;
-      trigger.setAttribute('aria-label', `${label}: ${selected?.textContent || 'None Selected'}`);
+      text.textContent = select.value ? selected.textContent : placeholder;
+      trigger.setAttribute('aria-label', select.value ? `${label}: ${selected.textContent}` : placeholder);
       rows.forEach(({ row, button }, index) => {
         row.dataset.selected = String(index === select.selectedIndex);
         button.setAttribute(supportsFavorites ? 'aria-pressed' : 'aria-selected', String(index === select.selectedIndex));

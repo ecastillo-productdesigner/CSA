@@ -181,7 +181,7 @@ main:focus { outline: none; }
 .material-card:hover { border-color: var(--line); box-shadow: 0 4px 16px var(--csa-foundation-color-observed-hex-4d5d7908); transform: translateY(-2px); }
 .profile-menu { display: grid; flex: 0 0 auto; width: calc(100% - 16px); max-height: 40svh; margin: var(--csa-foundation-space-8); padding: var(--csa-foundation-space-6); overflow-y: auto; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-12); background: var(--surface); box-shadow: 0 6px 20px var(--csa-foundation-color-observed-hex-2535500a); }
 .profile-navigation { display: block; width: 100%; min-height: 44px; padding: var(--csa-foundation-space-10) var(--csa-foundation-space-12); border: 0; border-radius: var(--csa-foundation-radius-8); background: transparent; text-align: left; font-size: var(--csa-foundation-font-size-14); }
-.profile-navigation:hover, .profile-navigation:focus-visible { background: var(--csa-foundation-color-observed-hex-f2f4f7); }
+.profile-navigation:hover, .profile-navigation:focus-visible { background: var(--csa-semantic-color-surface-hover); }
 .profile-logout { margin-top: var(--csa-foundation-space-4); border-top: var(--csa-foundation-border-width-1) solid var(--line); border-radius: 0 0 var(--csa-foundation-radius-8) var(--csa-foundation-radius-8); }
 .showing-composer main { display: block; padding: var(--csa-foundation-space-10) var(--csa-foundation-space-10) var(--csa-foundation-space-10) calc(var(--sidebar-left) + var(--workspace-sidebar-width) + var(--csa-foundation-space-20)); }
 .composer { display: grid; grid-template-columns: minmax(0, 1fr) var(--panel-width); gap: var(--csa-foundation-space-24); width: 100%; min-height: calc(100svh - 20px); }
@@ -955,8 +955,11 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
 
 .profile-settings-dialog { width: min(400px, calc(100vw - 32px)); padding: var(--csa-foundation-space-24); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-20); background: var(--csa-foundation-color-neutral-0); }
 .profile-settings-dialog h2 { margin: 0; font-size: var(--csa-foundation-font-size-20); }
+.profile-settings-photo { display: flex; align-items: center; gap: var(--csa-foundation-space-16); margin-bottom: var(--csa-foundation-space-24); }
+.profile-settings-photo img { width: var(--csa-foundation-space-64); height: var(--csa-foundation-space-64); border-radius: var(--csa-foundation-radius-999); object-fit: cover; }
+.profile-settings-photo p { margin: 0 0 var(--csa-foundation-space-8); font-size: var(--csa-foundation-font-size-13); font-weight: var(--csa-foundation-font-weight-600); }
 .profile-settings-dialog label { display: grid; gap: var(--csa-foundation-space-8); font-size: var(--csa-foundation-font-size-13); font-weight: var(--csa-foundation-font-weight-600); }
-.profile-settings-dialog input { width: 100%; height: 42px; padding: 9px var(--csa-foundation-space-12); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-10); color: var(--ink); font: inherit; font-size: var(--csa-foundation-font-size-16); font-weight: var(--csa-foundation-font-weight-400); }
+.profile-settings-dialog input[type="text"] { width: 100%; height: 42px; padding: 9px var(--csa-foundation-space-12); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-10); color: var(--ink); font: inherit; font-size: var(--csa-foundation-font-size-16); font-weight: var(--csa-foundation-font-weight-400); }
 
 .editor-source-open { display: block; width: 100%; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; }
 .editor-source-open strong { display: block; color: var(--heading); }
@@ -974,7 +977,9 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
 }
 .primary-button { justify-content: center; }
 
-button:disabled:not(.output-open):not(.output-selection-button) { color: var(--color-button-disabled-label); background: var(--csa-foundation-color-neutral-0); opacity: 1; }
+button:disabled:not(.output-open):not(.output-selection-button):not(.icon-button) { color: var(--color-button-disabled-label); background: var(--csa-foundation-color-neutral-0); opacity: 1; }
+
+.icon-button:disabled { color: var(--color-button-disabled-label); background: transparent; opacity: 1; }
 
 /* Keep bundled editor borders on the shared site color. */
 .ql-editor td,

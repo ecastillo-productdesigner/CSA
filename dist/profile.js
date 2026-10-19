@@ -17,7 +17,11 @@ export function createProfile({ notify, onClose, onSessionEnd }) {
   const form = document.querySelector('#profile-settings-form');
   const name = document.querySelector('#profile-settings-name');
   const photo = document.querySelector('#profile-photo-input');
+  const preview = document.querySelector('#profile-settings-photo');
+  const submit = form.querySelector('[type="submit"]');
   let profile = readProfile();
+  let pendingPhoto = profile.photo;
+  let photoSequence = 0;
 
   function apply() {
     document.querySelector('#profile-name').textContent = profile.name;
@@ -46,6 +50,10 @@ export function createProfile({ notify, onClose, onSessionEnd }) {
   document.querySelector('#profile-settings').addEventListener('click', () => {
     onClose();
     name.value = profile.name;
+    name.setCustomValidity('');
+    pendingPhoto = profile.photo;
+    preview.src = pendingPhoto || './assets/profile-photo.png';
+    submit.disabled = false;
     dialog.showModal();
     name.focus();
   });
@@ -54,14 +62,21 @@ export function createProfile({ notify, onClose, onSessionEnd }) {
     event.preventDefault();
     const nextName = name.value.trim();
     name.setCustomValidity(nextName ? '' : 'Enter your name.');
-    if (!form.reportValidity()) return;
-    if (save({ ...profile, name: nextName })) { dialog.close(); notify('Profile saved.'); }
+    if (submit.disabled || !form.reportValidity()) return;
+    if (save({ ...profile, name: nextName, photo: pendingPhoto })) { dialog.close(); notify('Profile saved.'); }
   });
   name.addEventListener('input', () => name.setCustomValidity(''));
-  dialog.addEventListener('close', () => trigger.focus({ preventScroll: true }));
+  dialog.addEventListener('close', () => {
+    photoSequence += 1;
+    pendingPhoto = profile.photo;
+    preview.src = pendingPhoto || './assets/profile-photo.png';
+    photo.value = '';
+    submit.disabled = false;
+    trigger.focus({ preventScroll: true });
+  });
 
 
-  document.querySelector('#profile-change-photo').addEventListener('click', () => { onClose(); photo.click(); });
+  document.querySelector('#profile-change-photo').addEventListener('click', () => photo.click());
   photo.addEventListener('change', async () => {
     const file = photo.files?.[0];
     photo.value = '';
@@ -69,17 +84,25 @@ export function createProfile({ notify, onClose, onSessionEnd }) {
     if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
       notify('Choose a PNG, JPG, or WebP photo up to 5 MB.'); return;
     }
+    const sequence = ++photoSequence;
+    submit.disabled = true;
     let bitmap;
     try {
       bitmap = await createImageBitmap(file);
+      if (!dialog.open || sequence !== photoSequence) return;
       const canvas = document.createElement('canvas');
       canvas.width = canvas.height = 256;
       const context = canvas.getContext('2d');
       const size = Math.min(bitmap.width, bitmap.height);
       context.drawImage(bitmap, (bitmap.width - size) / 2, (bitmap.height - size) / 2, size, size, 0, 0, 256, 256);
-      if (save({ ...profile, photo: canvas.toDataURL('image/webp', .85) })) notify('Profile photo updated.');
-    } catch { notify('This photo could not be opened. Try another image.'); }
-    finally { bitmap?.close(); }
+      pendingPhoto = canvas.toDataURL('image/webp', .85);
+      preview.src = pendingPhoto;
+    } catch {
+      if (dialog.open && sequence === photoSequence) notify('This photo could not be opened. Try another image.');
+    } finally {
+      bitmap?.close();
+      if (sequence === photoSequence) submit.disabled = false;
+    }
   });
   document.querySelector('#demo-lock').addEventListener('click', () => onSessionEnd(false));
   document.querySelector('#profile-logout').addEventListener('click', () => onSessionEnd(true));

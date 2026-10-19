@@ -116,7 +116,7 @@ export function createDashboard({ onNew, onOpen, onDelete, onRename }) {
       deleting = false;
       deleteDialog.removeAttribute('aria-busy');
       deleteCancel.disabled = deleteConfirm.disabled = false;
-      deleteConfirm.querySelector('span').textContent = 'Delete project';
+      deleteConfirm.querySelector('span').textContent = 'Delete';
       if (deleteDialog.open) deleteCancel.focus();
     }
   });

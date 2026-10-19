@@ -1,0 +1,5201 @@
+{
+  "version": "1.0.0",
+  "tokens": [
+    {
+      "name": "foundation.color.neutral.0",
+      "designName": "foundation/color/neutral/0",
+      "cssVariable": "--csa-foundation-color-neutral-0",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#ffffff",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      }
+    },
+    {
+      "name": "foundation.color.neutral.50",
+      "designName": "foundation/color/neutral/50",
+      "cssVariable": "--csa-foundation-color-neutral-50",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#fafafa",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9803921568627451,
+          0.9803921568627451,
+          0.9803921568627451
+        ],
+        "alpha": 1,
+        "hex": "#fafafa"
+      }
+    },
+    {
+      "name": "foundation.color.neutral.100",
+      "designName": "foundation/color/neutral/100",
+      "cssVariable": "--csa-foundation-color-neutral-100",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#f5f5f5",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9607843137254902,
+          0.9607843137254902,
+          0.9607843137254902
+        ],
+        "alpha": 1,
+        "hex": "#f5f5f5"
+      }
+    },
+    {
+      "name": "foundation.color.neutral.200",
+      "designName": "foundation/color/neutral/200",
+      "cssVariable": "--csa-foundation-color-neutral-200",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#e5e5e5",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8980392156862745,
+          0.8980392156862745,
+          0.8980392156862745
+        ],
+        "alpha": 1,
+        "hex": "#e5e5e5"
+      }
+    },
+    {
+      "name": "foundation.color.neutral.400",
+      "designName": "foundation/color/neutral/400",
+      "cssVariable": "--csa-foundation-color-neutral-400",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#a3a3a3",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.6392156862745098,
+          0.6392156862745098,
+          0.6392156862745098
+        ],
+        "alpha": 1,
+        "hex": "#a3a3a3"
+      }
+    },
+    {
+      "name": "foundation.color.neutral.700",
+      "designName": "foundation/color/neutral/700",
+      "cssVariable": "--csa-foundation-color-neutral-700",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#404040",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.25098039215686274,
+          0.25098039215686274,
+          0.25098039215686274
+        ],
+        "alpha": 1,
+        "hex": "#404040"
+      }
+    },
+    {
+      "name": "foundation.color.stone.200",
+      "designName": "foundation/color/stone/200",
+      "cssVariable": "--csa-foundation-color-stone-200",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#e7e5e4",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9058823529411765,
+          0.8980392156862745,
+          0.8941176470588236
+        ],
+        "alpha": 1,
+        "hex": "#e7e5e4"
+      }
+    },
+    {
+      "name": "foundation.color.stone.900",
+      "designName": "foundation/color/stone/900",
+      "cssVariable": "--csa-foundation-color-stone-900",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#1c1917",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.10980392156862745,
+          0.09803921568627451,
+          0.09019607843137255
+        ],
+        "alpha": 1,
+        "hex": "#1c1917"
+      }
+    },
+    {
+      "name": "foundation.color.warm.canvas",
+      "designName": "foundation/color/warm/canvas",
+      "cssVariable": "--csa-foundation-color-warm-canvas",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#fbf6f4",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.984313725490196,
+          0.9647058823529412,
+          0.9568627450980393
+        ],
+        "alpha": 1,
+        "hex": "#fbf6f4"
+      }
+    },
+    {
+      "name": "foundation.color.warm.selected",
+      "designName": "foundation/color/warm/selected",
+      "cssVariable": "--csa-foundation-color-warm-selected",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#f8f1ee",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9725490196078431,
+          0.9450980392156862,
+          0.9333333333333333
+        ],
+        "alpha": 1,
+        "hex": "#f8f1ee"
+      }
+    },
+    {
+      "name": "foundation.color.blue.50",
+      "designName": "foundation/color/blue/50",
+      "cssVariable": "--csa-foundation-color-blue-50",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#eff6ff",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9372549019607843,
+          0.9647058823529412,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#eff6ff"
+      }
+    },
+    {
+      "name": "foundation.color.blue.100",
+      "designName": "foundation/color/blue/100",
+      "cssVariable": "--csa-foundation-color-blue-100",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#dbeafe",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8588235294117647,
+          0.9176470588235294,
+          0.996078431372549
+        ],
+        "alpha": 1,
+        "hex": "#dbeafe"
+      }
+    },
+    {
+      "name": "foundation.color.blue.500",
+      "designName": "foundation/color/blue/500",
+      "cssVariable": "--csa-foundation-color-blue-500",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#3b82f6",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.23137254901960785,
+          0.5098039215686274,
+          0.9647058823529412
+        ],
+        "alpha": 1,
+        "hex": "#3b82f6"
+      }
+    },
+    {
+      "name": "foundation.color.blue.600",
+      "designName": "foundation/color/blue/600",
+      "cssVariable": "--csa-foundation-color-blue-600",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#2563eb",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.38823529411764707,
+          0.9215686274509803
+        ],
+        "alpha": 1,
+        "hex": "#2563eb"
+      }
+    },
+    {
+      "name": "foundation.color.blue.focus",
+      "designName": "foundation/color/blue/focus",
+      "cssVariable": "--csa-foundation-color-blue-focus",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#99abc6",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.6,
+          0.6705882352941176,
+          0.7764705882352941
+        ],
+        "alpha": 1,
+        "hex": "#99abc6"
+      }
+    },
+    {
+      "name": "foundation.color.slate.brand",
+      "designName": "foundation/color/slate/brand",
+      "cssVariable": "--csa-foundation-color-slate-brand",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#4d5d79",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.30196078431372547,
+          0.36470588235294116,
+          0.4745098039215686
+        ],
+        "alpha": 1,
+        "hex": "#4d5d79"
+      }
+    },
+    {
+      "name": "foundation.color.rose.100",
+      "designName": "foundation/color/rose/100",
+      "cssVariable": "--csa-foundation-color-rose-100",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#ffe4e6",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          0.8941176470588236,
+          0.9019607843137255
+        ],
+        "alpha": 1,
+        "hex": "#ffe4e6"
+      }
+    },
+    {
+      "name": "foundation.color.rose.400",
+      "designName": "foundation/color/rose/400",
+      "cssVariable": "--csa-foundation-color-rose-400",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#fb7185",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.984313725490196,
+          0.44313725490196076,
+          0.5215686274509804
+        ],
+        "alpha": 1,
+        "hex": "#fb7185"
+      }
+    },
+    {
+      "name": "foundation.color.indigo.50",
+      "designName": "foundation/color/indigo/50",
+      "cssVariable": "--csa-foundation-color-indigo-50",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#eef2ff",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9333333333333333,
+          0.9490196078431372,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#eef2ff"
+      }
+    },
+    {
+      "name": "foundation.color.orange.100",
+      "designName": "foundation/color/orange/100",
+      "cssVariable": "--csa-foundation-color-orange-100",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#ffedd5",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          0.9294117647058824,
+          0.8352941176470589
+        ],
+        "alpha": 1,
+        "hex": "#ffedd5"
+      }
+    },
+    {
+      "name": "foundation.color.green.200",
+      "designName": "foundation/color/green/200",
+      "cssVariable": "--csa-foundation-color-green-200",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#bbf7d0",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.7333333333333333,
+          0.9686274509803922,
+          0.8156862745098039
+        ],
+        "alpha": 1,
+        "hex": "#bbf7d0"
+      }
+    },
+    {
+      "name": "foundation.color.green.600",
+      "designName": "foundation/color/green/600",
+      "cssVariable": "--csa-foundation-color-green-600",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#16a34a",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.08627450980392157,
+          0.6392156862745098,
+          0.2901960784313726
+        ],
+        "alpha": 1,
+        "hex": "#16a34a"
+      }
+    },
+    {
+      "name": "foundation.color.green.900",
+      "designName": "foundation/color/green/900",
+      "cssVariable": "--csa-foundation-color-green-900",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#14532d",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0784313725490196,
+          0.3254901960784314,
+          0.17647058823529413
+        ],
+        "alpha": 1,
+        "hex": "#14532d"
+      }
+    },
+    {
+      "name": "foundation.color.red.50",
+      "designName": "foundation/color/red/50",
+      "cssVariable": "--csa-foundation-color-red-50",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#fef2f2",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.996078431372549,
+          0.9490196078431372,
+          0.9490196078431372
+        ],
+        "alpha": 1,
+        "hex": "#fef2f2"
+      }
+    },
+    {
+      "name": "foundation.color.red.600",
+      "designName": "foundation/color/red/600",
+      "cssVariable": "--csa-foundation-color-red-600",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#dc2626",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8627450980392157,
+          0.14901960784313725,
+          0.14901960784313725
+        ],
+        "alpha": 1,
+        "hex": "#dc2626"
+      }
+    },
+    {
+      "name": "foundation.color.red.700",
+      "designName": "foundation/color/red/700",
+      "cssVariable": "--csa-foundation-color-red-700",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#b91c1c",
+      "reference": "",
+      "description": "Implemented palette value.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.7254901960784313,
+          0.10980392156862745,
+          0.10980392156862745
+        ],
+        "alpha": 1,
+        "hex": "#b91c1c"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-4d5d7908",
+      "designName": "foundation/color/observed/hex-4d5d7908",
+      "cssVariable": "--csa-foundation-color-observed-hex-4d5d7908",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#4d5d7908",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.30196078431372547,
+          0.36470588235294116,
+          0.4745098039215686
+        ],
+        "alpha": 0.03137254901960784,
+        "hex": "#4d5d79"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-f8f9fb",
+      "designName": "foundation/color/observed/hex-f8f9fb",
+      "cssVariable": "--csa-foundation-color-observed-hex-f8f9fb",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#f8f9fb",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9725490196078431,
+          0.9764705882352941,
+          0.984313725490196
+        ],
+        "alpha": 1,
+        "hex": "#f8f9fb"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-f2f3f5",
+      "designName": "foundation/color/observed/hex-f2f3f5",
+      "cssVariable": "--csa-foundation-color-observed-hex-f2f3f5",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#f2f3f5",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9490196078431372,
+          0.9529411764705882,
+          0.9607843137254902
+        ],
+        "alpha": 1,
+        "hex": "#f2f3f5"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-eef1f6",
+      "designName": "foundation/color/observed/hex-eef1f6",
+      "cssVariable": "--csa-foundation-color-observed-hex-eef1f6",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#eef1f6",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9333333333333333,
+          0.9450980392156862,
+          0.9647058823529412
+        ],
+        "alpha": 1,
+        "hex": "#eef1f6"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-25355016",
+      "designName": "foundation/color/observed/hex-25355016",
+      "cssVariable": "--csa-foundation-color-observed-hex-25355016",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#25355016",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.20784313725490197,
+          0.3137254901960784
+        ],
+        "alpha": 0.08627450980392157,
+        "hex": "#253550"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-fbf6f400",
+      "designName": "foundation/color/observed/hex-fbf6f400",
+      "cssVariable": "--csa-foundation-color-observed-hex-fbf6f400",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#fbf6f400",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.984313725490196,
+          0.9647058823529412,
+          0.9568627450980393
+        ],
+        "alpha": 0,
+        "hex": "#fbf6f4"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-fbf6f4e6",
+      "designName": "foundation/color/observed/hex-fbf6f4e6",
+      "cssVariable": "--csa-foundation-color-observed-hex-fbf6f4e6",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#fbf6f4e6",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.984313725490196,
+          0.9647058823529412,
+          0.9568627450980393
+        ],
+        "alpha": 0.9019607843137255,
+        "hex": "#fbf6f4"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-17171714",
+      "designName": "foundation/color/observed/hex-17171714",
+      "cssVariable": "--csa-foundation-color-observed-hex-17171714",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#17171714",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.09019607843137255,
+          0.09019607843137255,
+          0.09019607843137255
+        ],
+        "alpha": 0.0784313725490196,
+        "hex": "#171717"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-cfd4d7",
+      "designName": "foundation/color/observed/hex-cfd4d7",
+      "cssVariable": "--csa-foundation-color-observed-hex-cfd4d7",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#cfd4d7",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8117647058823529,
+          0.8313725490196079,
+          0.8431372549019608
+        ],
+        "alpha": 1,
+        "hex": "#cfd4d7"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-2535500a",
+      "designName": "foundation/color/observed/hex-2535500a",
+      "cssVariable": "--csa-foundation-color-observed-hex-2535500a",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#2535500a",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.20784313725490197,
+          0.3137254901960784
+        ],
+        "alpha": 0.0392156862745098,
+        "hex": "#253550"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-f2f4f7",
+      "designName": "foundation/color/observed/hex-f2f4f7",
+      "cssVariable": "--csa-foundation-color-observed-hex-f2f4f7",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#f2f4f7",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9490196078431372,
+          0.9568627450980393,
+          0.9686274509803922
+        ],
+        "alpha": 1,
+        "hex": "#f2f4f7"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-f5f6f8",
+      "designName": "foundation/color/observed/hex-f5f6f8",
+      "cssVariable": "--csa-foundation-color-observed-hex-f5f6f8",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#f5f6f8",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9607843137254902,
+          0.9647058823529412,
+          0.9725490196078431
+        ],
+        "alpha": 1,
+        "hex": "#f5f6f8"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-f7f8fa",
+      "designName": "foundation/color/observed/hex-f7f8fa",
+      "cssVariable": "--csa-foundation-color-observed-hex-f7f8fa",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#f7f8fa",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9686274509803922,
+          0.9725490196078431,
+          0.9803921568627451
+        ],
+        "alpha": 1,
+        "hex": "#f7f8fa"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-29354c0d",
+      "designName": "foundation/color/observed/hex-29354c0d",
+      "cssVariable": "--csa-foundation-color-observed-hex-29354c0d",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#29354c0d",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1607843137254902,
+          0.20784313725490197,
+          0.2980392156862745
+        ],
+        "alpha": 0.050980392156862744,
+        "hex": "#29354c"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-edf0f5",
+      "designName": "foundation/color/observed/hex-edf0f5",
+      "cssVariable": "--csa-foundation-color-observed-hex-edf0f5",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#edf0f5",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9294117647058824,
+          0.9411764705882353,
+          0.9607843137254902
+        ],
+        "alpha": 1,
+        "hex": "#edf0f5"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-f3f5f8",
+      "designName": "foundation/color/observed/hex-f3f5f8",
+      "cssVariable": "--csa-foundation-color-observed-hex-f3f5f8",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#f3f5f8",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9529411764705882,
+          0.9607843137254902,
+          0.9725490196078431
+        ],
+        "alpha": 1,
+        "hex": "#f3f5f8"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-dfe5ee",
+      "designName": "foundation/color/observed/hex-dfe5ee",
+      "cssVariable": "--csa-foundation-color-observed-hex-dfe5ee",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#dfe5ee",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8745098039215686,
+          0.8980392156862745,
+          0.9333333333333333
+        ],
+        "alpha": 1,
+        "hex": "#dfe5ee"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-f5f7fa",
+      "designName": "foundation/color/observed/hex-f5f7fa",
+      "cssVariable": "--csa-foundation-color-observed-hex-f5f7fa",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#f5f7fa",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9607843137254902,
+          0.9686274509803922,
+          0.9803921568627451
+        ],
+        "alpha": 1,
+        "hex": "#f5f7fa"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-f9edf6",
+      "designName": "foundation/color/observed/hex-f9edf6",
+      "cssVariable": "--csa-foundation-color-observed-hex-f9edf6",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#f9edf6",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9764705882352941,
+          0.9294117647058824,
+          0.9647058823529412
+        ],
+        "alpha": 1,
+        "hex": "#f9edf6"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-a34d88",
+      "designName": "foundation/color/observed/hex-a34d88",
+      "cssVariable": "--csa-foundation-color-observed-hex-a34d88",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#a34d88",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.6392156862745098,
+          0.30196078431372547,
+          0.5333333333333333
+        ],
+        "alpha": 1,
+        "hex": "#a34d88"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-29354c14",
+      "designName": "foundation/color/observed/hex-29354c14",
+      "cssVariable": "--csa-foundation-color-observed-hex-29354c14",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#29354c14",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1607843137254902,
+          0.20784313725490197,
+          0.2980392156862745
+        ],
+        "alpha": 0.0784313725490196,
+        "hex": "#29354c"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-25355020",
+      "designName": "foundation/color/observed/hex-25355020",
+      "cssVariable": "--csa-foundation-color-observed-hex-25355020",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#25355020",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.20784313725490197,
+          0.3137254901960784
+        ],
+        "alpha": 0.12549019607843137,
+        "hex": "#253550"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-27354c28",
+      "designName": "foundation/color/observed/hex-27354c28",
+      "cssVariable": "--csa-foundation-color-observed-hex-27354c28",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#27354c28",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.15294117647058825,
+          0.20784313725490197,
+          0.2980392156862745
+        ],
+        "alpha": 0.1568627450980392,
+        "hex": "#27354c"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-25355018",
+      "designName": "foundation/color/observed/hex-25355018",
+      "cssVariable": "--csa-foundation-color-observed-hex-25355018",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#25355018",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.20784313725490197,
+          0.3137254901960784
+        ],
+        "alpha": 0.09411764705882353,
+        "hex": "#253550"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-27354c24",
+      "designName": "foundation/color/observed/hex-27354c24",
+      "cssVariable": "--csa-foundation-color-observed-hex-27354c24",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#27354c24",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.15294117647058825,
+          0.20784313725490197,
+          0.2980392156862745
+        ],
+        "alpha": 0.1411764705882353,
+        "hex": "#27354c"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-edf1f6",
+      "designName": "foundation/color/observed/hex-edf1f6",
+      "cssVariable": "--csa-foundation-color-observed-hex-edf1f6",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#edf1f6",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9294117647058824,
+          0.9450980392156862,
+          0.9647058823529412
+        ],
+        "alpha": 1,
+        "hex": "#edf1f6"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-25355024",
+      "designName": "foundation/color/observed/hex-25355024",
+      "cssVariable": "--csa-foundation-color-observed-hex-25355024",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#25355024",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.20784313725490197,
+          0.3137254901960784
+        ],
+        "alpha": 0.1411764705882353,
+        "hex": "#253550"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-f0f3f8",
+      "designName": "foundation/color/observed/hex-f0f3f8",
+      "cssVariable": "--csa-foundation-color-observed-hex-f0f3f8",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#f0f3f8",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9411764705882353,
+          0.9529411764705882,
+          0.9725490196078431
+        ],
+        "alpha": 1,
+        "hex": "#f0f3f8"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-25355014",
+      "designName": "foundation/color/observed/hex-25355014",
+      "cssVariable": "--csa-foundation-color-observed-hex-25355014",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#25355014",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.20784313725490197,
+          0.3137254901960784
+        ],
+        "alpha": 0.0784313725490196,
+        "hex": "#253550"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-f3f5f9",
+      "designName": "foundation/color/observed/hex-f3f5f9",
+      "cssVariable": "--csa-foundation-color-observed-hex-f3f5f9",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#f3f5f9",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9529411764705882,
+          0.9607843137254902,
+          0.9764705882352941
+        ],
+        "alpha": 1,
+        "hex": "#f3f5f9"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-25355005",
+      "designName": "foundation/color/observed/hex-25355005",
+      "cssVariable": "--csa-foundation-color-observed-hex-25355005",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#25355005",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.20784313725490197,
+          0.3137254901960784
+        ],
+        "alpha": 0.0196078431372549,
+        "hex": "#253550"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-a74646",
+      "designName": "foundation/color/observed/hex-a74646",
+      "cssVariable": "--csa-foundation-color-observed-hex-a74646",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#a74646",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.6549019607843137,
+          0.27450980392156865,
+          0.27450980392156865
+        ],
+        "alpha": 1,
+        "hex": "#a74646"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-eaf0f7",
+      "designName": "foundation/color/observed/hex-eaf0f7",
+      "cssVariable": "--csa-foundation-color-observed-hex-eaf0f7",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#eaf0f7",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9176470588235294,
+          0.9411764705882353,
+          0.9686274509803922
+        ],
+        "alpha": 1,
+        "hex": "#eaf0f7"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-e3eaf5",
+      "designName": "foundation/color/observed/hex-e3eaf5",
+      "cssVariable": "--csa-foundation-color-observed-hex-e3eaf5",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#e3eaf5",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8901960784313725,
+          0.9176470588235294,
+          0.9607843137254902
+        ],
+        "alpha": 1,
+        "hex": "#e3eaf5"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-263e69",
+      "designName": "foundation/color/observed/hex-263e69",
+      "cssVariable": "--csa-foundation-color-observed-hex-263e69",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#263e69",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.14901960784313725,
+          0.24313725490196078,
+          0.4117647058823529
+        ],
+        "alpha": 1,
+        "hex": "#263e69"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-fff0a8",
+      "designName": "foundation/color/observed/hex-fff0a8",
+      "cssVariable": "--csa-foundation-color-observed-hex-fff0a8",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#fff0a8",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          0.9411764705882353,
+          0.6588235294117647
+        ],
+        "alpha": 1,
+        "hex": "#fff0a8"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-4a6a9d",
+      "designName": "foundation/color/observed/hex-4a6a9d",
+      "cssVariable": "--csa-foundation-color-observed-hex-4a6a9d",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#4a6a9d",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.2901960784313726,
+          0.41568627450980394,
+          0.615686274509804
+        ],
+        "alpha": 1,
+        "hex": "#4a6a9d"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-2535501f",
+      "designName": "foundation/color/observed/hex-2535501f",
+      "cssVariable": "--csa-foundation-color-observed-hex-2535501f",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#2535501f",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.20784313725490197,
+          0.3137254901960784
+        ],
+        "alpha": 0.12156862745098039,
+        "hex": "#253550"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-fcfcfd",
+      "designName": "foundation/color/observed/hex-fcfcfd",
+      "cssVariable": "--csa-foundation-color-observed-hex-fcfcfd",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#fcfcfd",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9882352941176471,
+          0.9882352941176471,
+          0.9921568627450981
+        ],
+        "alpha": 1,
+        "hex": "#fcfcfd"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-fafbfc",
+      "designName": "foundation/color/observed/hex-fafbfc",
+      "cssVariable": "--csa-foundation-color-observed-hex-fafbfc",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#fafbfc",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9803921568627451,
+          0.984313725490196,
+          0.9882352941176471
+        ],
+        "alpha": 1,
+        "hex": "#fafbfc"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-d4d8df",
+      "designName": "foundation/color/observed/hex-d4d8df",
+      "cssVariable": "--csa-foundation-color-observed-hex-d4d8df",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#d4d8df",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8313725490196079,
+          0.8470588235294118,
+          0.8745098039215686
+        ],
+        "alpha": 1,
+        "hex": "#d4d8df"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-f6f7f9",
+      "designName": "foundation/color/observed/hex-f6f7f9",
+      "cssVariable": "--csa-foundation-color-observed-hex-f6f7f9",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#f6f7f9",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9647058823529412,
+          0.9686274509803922,
+          0.9764705882352941
+        ],
+        "alpha": 1,
+        "hex": "#f6f7f9"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-ac4848",
+      "designName": "foundation/color/observed/hex-ac4848",
+      "cssVariable": "--csa-foundation-color-observed-hex-ac4848",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#ac4848",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.6745098039215687,
+          0.2823529411764706,
+          0.2823529411764706
+        ],
+        "alpha": 1,
+        "hex": "#ac4848"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-78869c",
+      "designName": "foundation/color/observed/hex-78869c",
+      "cssVariable": "--csa-foundation-color-observed-hex-78869c",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#78869c",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.47058823529411764,
+          0.5254901960784314,
+          0.611764705882353
+        ],
+        "alpha": 1,
+        "hex": "#78869c"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-27354c16",
+      "designName": "foundation/color/observed/hex-27354c16",
+      "cssVariable": "--csa-foundation-color-observed-hex-27354c16",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#27354c16",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.15294117647058825,
+          0.20784313725490197,
+          0.2980392156862745
+        ],
+        "alpha": 0.08627450980392157,
+        "hex": "#27354c"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-ffffffde",
+      "designName": "foundation/color/observed/hex-ffffffde",
+      "cssVariable": "--csa-foundation-color-observed-hex-ffffffde",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#ffffffde",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 0.8705882352941177,
+        "hex": "#ffffff"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-4d5d7909",
+      "designName": "foundation/color/observed/hex-4d5d7909",
+      "cssVariable": "--csa-foundation-color-observed-hex-4d5d7909",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#4d5d7909",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.30196078431372547,
+          0.36470588235294116,
+          0.4745098039215686
+        ],
+        "alpha": 0.03529411764705882,
+        "hex": "#4d5d79"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-e7e2dd",
+      "designName": "foundation/color/observed/hex-e7e2dd",
+      "cssVariable": "--csa-foundation-color-observed-hex-e7e2dd",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#e7e2dd",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9058823529411765,
+          0.8862745098039215,
+          0.8666666666666667
+        ],
+        "alpha": 1,
+        "hex": "#e7e2dd"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-f0f1f4",
+      "designName": "foundation/color/observed/hex-f0f1f4",
+      "cssVariable": "--csa-foundation-color-observed-hex-f0f1f4",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#f0f1f4",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9411764705882353,
+          0.9450980392156862,
+          0.9568627450980393
+        ],
+        "alpha": 1,
+        "hex": "#f0f1f4"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-25355025",
+      "designName": "foundation/color/observed/hex-25355025",
+      "cssVariable": "--csa-foundation-color-observed-hex-25355025",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#25355025",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.20784313725490197,
+          0.3137254901960784
+        ],
+        "alpha": 0.1450980392156863,
+        "hex": "#253550"
+      }
+    },
+    {
+      "name": "foundation.color.observed.hex-29354c24",
+      "designName": "foundation/color/observed/hex-29354c24",
+      "cssVariable": "--csa-foundation-color-observed-hex-29354c24",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#29354c24",
+      "reference": "",
+      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "status": "observed-exception",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1607843137254902,
+          0.20784313725490197,
+          0.2980392156862745
+        ],
+        "alpha": 0.1411764705882353,
+        "hex": "#29354c"
+      }
+    },
+    {
+      "name": "foundation.space.0",
+      "designName": "foundation/space/0",
+      "cssVariable": "--csa-foundation-space-0",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "0px",
+      "reference": "",
+      "description": "Spacing in CSS pixels. Core rhythm uses 4px with 2px refinements.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.2",
+      "designName": "foundation/space/2",
+      "cssVariable": "--csa-foundation-space-2",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "2px",
+      "reference": "",
+      "description": "Observed compact spacing refinement.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.4",
+      "designName": "foundation/space/4",
+      "cssVariable": "--csa-foundation-space-4",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "4px",
+      "reference": "",
+      "description": "Spacing in CSS pixels. Core rhythm uses 4px with 2px refinements.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.6",
+      "designName": "foundation/space/6",
+      "cssVariable": "--csa-foundation-space-6",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "6px",
+      "reference": "",
+      "description": "Observed compact spacing refinement.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.8",
+      "designName": "foundation/space/8",
+      "cssVariable": "--csa-foundation-space-8",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "8px",
+      "reference": "",
+      "description": "Spacing in CSS pixels. Core rhythm uses 4px with 2px refinements.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.10",
+      "designName": "foundation/space/10",
+      "cssVariable": "--csa-foundation-space-10",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "10px",
+      "reference": "",
+      "description": "Observed compact spacing refinement.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.12",
+      "designName": "foundation/space/12",
+      "cssVariable": "--csa-foundation-space-12",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "12px",
+      "reference": "",
+      "description": "Spacing in CSS pixels. Core rhythm uses 4px with 2px refinements.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.14",
+      "designName": "foundation/space/14",
+      "cssVariable": "--csa-foundation-space-14",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "14px",
+      "reference": "",
+      "description": "Observed compact spacing refinement.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.16",
+      "designName": "foundation/space/16",
+      "cssVariable": "--csa-foundation-space-16",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "16px",
+      "reference": "",
+      "description": "Spacing in CSS pixels. Core rhythm uses 4px with 2px refinements.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.18",
+      "designName": "foundation/space/18",
+      "cssVariable": "--csa-foundation-space-18",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "18px",
+      "reference": "",
+      "description": "Observed compact spacing refinement.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.20",
+      "designName": "foundation/space/20",
+      "cssVariable": "--csa-foundation-space-20",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "20px",
+      "reference": "",
+      "description": "Spacing in CSS pixels. Core rhythm uses 4px with 2px refinements.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.24",
+      "designName": "foundation/space/24",
+      "cssVariable": "--csa-foundation-space-24",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "24px",
+      "reference": "",
+      "description": "Spacing in CSS pixels. Core rhythm uses 4px with 2px refinements.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.28",
+      "designName": "foundation/space/28",
+      "cssVariable": "--csa-foundation-space-28",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "28px",
+      "reference": "",
+      "description": "Spacing in CSS pixels. Core rhythm uses 4px with 2px refinements.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.30",
+      "designName": "foundation/space/30",
+      "cssVariable": "--csa-foundation-space-30",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "30px",
+      "reference": "",
+      "description": "Observed compact spacing refinement.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.32",
+      "designName": "foundation/space/32",
+      "cssVariable": "--csa-foundation-space-32",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "32px",
+      "reference": "",
+      "description": "Spacing in CSS pixels. Core rhythm uses 4px with 2px refinements.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.36",
+      "designName": "foundation/space/36",
+      "cssVariable": "--csa-foundation-space-36",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "36px",
+      "reference": "",
+      "description": "Spacing in CSS pixels. Core rhythm uses 4px with 2px refinements.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.40",
+      "designName": "foundation/space/40",
+      "cssVariable": "--csa-foundation-space-40",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "40px",
+      "reference": "",
+      "description": "Spacing in CSS pixels. Core rhythm uses 4px with 2px refinements.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.44",
+      "designName": "foundation/space/44",
+      "cssVariable": "--csa-foundation-space-44",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "44px",
+      "reference": "",
+      "description": "Spacing in CSS pixels. Core rhythm uses 4px with 2px refinements.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.48",
+      "designName": "foundation/space/48",
+      "cssVariable": "--csa-foundation-space-48",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "48px",
+      "reference": "",
+      "description": "Spacing in CSS pixels. Core rhythm uses 4px with 2px refinements.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.56",
+      "designName": "foundation/space/56",
+      "cssVariable": "--csa-foundation-space-56",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "56px",
+      "reference": "",
+      "description": "Spacing in CSS pixels. Core rhythm uses 4px with 2px refinements.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.space.64",
+      "designName": "foundation/space/64",
+      "cssVariable": "--csa-foundation-space-64",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "space",
+      "value": "64px",
+      "reference": "",
+      "description": "Spacing in CSS pixels. Core rhythm uses 4px with 2px refinements.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.font.size.10",
+      "designName": "foundation/font/size/10",
+      "cssVariable": "--csa-foundation-font-size-10",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "10px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.font.size.11",
+      "designName": "foundation/font/size/11",
+      "cssVariable": "--csa-foundation-font-size-11",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "11px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.font.size.12",
+      "designName": "foundation/font/size/12",
+      "cssVariable": "--csa-foundation-font-size-12",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "12px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.font.size.13",
+      "designName": "foundation/font/size/13",
+      "cssVariable": "--csa-foundation-font-size-13",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "13px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.font.size.14",
+      "designName": "foundation/font/size/14",
+      "cssVariable": "--csa-foundation-font-size-14",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "14px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.font.size.15",
+      "designName": "foundation/font/size/15",
+      "cssVariable": "--csa-foundation-font-size-15",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "15px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.font.size.16",
+      "designName": "foundation/font/size/16",
+      "cssVariable": "--csa-foundation-font-size-16",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "16px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.font.size.17",
+      "designName": "foundation/font/size/17",
+      "cssVariable": "--csa-foundation-font-size-17",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "17px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.font.size.18",
+      "designName": "foundation/font/size/18",
+      "cssVariable": "--csa-foundation-font-size-18",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "18px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.font.size.19",
+      "designName": "foundation/font/size/19",
+      "cssVariable": "--csa-foundation-font-size-19",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "19px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.font.size.20",
+      "designName": "foundation/font/size/20",
+      "cssVariable": "--csa-foundation-font-size-20",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "20px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.font.size.22",
+      "designName": "foundation/font/size/22",
+      "cssVariable": "--csa-foundation-font-size-22",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "22px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.font.size.23",
+      "designName": "foundation/font/size/23",
+      "cssVariable": "--csa-foundation-font-size-23",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "23px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.font.size.24",
+      "designName": "foundation/font/size/24",
+      "cssVariable": "--csa-foundation-font-size-24",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "24px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.font.size.25",
+      "designName": "foundation/font/size/25",
+      "cssVariable": "--csa-foundation-font-size-25",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "25px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.font.size.27",
+      "designName": "foundation/font/size/27",
+      "cssVariable": "--csa-foundation-font-size-27",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "27px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.font.size.28",
+      "designName": "foundation/font/size/28",
+      "cssVariable": "--csa-foundation-font-size-28",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "28px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.font.size.29",
+      "designName": "foundation/font/size/29",
+      "cssVariable": "--csa-foundation-font-size-29",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "29px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.font.size.32",
+      "designName": "foundation/font/size/32",
+      "cssVariable": "--csa-foundation-font-size-32",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "font",
+      "value": "32px",
+      "reference": "",
+      "description": "Observed type size.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.font.weight.400",
+      "designName": "foundation/font/weight/400",
+      "cssVariable": "--csa-foundation-font-weight-400",
+      "type": "fontWeight",
+      "layer": "foundation",
+      "category": "font",
+      "value": "400",
+      "reference": "",
+      "description": "Inter variable-font weight used in the application.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.font.weight.500",
+      "designName": "foundation/font/weight/500",
+      "cssVariable": "--csa-foundation-font-weight-500",
+      "type": "fontWeight",
+      "layer": "foundation",
+      "category": "font",
+      "value": "500",
+      "reference": "",
+      "description": "Inter variable-font weight used in the application.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.font.weight.550",
+      "designName": "foundation/font/weight/550",
+      "cssVariable": "--csa-foundation-font-weight-550",
+      "type": "fontWeight",
+      "layer": "foundation",
+      "category": "font",
+      "value": "550",
+      "reference": "",
+      "description": "Inter variable-font weight used in the application.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.font.weight.600",
+      "designName": "foundation/font/weight/600",
+      "cssVariable": "--csa-foundation-font-weight-600",
+      "type": "fontWeight",
+      "layer": "foundation",
+      "category": "font",
+      "value": "600",
+      "reference": "",
+      "description": "Inter variable-font weight used in the application.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.font.weight.650",
+      "designName": "foundation/font/weight/650",
+      "cssVariable": "--csa-foundation-font-weight-650",
+      "type": "fontWeight",
+      "layer": "foundation",
+      "category": "font",
+      "value": "650",
+      "reference": "",
+      "description": "Inter variable-font weight used in the application.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.font.weight.700",
+      "designName": "foundation/font/weight/700",
+      "cssVariable": "--csa-foundation-font-weight-700",
+      "type": "fontWeight",
+      "layer": "foundation",
+      "category": "font",
+      "value": "700",
+      "reference": "",
+      "description": "Inter variable-font weight used in the application.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.font.family.interface",
+      "designName": "foundation/font/family/interface",
+      "cssVariable": "--csa-foundation-font-family-interface",
+      "type": "fontFamily",
+      "layer": "foundation",
+      "category": "font",
+      "value": "Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Interface, editor, controls and metadata.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.font.family.editorial",
+      "designName": "foundation/font/family/editorial",
+      "cssVariable": "--csa-foundation-font-family-editorial",
+      "type": "fontFamily",
+      "layer": "foundation",
+      "category": "font",
+      "value": "Newsreader, Georgia, serif",
+      "reference": "",
+      "description": "Homepage greeting and project-start heading.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.font.family.icons",
+      "designName": "foundation/font/family/icons",
+      "cssVariable": "--csa-foundation-font-family-icons",
+      "type": "fontFamily",
+      "layer": "foundation",
+      "category": "font",
+      "value": "\"Material Symbols Outlined\"",
+      "reference": "",
+      "description": "Filled Material Symbols; family name remains Outlined with FILL 1.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.line.height.14",
+      "designName": "foundation/line/height/14",
+      "cssVariable": "--csa-foundation-line-height-14",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "line",
+      "value": "14px",
+      "reference": "",
+      "description": "Observed fixed line height.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.line.height.15",
+      "designName": "foundation/line/height/15",
+      "cssVariable": "--csa-foundation-line-height-15",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "line",
+      "value": "15px",
+      "reference": "",
+      "description": "Observed fixed line height.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.line.height.16",
+      "designName": "foundation/line/height/16",
+      "cssVariable": "--csa-foundation-line-height-16",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "line",
+      "value": "16px",
+      "reference": "",
+      "description": "Observed fixed line height.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.line.height.17",
+      "designName": "foundation/line/height/17",
+      "cssVariable": "--csa-foundation-line-height-17",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "line",
+      "value": "17px",
+      "reference": "",
+      "description": "Observed fixed line height.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.line.height.18",
+      "designName": "foundation/line/height/18",
+      "cssVariable": "--csa-foundation-line-height-18",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "line",
+      "value": "18px",
+      "reference": "",
+      "description": "Observed fixed line height.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.line.height.19",
+      "designName": "foundation/line/height/19",
+      "cssVariable": "--csa-foundation-line-height-19",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "line",
+      "value": "19px",
+      "reference": "",
+      "description": "Observed fixed line height.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.line.height.20",
+      "designName": "foundation/line/height/20",
+      "cssVariable": "--csa-foundation-line-height-20",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "line",
+      "value": "20px",
+      "reference": "",
+      "description": "Observed fixed line height.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.line.height.22",
+      "designName": "foundation/line/height/22",
+      "cssVariable": "--csa-foundation-line-height-22",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "line",
+      "value": "22px",
+      "reference": "",
+      "description": "Observed fixed line height.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.line.height.24",
+      "designName": "foundation/line/height/24",
+      "cssVariable": "--csa-foundation-line-height-24",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "line",
+      "value": "24px",
+      "reference": "",
+      "description": "Observed fixed line height.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.line.height.25",
+      "designName": "foundation/line/height/25",
+      "cssVariable": "--csa-foundation-line-height-25",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "line",
+      "value": "25px",
+      "reference": "",
+      "description": "Observed fixed line height.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.line.height.28",
+      "designName": "foundation/line/height/28",
+      "cssVariable": "--csa-foundation-line-height-28",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "line",
+      "value": "28px",
+      "reference": "",
+      "description": "Observed fixed line height.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.line.height.30",
+      "designName": "foundation/line/height/30",
+      "cssVariable": "--csa-foundation-line-height-30",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "line",
+      "value": "30px",
+      "reference": "",
+      "description": "Observed fixed line height.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.radius.2",
+      "designName": "foundation/radius/2",
+      "cssVariable": "--csa-foundation-radius-2",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "2px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.radius.4",
+      "designName": "foundation/radius/4",
+      "cssVariable": "--csa-foundation-radius-4",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "4px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.radius.5",
+      "designName": "foundation/radius/5",
+      "cssVariable": "--csa-foundation-radius-5",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "5px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.radius.6",
+      "designName": "foundation/radius/6",
+      "cssVariable": "--csa-foundation-radius-6",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "6px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.radius.7",
+      "designName": "foundation/radius/7",
+      "cssVariable": "--csa-foundation-radius-7",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "7px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.radius.8",
+      "designName": "foundation/radius/8",
+      "cssVariable": "--csa-foundation-radius-8",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "8px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.radius.9",
+      "designName": "foundation/radius/9",
+      "cssVariable": "--csa-foundation-radius-9",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "9px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.radius.10",
+      "designName": "foundation/radius/10",
+      "cssVariable": "--csa-foundation-radius-10",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "10px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.radius.11",
+      "designName": "foundation/radius/11",
+      "cssVariable": "--csa-foundation-radius-11",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "11px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.radius.12",
+      "designName": "foundation/radius/12",
+      "cssVariable": "--csa-foundation-radius-12",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "12px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.radius.14",
+      "designName": "foundation/radius/14",
+      "cssVariable": "--csa-foundation-radius-14",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "14px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.radius.15",
+      "designName": "foundation/radius/15",
+      "cssVariable": "--csa-foundation-radius-15",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "15px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.radius.16",
+      "designName": "foundation/radius/16",
+      "cssVariable": "--csa-foundation-radius-16",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "16px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.radius.17",
+      "designName": "foundation/radius/17",
+      "cssVariable": "--csa-foundation-radius-17",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "17px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.radius.18",
+      "designName": "foundation/radius/18",
+      "cssVariable": "--csa-foundation-radius-18",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "18px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.radius.20",
+      "designName": "foundation/radius/20",
+      "cssVariable": "--csa-foundation-radius-20",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "20px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.radius.21",
+      "designName": "foundation/radius/21",
+      "cssVariable": "--csa-foundation-radius-21",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "21px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.radius.22",
+      "designName": "foundation/radius/22",
+      "cssVariable": "--csa-foundation-radius-22",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "22px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.radius.23",
+      "designName": "foundation/radius/23",
+      "cssVariable": "--csa-foundation-radius-23",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "23px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.radius.30",
+      "designName": "foundation/radius/30",
+      "cssVariable": "--csa-foundation-radius-30",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "30px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed-exception"
+    },
+    {
+      "name": "foundation.radius.999",
+      "designName": "foundation/radius/999",
+      "cssVariable": "--csa-foundation-radius-999",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "radius",
+      "value": "999px",
+      "reference": "",
+      "description": "Observed corner radius.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.border.width.1",
+      "designName": "foundation/border/width/1",
+      "cssVariable": "--csa-foundation-border-width-1",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "border",
+      "value": "1px",
+      "reference": "",
+      "description": "Standard border.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.border.width.3",
+      "designName": "foundation/border/width/3",
+      "cssVariable": "--csa-foundation-border-width-3",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "border",
+      "value": "3px",
+      "reference": "",
+      "description": "Keyboard focus outline.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.motion.duration.120",
+      "designName": "foundation/motion/duration/120",
+      "cssVariable": "--csa-foundation-motion-duration-120",
+      "type": "duration",
+      "layer": "foundation",
+      "category": "motion",
+      "value": "120ms",
+      "reference": "",
+      "description": "Observed animation or transition duration.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.motion.duration.150",
+      "designName": "foundation/motion/duration/150",
+      "cssVariable": "--csa-foundation-motion-duration-150",
+      "type": "duration",
+      "layer": "foundation",
+      "category": "motion",
+      "value": "150ms",
+      "reference": "",
+      "description": "Observed animation or transition duration.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.motion.duration.160",
+      "designName": "foundation/motion/duration/160",
+      "cssVariable": "--csa-foundation-motion-duration-160",
+      "type": "duration",
+      "layer": "foundation",
+      "category": "motion",
+      "value": "160ms",
+      "reference": "",
+      "description": "Observed animation or transition duration.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.motion.duration.180",
+      "designName": "foundation/motion/duration/180",
+      "cssVariable": "--csa-foundation-motion-duration-180",
+      "type": "duration",
+      "layer": "foundation",
+      "category": "motion",
+      "value": "180ms",
+      "reference": "",
+      "description": "Observed animation or transition duration.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.motion.duration.200",
+      "designName": "foundation/motion/duration/200",
+      "cssVariable": "--csa-foundation-motion-duration-200",
+      "type": "duration",
+      "layer": "foundation",
+      "category": "motion",
+      "value": "200ms",
+      "reference": "",
+      "description": "Observed animation or transition duration.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.motion.duration.450",
+      "designName": "foundation/motion/duration/450",
+      "cssVariable": "--csa-foundation-motion-duration-450",
+      "type": "duration",
+      "layer": "foundation",
+      "category": "motion",
+      "value": "450ms",
+      "reference": "",
+      "description": "Observed animation or transition duration.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.motion.duration.520",
+      "designName": "foundation/motion/duration/520",
+      "cssVariable": "--csa-foundation-motion-duration-520",
+      "type": "duration",
+      "layer": "foundation",
+      "category": "motion",
+      "value": "520ms",
+      "reference": "",
+      "description": "Observed animation or transition duration.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.motion.easing.arrive",
+      "designName": "foundation/motion/easing/arrive",
+      "cssVariable": "--csa-foundation-motion-easing-arrive",
+      "type": "cubicBezier",
+      "layer": "foundation",
+      "category": "motion",
+      "value": "cubic-bezier(0.2, 0.7, 0.2, 1)",
+      "reference": "",
+      "description": "Greeting and project-card entrance easing.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.layer.0",
+      "designName": "foundation/layer/0",
+      "cssVariable": "--csa-foundation-layer-0",
+      "type": "number",
+      "layer": "foundation",
+      "category": "layer",
+      "value": "0",
+      "reference": "",
+      "description": "Existing stacking level; native dialogs use the browser top layer.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.layer.1",
+      "designName": "foundation/layer/1",
+      "cssVariable": "--csa-foundation-layer-1",
+      "type": "number",
+      "layer": "foundation",
+      "category": "layer",
+      "value": "1",
+      "reference": "",
+      "description": "Existing stacking level; native dialogs use the browser top layer.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.layer.2",
+      "designName": "foundation/layer/2",
+      "cssVariable": "--csa-foundation-layer-2",
+      "type": "number",
+      "layer": "foundation",
+      "category": "layer",
+      "value": "2",
+      "reference": "",
+      "description": "Existing stacking level; native dialogs use the browser top layer.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.layer.3",
+      "designName": "foundation/layer/3",
+      "cssVariable": "--csa-foundation-layer-3",
+      "type": "number",
+      "layer": "foundation",
+      "category": "layer",
+      "value": "3",
+      "reference": "",
+      "description": "Existing stacking level; native dialogs use the browser top layer.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.layer.4",
+      "designName": "foundation/layer/4",
+      "cssVariable": "--csa-foundation-layer-4",
+      "type": "number",
+      "layer": "foundation",
+      "category": "layer",
+      "value": "4",
+      "reference": "",
+      "description": "Existing stacking level; native dialogs use the browser top layer.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.layer.5",
+      "designName": "foundation/layer/5",
+      "cssVariable": "--csa-foundation-layer-5",
+      "type": "number",
+      "layer": "foundation",
+      "category": "layer",
+      "value": "5",
+      "reference": "",
+      "description": "Existing stacking level; native dialogs use the browser top layer.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.layer.8",
+      "designName": "foundation/layer/8",
+      "cssVariable": "--csa-foundation-layer-8",
+      "type": "number",
+      "layer": "foundation",
+      "category": "layer",
+      "value": "8",
+      "reference": "",
+      "description": "Existing stacking level; native dialogs use the browser top layer.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.layer.10",
+      "designName": "foundation/layer/10",
+      "cssVariable": "--csa-foundation-layer-10",
+      "type": "number",
+      "layer": "foundation",
+      "category": "layer",
+      "value": "10",
+      "reference": "",
+      "description": "Existing stacking level; native dialogs use the browser top layer.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.layer.12",
+      "designName": "foundation/layer/12",
+      "cssVariable": "--csa-foundation-layer-12",
+      "type": "number",
+      "layer": "foundation",
+      "category": "layer",
+      "value": "12",
+      "reference": "",
+      "description": "Existing stacking level; native dialogs use the browser top layer.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.layer.18",
+      "designName": "foundation/layer/18",
+      "cssVariable": "--csa-foundation-layer-18",
+      "type": "number",
+      "layer": "foundation",
+      "category": "layer",
+      "value": "18",
+      "reference": "",
+      "description": "Existing stacking level; native dialogs use the browser top layer.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.layer.20",
+      "designName": "foundation/layer/20",
+      "cssVariable": "--csa-foundation-layer-20",
+      "type": "number",
+      "layer": "foundation",
+      "category": "layer",
+      "value": "20",
+      "reference": "",
+      "description": "Existing stacking level; native dialogs use the browser top layer.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.layer.30",
+      "designName": "foundation/layer/30",
+      "cssVariable": "--csa-foundation-layer-30",
+      "type": "number",
+      "layer": "foundation",
+      "category": "layer",
+      "value": "30",
+      "reference": "",
+      "description": "Existing stacking level; native dialogs use the browser top layer.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.layer.40",
+      "designName": "foundation/layer/40",
+      "cssVariable": "--csa-foundation-layer-40",
+      "type": "number",
+      "layer": "foundation",
+      "category": "layer",
+      "value": "40",
+      "reference": "",
+      "description": "Existing stacking level; native dialogs use the browser top layer.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.layer.45",
+      "designName": "foundation/layer/45",
+      "cssVariable": "--csa-foundation-layer-45",
+      "type": "number",
+      "layer": "foundation",
+      "category": "layer",
+      "value": "45",
+      "reference": "",
+      "description": "Existing stacking level; native dialogs use the browser top layer.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.layer.50",
+      "designName": "foundation/layer/50",
+      "cssVariable": "--csa-foundation-layer-50",
+      "type": "number",
+      "layer": "foundation",
+      "category": "layer",
+      "value": "50",
+      "reference": "",
+      "description": "Existing stacking level; native dialogs use the browser top layer.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.breakpoint.mobile",
+      "designName": "foundation/breakpoint/mobile",
+      "cssVariable": "--csa-foundation-breakpoint-mobile",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "breakpoint",
+      "value": "768px",
+      "reference": "",
+      "description": "Viewport breakpoint.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.breakpoint.desktop-start",
+      "designName": "foundation/breakpoint/desktop-start",
+      "cssVariable": "--csa-foundation-breakpoint-desktop-start",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "breakpoint",
+      "value": "769px",
+      "reference": "",
+      "description": "Viewport breakpoint.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.breakpoint.editor-stack",
+      "designName": "foundation/breakpoint/editor-stack",
+      "cssVariable": "--csa-foundation-breakpoint-editor-stack",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "breakpoint",
+      "value": "1100px",
+      "reference": "",
+      "description": "Viewport breakpoint.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.breakpoint.legacy-compact",
+      "designName": "foundation/breakpoint/legacy-compact",
+      "cssVariable": "--csa-foundation-breakpoint-legacy-compact",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "breakpoint",
+      "value": "650px",
+      "reference": "",
+      "description": "Viewport breakpoint.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.breakpoint.feedback-stack",
+      "designName": "foundation/breakpoint/feedback-stack",
+      "cssVariable": "--csa-foundation-breakpoint-feedback-stack",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "breakpoint",
+      "value": "700px",
+      "reference": "",
+      "description": "Viewport breakpoint.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.breakpoint.feedback-small",
+      "designName": "foundation/breakpoint/feedback-small",
+      "cssVariable": "--csa-foundation-breakpoint-feedback-small",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "breakpoint",
+      "value": "480px",
+      "reference": "",
+      "description": "Viewport breakpoint.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.breakpoint.starter-small",
+      "designName": "foundation/breakpoint/starter-small",
+      "cssVariable": "--csa-foundation-breakpoint-starter-small",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "breakpoint",
+      "value": "370px",
+      "reference": "",
+      "description": "Viewport breakpoint.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.breakpoint.dashboard-two",
+      "designName": "foundation/breakpoint/dashboard-two",
+      "cssVariable": "--csa-foundation-breakpoint-dashboard-two",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "breakpoint",
+      "value": "999px",
+      "reference": "",
+      "description": "Dashboard container width, not viewport width.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.breakpoint.dashboard-one",
+      "designName": "foundation/breakpoint/dashboard-one",
+      "cssVariable": "--csa-foundation-breakpoint-dashboard-one",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "breakpoint",
+      "value": "579px",
+      "reference": "",
+      "description": "Dashboard container width, not viewport width.",
+      "status": "observed"
+    },
+    {
+      "name": "semantic.color.background.canvas",
+      "designName": "semantic/color/background/canvas",
+      "cssVariable": "--csa-semantic-color-background-canvas",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#fbf6f4",
+      "reference": "foundation.color.warm.canvas",
+      "description": "Warm page background behind workspace surfaces.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.984313725490196,
+          0.9647058823529412,
+          0.9568627450980393
+        ],
+        "alpha": 1,
+        "hex": "#fbf6f4"
+      }
+    },
+    {
+      "name": "semantic.color.surface.default",
+      "designName": "semantic/color/surface/default",
+      "cssVariable": "--csa-semantic-color-surface-default",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#ffffff",
+      "reference": "foundation.color.neutral.0",
+      "description": "Default white cards, panels, and dialogs.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      }
+    },
+    {
+      "name": "semantic.color.surface.subtle",
+      "designName": "semantic/color/surface/subtle",
+      "cssVariable": "--csa-semantic-color-surface-subtle",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#fafafa",
+      "reference": "foundation.color.neutral.50",
+      "description": "Subtle surface used for content preview and quiet sections.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9803921568627451,
+          0.9803921568627451,
+          0.9803921568627451
+        ],
+        "alpha": 1,
+        "hex": "#fafafa"
+      }
+    },
+    {
+      "name": "semantic.color.surface.hover",
+      "designName": "semantic/color/surface/hover",
+      "cssVariable": "--csa-semantic-color-surface-hover",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#f5f5f5",
+      "reference": "foundation.color.neutral.100",
+      "description": "Neutral hover surface for icon controls.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9607843137254902,
+          0.9607843137254902,
+          0.9607843137254902
+        ],
+        "alpha": 1,
+        "hex": "#f5f5f5"
+      }
+    },
+    {
+      "name": "semantic.color.surface.selected",
+      "designName": "semantic/color/surface/selected",
+      "cssVariable": "--csa-semantic-color-surface-selected",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#f8f1ee",
+      "reference": "foundation.color.warm.selected",
+      "description": "Warm fill for the active variant card.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9725490196078431,
+          0.9450980392156862,
+          0.9333333333333333
+        ],
+        "alpha": 1,
+        "hex": "#f8f1ee"
+      }
+    },
+    {
+      "name": "semantic.color.text.primary",
+      "designName": "semantic/color/text/primary",
+      "cssVariable": "--csa-semantic-color-text-primary",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#404040",
+      "reference": "foundation.color.neutral.700",
+      "description": "Default interface and body text.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.25098039215686274,
+          0.25098039215686274,
+          0.25098039215686274
+        ],
+        "alpha": 1,
+        "hex": "#404040"
+      }
+    },
+    {
+      "name": "semantic.color.text.heading",
+      "designName": "semantic/color/text/heading",
+      "cssVariable": "--csa-semantic-color-text-heading",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#404040",
+      "reference": "foundation.color.neutral.700",
+      "description": "Headings and variant article titles.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.25098039215686274,
+          0.25098039215686274,
+          0.25098039215686274
+        ],
+        "alpha": 1,
+        "hex": "#404040"
+      }
+    },
+    {
+      "name": "semantic.color.text.muted",
+      "designName": "semantic/color/text/muted",
+      "cssVariable": "--csa-semantic-color-text-muted",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#a3a3a3",
+      "reference": "foundation.color.neutral.400",
+      "description": "Secondary metadata, placeholders, and quiet labels. Review normal-text contrast.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.6392156862745098,
+          0.6392156862745098,
+          0.6392156862745098
+        ],
+        "alpha": 1,
+        "hex": "#a3a3a3"
+      }
+    },
+    {
+      "name": "semantic.color.text.inverse",
+      "designName": "semantic/color/text/inverse",
+      "cssVariable": "--csa-semantic-color-text-inverse",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#ffffff",
+      "reference": "foundation.color.neutral.0",
+      "description": "Text on a filled primary or destructive action.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      }
+    },
+    {
+      "name": "semantic.color.border.default",
+      "designName": "semantic/color/border/default",
+      "cssVariable": "--csa-semantic-color-border-default",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#e5e5e5",
+      "reference": "foundation.color.neutral.200",
+      "description": "Shared neutral separator and control border.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8980392156862745,
+          0.8980392156862745,
+          0.8980392156862745
+        ],
+        "alpha": 1,
+        "hex": "#e5e5e5"
+      }
+    },
+    {
+      "name": "semantic.color.border.selected",
+      "designName": "semantic/color/border/selected",
+      "cssVariable": "--csa-semantic-color-border-selected",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#3b82f6",
+      "reference": "foundation.color.blue.500",
+      "description": "Blue outline identifying the active selection.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.23137254901960785,
+          0.5098039215686274,
+          0.9647058823529412
+        ],
+        "alpha": 1,
+        "hex": "#3b82f6"
+      }
+    },
+    {
+      "name": "semantic.color.action.primary",
+      "designName": "semantic/color/action/primary",
+      "cssVariable": "--csa-semantic-color-action-primary",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#3b82f6",
+      "reference": "foundation.color.blue.500",
+      "description": "Default filled primary action background.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.23137254901960785,
+          0.5098039215686274,
+          0.9647058823529412
+        ],
+        "alpha": 1,
+        "hex": "#3b82f6"
+      }
+    },
+    {
+      "name": "semantic.color.action.primary-hover",
+      "designName": "semantic/color/action/primary-hover",
+      "cssVariable": "--csa-semantic-color-action-primary-hover",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#2563eb",
+      "reference": "foundation.color.blue.600",
+      "description": "Primary action background on hover or press.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.38823529411764707,
+          0.9215686274509803
+        ],
+        "alpha": 1,
+        "hex": "#2563eb"
+      }
+    },
+    {
+      "name": "semantic.color.action.disabled-label",
+      "designName": "semantic/color/action/disabled-label",
+      "cssVariable": "--csa-semantic-color-action-disabled-label",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#a3a3a3",
+      "reference": "foundation.color.neutral.400",
+      "description": "Label on a disabled action.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.6392156862745098,
+          0.6392156862745098,
+          0.6392156862745098
+        ],
+        "alpha": 1,
+        "hex": "#a3a3a3"
+      }
+    },
+    {
+      "name": "semantic.color.action.disabled-surface",
+      "designName": "semantic/color/action/disabled-surface",
+      "cssVariable": "--csa-semantic-color-action-disabled-surface",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#ffffff",
+      "reference": "foundation.color.neutral.0",
+      "description": "Background of disabled actions.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      }
+    },
+    {
+      "name": "semantic.color.focus.ring",
+      "designName": "semantic/color/focus/ring",
+      "cssVariable": "--csa-semantic-color-focus-ring",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#99abc6",
+      "reference": "foundation.color.blue.focus",
+      "description": "Keyboard focus outline, offset from its control.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.6,
+          0.6705882352941176,
+          0.7764705882352941
+        ],
+        "alpha": 1,
+        "hex": "#99abc6"
+      }
+    },
+    {
+      "name": "semantic.color.favorite.active",
+      "designName": "semantic/color/favorite/active",
+      "cssVariable": "--csa-semantic-color-favorite-active",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#fb7185",
+      "reference": "foundation.color.rose.400",
+      "description": "Heart color for a saved variant.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.984313725490196,
+          0.44313725490196076,
+          0.5215686274509804
+        ],
+        "alpha": 1,
+        "hex": "#fb7185"
+      }
+    },
+    {
+      "name": "semantic.color.danger.default",
+      "designName": "semantic/color/danger/default",
+      "cssVariable": "--csa-semantic-color-danger-default",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#b91c1c",
+      "reference": "foundation.color.red.700",
+      "description": "Destructive icon and text color.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.7254901960784313,
+          0.10980392156862745,
+          0.10980392156862745
+        ],
+        "alpha": 1,
+        "hex": "#b91c1c"
+      }
+    },
+    {
+      "name": "semantic.color.danger.solid",
+      "designName": "semantic/color/danger/solid",
+      "cssVariable": "--csa-semantic-color-danger-solid",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#dc2626",
+      "reference": "foundation.color.red.600",
+      "description": "Filled destructive action background.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8627450980392157,
+          0.14901960784313725,
+          0.14901960784313725
+        ],
+        "alpha": 1,
+        "hex": "#dc2626"
+      }
+    },
+    {
+      "name": "semantic.color.danger.subtle",
+      "designName": "semantic/color/danger/subtle",
+      "cssVariable": "--csa-semantic-color-danger-subtle",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#fef2f2",
+      "reference": "foundation.color.red.50",
+      "description": "Quiet background for destructive hover feedback.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.996078431372549,
+          0.9490196078431372,
+          0.9490196078431372
+        ],
+        "alpha": 1,
+        "hex": "#fef2f2"
+      }
+    },
+    {
+      "name": "semantic.color.navigation.selected",
+      "designName": "semantic/color/navigation/selected",
+      "cssVariable": "--csa-semantic-color-navigation-selected",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#eff6ff",
+      "reference": "foundation.color.blue.50",
+      "description": "Selected navigation and selected field surface.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9372549019607843,
+          0.9647058823529412,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#eff6ff"
+      }
+    },
+    {
+      "name": "semantic.color.navigation.selected-hover",
+      "designName": "semantic/color/navigation/selected-hover",
+      "cssVariable": "--csa-semantic-color-navigation-selected-hover",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#dbeafe",
+      "reference": "foundation.color.blue.100",
+      "description": "Hover surface for selected navigation.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8588235294117647,
+          0.9176470588235294,
+          0.996078431372549
+        ],
+        "alpha": 1,
+        "hex": "#dbeafe"
+      }
+    },
+    {
+      "name": "semantic.color.navigation.selected-foreground",
+      "designName": "semantic/color/navigation/selected-foreground",
+      "cssVariable": "--csa-semantic-color-navigation-selected-foreground",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#2563eb",
+      "reference": "foundation.color.blue.600",
+      "description": "Foreground accent for selected navigation.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.38823529411764707,
+          0.9215686274509803
+        ],
+        "alpha": 1,
+        "hex": "#2563eb"
+      }
+    },
+    {
+      "name": "semantic.typography.greeting.desktop",
+      "designName": "semantic/typography/greeting/desktop",
+      "cssVariable": "--csa-semantic-typography-greeting-desktop",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "700 32px/1.4 Newsreader, Georgia, serif",
+      "reference": "",
+      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Newsreader",
+          "Georgia",
+          "serif"
+        ],
+        "fontSize": {
+          "value": 32,
+          "unit": "px"
+        },
+        "fontWeight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": {
+          "value": -0.35,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.greeting.mobile",
+      "designName": "semantic/typography/greeting/mobile",
+      "cssVariable": "--csa-semantic-typography-greeting-mobile",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "700 24px/1.25 Newsreader, Georgia, serif",
+      "reference": "",
+      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Newsreader",
+          "Georgia",
+          "serif"
+        ],
+        "fontSize": {
+          "value": 24,
+          "unit": "px"
+        },
+        "fontWeight": 700,
+        "lineHeight": 1.25,
+        "letterSpacing": {
+          "value": -0.35,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.editor-heading.desktop",
+      "designName": "semantic/typography/editor-heading/desktop",
+      "cssVariable": "--csa-semantic-typography-editor-heading-desktop",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "650 29px/1.35 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 29,
+          "unit": "px"
+        },
+        "fontWeight": 650,
+        "lineHeight": 1.35,
+        "letterSpacing": {
+          "value": -0.7,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.editor-heading.mobile",
+      "designName": "semantic/typography/editor-heading/mobile",
+      "cssVariable": "--csa-semantic-typography-editor-heading-mobile",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "650 24px/1.35 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 24,
+          "unit": "px"
+        },
+        "fontWeight": 650,
+        "lineHeight": 1.35,
+        "letterSpacing": {
+          "value": -0.7,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.panel-heading",
+      "designName": "semantic/typography/panel-heading",
+      "cssVariable": "--csa-semantic-typography-panel-heading",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "700 18px/1.3333333333333333 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 18,
+          "unit": "px"
+        },
+        "fontWeight": 700,
+        "lineHeight": 1.3333333333333333,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.project-title",
+      "designName": "semantic/typography/project-title",
+      "cssVariable": "--csa-semantic-typography-project-title",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "700 18px/1.3888888888888888 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 18,
+          "unit": "px"
+        },
+        "fontWeight": 700,
+        "lineHeight": 1.3888888888888888,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.project-title-mobile",
+      "designName": "semantic/typography/project-title-mobile",
+      "cssVariable": "--csa-semantic-typography-project-title-mobile",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "700 16px/1.375 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 16,
+          "unit": "px"
+        },
+        "fontWeight": 700,
+        "lineHeight": 1.375,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.body",
+      "designName": "semantic/typography/body",
+      "cssVariable": "--csa-semantic-typography-body",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "400 16px/1.7 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 16,
+          "unit": "px"
+        },
+        "fontWeight": 400,
+        "lineHeight": 1.7,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.button",
+      "designName": "semantic/typography/button",
+      "cssVariable": "--csa-semantic-typography-button",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "700 16px/1.25 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 16,
+          "unit": "px"
+        },
+        "fontWeight": 700,
+        "lineHeight": 1.25,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.label",
+      "designName": "semantic/typography/label",
+      "cssVariable": "--csa-semantic-typography-label",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "600 14px/1.4 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 14,
+          "unit": "px"
+        },
+        "fontWeight": 600,
+        "lineHeight": 1.4,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.metadata",
+      "designName": "semantic/typography/metadata",
+      "cssVariable": "--csa-semantic-typography-metadata",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "400 11px/1.6363636363636365 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 11,
+          "unit": "px"
+        },
+        "fontWeight": 400,
+        "lineHeight": 1.6363636363636365,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.status",
+      "designName": "semantic/typography/status",
+      "cssVariable": "--csa-semantic-typography-status",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "700 10px/1.6 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 10,
+          "unit": "px"
+        },
+        "fontWeight": 700,
+        "lineHeight": 1.6,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.chip",
+      "designName": "semantic/typography/chip",
+      "cssVariable": "--csa-semantic-typography-chip",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "500 12px/1.6666666666666667 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 12,
+          "unit": "px"
+        },
+        "fontWeight": 500,
+        "lineHeight": 1.6666666666666667,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.dialog-title",
+      "designName": "semantic/typography/dialog-title",
+      "cssVariable": "--csa-semantic-typography-dialog-title",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "650 25px/1.3 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 25,
+          "unit": "px"
+        },
+        "fontWeight": 650,
+        "lineHeight": 1.3,
+        "letterSpacing": {
+          "value": -0.6,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.shadow.menu",
+      "designName": "semantic/shadow/menu",
+      "cssVariable": "--csa-semantic-shadow-menu",
+      "type": "shadow",
+      "layer": "semantic",
+      "category": "shadow",
+      "value": "0px 8px 28px 0px #17171714",
+      "reference": "",
+      "description": "Existing elevation; no new shadow added.",
+      "status": "observed"
+    },
+    {
+      "name": "semantic.shadow.dropdown",
+      "designName": "semantic/shadow/dropdown",
+      "cssVariable": "--csa-semantic-shadow-dropdown",
+      "type": "shadow",
+      "layer": "semantic",
+      "category": "shadow",
+      "value": "0px 8px 36px 0px #29354c0d",
+      "reference": "",
+      "description": "Existing elevation; no new shadow added.",
+      "status": "observed"
+    },
+    {
+      "name": "semantic.shadow.popover",
+      "designName": "semantic/shadow/popover",
+      "cssVariable": "--csa-semantic-shadow-popover",
+      "type": "shadow",
+      "layer": "semantic",
+      "category": "shadow",
+      "value": "0px 10px 36px 0px #29354c24",
+      "reference": "",
+      "description": "Existing elevation; no new shadow added.",
+      "status": "observed"
+    },
+    {
+      "name": "semantic.shadow.dialog",
+      "designName": "semantic/shadow/dialog",
+      "cssVariable": "--csa-semantic-shadow-dialog",
+      "type": "shadow",
+      "layer": "semantic",
+      "category": "shadow",
+      "value": "0px 16px 65px 0px #25355024",
+      "reference": "",
+      "description": "Existing elevation; no new shadow added.",
+      "status": "observed"
+    },
+    {
+      "name": "semantic.shadow.new-project",
+      "designName": "semantic/shadow/new-project",
+      "cssVariable": "--csa-semantic-shadow-new-project",
+      "type": "shadow",
+      "layer": "semantic",
+      "category": "shadow",
+      "value": "0px 16px 65px 0px #25355018",
+      "reference": "",
+      "description": "Existing elevation; no new shadow added.",
+      "status": "observed"
+    },
+    {
+      "name": "semantic.shadow.mobile-panel",
+      "designName": "semantic/shadow/mobile-panel",
+      "cssVariable": "--csa-semantic-shadow-mobile-panel",
+      "type": "shadow",
+      "layer": "semantic",
+      "category": "shadow",
+      "value": "0px 10px 36px 0px #25355025",
+      "reference": "",
+      "description": "Existing elevation; no new shadow added.",
+      "status": "observed"
+    },
+    {
+      "name": "semantic.shadow.drawer",
+      "designName": "semantic/shadow/drawer",
+      "cssVariable": "--csa-semantic-shadow-drawer",
+      "type": "shadow",
+      "layer": "semantic",
+      "category": "shadow",
+      "value": "8px 0px 32px 0px #25355016",
+      "reference": "",
+      "description": "Existing elevation; no new shadow added.",
+      "status": "observed"
+    },
+    {
+      "name": "semantic.shadow.editor",
+      "designName": "semantic/shadow/editor",
+      "cssVariable": "--csa-semantic-shadow-editor",
+      "type": "shadow",
+      "layer": "semantic",
+      "category": "shadow",
+      "value": "0px 4px 26px 0px #25355005",
+      "reference": "",
+      "description": "Existing elevation; no new shadow added.",
+      "status": "observed"
+    },
+    {
+      "name": "semantic.shadow.input-focus",
+      "designName": "semantic/shadow/input-focus",
+      "cssVariable": "--csa-semantic-shadow-input-focus",
+      "type": "shadow",
+      "layer": "semantic",
+      "category": "shadow",
+      "value": "0px 0px 0px 3px #4d5d7908",
+      "reference": "",
+      "description": "Existing elevation; no new shadow added.",
+      "status": "observed"
+    },
+    {
+      "name": "component.button.height",
+      "designName": "component/button/height",
+      "cssVariable": "--csa-component-button-height",
+      "type": "dimension",
+      "layer": "component",
+      "category": "button",
+      "value": "46px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.button.radius",
+      "designName": "component/button/radius",
+      "cssVariable": "--csa-component-button-radius",
+      "type": "dimension",
+      "layer": "component",
+      "category": "button",
+      "value": "10px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.button.panel-radius",
+      "designName": "component/button/panel-radius",
+      "cssVariable": "--csa-component-button-panel-radius",
+      "type": "dimension",
+      "layer": "component",
+      "category": "button",
+      "value": "11px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.button.primary.background",
+      "designName": "component/button/primary/background",
+      "cssVariable": "--csa-component-button-primary-background",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#3b82f6",
+      "reference": "semantic.color.action.primary",
+      "description": "Button primary background.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.23137254901960785,
+          0.5098039215686274,
+          0.9647058823529412
+        ],
+        "alpha": 1,
+        "hex": "#3b82f6"
+      }
+    },
+    {
+      "name": "component.button.primary.hover",
+      "designName": "component/button/primary/hover",
+      "cssVariable": "--csa-component-button-primary-hover",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#2563eb",
+      "reference": "semantic.color.action.primary-hover",
+      "description": "Button primary hover.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.38823529411764707,
+          0.9215686274509803
+        ],
+        "alpha": 1,
+        "hex": "#2563eb"
+      }
+    },
+    {
+      "name": "component.button.primary.label",
+      "designName": "component/button/primary/label",
+      "cssVariable": "--csa-component-button-primary-label",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#ffffff",
+      "reference": "semantic.color.text.inverse",
+      "description": "Button primary label.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      }
+    },
+    {
+      "name": "component.button.secondary.background",
+      "designName": "component/button/secondary/background",
+      "cssVariable": "--csa-component-button-secondary-background",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#ffffff",
+      "reference": "semantic.color.surface.default",
+      "description": "Button secondary background.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      }
+    },
+    {
+      "name": "component.button.secondary.label",
+      "designName": "component/button/secondary/label",
+      "cssVariable": "--csa-component-button-secondary-label",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#404040",
+      "reference": "semantic.color.text.primary",
+      "description": "Button secondary label.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.25098039215686274,
+          0.25098039215686274,
+          0.25098039215686274
+        ],
+        "alpha": 1,
+        "hex": "#404040"
+      }
+    },
+    {
+      "name": "component.button.disabled.background",
+      "designName": "component/button/disabled/background",
+      "cssVariable": "--csa-component-button-disabled-background",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#ffffff",
+      "reference": "semantic.color.action.disabled-surface",
+      "description": "Button disabled background.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      }
+    },
+    {
+      "name": "component.button.disabled.label",
+      "designName": "component/button/disabled/label",
+      "cssVariable": "--csa-component-button-disabled-label",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#a3a3a3",
+      "reference": "semantic.color.action.disabled-label",
+      "description": "Button disabled label.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.6392156862745098,
+          0.6392156862745098,
+          0.6392156862745098
+        ],
+        "alpha": 1,
+        "hex": "#a3a3a3"
+      }
+    },
+    {
+      "name": "component.button.border",
+      "designName": "component/button/border",
+      "cssVariable": "--csa-component-button-border",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#e5e5e5",
+      "reference": "semantic.color.border.default",
+      "description": "Button border.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8980392156862745,
+          0.8980392156862745,
+          0.8980392156862745
+        ],
+        "alpha": 1,
+        "hex": "#e5e5e5"
+      }
+    },
+    {
+      "name": "component.icon-button.size",
+      "designName": "component/icon-button/size",
+      "cssVariable": "--csa-component-icon-button-size",
+      "type": "dimension",
+      "layer": "component",
+      "category": "icon-button",
+      "value": "40px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.icon-button.touch-size",
+      "designName": "component/icon-button/touch-size",
+      "cssVariable": "--csa-component-icon-button-touch-size",
+      "type": "dimension",
+      "layer": "component",
+      "category": "icon-button",
+      "value": "44px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.field.height.desktop",
+      "designName": "component/field/height/desktop",
+      "cssVariable": "--csa-component-field-height-desktop",
+      "type": "dimension",
+      "layer": "component",
+      "category": "field",
+      "value": "36px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.field.height.mobile",
+      "designName": "component/field/height/mobile",
+      "cssVariable": "--csa-component-field-height-mobile",
+      "type": "dimension",
+      "layer": "component",
+      "category": "field",
+      "value": "46px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.field.radius",
+      "designName": "component/field/radius",
+      "cssVariable": "--csa-component-field-radius",
+      "type": "dimension",
+      "layer": "component",
+      "category": "field",
+      "value": "10px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.field.background",
+      "designName": "component/field/background",
+      "cssVariable": "--csa-component-field-background",
+      "type": "color",
+      "layer": "component",
+      "category": "field",
+      "value": "#ffffff",
+      "reference": "semantic.color.surface.default",
+      "description": "Field background.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      }
+    },
+    {
+      "name": "component.field.border",
+      "designName": "component/field/border",
+      "cssVariable": "--csa-component-field-border",
+      "type": "color",
+      "layer": "component",
+      "category": "field",
+      "value": "#e5e5e5",
+      "reference": "semantic.color.border.default",
+      "description": "Field border.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8980392156862745,
+          0.8980392156862745,
+          0.8980392156862745
+        ],
+        "alpha": 1,
+        "hex": "#e5e5e5"
+      }
+    },
+    {
+      "name": "component.field.placeholder",
+      "designName": "component/field/placeholder",
+      "cssVariable": "--csa-component-field-placeholder",
+      "type": "color",
+      "layer": "component",
+      "category": "field",
+      "value": "#a3a3a3",
+      "reference": "semantic.color.text.muted",
+      "description": "Field placeholder.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.6392156862745098,
+          0.6392156862745098,
+          0.6392156862745098
+        ],
+        "alpha": 1,
+        "hex": "#a3a3a3"
+      }
+    },
+    {
+      "name": "component.status.height",
+      "designName": "component/status/height",
+      "cssVariable": "--csa-component-status-height",
+      "type": "dimension",
+      "layer": "component",
+      "category": "status",
+      "value": "24px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.status.radius",
+      "designName": "component/status/radius",
+      "cssVariable": "--csa-component-status-radius",
+      "type": "dimension",
+      "layer": "component",
+      "category": "status",
+      "value": "2px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.status.padding-inline",
+      "designName": "component/status/padding-inline",
+      "cssVariable": "--csa-component-status-padding-inline",
+      "type": "dimension",
+      "layer": "component",
+      "category": "status",
+      "value": "8px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.status.draft.background",
+      "designName": "component/status/draft/background",
+      "cssVariable": "--csa-component-status-draft-background",
+      "type": "color",
+      "layer": "component",
+      "category": "status",
+      "value": "#e7e5e4",
+      "reference": "foundation.color.stone.200",
+      "description": "Status draft background.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9058823529411765,
+          0.8980392156862745,
+          0.8941176470588236
+        ],
+        "alpha": 1,
+        "hex": "#e7e5e4"
+      }
+    },
+    {
+      "name": "component.status.draft.label",
+      "designName": "component/status/draft/label",
+      "cssVariable": "--csa-component-status-draft-label",
+      "type": "color",
+      "layer": "component",
+      "category": "status",
+      "value": "#404040",
+      "reference": "semantic.color.text.primary",
+      "description": "Status draft label.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.25098039215686274,
+          0.25098039215686274,
+          0.25098039215686274
+        ],
+        "alpha": 1,
+        "hex": "#404040"
+      }
+    },
+    {
+      "name": "component.status.sent.background",
+      "designName": "component/status/sent/background",
+      "cssVariable": "--csa-component-status-sent-background",
+      "type": "color",
+      "layer": "component",
+      "category": "status",
+      "value": "#bbf7d0",
+      "reference": "foundation.color.green.200",
+      "description": "Status sent background.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.7333333333333333,
+          0.9686274509803922,
+          0.8156862745098039
+        ],
+        "alpha": 1,
+        "hex": "#bbf7d0"
+      }
+    },
+    {
+      "name": "component.status.sent.label",
+      "designName": "component/status/sent/label",
+      "cssVariable": "--csa-component-status-sent-label",
+      "type": "color",
+      "layer": "component",
+      "category": "status",
+      "value": "#404040",
+      "reference": "semantic.color.text.primary",
+      "description": "Status sent label.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.25098039215686274,
+          0.25098039215686274,
+          0.25098039215686274
+        ],
+        "alpha": 1,
+        "hex": "#404040"
+      }
+    },
+    {
+      "name": "component.chip.height",
+      "designName": "component/chip/height",
+      "cssVariable": "--csa-component-chip-height",
+      "type": "dimension",
+      "layer": "component",
+      "category": "chip",
+      "value": "24px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.chip.radius",
+      "designName": "component/chip/radius",
+      "cssVariable": "--csa-component-chip-radius",
+      "type": "dimension",
+      "layer": "component",
+      "category": "chip",
+      "value": "999px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.chip.format.background",
+      "designName": "component/chip/format/background",
+      "cssVariable": "--csa-component-chip-format-background",
+      "type": "color",
+      "layer": "component",
+      "category": "chip",
+      "value": "#ffe4e6",
+      "reference": "foundation.color.rose.100",
+      "description": "Chip format background.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          0.8941176470588236,
+          0.9019607843137255
+        ],
+        "alpha": 1,
+        "hex": "#ffe4e6"
+      }
+    },
+    {
+      "name": "component.chip.audience.background",
+      "designName": "component/chip/audience/background",
+      "cssVariable": "--csa-component-chip-audience-background",
+      "type": "color",
+      "layer": "component",
+      "category": "chip",
+      "value": "#eef2ff",
+      "reference": "foundation.color.indigo.50",
+      "description": "Chip audience background.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9333333333333333,
+          0.9490196078431372,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#eef2ff"
+      }
+    },
+    {
+      "name": "component.chip.voice.background",
+      "designName": "component/chip/voice/background",
+      "cssVariable": "--csa-component-chip-voice-background",
+      "type": "color",
+      "layer": "component",
+      "category": "chip",
+      "value": "#ffedd5",
+      "reference": "foundation.color.orange.100",
+      "description": "Chip voice background.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          0.9294117647058824,
+          0.8352941176470589
+        ],
+        "alpha": 1,
+        "hex": "#ffedd5"
+      }
+    },
+    {
+      "name": "component.chip.label",
+      "designName": "component/chip/label",
+      "cssVariable": "--csa-component-chip-label",
+      "type": "color",
+      "layer": "component",
+      "category": "chip",
+      "value": "#404040",
+      "reference": "semantic.color.text.primary",
+      "description": "Chip label.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.25098039215686274,
+          0.25098039215686274,
+          0.25098039215686274
+        ],
+        "alpha": 1,
+        "hex": "#404040"
+      }
+    },
+    {
+      "name": "component.project-card.height.desktop",
+      "designName": "component/project-card/height/desktop",
+      "cssVariable": "--csa-component-project-card-height-desktop",
+      "type": "dimension",
+      "layer": "component",
+      "category": "project-card",
+      "value": "257px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.project-card.height.mobile",
+      "designName": "component/project-card/height/mobile",
+      "cssVariable": "--csa-component-project-card-height-mobile",
+      "type": "dimension",
+      "layer": "component",
+      "category": "project-card",
+      "value": "104px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.project-card.radius.desktop",
+      "designName": "component/project-card/radius/desktop",
+      "cssVariable": "--csa-component-project-card-radius-desktop",
+      "type": "dimension",
+      "layer": "component",
+      "category": "project-card",
+      "value": "21px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.project-card.radius.mobile",
+      "designName": "component/project-card/radius/mobile",
+      "cssVariable": "--csa-component-project-card-radius-mobile",
+      "type": "dimension",
+      "layer": "component",
+      "category": "project-card",
+      "value": "16px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.project-card.padding",
+      "designName": "component/project-card/padding",
+      "cssVariable": "--csa-component-project-card-padding",
+      "type": "dimension",
+      "layer": "component",
+      "category": "project-card",
+      "value": "20px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.variant-card.radius",
+      "designName": "component/variant-card/radius",
+      "cssVariable": "--csa-component-variant-card-radius",
+      "type": "dimension",
+      "layer": "component",
+      "category": "variant-card",
+      "value": "8px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.variant-card.selected-background",
+      "designName": "component/variant-card/selected-background",
+      "cssVariable": "--csa-component-variant-card-selected-background",
+      "type": "color",
+      "layer": "component",
+      "category": "variant-card",
+      "value": "#f8f1ee",
+      "reference": "semantic.color.surface.selected",
+      "description": "Variant card selected background.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9725490196078431,
+          0.9450980392156862,
+          0.9333333333333333
+        ],
+        "alpha": 1,
+        "hex": "#f8f1ee"
+      }
+    },
+    {
+      "name": "component.variant-card.selected-border",
+      "designName": "component/variant-card/selected-border",
+      "cssVariable": "--csa-component-variant-card-selected-border",
+      "type": "color",
+      "layer": "component",
+      "category": "variant-card",
+      "value": "#3b82f6",
+      "reference": "semantic.color.border.selected",
+      "description": "Variant card selected border.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.23137254901960785,
+          0.5098039215686274,
+          0.9647058823529412
+        ],
+        "alpha": 1,
+        "hex": "#3b82f6"
+      }
+    },
+    {
+      "name": "component.variant-card.label",
+      "designName": "component/variant-card/label",
+      "cssVariable": "--csa-component-variant-card-label",
+      "type": "color",
+      "layer": "component",
+      "category": "variant-card",
+      "value": "#404040",
+      "reference": "semantic.color.text.primary",
+      "description": "Variant card label.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.25098039215686274,
+          0.25098039215686274,
+          0.25098039215686274
+        ],
+        "alpha": 1,
+        "hex": "#404040"
+      }
+    },
+    {
+      "name": "component.checkbox.size",
+      "designName": "component/checkbox/size",
+      "cssVariable": "--csa-component-checkbox-size",
+      "type": "dimension",
+      "layer": "component",
+      "category": "checkbox",
+      "value": "18px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.checkbox.radius",
+      "designName": "component/checkbox/radius",
+      "cssVariable": "--csa-component-checkbox-radius",
+      "type": "dimension",
+      "layer": "component",
+      "category": "checkbox",
+      "value": "2px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.checkbox.selected-background",
+      "designName": "component/checkbox/selected-background",
+      "cssVariable": "--csa-component-checkbox-selected-background",
+      "type": "color",
+      "layer": "component",
+      "category": "checkbox",
+      "value": "#3b82f6",
+      "reference": "semantic.color.action.primary",
+      "description": "Checkbox selected background.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.23137254901960785,
+          0.5098039215686274,
+          0.9647058823529412
+        ],
+        "alpha": 1,
+        "hex": "#3b82f6"
+      }
+    },
+    {
+      "name": "component.checkbox.check",
+      "designName": "component/checkbox/check",
+      "cssVariable": "--csa-component-checkbox-check",
+      "type": "color",
+      "layer": "component",
+      "category": "checkbox",
+      "value": "#ffffff",
+      "reference": "semantic.color.text.inverse",
+      "description": "Checkbox check.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      }
+    },
+    {
+      "name": "component.dialog.width",
+      "designName": "component/dialog/width",
+      "cssVariable": "--csa-component-dialog-width",
+      "type": "dimension",
+      "layer": "component",
+      "category": "dialog",
+      "value": "540px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.dialog.radius.desktop",
+      "designName": "component/dialog/radius/desktop",
+      "cssVariable": "--csa-component-dialog-radius-desktop",
+      "type": "dimension",
+      "layer": "component",
+      "category": "dialog",
+      "value": "22px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.dialog.radius.mobile",
+      "designName": "component/dialog/radius/mobile",
+      "cssVariable": "--csa-component-dialog-radius-mobile",
+      "type": "dimension",
+      "layer": "component",
+      "category": "dialog",
+      "value": "16px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.popover.width",
+      "designName": "component/popover/width",
+      "cssVariable": "--csa-component-popover-width",
+      "type": "dimension",
+      "layer": "component",
+      "category": "popover",
+      "value": "340px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.popover.radius",
+      "designName": "component/popover/radius",
+      "cssVariable": "--csa-component-popover-radius",
+      "type": "dimension",
+      "layer": "component",
+      "category": "popover",
+      "value": "16px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.navigation.rail-width",
+      "designName": "component/navigation/rail-width",
+      "cssVariable": "--csa-component-navigation-rail-width",
+      "type": "dimension",
+      "layer": "component",
+      "category": "navigation",
+      "value": "56px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.navigation.drawer-width",
+      "designName": "component/navigation/drawer-width",
+      "cssVariable": "--csa-component-navigation-drawer-width",
+      "type": "dimension",
+      "layer": "component",
+      "category": "navigation",
+      "value": "360px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.navigation.mobile-height",
+      "designName": "component/navigation/mobile-height",
+      "cssVariable": "--csa-component-navigation-mobile-height",
+      "type": "dimension",
+      "layer": "component",
+      "category": "navigation",
+      "value": "64px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.navigation.outer-inset",
+      "designName": "component/navigation/outer-inset",
+      "cssVariable": "--csa-component-navigation-outer-inset",
+      "type": "dimension",
+      "layer": "component",
+      "category": "navigation",
+      "value": "10px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.layout.page-min-width",
+      "designName": "component/layout/page-min-width",
+      "cssVariable": "--csa-component-layout-page-min-width",
+      "type": "dimension",
+      "layer": "component",
+      "category": "layout",
+      "value": "320px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.layout.home-max-width",
+      "designName": "component/layout/home-max-width",
+      "cssVariable": "--csa-component-layout-home-max-width",
+      "type": "dimension",
+      "layer": "component",
+      "category": "layout",
+      "value": "1260px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.layout.editor-max-width",
+      "designName": "component/layout/editor-max-width",
+      "cssVariable": "--csa-component-layout-editor-max-width",
+      "type": "dimension",
+      "layer": "component",
+      "category": "layout",
+      "value": "980px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.layout.panel-width",
+      "designName": "component/layout/panel-width",
+      "cssVariable": "--csa-component-layout-panel-width",
+      "type": "dimension",
+      "layer": "component",
+      "category": "layout",
+      "value": "360px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.focus.width",
+      "designName": "component/focus/width",
+      "cssVariable": "--csa-component-focus-width",
+      "type": "dimension",
+      "layer": "component",
+      "category": "focus",
+      "value": "3px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.focus.offset",
+      "designName": "component/focus/offset",
+      "cssVariable": "--csa-component-focus-offset",
+      "type": "dimension",
+      "layer": "component",
+      "category": "focus",
+      "value": "4px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.icon.size.default",
+      "designName": "component/icon/size/default",
+      "cssVariable": "--csa-component-icon-size-default",
+      "type": "dimension",
+      "layer": "component",
+      "category": "icon",
+      "value": "24px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.icon.size.small",
+      "designName": "component/icon/size/small",
+      "cssVariable": "--csa-component-icon-size-small",
+      "type": "dimension",
+      "layer": "component",
+      "category": "icon",
+      "value": "16px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.icon.size.edit",
+      "designName": "component/icon/size/edit",
+      "cssVariable": "--csa-component-icon-size-edit",
+      "type": "dimension",
+      "layer": "component",
+      "category": "icon",
+      "value": "18px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.icon.size.draft",
+      "designName": "component/icon/size/draft",
+      "cssVariable": "--csa-component-icon-size-draft",
+      "type": "dimension",
+      "layer": "component",
+      "category": "icon",
+      "value": "14px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.icon.size.sent",
+      "designName": "component/icon/size/sent",
+      "cssVariable": "--csa-component-icon-size-sent",
+      "type": "dimension",
+      "layer": "component",
+      "category": "icon",
+      "value": "16px",
+      "reference": "",
+      "description": "Implemented component measurement.",
+      "status": "observed"
+    },
+    {
+      "name": "component.icon.hover-background",
+      "designName": "component/icon/hover-background",
+      "cssVariable": "--csa-component-icon-hover-background",
+      "type": "color",
+      "layer": "component",
+      "category": "icon",
+      "value": "#f5f5f5",
+      "reference": "semantic.color.surface.hover",
+      "description": "Icon hover background.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9607843137254902,
+          0.9607843137254902,
+          0.9607843137254902
+        ],
+        "alpha": 1,
+        "hex": "#f5f5f5"
+      }
+    },
+    {
+      "name": "component.icon.fill",
+      "designName": "component/icon/fill",
+      "cssVariable": "--csa-component-icon-fill",
+      "type": "number",
+      "layer": "component",
+      "category": "icon",
+      "value": "1",
+      "reference": "",
+      "description": "Always use filled Material Symbols throughout CSA. Custom supplied SVG assets retain their own geometry.",
+      "status": "observed"
+    }
+  ]
+}

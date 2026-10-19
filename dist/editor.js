@@ -357,6 +357,16 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       flush(); project = next; loading = true; root.hidden = false;
       initialize();
       title.value = next.title === 'Untitled story' ? '' : next.title;
+      const created = new Date(next.createdAt);
+      const hasCreatedAt = next.createdAt != null && next.createdAt !== '' && Number.isFinite(created.getTime());
+      $('#editor-created').hidden = !hasCreatedAt;
+      const createdTime = $('#editor-created-time');
+      createdTime.textContent = hasCreatedAt ? new Intl.DateTimeFormat('en-US', {
+        month: 'numeric', day: 'numeric', year: 'numeric',
+        hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true,
+      }).format(created) : '';
+      if (hasCreatedAt) createdTime.dateTime = created.toISOString();
+      else createdTime.removeAttribute('datetime');
       const document = savedDocument(next.document);
       if (document) quill.setContents(document, 'silent'); else quill.setText(typeof next.draftText === 'string' ? next.draftText : '', 'silent');
       sentContent = Number.isFinite(next.cmsSentAt) && next.cmsSentAt > 0

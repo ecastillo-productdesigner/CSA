@@ -10,8 +10,9 @@
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=alt_route,chevron_forward,description,draw,edit,expand_all,favorite,folder_open,keyboard_arrow_down,keyboard_arrow_up,photo_camera,right_panel_close,right_panel_open,upload_file">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:opsz,wght@6..72,700&amp;display=swap">
-    <link rel="stylesheet" href="./styles.css?v=20261019-filled-icons">
-    <script src="./demo-access.js?v=20261019-mobile-option-taps" type="module"></script>
+    <link rel="stylesheet" href="./design-system/tokens.css?v=20261019-design-system">
+    <link rel="stylesheet" href="./styles.css?v=20261019-design-system">
+    <script src="./demo-access.js?v=20261019-design-system" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -146,7 +147,7 @@
               </div>
               <div id="rich-text-editor"></div>
               <div class="editor-publish-actions"><button class="editor-wordpress-button" id="editor-wordpress" type="button">Send to WordPress</button></div>
-              <footer class="editor-footer"><button class="editor-metadata-trigger" id="editor-metadata-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-metadata">Metadata<span class="material-symbols-outlined editor-flyover-chevron" aria-hidden="true">chevron_forward</span></button><span id="editor-word-count">0 words</span><span id="editor-character-count">0 characters</span><span id="editor-read-time">0 min read</span><span id="editor-save-status" role="status">Saved on this device</span><span class="editor-spellcheck">Spellcheck on</span><p class="editor-content-note">No new facts or information will be added. Each draft adapts your approved content while maintaining factual accuracy.</p></footer>
+              <footer class="editor-footer"><button class="editor-metadata-trigger" id="editor-metadata-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-metadata">Metadata<span class="material-symbols-outlined editor-flyover-chevron" aria-hidden="true">chevron_forward</span></button><span id="editor-word-count">0 words</span><span id="editor-character-count">0 characters</span><span id="editor-read-time">0 min read</span><span id="editor-save-status" role="status">Saved on this device</span><span class="editor-created" id="editor-created" hidden>Created: <time id="editor-created-time"></time></span><span class="editor-spellcheck">Spellcheck on</span><p class="editor-content-note">No new facts or information will be added. Each draft adapts your approved content while maintaining factual accuracy.</p></footer>
             </div>
             <div class="editor-context-panel editor-flyover" id="editor-metadata" role="dialog" aria-labelledby="editor-metadata-heading" tabindex="-1" hidden>
               <div class="editor-panel-heading"><h2 id="editor-metadata-heading">Metadata</h2><button class="icon-button" type="button" data-editor-close="metadata" aria-label="Close metadata" title="Close metadata"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></div>

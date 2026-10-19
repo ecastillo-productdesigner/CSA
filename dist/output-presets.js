@@ -1,4 +1,4 @@
-import { projectOutputs, createOutputBadges } from './outputs.js?v=20261018-variant-controls';
+import { projectOutputs, createOutputBadges } from './outputs.js?v=20261018-active-revision';
 
 export function createOutputPresets({ onSelect }) {
   const root = document.querySelector('#output-presets');

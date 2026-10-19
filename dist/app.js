@@ -2,17 +2,17 @@ import { createVariantFeedback } from './variant-feedback.js?v=20261018-feedback
 import { createProfile } from './profile.js?v=20261017-disabled-sent';
 import { createSearchExperience } from './search.js?v=20261018-content-preview';
 import { createDashboard } from './dashboard.js?v=20261018-feedback-report';
-import { createMaterialEditor } from './editor.js?v=20261017-disabled-sent';
+import { createMaterialEditor } from './editor.js?v=20261018-active-revision';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261018-project-delete';
 import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
 import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261018-search-preview';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261018-feedback-report';
 import { createRailNavigation } from './navigation.js?v=20261018-nav-tooltips';
-import { createProjectSources } from './sources.js?v=20261017-disabled-sent';
-import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261018-variant-controls';
-import { createEditorTabs } from './editor-tabs.js?v=20261018-tab-order';
+import { createProjectSources } from './sources.js?v=20261018-source-actions';
+import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261018-active-revision';
+import { createEditorTabs } from './editor-tabs.js?v=20261018-active-revision';
 import { createOutputSettings } from './output-settings.js?v=20261018-variant-controls';
-import { createOutputPresets } from './output-presets.js?v=20261018-variant-controls';
+import { createOutputPresets } from './output-presets.js?v=20261018-active-revision';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -91,6 +91,7 @@ const contentPreview = createContentPreview({
 });
 const editorTabs = createEditorTabs({ onSelect: openEditorTab });
 const projectSourcesPanel = createProjectSources({
+  onRemoveSource: removeProjectSource,
   onDownloadSource: downloadSource,
   onSelectionChange(projectId) {
     richEditor.flush();
@@ -124,6 +125,7 @@ const richEditor = createMaterialEditor({
     const output = projectOutputs(project).find(entry => entry.id === project.selectedOutputId);
     if (output) {
       for (const key of ['title', 'document', 'draftText', 'metadata', 'updatedAt']) output[key] = snapshot[key];
+      if (typeof snapshot.cmsSentContent === 'string') output.cmsSentContent = snapshot.cmsSentContent;
       project.toolPreferences = snapshot.toolPreferences;
       project.updatedAt = snapshot.updatedAt;
     } else Object.assign(project, snapshot);
@@ -139,10 +141,56 @@ function renderOutputs(project) {
   outputSettings.sync(project);
   outputPresets.render(projects, project?.variantPreset || null);
   editorTabs.render(project);
-  const selectedOutput = projectOutputs(project).find(output => output.id === project?.selectedOutputId && outputIsReady(output));
+  const selectedOutput = projectOutputs(project).find(output => output.id === project?.selectedOutputId && (outputIsReady(output) || output.needsRegeneration));
   const labels = $('#editor-variant-labels');
   labels.replaceChildren(...createOutputBadges(selectedOutput));
   labels.hidden = !labels.childElementCount;
+}
+
+function removeProjectSource(projectId, source) {
+  richEditor.flush();
+  const project = projects.find(entry => entry.id === projectId && !entry.deletedAt);
+  const index = project?.sources.indexOf(source) ?? -1;
+  if (index < 0) return;
+  const before = projectOutputs(project).map(output => [output, output.selectedSourceIndexes]);
+  const updatedAt = project.updatedAt;
+  project.sources.splice(index, 1);
+  for (const [output, indexes] of before) {
+    if (Array.isArray(indexes)) output.selectedSourceIndexes = indexes.filter(value => value !== index).map(value => value > index ? value - 1 : value);
+  }
+  project.updatedAt = Date.now();
+  if (!saveProjects()) {
+    project.sources.splice(index, 0, source);
+    before.forEach(([output, indexes]) => { output.selectedSourceIndexes = indexes; });
+    project.updatedAt = updatedAt;
+    notify('Could not delete this source. Please try again.');
+    return;
+  }
+  projectSourcesPanel.render(project);
+  const focus = [...$('#editor-source-list').querySelectorAll('.editor-source-more')];
+  (focus[Math.min(index, focus.length - 1)] || $('#editor-add-source-button')).focus({ preventScroll: true });
+  notify('Source deleted.', () => {
+    if (project.deletedAt || !projects.includes(project)) return;
+    richEditor.flush();
+    const currentIndexes = projectOutputs(project).map(output => [output, output.selectedSourceIndexes]);
+    const insertAt = Math.min(index, project.sources.length);
+    project.sources.splice(insertAt, 0, source);
+    for (const [output, indexes] of currentIndexes) {
+      if (!Array.isArray(indexes)) continue;
+      const restored = indexes.map(value => value >= insertAt ? value + 1 : value);
+      if (before.some(([previous, values]) => previous.id === output.id && values?.includes(index))) restored.push(insertAt);
+      output.selectedSourceIndexes = [...new Set(restored)].sort((a, b) => a - b);
+    }
+    project.updatedAt = Date.now();
+    if (!saveProjects()) {
+      project.sources.splice(insertAt, 1);
+      currentIndexes.forEach(([output, indexes]) => { output.selectedSourceIndexes = indexes; });
+      notify('Could not restore this source. Please try again.');
+      return;
+    }
+    if (activeProjectId === project.id) projectSourcesPanel.render(project);
+    notify('Source restored.');
+  });
 }
 
 function saveOutputSettings({ projectId, outputId, voice, editorialDirection }) {
@@ -150,24 +198,38 @@ function saveOutputSettings({ projectId, outputId, voice, editorialDirection }) 
   const project = projects.find(entry => entry.id === projectId);
   const output = projectOutputs(project).find(entry => entry.id === outputId);
   if (!output || project.outputProcessing) return false;
-  const before = { toolPreferences: output.toolPreferences, labels: output.labels, editorialDirection: output.editorialDirection, updatedAt: output.updatedAt };
-  const projectUpdatedAt = project.updatedAt;
+  if ((output.toolPreferences?.voice || '') === voice && (output.editorialDirection || '') === editorialDirection) return true;
+  const before = structuredClone(output);
+  const projectBefore = { updatedAt: project.updatedAt, selectedOutputId: project.selectedOutputId, selectedOutputIds: project.selectedOutputIds };
   output.toolPreferences = { ...output.toolPreferences, voice };
   output.editorialDirection = editorialDirection;
   output.labels = (Array.isArray(output.labels) ? output.labels : []).filter(label => label && label.key !== 'voice');
   const option = [...$('#composer-voice').options].find(entry => entry.value === voice);
   if (voice && option) output.labels.push({ key: 'voice', label: option.textContent });
+  output.status = 'pending';
+  output.needsRegeneration = true;
+  delete output.processedAt;
+  delete output.cmsSentAt;
+  delete output.cmsSentContent;
+  project.selectedOutputIds = [output.id];
+  project.selectedOutputId = output.id;
   output.updatedAt = project.updatedAt = Date.now();
-  if (!saveProjects()) { Object.assign(output, before); project.updatedAt = projectUpdatedAt; return false; }
-  renderOutputs(project);
-  notify('Variant settings saved.');
+  if (!saveProjects()) {
+    for (const key of Object.keys(output)) delete output[key];
+    Object.assign(output, before);
+    Object.assign(project, projectBefore);
+    return false;
+  }
+  showEditorProject(project);
+  requestAnimationFrame(() => [...$('#output-list').querySelectorAll('[data-select-output]')].find(button => button.dataset.selectOutput === output.id)?.focus({ preventScroll: true }));
+  notify('Variant updated. Create it again to apply the changes.');
   return true;
 }
 
 function openEditorTab(outputId) {
   richEditor.flush();
   const project = projects.find(entry => entry.id === activeProjectId);
-  if (!project || !projectOutputs(project).some(output => output.id === outputId && outputIsReady(output))) return;
+  if (!project || !projectOutputs(project).some(output => output.id === outputId && (outputIsReady(output) || output.needsRegeneration))) return;
   project.selectedOutputIds = [...new Set([...selectedOutputs(project).map(output => output.id), outputId])];
   project.selectedOutputId = outputId;
   project.viewOriginalDraft = false;
@@ -519,12 +581,12 @@ function showEditorProject(project) {
   $('#composer').hidden = false;
   resumeOutputProcessing(project, false);
   const readyOutputs = projectOutputs(project).filter(outputIsReady);
-  const selectedOutput = readyOutputs.find(output => output.id === project.selectedOutputId) || readyOutputs[0];
+  const selectedOutput = projectOutputs(project).find(output => output.id === project.selectedOutputId && (outputIsReady(output) || output.needsRegeneration)) || readyOutputs[0];
   if (selectedOutput) {
     project.selectedOutputId = selectedOutput.id;
     project.viewOriginalDraft = false;
     project.selectedOutputIds = [...new Set([...selectedOutputs(project).map(output => output.id), selectedOutput.id])];
-    populateOutputContent(selectedOutput);
+    if (outputIsReady(selectedOutput)) populateOutputContent(selectedOutput);
     saveProjects();
   }
   if (project.awaitingOutput && !selectedOutput) {
@@ -700,7 +762,7 @@ function finishOutputProcessing(project, renderWhenReady = true) {
   const active = activeProjectId === project.id && !$('#composer').hidden;
   if (active) richEditor.close();
   for (const output of projectOutputs(project)) {
-    if (ids.has(output.id)) { output.status = 'ready'; output.processedAt = Date.now(); populateOutputContent(output); }
+    if (ids.has(output.id)) { output.status = 'ready'; delete output.needsRegeneration; output.processedAt = Date.now(); populateOutputContent(output); }
   }
   const latestCreated = projectOutputs(project).find(output => output.id === job.openOutputId && outputIsReady(output)) || projectOutputs(project).filter(output => ids.has(output.id) && outputIsReady(output)).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))[0];
   if (latestCreated) { project.selectedOutputId = latestCreated.id; project.viewOriginalDraft = false; }
@@ -1062,12 +1124,9 @@ function markVariantSentToCms(projectId) {
   const project = projects.find(entry => entry.id === projectId);
   const variant = projectOutputs(project).find(output => output.id === project?.selectedOutputId && outputIsReady(output));
   if (!variant) { notify('Select a generated variant to send to CMS.'); return; }
-  if (Number.isFinite(variant.cmsSentAt) && variant.cmsSentAt > 0) {
-    notify('Demo: this variant is already marked as sent to CMS.');
-    openExperienceFeedback(project, variant);
-    return;
-  }
+  if (!richEditor.canSend()) return;
   variant.cmsSentAt = Date.now();
+  variant.cmsSentContent = richEditor.markSent();
   project.updatedAt = variant.cmsSentAt;
   const saved = saveProjects();
   editorTabs.render(project);

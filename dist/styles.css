@@ -830,3 +830,14 @@ button:disabled:not(.output-open):not(.output-selection-button) { color: var(--c
 .ql-snow .ql-tooltip input[type="text"],
 .ql-snow .ql-tooltip a.ql-action::after,
 .ql-container.ql-snow { border-color: var(--line); }
+
+/* Source actions stay aligned with each source title. */
+#editor-source-list { overflow-x: hidden; }
+#editor-source-list li:not(.editor-sources-empty) { position: relative; }
+#editor-source-list .editor-source-content { padding-right: 30px; }
+#editor-source-list .editor-source-more { position: absolute; top: -10px; right: 0; color: var(--color-neutral-400); }
+.editor-source-more svg { width: 18px; height: 18px; }
+.editor-source-menu { position: fixed; z-index: 45; min-width: 140px; padding: 6px; border: 1px solid var(--line); border-radius: 12px; background: white; box-shadow: 0 8px 28px #17171714; }
+.editor-source-menu button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; padding: 8px 10px; border: 0; border-radius: 8px; background: white; color: var(--color-red-700); text-align: left; font: inherit; font-size: 14px; }
+.editor-source-menu button:hover { background: var(--icon-hover-background); }
+.editor-source-menu svg { width: 18px; height: 18px; }

@@ -45,6 +45,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   let project = null;
   let loading = false;
   let dirty = false;
+  let sentContent = null;
   let saveTimer;
   let selection = { index: 0, length: 0 };
   let linkSelection = selection;
@@ -68,8 +69,30 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
 
   function resizeTitle() { title.style.height = 'auto'; title.style.height = `${Math.max(44, title.scrollHeight)}px`; }
 
+  function contentSignature() {
+    const ops = quill.getContents().ops.map(op => ({
+      insert: op.insert,
+      ...(op.attributes ? { attributes: Object.fromEntries(Object.entries(op.attributes).sort(([a], [b]) => a.localeCompare(b))) } : {}),
+    }));
+    return JSON.stringify([title.value.trim() || 'Untitled story', ops]);
+  }
+
+  function canSend() {
+    return Boolean(project?.selectedOutputId && project.status !== 'pending' && !project.needsRegeneration && quill && (sentContent === null || contentSignature() !== sentContent));
+  }
+
+  function updateSendButton() {
+    const button = $('#editor-wordpress');
+    button.disabled = !canSend();
+    button.title = !project?.selectedOutputId ? 'Select a generated variant to send to CMS'
+      : project.status === 'pending' || project.needsRegeneration ? 'Create this variant again to apply its updated settings before sending.'
+      : button.disabled ? 'This version has been sent. Edit the title or content to send an update.'
+        : 'Send this variant to CMS (demo)';
+  }
+
   function scheduleSave() {
     if (!project || loading) return;
+    updateSendButton();
     dirty = true;
     status.textContent = 'Saving…';
     clearTimeout(saveTimer);
@@ -86,6 +109,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       metadata: { ...project.metadata, ...storyMetadata() },
       toolPreferences: Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, $(`#composer-${key}`).value])),
       updatedAt: Date.now(),
+      ...(sentContent !== null ? { cmsSentContent: sentContent } : {}),
     };
     const saved = onSave(snapshot);
     dirty = saved === false;
@@ -313,7 +337,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   });
   $('#editor-print').addEventListener('click', () => { $('#editor-download').open = false; flush(); window.print(); });
   $('#editor-wordpress').addEventListener('click', () => {
-    if (!project) return;
+    if (!canSend()) return;
     flush();
     onSendToCms(project.id);
   });
@@ -333,10 +357,11 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       flush(); project = next; loading = true; root.hidden = false;
       initialize();
       title.value = next.title === 'Untitled story' ? '' : next.title;
-      $('#editor-wordpress').disabled = !next.selectedOutputId;
-      $('#editor-wordpress').title = next.selectedOutputId ? 'Send this variant to CMS (demo)' : 'Select a generated variant to send to CMS';
       const document = savedDocument(next.document);
       if (document) quill.setContents(document, 'silent'); else quill.setText(typeof next.draftText === 'string' ? next.draftText : '', 'silent');
+      sentContent = Number.isFinite(next.cmsSentAt) && next.cmsSentAt > 0
+        ? (typeof next.cmsSentContent === 'string' ? next.cmsSentContent : contentSignature()) : null;
+      updateSendButton();
       quill.history.clear(); selection = { index: 0, length: 0 }; findIndex = -1;
       $('#editor-find-text').value = ''; $('#editor-replace-text').value = '';
       status.textContent = 'Saved on this device'; status.classList.remove('editor-save-error');
@@ -349,6 +374,12 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     close() { flush(); project = null; root.hidden = true; setPanel('', false); if (linkDialog.open) linkDialog.close(); $('#editor-download').open = false; },
     closePanels() { setPanel('', false); },
     hasContent() { return Boolean(project && quill && quill.getText().replace(/[\s\u200B-\u200D\uFEFF]/gu, '')); },
+    canSend,
+    markSent() {
+      sentContent = contentSignature();
+      updateSendButton();
+      return sentContent;
+    },
     flush,
   };
 }

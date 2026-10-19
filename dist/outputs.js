@@ -229,7 +229,7 @@ export function renderOutputs(project) {
     const item = document.createElement('li');
     const card = document.createElement('article');
     const ready = outputIsReady(output);
-    const active = ready && project.selectedOutputId === output.id;
+    const active = Boolean((ready || output.needsRegeneration) && project.selectedOutputId === output.id);
     const selected = ready ? active : selectedIds.has(output.id);
     card.className = 'output-card';
     card.dataset.selected = String(selected);

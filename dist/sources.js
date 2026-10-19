@@ -5,11 +5,58 @@ function sourceUrl(value) {
   } catch { return null; }
 }
 
-export function createProjectSources({ onSelectionChange, onDownloadSource, onAddSource }) {
+export function createProjectSources({ onSelectionChange, onDownloadSource, onAddSource, onRemoveSource }) {
   const list = document.querySelector('#editor-source-list');
   const status = document.querySelector('#editor-source-selection-status');
   const add = document.querySelector('#editor-add-source-button');
   let project = null;
+  let menuTarget = null;
+  const menu = document.createElement('div');
+  menu.id = 'editor-source-menu';
+  menu.className = 'editor-source-menu';
+  menu.setAttribute('role', 'menu');
+  menu.setAttribute('aria-label', 'Source actions');
+  menu.hidden = true;
+  const remove = document.createElement('button');
+  remove.type = 'button';
+  remove.setAttribute('role', 'menuitem');
+  remove.innerHTML = '<svg aria-hidden="true"><use href="#icon-delete-project"/></svg><span>Delete</span>';
+  menu.append(remove);
+  list.parentElement.append(menu);
+
+  function closeMenu(restoreFocus = false) {
+    const button = menuTarget?.button;
+    menuTarget = null;
+    menu.hidden = true;
+    button?.setAttribute('aria-expanded', 'false');
+    if (restoreFocus && button?.isConnected) button.focus({ preventScroll: true });
+  }
+
+  function openMenu(source, button) {
+    if (menuTarget?.button === button) { closeMenu(true); return; }
+    closeMenu();
+    menuTarget = { source, button, projectId: project.id };
+    button.setAttribute('aria-expanded', 'true');
+    menu.hidden = false;
+    const anchor = button.getBoundingClientRect();
+    const bounds = menu.getBoundingClientRect();
+    menu.style.left = `${Math.max(12, Math.min(anchor.right - bounds.width, window.innerWidth - bounds.width - 12))}px`;
+    menu.style.top = `${Math.max(12, Math.min(anchor.bottom + 4, window.innerHeight - bounds.height - 12))}px`;
+    remove.focus({ preventScroll: true });
+  }
+  remove.addEventListener('click', () => {
+    const target = menuTarget;
+    closeMenu();
+    if (target) onRemoveSource(target.projectId, target.source);
+  });
+  menu.addEventListener('keydown', event => {
+    if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeMenu(true); }
+    else if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) { event.preventDefault(); remove.focus(); }
+    else if (event.key === 'Tab') closeMenu(true);
+  });
+  document.addEventListener('pointerdown', event => { if (menuTarget && !menu.contains(event.target) && !menuTarget.button.contains(event.target)) closeMenu(); });
+  document.addEventListener('scroll', event => { if (menuTarget && !menu.contains(event.target)) closeMenu(); }, true);
+  window.addEventListener('resize', () => closeMenu());
   const previewDialog = document.querySelector('#article-preview-dialog');
   let previewTrigger = null;
   previewDialog.addEventListener('close', () => {
@@ -60,6 +107,7 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
 
   return {
     render(next) {
+      closeMenu();
       project = next;
       add.disabled = !project;
       list.replaceChildren();
@@ -112,6 +160,17 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
           content.append(download);
         }
         row.append(checkbox, content);
+        const more = document.createElement('button');
+        more.type = 'button';
+        more.className = 'icon-button editor-source-more';
+        more.setAttribute('aria-label', `Source options: ${source.title}`);
+        more.setAttribute('aria-haspopup', 'menu');
+        more.setAttribute('aria-expanded', 'false');
+        more.setAttribute('aria-controls', menu.id);
+        more.innerHTML = '<svg aria-hidden="true"><use href="#icon-more"/></svg>';
+        more.addEventListener('click', () => openMenu(source, more));
+        more.addEventListener('keydown', event => { if (['ArrowDown', 'ArrowUp'].includes(event.key)) { event.preventDefault(); openMenu(source, more); } });
+        row.append(more);
         list.append(row);
       }
     },

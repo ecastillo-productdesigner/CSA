@@ -5252,9 +5252,9 @@
       "type": "dimension",
       "layer": "component",
       "category": "editor-toolbar",
-      "value": "8px",
-      "reference": "foundation.space.8",
-      "description": "Inner vertical space of the compact toolbar.",
+      "value": "4px",
+      "reference": "foundation.space.4",
+      "description": "User-requested 4 px top and bottom padding of the compact toolbar.",
       "status": "approved-update"
     }
   ]

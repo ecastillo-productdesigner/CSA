@@ -366,5 +366,5 @@
   --csa-component-editor-toolbar-inset-desktop: 38px;
   --csa-component-editor-toolbar-inset-mobile: var(--csa-foundation-space-16);
   --csa-component-editor-toolbar-padding-inline: var(--csa-foundation-space-14);
-  --csa-component-editor-toolbar-padding-block: var(--csa-foundation-space-8);
+  --csa-component-editor-toolbar-padding-block: var(--csa-foundation-space-4);
 }

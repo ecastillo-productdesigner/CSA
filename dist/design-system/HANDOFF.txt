@@ -66,6 +66,8 @@ COMPONENT CONTRACTS
   Open dropdown, profile, and project menus: 10 px corner radius,
     including the mobile profile menu.
   Profile and project name labels: Inter 14 px, weight 600.
+  Editorial Direction fields start at two rows, with padding and
+    borders added to the current line height. They remain resizable.
   Navigation: hover and active surfaces use neutral gray #f5f5f5,
     with dark gray #404040 labels and icons. Variant hearts retain pink without a persistent circle.
   Profile menu: neutral gray #f5f5f5 hover and focus surface.

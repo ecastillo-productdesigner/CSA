@@ -743,7 +743,7 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
 .composer-direction { margin-top: var(--csa-foundation-space-24); }
 .results-direction label, .composer-direction label { color: var(--heading); display: block; margin-bottom: var(--csa-foundation-space-10); font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-600); }
 .results-direction label span, .composer-direction label span { color: var(--muted); font-weight: var(--csa-foundation-font-weight-400); }
-.results-direction textarea, .composer-direction textarea { display: block; width: 100%; min-height: 72px; max-height: 280px; resize: vertical; padding: var(--csa-foundation-space-10) var(--csa-foundation-space-14); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-10); background: var(--csa-foundation-color-neutral-0); color: var(--ink); font: inherit; font-size: var(--csa-foundation-font-size-14); line-height: 1.6; }
+.results-direction textarea, .composer-direction textarea { display: block; width: 100%; min-height: calc(3.2em + var(--csa-foundation-space-20) + 2 * var(--csa-foundation-border-width-1)); max-height: 280px; resize: vertical; padding: var(--csa-foundation-space-10) var(--csa-foundation-space-14); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-10); background: var(--csa-foundation-color-neutral-0); color: var(--ink); font: inherit; font-size: var(--csa-foundation-font-size-14); line-height: 1.6; }
 .results-actions { display: flex; gap: var(--csa-foundation-space-12); justify-content: center; margin: 22px auto 0; width: min(375px, 100%); }
 .draft-button { display: grid; place-items: center; flex: 1; height: var(--button-height); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-10); background: var(--csa-foundation-color-neutral-0); color: var(--ink); font-size: var(--csa-foundation-font-size-16); font-weight: var(--csa-foundation-font-weight-700); }
 .draft-button:not(:disabled) { background: var(--color-button-primary); border-color: var(--line); color: var(--csa-foundation-color-neutral-0); }
@@ -802,7 +802,6 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
   .output-placeholder p { font-size: var(--csa-foundation-font-size-16); }
   .results-toolbar { flex-wrap: wrap; gap: var(--csa-foundation-space-10); }
   .results-toolbar-actions { margin-left: auto; gap: var(--csa-foundation-space-12); }
-  .results-direction textarea { min-height: 90px; }
 }
 @media (max-width: 370px) {
   main { padding-right: var(--csa-foundation-space-14); padding-left: 72px; }
@@ -883,7 +882,7 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
   body.showing-results .results-filter-panel input { min-height: 44px; font-size: var(--csa-foundation-font-size-16); }
   body.showing-results .results-filter-panel .text-button { min-height: 44px; font-size: var(--csa-foundation-font-size-13); }
   body.showing-results .results-direction { margin-top: var(--csa-foundation-space-24); }
-  body.showing-results .results-direction textarea { min-height: 96px; font-size: var(--csa-foundation-font-size-16); }
+  body.showing-results .results-direction textarea { font-size: var(--csa-foundation-font-size-16); }
   body.showing-results .results-actions { width: 100%; margin-top: var(--csa-foundation-space-16); }
 
   .new-project-dialog { width: min(420px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); padding: var(--csa-foundation-space-24) var(--csa-foundation-space-20) var(--csa-foundation-space-20); border-radius: var(--csa-foundation-radius-16); overflow-y: auto; overscroll-behavior: contain; }
@@ -922,7 +921,7 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
   body.showing-composer .mobile-panel-heading .icon-button svg { width: 18px; height: 18px; }
   body.showing-composer .composer-fields { gap: var(--csa-foundation-space-12); margin-top: var(--csa-foundation-space-20); }
   body.showing-composer .composer-fields .tool-dropdown-trigger { height: 46px; }
-  body.showing-composer .composer-direction textarea { min-height: 96px; font-size: var(--csa-foundation-font-size-16); }
+  body.showing-composer .composer-direction textarea { font-size: var(--csa-foundation-font-size-16); }
   body.showing-composer .composer-outputs .output-list { flex: 1; overflow-y: auto; }
   body.showing-composer .sidebar .sources-panel { position: fixed; z-index: var(--csa-foundation-layer-18); top: 82px; right: 10px; bottom: auto; left: 10px; width: auto; max-height: calc(100dvh - 98px); margin: 0; padding: var(--csa-foundation-space-12) var(--csa-foundation-space-6); overflow-y: auto; overscroll-behavior: contain; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-10); background: var(--csa-foundation-color-neutral-0); box-shadow: var(--csa-semantic-shadow-mobile-panel); }
   body.showing-composer .mobile-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--csa-foundation-space-12); padding: 0 var(--csa-foundation-space-10) var(--csa-foundation-space-10); }
@@ -960,7 +959,7 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
 .output-edit-voice-field { margin-top: var(--csa-foundation-space-14); }
 .output-edit-voice-control { position: relative; display: block; width: 100%; }
 .output-edit-voice-control .tool-dropdown-trigger { background: var(--csa-foundation-color-neutral-0); font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-600); }
-.output-edit-menu textarea { min-height: 88px; max-height: 30svh; padding: var(--csa-foundation-space-10); line-height: 1.5; }
+.output-edit-menu textarea { min-height: calc(3em + var(--csa-foundation-space-20) + 2 * var(--csa-foundation-border-width-1)); max-height: 30svh; padding: var(--csa-foundation-space-10); line-height: 1.5; }
 .output-edit-actions { display: flex; justify-content: flex-end; gap: var(--csa-foundation-space-10); margin-top: var(--csa-foundation-space-18); }
 
 @media print { .output-edit-menu { display: none !important; } }

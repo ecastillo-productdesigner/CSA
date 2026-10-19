@@ -947,6 +947,7 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
 .output-edit-menu .field-optional { font-weight: var(--csa-foundation-font-weight-400); }
 .output-edit-menu input, .output-edit-menu select, .output-edit-menu textarea { width: 100%; min-width: 0; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-10); background: var(--csa-foundation-color-neutral-50); color: var(--ink); font: inherit; font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-400); }
 .output-edit-menu input, .output-edit-menu select { height: 40px; padding: var(--csa-foundation-space-8) var(--csa-foundation-space-10); }
+.output-edit-voice-field { margin-top: var(--csa-foundation-space-14); }
 .output-edit-voice-control { position: relative; display: block; width: 100%; }
 .output-edit-voice-control .tool-dropdown-trigger { background: var(--csa-foundation-color-neutral-0); }
 .output-edit-menu textarea { min-height: 88px; max-height: 30svh; padding: var(--csa-foundation-space-10); line-height: 1.5; }

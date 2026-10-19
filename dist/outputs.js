@@ -21,13 +21,16 @@ export function outputIsSent(output) {
   return Number.isFinite(output?.cmsSentAt) && output.cmsSentAt > 0;
 }
 
-export function createOutputBadges(output) {
+export function createOutputBadges(output, { maxLabelLength = 20 } = {}) {
   return (Array.isArray(output?.labels) ? output.labels : [])
-    .filter(label => label && ['format', 'audience', 'tone', 'voice'].includes(label.key) && typeof label.label === 'string')
+    .filter(label => label && ['format', 'audience', 'voice'].includes(label.key) && typeof label.label === 'string')
     .map(label => {
       const badge = document.createElement('span');
       badge.className = `output-badge output-badge--${label.key}`;
-      badge.textContent = label.label;
+      const characters = Array.from(label.label);
+      badge.textContent = maxLabelLength && characters.length > maxLabelLength ? `${characters.slice(0, maxLabelLength - 1).join('').trimEnd()}…` : label.label;
+      badge.title = label.label;
+      badge.setAttribute('aria-label', label.label);
       return badge;
     });
 }
@@ -216,10 +219,10 @@ export function renderOutputs(project) {
   document.querySelector('.composer-outputs').setAttribute('aria-busy', String(processing));
   const create = document.querySelector('#create-output');
   create.disabled = processing || !selectedPending.length;
-  create.title = processing ? 'Preparing selected outputs' : selectedPending.length ? `Create ${selectedPending.length} selected output${selectedPending.length === 1 ? '' : 's'}` : 'Select at least one pending output';
-  document.querySelector('#create-output-label').textContent = processing ? 'Processing…' : 'Create Output';
+  create.title = processing ? 'Preparing selected variants' : selectedPending.length ? `Create ${selectedPending.length} selected variant${selectedPending.length === 1 ? '' : 's'}` : 'Select at least one pending variant';
+  document.querySelector('#create-output-label').textContent = processing ? 'Processing…' : `Create ${selectedPending.length} Variant${selectedPending.length === 1 ? '' : 's'}`;
   document.querySelector('#output-processing-spinner').hidden = !processing;
-  document.querySelector('#output-processing-status').textContent = processing ? 'Processing your selected outputs. This takes about four seconds.' : `${selectedPending.length} pending output${selectedPending.length === 1 ? '' : 's'} selected.`;
+  document.querySelector('#output-processing-status').textContent = processing ? 'Processing your selected variants. This takes about four seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
   document.querySelector('#outputs-empty').hidden = outputs.length > 0;
   list.hidden = outputs.length === 0;
   list.replaceChildren(...[...pendingOutputs, ...createdOutputs].map((output, index) => {
@@ -237,15 +240,15 @@ export function renderOutputs(project) {
     open.className = 'output-open';
     open.dataset.outputId = output.id;
     open.disabled = !ready && processing;
-    open.setAttribute('aria-label', `${!ready ? 'Pending output' : 'Open variant'}: ${output.title}`);
+    open.setAttribute('aria-label', `${!ready ? 'Pending variant' : 'Open variant'}: ${output.title}`);
     open.setAttribute('aria-pressed', String(ready ? active : selected));
-    open.title = !ready ? selected ? 'Unselect this output' : 'Select this output to create it' : active ? 'This variant is open in the editor' : 'Open this variant in the editor';
+    open.title = !ready ? selected ? 'Unselect this variant' : 'Select this variant to create it' : active ? 'This variant is open in the editor' : 'Open this variant in the editor';
     const top = document.createElement('span');
     top.className = 'output-card-top';
     const badges = document.createElement('span');
     badges.className = 'output-badges';
     badges.setAttribute('role', 'group');
-    badges.setAttribute('aria-label', 'Output settings');
+    badges.setAttribute('aria-label', 'Variant settings');
     badges.addEventListener('scroll', () => updateBadgeOverflow(badges), { passive: true });
     let drag = null;
     badges.addEventListener('pointerdown', event => {
@@ -273,7 +276,7 @@ export function renderOutputs(project) {
     selection.className = 'output-selection-button';
     selection.dataset.selectOutput = output.id;
     selection.disabled = processing;
-    selection.setAttribute('aria-label', `${selected ? 'Deselect output' : 'Select output'}: ${output.title}`);
+    selection.setAttribute('aria-label', `${selected ? 'Deselect variant' : 'Select variant'}: ${output.title}`);
     selection.setAttribute('role', 'checkbox');
     selection.setAttribute('aria-checked', String(selected));
     selection.append(indicator);

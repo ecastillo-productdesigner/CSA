@@ -22,7 +22,8 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
   const controls = [...document.querySelectorAll('.composer-field, .results-sort-field')].map(field => {
     const select = field.querySelector('select');
     const label = field.dataset.label;
-    const key = select.id.replace('composer-', '');
+    const key = select.id.replace(/^(composer-|output-edit-)/, '');
+    const floating = select.id === 'output-edit-voice';
     const placeholder = ['format', 'audience', 'voice'].includes(key) ? `Select ${label}` : label;
     const supportsFavorites = ['format', 'audience'].includes(key);
     const plural = key === 'format' ? 'formats' : 'audiences';
@@ -167,6 +168,18 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
       menu.hidden = false;
       field.classList.add('is-open');
       trigger.setAttribute('aria-expanded', 'true');
+      if (floating) {
+        const bounds = trigger.getBoundingClientRect();
+        const below = document.documentElement.clientHeight - bounds.bottom - 12;
+        const above = bounds.top - 12;
+        const opensUp = below < 160 && above > below;
+        menu.style.position = 'fixed';
+        menu.style.left = `${bounds.left}px`;
+        menu.style.right = 'auto';
+        menu.style.width = `${bounds.width}px`;
+        menu.style.maxHeight = `${Math.max(80, Math.min(360, opensUp ? above : below))}px`;
+        menu.style.top = `${opensUp ? Math.max(12, bounds.top - menu.getBoundingClientRect().height - 8) : bounds.bottom + 8}px`;
+      }
       const selected = rows[select.selectedIndex];
       (selected && !selected.row.hidden ? selected.button : rows.find(choice => !choice.row.hidden)?.button || savedToggle).focus();
     }
@@ -192,6 +205,10 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
     });
     field.addEventListener('focusout', event => { if (!field.contains(event.relatedTarget)) close(); });
     select.addEventListener('change', refresh);
+    if (floating) {
+      document.addEventListener('scroll', event => { if (!menu.hidden && !menu.contains(event.target)) close(); }, true);
+      window.addEventListener('resize', () => close());
+    }
     refresh();
     return { field, close, refresh };
   });

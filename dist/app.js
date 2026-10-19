@@ -5,13 +5,13 @@ import { createMaterialEditor } from './editor.js?v=20261017-disabled-sent';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261018-project-delete';
 import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
 import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261018-search-preview';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261018-selection-prompts';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261018-variant-controls';
 import { createRailNavigation } from './navigation.js?v=20261018-nav-tooltips';
 import { createProjectSources } from './sources.js?v=20261017-disabled-sent';
-import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261018-editor-labels';
+import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261018-variant-controls';
 import { createEditorTabs } from './editor-tabs.js?v=20261017-disabled-sent';
-import { createOutputSettings } from './output-settings.js?v=20261017-disabled-sent';
-import { createOutputPresets } from './output-presets.js?v=20261017-disabled-sent';
+import { createOutputSettings } from './output-settings.js?v=20261018-variant-controls';
+import { createOutputPresets } from './output-presets.js?v=20261018-variant-controls';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -76,7 +76,7 @@ let dashboard = null;
 const outputTimers = new Map();
 const toolDropdowns = createToolDropdowns({ notify });
 const outputPresets = createOutputPresets({ onSelect: applyOutputPreset });
-const outputSettings = createOutputSettings({ onSave: saveOutputSettings });
+const outputSettings = createOutputSettings({ onSave: saveOutputSettings, closeDropdowns: toolDropdowns.close });
 const contentPreview = createContentPreview({
   onChange(text) {
     const project = projects.find(entry => entry.id === activeProjectId);
@@ -144,18 +144,16 @@ function renderOutputs(project) {
   labels.hidden = !labels.childElementCount;
 }
 
-function saveOutputSettings({ projectId, outputId, tone, voice, editorialDirection }) {
+function saveOutputSettings({ projectId, outputId, voice, editorialDirection }) {
   richEditor.flush();
   const project = projects.find(entry => entry.id === projectId);
   const output = projectOutputs(project).find(entry => entry.id === outputId);
   if (!output || project.outputProcessing) return false;
-  const before = { tone: output.tone, toolPreferences: output.toolPreferences, labels: output.labels, editorialDirection: output.editorialDirection, updatedAt: output.updatedAt };
+  const before = { toolPreferences: output.toolPreferences, labels: output.labels, editorialDirection: output.editorialDirection, updatedAt: output.updatedAt };
   const projectUpdatedAt = project.updatedAt;
-  output.tone = tone;
   output.toolPreferences = { ...output.toolPreferences, voice };
   output.editorialDirection = editorialDirection;
-  output.labels = (Array.isArray(output.labels) ? output.labels : []).filter(label => label && !['tone', 'voice'].includes(label.key));
-  if (tone) output.labels.push({ key: 'tone', label: tone });
+  output.labels = (Array.isArray(output.labels) ? output.labels : []).filter(label => label && label.key !== 'voice');
   const option = [...$('#composer-voice').options].find(entry => entry.value === voice);
   if (voice && option) output.labels.push({ key: 'voice', label: option.textContent });
   output.updatedAt = project.updatedAt = Date.now();
@@ -191,7 +189,7 @@ function applyOutputPreset(projectId, outputId) {
     select.value = selected?.value || '';
   }
   if (output) {
-    project.variantPreset = { projectId, outputId, title: output.title, tone: typeof output.tone === 'string' ? output.tone : output.labels?.find(label => label.key === 'tone')?.label || '' };
+    project.variantPreset = { projectId, outputId };
     project.editorialDirection = typeof output.editorialDirection === 'string' ? output.editorialDirection : '';
     $('#composer-editorial-direction').value = project.editorialDirection;
   } else delete project.variantPreset;
@@ -580,7 +578,7 @@ function updateComposerActions() {
   if (changed) toolDropdowns.refresh();
   const enabled = hasPreset || (hasContent && ['format', 'audience', 'voice'].some(key => $(`#composer-${key}`).value));
   $('.create-variant').disabled = !enabled;
-  $('.create-variant').title = enabled ? 'Create variant' : !hasContent ? 'Add content or select a preset first' : 'Select a preset, format, audience, or voice to create a variant';
+  $('.create-variant').title = enabled ? 'Add variant' : !hasContent ? 'Add content or select a preset first' : 'Select a preset, format, audience, or voice to add a variant';
 }
 
 function ensureComposerProject(allowEmpty = false) {
@@ -625,10 +623,6 @@ $('.create-variant').addEventListener('click', () => {
   const project = projects.find(entry => entry.id === activeProjectId);
   if (!project || (!selections.length && !project.variantPreset)) return;
   const output = sampleVariant(project, selections);
-  if (project.variantPreset?.tone) {
-    output.tone = project.variantPreset.tone;
-    output.labels.push({ key: 'tone', label: output.tone });
-  }
   delete project.variantPreset;
   project.outputs = [output, ...projectOutputs(project)];
   project.newVariantCollapsed = true;
@@ -641,7 +635,7 @@ $('.create-variant').addEventListener('click', () => {
   const saved = saveProjects();
   renderOutputs(project);
   [...$('#output-list').querySelectorAll('[data-output-id]')].find(button => button.dataset.outputId === output.id)?.focus();
-  if (saved) notify('Variant created.');
+  if (saved) notify('Variant added.');
 });
 
 $('#output-list').addEventListener('click', event => {
@@ -714,7 +708,7 @@ function finishOutputProcessing(project, renderWhenReady = true) {
   saveProjects();
   if (active && renderWhenReady) {
     showEditorProject(project);
-    notify(latestCreated ? 'Output ready. The newest variant is open in the editor.' : 'Output processing finished.');
+    notify(latestCreated ? 'Variant ready. The newest variant is open in the editor.' : 'Variant processing finished.');
   }
 }
 

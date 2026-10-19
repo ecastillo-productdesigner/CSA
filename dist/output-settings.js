@@ -1,7 +1,6 @@
-export function createOutputSettings({ onSave }) {
+export function createOutputSettings({ onSave, closeDropdowns }) {
   const menu = document.querySelector('#output-edit-menu');
   const form = document.querySelector('#output-edit-form');
-  const tone = document.querySelector('#output-edit-tone');
   const voice = document.querySelector('#output-edit-voice');
   const direction = document.querySelector('#output-edit-direction');
   const error = document.querySelector('#output-edit-error');
@@ -12,6 +11,7 @@ export function createOutputSettings({ onSave }) {
   }
 
   function close(restoreFocus = false) {
+    closeDropdowns();
     const button = trigger();
     button?.setAttribute('aria-expanded', 'false');
     active = null;
@@ -39,20 +39,19 @@ export function createOutputSettings({ onSave }) {
     if (active?.projectId === projectId && active.outputId === output.id) { close(true); return; }
     close();
     active = { projectId, outputId: output.id };
-    document.querySelector('#output-edit-context').textContent = output.title;
-    tone.value = typeof output.tone === 'string' ? output.tone : '';
     voice.value = output.toolPreferences?.voice || '';
+    voice.dispatchEvent(new Event('change', { bubbles: true }));
     direction.value = typeof output.editorialDirection === 'string' ? output.editorialDirection : '';
     error.hidden = true;
     menu.hidden = false;
     position();
-    tone.focus({ preventScroll: true });
+    document.querySelector('#output-edit-voice-trigger').focus({ preventScroll: true });
   }
 
   form.addEventListener('submit', event => {
     event.preventDefault();
     if (!active) return;
-    const saved = onSave({ ...active, tone: tone.value.trim(), voice: voice.value, editorialDirection: direction.value });
+    const saved = onSave({ ...active, voice: voice.value, editorialDirection: direction.value });
     if (saved) close(true);
     else { error.textContent = 'Changes could not be saved. Please try again.'; error.hidden = false; position(); }
   });

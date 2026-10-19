@@ -5,10 +5,21 @@ function sourceUrl(value) {
   } catch { return null; }
 }
 
-export function createProjectSources({ onSelectionChange, onDownloadSource, onAddSource, onRemoveSource }) {
+export function createProjectSources({ onSelectionChange, onDownloadSource, onAddSource, onRemoveSource, onVariantContextChange = () => {} }) {
   const list = document.querySelector('#editor-source-list');
   const status = document.querySelector('#editor-source-selection-status');
   const add = document.querySelector('#editor-add-source-button');
+  const context = document.createElement('div');
+  context.className = 'editor-source-variant-context';
+  context.hidden = true;
+  const contextText = document.createElement('span');
+  const showAll = document.createElement('button');
+  showAll.className = 'text-button';
+  showAll.type = 'button';
+  showAll.textContent = 'Show all sources';
+  context.append(contextText, showAll);
+  add.after(context);
+  let visibleSources = [];
   let project = null;
   let menuTarget = null;
   const menu = document.createElement('div');
@@ -98,81 +109,88 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
 
 
   function updateSelectionStatus() {
-    const sources = project?.sources || [];
+    const sources = visibleSources;
     const selected = sources.filter(source => source.selected !== false).length;
     status.textContent = sources.length ? `${selected} of ${sources.length} selected for new variants` : '';
   }
 
   add.addEventListener('click', () => { if (project) onAddSource(project.id); });
+  showAll.addEventListener('click', () => render(project));
 
-  return {
-    render(next) {
-      closeMenu();
-      project = next;
-      add.disabled = !project;
-      list.replaceChildren();
-      updateSelectionStatus();
-      const sources = project?.sources || [];
-      if (!sources.length) {
-        const empty = document.createElement('li');
-        empty.className = 'editor-sources-empty';
-        empty.textContent = project ? 'No sources yet. Add a new source to this project.' : 'Open a project to view its sources.';
-        list.append(empty);
+  function render(next, { variant = null } = {}) {
+    closeMenu();
+    project = next;
+    context.hidden = !variant;
+    contextText.textContent = variant ? `${variant.sourceCount || 0} ${variant.sourceCount === 1 ? 'source' : 'sources'} used for this variant` : '';
+    onVariantContextChange(variant?.id || null);
+    const allSources = project?.sources || [];
+    visibleSources = variant ? (variant.sourceSnapshots || []).map(saved => allSources.find(source => saved.attachmentId ? source.attachmentId === saved.attachmentId : source.type === saved.type && source.title === saved.title && source.url === saved.url && source.text === saved.text) || saved) : allSources;
+    add.disabled = !project;
+    list.replaceChildren();
+    updateSelectionStatus();
+    const sources = visibleSources;
+    if (!sources.length) {
+      const empty = document.createElement('li');
+      empty.className = 'editor-sources-empty';
+      empty.textContent = project ? 'No sources yet. Add a new source to this project.' : 'Open a project to view its sources.';
+      list.append(empty);
+    }
+    for (const source of sources) {
+      const row = document.createElement('li');
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.className = 'editor-source-checkbox';
+      checkbox.checked = source.selected !== false;
+      const available = allSources.includes(source);
+      if (!available) { checkbox.checked = true; checkbox.disabled = true; }
+      checkbox.setAttribute('aria-label', `Include source: ${source.title}`);
+      checkbox.addEventListener('change', () => {
+        source.selected = checkbox.checked;
+        updateSelectionStatus();
+        onSelectionChange(project.id);
+      });
+      const content = document.createElement('div');
+      content.className = 'editor-source-content';
+      const href = source.type === 'link' && sourceUrl(source.url || '');
+      const open = document.createElement('button');
+      open.type = 'button';
+      open.className = 'editor-source-open';
+      open.setAttribute('aria-label', `Preview source: ${source.title}`);
+      open.setAttribute('aria-haspopup', 'dialog');
+      open.setAttribute('aria-controls', 'article-preview-dialog');
+      open.addEventListener('click', () => openPreview(source, open));
+      const heading = document.createElement('strong');
+      heading.textContent = source.title;
+      open.append(heading);
+      const preview = source.text || '';
+      const detail = document.createElement('span');
+      detail.className = 'editor-source-preview';
+      detail.textContent = preview ? preview.slice(0, 260) + (preview.length > 260 ? '…' : '') : href || (source.attachmentId ? 'Document saved in this browser' : 'Local source');
+      open.append(detail);
+      content.append(open);
+      if (source.attachmentId) {
+        const download = document.createElement('button');
+        download.type = 'button';
+        download.className = 'text-button document-download';
+        download.textContent = 'Download document';
+        download.setAttribute('aria-label', `Download ${source.title}`);
+        download.addEventListener('click', () => onDownloadSource(source));
+        content.append(download);
       }
-      for (const source of sources) {
-        const row = document.createElement('li');
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.className = 'editor-source-checkbox';
-        checkbox.checked = source.selected !== false;
-        checkbox.setAttribute('aria-label', `Include source: ${source.title}`);
-        checkbox.addEventListener('change', () => {
-          source.selected = checkbox.checked;
-          updateSelectionStatus();
-          onSelectionChange(project.id);
-        });
-        const content = document.createElement('div');
-        content.className = 'editor-source-content';
-        const href = source.type === 'link' && sourceUrl(source.url || '');
-        const open = document.createElement('button');
-        open.type = 'button';
-        open.className = 'editor-source-open';
-        open.setAttribute('aria-label', `Preview source: ${source.title}`);
-        open.setAttribute('aria-haspopup', 'dialog');
-        open.setAttribute('aria-controls', 'article-preview-dialog');
-        open.addEventListener('click', () => openPreview(source, open));
-        const heading = document.createElement('strong');
-        heading.textContent = source.title;
-        open.append(heading);
-        const preview = source.text || '';
-        const detail = document.createElement('span');
-        detail.className = 'editor-source-preview';
-        detail.textContent = preview ? preview.slice(0, 260) + (preview.length > 260 ? '…' : '') : href || (source.attachmentId ? 'Document saved in this browser' : 'Local source');
-        open.append(detail);
-        content.append(open);
-        if (source.attachmentId) {
-          const download = document.createElement('button');
-          download.type = 'button';
-          download.className = 'text-button document-download';
-          download.textContent = 'Download document';
-          download.setAttribute('aria-label', `Download ${source.title}`);
-          download.addEventListener('click', () => onDownloadSource(source));
-          content.append(download);
-        }
-        row.append(checkbox, content);
-        const more = document.createElement('button');
-        more.type = 'button';
-        more.className = 'icon-button editor-source-more';
-        more.setAttribute('aria-label', `Source options: ${source.title}`);
-        more.setAttribute('aria-haspopup', 'menu');
-        more.setAttribute('aria-expanded', 'false');
-        more.setAttribute('aria-controls', menu.id);
-        more.innerHTML = '<svg aria-hidden="true"><use href="#icon-more"/></svg>';
-        more.addEventListener('click', () => openMenu(source, more));
-        more.addEventListener('keydown', event => { if (['ArrowDown', 'ArrowUp'].includes(event.key)) { event.preventDefault(); openMenu(source, more); } });
-        row.append(more);
-        list.append(row);
-      }
-    },
-  };
+      row.append(checkbox, content);
+      const more = document.createElement('button');
+      more.type = 'button';
+      more.className = 'icon-button editor-source-more';
+      more.setAttribute('aria-label', `Source options: ${source.title}`);
+      more.setAttribute('aria-haspopup', 'menu');
+      more.setAttribute('aria-expanded', 'false');
+      more.setAttribute('aria-controls', menu.id);
+      more.innerHTML = '<svg aria-hidden="true"><use href="#icon-more"/></svg>';
+      more.addEventListener('click', () => openMenu(source, more));
+      more.addEventListener('keydown', event => { if (['ArrowDown', 'ArrowUp'].includes(event.key)) { event.preventDefault(); openMenu(source, more); } });
+      if (available) row.append(more);
+      list.append(row);
+    }
+  }
+  return { render };
 }

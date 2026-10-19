@@ -1,4 +1,4 @@
-export function createRailNavigation({ onSourcesOpen, onOpen }) {
+export function createRailNavigation({ onSourcesOpen, onSourcesClose, onOpen }) {
   const panels = {
     sources: { trigger: document.querySelector('#show-sources'), panel: document.querySelector('#editor-sources') },
     profile: { trigger: document.querySelector('#show-profile'), panel: document.querySelector('#profile-menu') },
@@ -35,6 +35,7 @@ export function createRailNavigation({ onSourcesOpen, onOpen }) {
     const { trigger, panel } = panels[name];
     panel.hidden = true;
     trigger.setAttribute('aria-expanded', 'false');
+    if (name === 'sources') onSourcesClose?.();
     if (active === name) active = null;
     if (restoreFocus) trigger.focus({ preventScroll: true });
   }
@@ -89,7 +90,7 @@ export function createRailNavigation({ onSourcesOpen, onOpen }) {
   for (const button of document.querySelectorAll('[data-close-navigation]')) button.addEventListener('click', () => close(button.dataset.closeNavigation, true));
   document.addEventListener('pointerdown', event => {
     if (document.querySelector('dialog[open]')) return;
-    if (drawerOpen && !sidebar.contains(event.target)) setDrawer(false);
+    if (drawerOpen && !sidebar.contains(event.target) && !event.target.closest('[data-variant-sources]')) setDrawer(false);
   });
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape' || event.defaultPrevented || document.querySelector('dialog[open]')) return;
@@ -97,5 +98,5 @@ export function createRailNavigation({ onSourcesOpen, onOpen }) {
     if (active) { event.preventDefault(); close(active, true); }
     else if (drawerOpen) { event.preventDefault(); setDrawer(false, true); }
   });
-  return { close, open };
+  return { close, open, closeDrawer: () => setDrawer(false) };
 }

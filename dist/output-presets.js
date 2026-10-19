@@ -1,4 +1,4 @@
-import { projectOutputs, createOutputBadges } from './outputs.js?v=20261018-dash-spacing';
+import { projectOutputs, createOutputBadges } from './outputs.js?v=20261018-variant-source-panel';
 
 export function createOutputPresets({ onSelect }) {
   const root = document.querySelector('#output-presets');
@@ -89,7 +89,7 @@ export function createOutputPresets({ onSelect }) {
         button.setAttribute('aria-label', settings.map(setting => `${setting.key[0].toUpperCase() + setting.key.slice(1)}: ${setting.label}`).join(', ') || summaryFor(output, settings));
         const choices = document.createElement('span');
         choices.className = 'output-preset-settings';
-        if (settings.length) choices.append(...createOutputBadges({ labels: settings }, { maxLabelLength: 20 }));
+        if (settings.length) choices.append(...createOutputBadges({ labels: settings }, { maxLabelLength: 20, includeSourceCount: false }));
         else choices.textContent = summaryFor(output, settings);
         button.append(choices);
         if (output.editorialDirection?.trim() && settings.length) {

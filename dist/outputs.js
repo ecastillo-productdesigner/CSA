@@ -21,8 +21,13 @@ export function outputIsSent(output) {
   return Number.isFinite(output?.cmsSentAt) && output.cmsSentAt > 0;
 }
 
-export function createOutputBadges(output, { maxLabelLength = 20 } = {}) {
-  return (Array.isArray(output?.labels) ? output.labels : [])
+export function outputSourceCount(output) {
+  if (Number.isInteger(output?.sourceCount) && output.sourceCount >= 0) return output.sourceCount;
+  return new Set((Array.isArray(output?.selectedSourceIndexes) ? output.selectedSourceIndexes : []).filter(index => Number.isInteger(index) && index >= 0)).size;
+}
+
+export function createOutputBadges(output, { maxLabelLength = 20, includeSourceCount = true } = {}) {
+  const badges = (Array.isArray(output?.labels) ? output.labels : [])
     .filter(label => label && ['format', 'audience', 'voice'].includes(label.key) && typeof label.label === 'string')
     .map(label => {
       const badge = document.createElement('span');
@@ -33,6 +38,27 @@ export function createOutputBadges(output, { maxLabelLength = 20 } = {}) {
       badge.setAttribute('aria-label', label.label);
       return badge;
     });
+  if (output && includeSourceCount) {
+    const count = outputSourceCount(output);
+    const label = `${count} ${count === 1 ? 'source' : 'sources'}`;
+    const badge = document.createElement('button');
+    badge.type = 'button';
+    badge.className = 'output-badge output-badge--sources';
+    badge.dataset.variantSources = output.id;
+    badge.setAttribute('aria-controls', 'editor-sources');
+    badge.setAttribute('aria-expanded', 'false');
+    badge.title = label;
+    badge.setAttribute('aria-label', `View ${label} used for this variant`);
+    const icon = document.createElement('span');
+    icon.className = 'material-symbols-outlined';
+    icon.setAttribute('aria-hidden', 'true');
+    icon.textContent = 'folder_open';
+    const text = document.createElement('span');
+    text.textContent = label;
+    badge.append(icon, text);
+    badges.push(badge);
+  }
+  return badges;
 }
 
 export function selectedOutputs(project) {
@@ -193,6 +219,7 @@ export function sampleVariant(project, selections) {
   const used = new Set(projectOutputs(project).map(output => output.title));
   const available = sampleHeadlines.filter(title => !used.has(title));
   const choices = available.length ? available : sampleHeadlines;
+  const selectedSourceIndexes = (project.sources || []).flatMap((source, index) => source.selected !== false ? [index] : []);
   return {
     id: crypto.randomUUID(),
     title: choices[Math.floor(Math.random() * choices.length)],
@@ -200,7 +227,9 @@ export function sampleVariant(project, selections) {
     status: 'pending',
     labels: selections.map(({ key, label }) => ({ key, label })),
     toolPreferences: Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, selections.find(selection => selection.key === key)?.value || ''])),
-    selectedSourceIndexes: (project.sources || []).flatMap((source, index) => source.selected !== false ? [index] : []),
+    selectedSourceIndexes,
+    sourceCount: selectedSourceIndexes.length,
+    sourceSnapshots: selectedSourceIndexes.map(index => structuredClone(project.sources[index])),
     editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '',
     draftText: '',
     metadata: { author: '', tags: '' },
@@ -229,7 +258,8 @@ export function renderOutputs(project) {
     const item = document.createElement('li');
     const card = document.createElement('article');
     const ready = outputIsReady(output);
-    const active = Boolean((ready || output.needsRegeneration) && project.selectedOutputId === output.id);
+    const active = Boolean(((ready || output.needsRegeneration) && project.selectedOutputId === output.id)
+      || (project.viewOriginalDraft && !ready && project.lastPendingOutputId === output.id && selectedIds.has(output.id)));
     const selected = ready ? active : selectedIds.has(output.id);
     card.className = 'output-card';
     card.dataset.selected = String(selected);
@@ -254,7 +284,7 @@ export function renderOutputs(project) {
     open.disabled = !ready && processing;
     open.setAttribute('aria-label', `${!ready ? 'Pending variant' : 'Open variant'}: ${output.title}`);
     open.setAttribute('aria-pressed', String(ready ? active : selected));
-    open.title = !ready ? selected ? 'Unselect this variant' : 'Select this variant to create it' : active ? 'This variant is open in the editor' : 'Open this variant in the editor';
+    open.title = !ready ? output.needsRegeneration ? 'Open this variant in the editor' : 'View content preview for this variant' : active ? 'This variant is open in the editor' : 'Open this variant in the editor';
     const top = document.createElement('span');
     top.className = 'output-card-top';
     const badges = document.createElement('span');
@@ -264,6 +294,7 @@ export function renderOutputs(project) {
     badges.addEventListener('scroll', () => updateBadgeOverflow(badges), { passive: true });
     let drag = null;
     badges.addEventListener('pointerdown', event => {
+      if (event.target.closest('[data-variant-sources]')) return;
       if (event.pointerType !== 'mouse' || event.button !== 0 || badges.scrollWidth <= badges.clientWidth + 1) return;
       drag = { pointerId: event.pointerId, x: event.clientX, scrollLeft: badges.scrollLeft };
       badges.setPointerCapture(event.pointerId);

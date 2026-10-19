@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261017-disabled-sent';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261018-variant-source-panel';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');
@@ -16,7 +16,6 @@ export function createEditorTabs({ onSelect }) {
   new ResizeObserver(revealSelected).observe(root);
 
   function select(tab) {
-    if (tab.getAttribute('aria-selected') === 'true') return;
     onSelect(tab.dataset.editorOutput || null);
     const current = root.querySelector('[aria-selected="true"]');
     current?.focus({ preventScroll: true });
@@ -39,9 +38,11 @@ export function createEditorTabs({ onSelect }) {
 
   return {
     render(project) {
-      const outputs = projectOutputs(project).filter(output => outputIsReady(output) || output.needsRegeneration);
-      const activeId = outputs.some(output => output.id === project?.selectedOutputId) ? project.selectedOutputId : outputs[0]?.id;
-      const nextSignature = JSON.stringify([project?.id, activeId, outputs.map(({ id, title, cmsSentAt }) => [id, title, cmsSentAt])]);
+      const allOutputs = projectOutputs(project);
+      const outputs = allOutputs.filter(output => outputIsReady(output) || output.needsRegeneration);
+      const showCreateTab = Boolean(project?.viewOriginalDraft || allOutputs.some(output => output.id === project?.lastPendingOutputId && !outputIsReady(output)));
+      const activeId = project?.viewOriginalDraft ? null : outputs.some(output => output.id === project?.selectedOutputId) ? project.selectedOutputId : outputs[0]?.id;
+      const nextSignature = JSON.stringify([project?.id, activeId, showCreateTab, outputs.map(({ id, title, cmsSentAt }) => [id, title, cmsSentAt])]);
       if (signature === nextSignature) return;
       signature = nextSignature;
       root.hidden = !outputs.length;
@@ -52,30 +53,45 @@ export function createEditorTabs({ onSelect }) {
         panel.removeAttribute('aria-labelledby');
         return;
       }
-      const entries = outputs;
-      root.replaceChildren(...entries.map(({ id, title, cmsSentAt }) => {
+      const entries = [...(showCreateTab ? [{ id: null, title: 'Create Variant', preview: true }] : []), ...outputs];
+      root.replaceChildren(...entries.map(({ id, title, cmsSentAt, preview }) => {
         const sent = outputIsSent({ cmsSentAt });
         const status = sent ? 'Sent' : 'Draft';
         const tab = document.createElement('button');
         tab.type = 'button';
         tab.id = `editor-tab-${id || 'original'}`;
-        tab.dataset.editorOutput = id;
+        tab.dataset.editorOutput = id || '';
         tab.setAttribute('role', 'tab');
         tab.setAttribute('aria-controls', panel.id);
         tab.setAttribute('aria-selected', String(id === activeId));
         tab.tabIndex = id === activeId ? 0 : -1;
         tab.setAttribute('aria-label', title);
-        const badge = document.createElement('span');
-        badge.className = 'editor-tab-draft';
-        badge.setAttribute('aria-hidden', 'true');
-        badge.textContent = status;
-        badge.dataset.sent = String(sent);
-        tab.setAttribute('aria-description', status);
+        if (!preview) {
+          const badge = document.createElement('span');
+          badge.className = 'editor-tab-draft';
+          badge.setAttribute('aria-hidden', 'true');
+          if (sent) {
+            const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+            use.setAttribute('href', '#icon-sent');
+            icon.append(use);
+            badge.append(icon);
+          } else {
+            const icon = document.createElement('span');
+            icon.className = 'material-symbols-outlined';
+            icon.textContent = 'draw';
+            badge.append(icon);
+          }
+          badge.append(document.createTextNode(status));
+          badge.dataset.sent = String(sent);
+          tab.append(badge);
+        }
+        tab.setAttribute('aria-description', preview ? 'Content preview for creating variants' : status);
         const label = document.createElement('span');
         label.className = 'editor-tab-title';
         label.textContent = title;
-        tab.append(badge, label);
-        tab.title = `${title} · ${status}`;
+        tab.append(label);
+        tab.title = preview ? title : `${title} · ${status}`;
         return tab;
       }));
       panel.setAttribute('role', 'tabpanel');

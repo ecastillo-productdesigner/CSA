@@ -69,9 +69,6 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
       severity.value = feedback.severity || '';
       description.value = typeof feedback.description === 'string' ? feedback.description.slice(0, 500) : '';
       comments.value = typeof feedback.comments === 'string' ? feedback.comments : '';
-      const title = document.querySelector('#feedback-draft-title');
-      title.textContent = variant.title || 'Untitled variant';
-      title.title = title.textContent;
       form.hidden = false;
       complete.hidden = true;
       error.hidden = true;

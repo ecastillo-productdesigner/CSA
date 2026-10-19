@@ -1,4 +1,4 @@
-import { createVariantFeedback } from './variant-feedback.js?v=20261018-feedback-report';
+import { createVariantFeedback } from './variant-feedback.js?v=20261018-connected-sources';
 import { createProfile } from './profile.js?v=20261017-disabled-sent';
 import { createSearchExperience } from './search.js?v=20261018-content-preview';
 import { createDashboard } from './dashboard.js?v=20261018-feedback-report';
@@ -7,12 +7,12 @@ import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js
 import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
 import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261018-search-preview';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261018-feedback-report';
-import { createRailNavigation } from './navigation.js?v=20261018-nav-tooltips';
-import { createProjectSources } from './sources.js?v=20261018-source-actions';
-import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261018-dash-spacing';
-import { createEditorTabs } from './editor-tabs.js?v=20261018-active-revision';
+import { createRailNavigation } from './navigation.js?v=20261018-connected-sources';
+import { createProjectSources } from './sources.js?v=20261018-connected-sources';
+import { projectOutputs, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261018-variant-source-panel';
+import { createEditorTabs } from './editor-tabs.js?v=20261018-status-icons';
 import { createOutputSettings } from './output-settings.js?v=20261018-variant-controls';
-import { createOutputPresets } from './output-presets.js?v=20261018-dash-spacing';
+import { createOutputPresets } from './output-presets.js?v=20261018-variant-source-panel';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -72,6 +72,7 @@ let uploadContext = 'material';
 let materialBusy = false;
 let toastTimer;
 let toastAction = null;
+let sourcePanelOutputId = null;
 let dashboard = null;
 const outputTimers = new Map();
 const toolDropdowns = createToolDropdowns({ notify });
@@ -91,6 +92,7 @@ const contentPreview = createContentPreview({
 });
 const editorTabs = createEditorTabs({ onSelect: openEditorTab });
 const projectSourcesPanel = createProjectSources({
+  onVariantContextChange(outputId) { sourcePanelOutputId = outputId; syncSourceBadges(); },
   onRemoveSource: removeProjectSource,
   onDownloadSource: downloadSource,
   onSelectionChange(projectId) {
@@ -102,6 +104,7 @@ const projectSourcesPanel = createProjectSources({
 });
 const railNavigation = createRailNavigation({
   onSourcesOpen() { projectSourcesPanel.render(projects.find(project => project.id === activeProjectId && project.kind === 'draft') || null); },
+  onSourcesClose() { sourcePanelOutputId = null; syncSourceBadges(); },
   onOpen: () => { toolDropdowns.close(); outputPresets.close(); outputSettings.close(); richEditor.closePanels(); },
 });
 createProfile({
@@ -145,6 +148,12 @@ function renderOutputs(project) {
   const labels = $('#editor-variant-labels');
   labels.replaceChildren(...createOutputBadges(selectedOutput));
   labels.hidden = !labels.childElementCount;
+  syncSourceBadges();
+}
+
+function syncSourceBadges() {
+  const open = $('#show-sources').getAttribute('aria-expanded') === 'true';
+  for (const button of document.querySelectorAll('[data-variant-sources]')) button.setAttribute('aria-expanded', String(open && button.dataset.variantSources === sourcePanelOutputId));
 }
 
 function removeProjectSource(projectId, source) {
@@ -199,20 +208,23 @@ function saveOutputSettings({ projectId, outputId, voice, editorialDirection }) 
   const output = projectOutputs(project).find(entry => entry.id === outputId);
   if (!output || project.outputProcessing) return false;
   if ((output.toolPreferences?.voice || '') === voice && (output.editorialDirection || '') === editorialDirection) return true;
+  const hasCreatedContent = outputIsReady(output) || Boolean(output.needsRegeneration && (output.draftText?.trim() || output.document?.ops?.some(op => typeof op.insert === 'string' && op.insert.trim())));
   const before = structuredClone(output);
-  const projectBefore = { updatedAt: project.updatedAt, selectedOutputId: project.selectedOutputId, selectedOutputIds: project.selectedOutputIds };
+  const projectBefore = { updatedAt: project.updatedAt, selectedOutputId: project.selectedOutputId, selectedOutputIds: project.selectedOutputIds, viewOriginalDraft: project.viewOriginalDraft, lastPendingOutputId: project.lastPendingOutputId };
   output.toolPreferences = { ...output.toolPreferences, voice };
   output.editorialDirection = editorialDirection;
   output.labels = (Array.isArray(output.labels) ? output.labels : []).filter(label => label && label.key !== 'voice');
   const option = [...$('#composer-voice').options].find(entry => entry.value === voice);
   if (voice && option) output.labels.push({ key: 'voice', label: option.textContent });
   output.status = 'pending';
-  output.needsRegeneration = true;
+  output.needsRegeneration = hasCreatedContent;
   delete output.processedAt;
   delete output.cmsSentAt;
   delete output.cmsSentContent;
   project.selectedOutputIds = [output.id];
-  project.selectedOutputId = output.id;
+  project.selectedOutputId = hasCreatedContent ? output.id : null;
+  project.viewOriginalDraft = !hasCreatedContent;
+  project.lastPendingOutputId = output.id;
   output.updatedAt = project.updatedAt = Date.now();
   if (!saveProjects()) {
     for (const key of Object.keys(output)) delete output[key];
@@ -229,8 +241,21 @@ function saveOutputSettings({ projectId, outputId, voice, editorialDirection }) 
 function openEditorTab(outputId) {
   richEditor.flush();
   const project = projects.find(entry => entry.id === activeProjectId);
-  if (!project || !projectOutputs(project).some(output => output.id === outputId && (outputIsReady(output) || output.needsRegeneration))) return;
-  project.selectedOutputIds = [...new Set([...selectedOutputs(project).map(output => output.id), outputId])];
+  if (project && !outputId) {
+    const selected = selectedPendingOutputs(project);
+    const pending = projectOutputs(project).filter(output => !outputIsReady(output));
+    const target = pending.find(output => output.id === project.lastPendingOutputId) || selected[0] || pending[0];
+    project.selectedOutputIds = [...new Set([...selected.map(output => output.id), ...(target ? [target.id] : [])])];
+    project.lastPendingOutputId = target?.id || null;
+    project.selectedOutputId = null;
+    project.viewOriginalDraft = true;
+    saveProjects();
+    showEditorProject(project);
+    return;
+  }
+  const output = projectOutputs(project).find(output => output.id === outputId && (outputIsReady(output) || output.needsRegeneration));
+  if (!project || !output) return;
+  project.selectedOutputIds = outputIsReady(output) ? [outputId] : [...new Set([...selectedPendingOutputs(project).map(output => output.id), outputId])];
   project.selectedOutputId = outputId;
   project.viewOriginalDraft = false;
   saveProjects();
@@ -269,7 +294,13 @@ function loadProjects() {
   try {
     const saved = JSON.parse(localStorage.getItem(storageKey) || '[]');
     if (!Array.isArray(saved)) return [];
-    return saved.filter((project) => project && typeof project.id === 'string' && typeof project.title === 'string' && Number.isFinite(project.createdAt) && Array.isArray(project.sources) && project.sources.every((source) => source && ['link', 'search', 'file', 'text'].includes(source.type) && typeof source.title === 'string' && (source.text === undefined || typeof source.text === 'string') && (source.url === undefined || typeof source.url === 'string')));
+    return saved.filter((project) => project && typeof project.id === 'string' && typeof project.title === 'string' && Number.isFinite(project.createdAt) && Array.isArray(project.sources) && project.sources.every((source) => source && ['link', 'search', 'file', 'text'].includes(source.type) && typeof source.title === 'string' && (source.text === undefined || typeof source.text === 'string') && (source.url === undefined || typeof source.url === 'string'))).map(project => {
+      for (const output of projectOutputs(project)) {
+        output.sourceCount = outputSourceCount(output);
+        if (!Array.isArray(output.sourceSnapshots)) output.sourceSnapshots = (Array.isArray(output.selectedSourceIndexes) ? output.selectedSourceIndexes : []).map(index => project.sources[index]).filter(Boolean).map(source => structuredClone(source));
+      }
+      return project;
+    });
   } catch {
     return [];
   }
@@ -550,6 +581,15 @@ function renderSourceStory(project) {
     $('#output-placeholder').scrollTop = 0;
     return;
   }
+  if (project.viewOriginalDraft) {
+    const originalText = Array.isArray(project.document?.ops)
+      ? project.document.ops.map(op => typeof op?.insert === 'string' ? op.insert : '').join('') : project.draftText || '';
+    if (originalText.trim()) {
+      contentPreview.render({ text: `# ${project.title}\n\n${originalText.trim()}` }, { readOnly: true });
+      $('#output-placeholder').scrollTop = 0;
+      return;
+    }
+  }
   contentPreview.hide();
   let story;
   if (latestOutput) {
@@ -581,15 +621,15 @@ function showEditorProject(project) {
   $('#composer').hidden = false;
   resumeOutputProcessing(project, false);
   const readyOutputs = projectOutputs(project).filter(outputIsReady);
-  const selectedOutput = projectOutputs(project).find(output => output.id === project.selectedOutputId && (outputIsReady(output) || output.needsRegeneration)) || readyOutputs[0];
+  const selectedOutput = project.viewOriginalDraft ? null : projectOutputs(project).find(output => output.id === project.selectedOutputId && (outputIsReady(output) || output.needsRegeneration)) || readyOutputs[0];
   if (selectedOutput) {
     project.selectedOutputId = selectedOutput.id;
     project.viewOriginalDraft = false;
-    project.selectedOutputIds = [...new Set([...selectedOutputs(project).map(output => output.id), selectedOutput.id])];
+    project.selectedOutputIds = outputIsReady(selectedOutput) ? [selectedOutput.id] : [...new Set([...selectedPendingOutputs(project).map(output => output.id), selectedOutput.id])];
     if (outputIsReady(selectedOutput)) populateOutputContent(selectedOutput);
     saveProjects();
   }
-  if (project.awaitingOutput && !selectedOutput) {
+  if (project.viewOriginalDraft || (project.awaitingOutput && !selectedOutput)) {
     $('#composer').classList.add('has-output');
     $('#composer-heading').textContent = 'Story workspace';
     renderSourceStory(project);
@@ -686,6 +726,7 @@ $('.create-variant').addEventListener('click', () => {
   const project = projects.find(entry => entry.id === activeProjectId);
   if (!project || (!selections.length && !project.variantPreset)) return;
   const output = sampleVariant(project, selections);
+  project.lastPendingOutputId = output.id;
   delete project.variantPreset;
   project.outputs = [output, ...projectOutputs(project)];
   project.newVariantCollapsed = true;
@@ -704,6 +745,8 @@ $('.create-variant').addEventListener('click', () => {
 $('#output-list').addEventListener('click', event => {
   const project = projects.find(entry => entry.id === activeProjectId);
   if (!project) return;
+  const sources = event.target.closest('[data-variant-sources]');
+  if (sources) { openVariantSources(sources); return; }
   const edit = event.target.closest('[data-edit-output]');
   if (edit) {
     if (project.outputProcessing) return;
@@ -739,17 +782,46 @@ $('#output-list').addEventListener('click', event => {
   if (selection || !outputIsReady(output)) {
     if (project.outputProcessing && !outputIsReady(output)) return;
     richEditor.flush();
-    const selectedIds = new Set(selectedOutputs(project).map(entry => entry.id));
-    if (selectedIds.has(output.id)) selectedIds.delete(output.id);
+    const selectedIds = new Set(selectedPendingOutputs(project).map(entry => entry.id));
+    if (selection && selectedIds.has(output.id)) selectedIds.delete(output.id);
     else selectedIds.add(output.id);
     project.selectedOutputIds = [...selectedIds];
+    const activating = selectedIds.has(output.id);
+    if (activating) {
+      project.viewOriginalDraft = !output.needsRegeneration;
+      project.selectedOutputId = output.needsRegeneration ? output.id : null;
+      project.lastPendingOutputId = output.id;
+    } else if (project.lastPendingOutputId === output.id) {
+      project.lastPendingOutputId = selectedPendingOutputs(project)[0]?.id || null;
+    }
     saveProjects();
-    renderOutputs(project);
+    if (activating) showEditorProject(project);
+    else renderOutputs(project);
     const selector = selection ? '[data-select-output]' : '[data-output-id]';
     [...$('#output-list').querySelectorAll(selector)].find(button => (button.dataset.selectOutput || button.dataset.outputId) === output.id)?.focus({ preventScroll: true });
     return;
   }
   openEditorTab(output.id);
+});
+
+function openVariantSources(button) {
+  if (button.getAttribute('aria-expanded') === 'true') { railNavigation.closeDrawer(); return; }
+  richEditor.flush();
+  outputSettings.close();
+  outputPresets.close();
+  toolDropdowns.close();
+  const project = projects.find(entry => entry.id === activeProjectId);
+  const output = projectOutputs(project).find(output => output.id === button.dataset.variantSources);
+  if (project && output) {
+    railNavigation.open('sources');
+    projectSourcesPanel.render(project, { variant: output });
+    syncSourceBadges();
+    $('#editor-add-source-button').focus({ preventScroll: true });
+  }
+}
+$('#editor-variant-labels').addEventListener('click', event => {
+  const button = event.target.closest('[data-variant-sources]');
+  if (button) openVariantSources(button);
 });
 
 function finishOutputProcessing(project, renderWhenReady = true) {

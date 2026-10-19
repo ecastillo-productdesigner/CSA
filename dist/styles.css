@@ -190,7 +190,7 @@ main:focus { outline: none; }
 .editor-tab-draft { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; gap: 6px; min-height: 28px; padding: 2px 8px; border-radius: 2px; background: var(--draft-background); color: var(--ink); font-size: 12px; line-height: 20px; font-weight: 700; text-transform: uppercase; }
 .editor-tab-draft > svg, .editor-tab-draft > .material-symbols-outlined { flex-shrink: 0; width: 18px; height: 18px; font-size: 18px; line-height: 1; }
 .editor-tab-draft[data-sent="true"] { background: var(--color-green-200); color: var(--ink); white-space: nowrap; }
-.editor-tab-draft[data-sent="true"] > svg { color: var(--color-green-600); }
+.editor-tab-draft[data-sent="true"] > svg { width: 16px; height: 16px; }
 .editor-tab-title { color: var(--muted); flex: 1; min-width: 0; overflow: hidden; font-size: 15px; line-height: 22px; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
 .has-variant-tabs .material-editor { height: calc(100svh - 20px - var(--editor-tabs-height)); padding-top: 0; }
 .has-variant-tabs .editor-sheet { border-top: 0; border-radius: 0 0 15px 15px; box-shadow: none; }

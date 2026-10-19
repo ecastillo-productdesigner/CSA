@@ -45,8 +45,8 @@ COMPONENT CONTRACTS
   Primary action: #3b82f6, hover #2563eb, 46 px height,
     Inter 16 / 20, weight 700. General radius 10 px;
     workspace panel action radius 11 px.
-  Rename and profile/variant settings actions: Inter 12 px, weight 600,
-    matching their Cancel labels.
+  Rename, profile/variant settings, and feedback footer actions: Inter 12 px, weight 600,
+    matching their Cancel labels. Optional markers use #a3a3a3 at weight 400.
   Disabled actions: white background and #a3a3a3 text.
     Disabled icon buttons keep a transparent background.
   Format chip: #ffe4e6; Audience: #eef2ff; Voice: #ffedd5.

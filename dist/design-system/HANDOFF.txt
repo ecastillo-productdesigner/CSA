@@ -4,7 +4,7 @@ Extracted 2026-10-19 from CSA app source baa4775.
 SOURCE OF TRUTH
   dist/design-system/tokens.json
   Three layers: foundation > semantic > component.
-  311 tokens in DTCG 2025.10-compatible JSON.
+  298 tokens in DTCG 2025.10-compatible JSON.
   Every token includes a type, description, and observed status.
   observed-exception retains a component-specific existing value.
   approved-update identifies the requested compact toolbar additions.
@@ -45,7 +45,8 @@ COMPONENT CONTRACTS
   Primary action: #3b82f6, hover #2563eb, 46 px height,
     Inter 16 / 20, weight 700. General radius 10 px;
     workspace panel action radius 10 px.
-    The former foundation.radius.11 token is consolidated into radius.10.
+    Radius primitives: 2, 4, 8, 10, 16, 20, and 999 px.
+    Components reference these primitives through aliases.
   Rename, profile/variant settings, and feedback footer actions: Inter 12 px, weight 600,
     matching their Cancel labels. Optional markers use #a3a3a3 at weight 400.
   Disabled actions: white background and #a3a3a3 text.
@@ -95,8 +96,13 @@ DESIGN TOOL IMPORT
   No native Figma file is included.
 
 SCOPE / REVIEW
-  This extracts the current light theme without visual normalization.
-  Existing nearby values and unusual radii remain marked as exceptions.
+  The light theme retains its extracted palette and typography.
+  Corner radii use the approved seven-value scale. Compact details use
+    2/4 px, variant cards 8 px, controls and menus 10 px, popovers and
+    mobile project cards 16 px, dialogs and desktop project cards 20 px,
+    and pills/circles 999 px.
+  Consolidated radii: 5/6 -> 4; 7 -> 8; 9/12 -> 10;
+    14/15/17 -> 16; 18/21/22/23/30 -> 20.
   Shared declarations in the product stylesheet now consume tokens.
   Layout-specific geometry and CSS query literals are retained.
   Muted text #a3a3a3 on white and white on primary #3b82f6 are below

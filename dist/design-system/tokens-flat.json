@@ -2436,8 +2436,8 @@
       "category": "radius",
       "value": "2px",
       "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed"
+      "description": "Approved corner radius primitive.",
+      "status": "approved-update"
     },
     {
       "name": "foundation.radius.4",
@@ -2448,44 +2448,8 @@
       "category": "radius",
       "value": "4px",
       "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed-exception"
-    },
-    {
-      "name": "foundation.radius.5",
-      "designName": "foundation/radius/5",
-      "cssVariable": "--csa-foundation-radius-5",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "radius",
-      "value": "5px",
-      "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed-exception"
-    },
-    {
-      "name": "foundation.radius.6",
-      "designName": "foundation/radius/6",
-      "cssVariable": "--csa-foundation-radius-6",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "radius",
-      "value": "6px",
-      "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed-exception"
-    },
-    {
-      "name": "foundation.radius.7",
-      "designName": "foundation/radius/7",
-      "cssVariable": "--csa-foundation-radius-7",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "radius",
-      "value": "7px",
-      "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed-exception"
+      "description": "Approved corner radius primitive.",
+      "status": "approved-update"
     },
     {
       "name": "foundation.radius.8",
@@ -2496,20 +2460,8 @@
       "category": "radius",
       "value": "8px",
       "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.radius.9",
-      "designName": "foundation/radius/9",
-      "cssVariable": "--csa-foundation-radius-9",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "radius",
-      "value": "9px",
-      "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed-exception"
+      "description": "Approved corner radius primitive.",
+      "status": "approved-update"
     },
     {
       "name": "foundation.radius.10",
@@ -2520,44 +2472,8 @@
       "category": "radius",
       "value": "10px",
       "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.radius.12",
-      "designName": "foundation/radius/12",
-      "cssVariable": "--csa-foundation-radius-12",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "radius",
-      "value": "12px",
-      "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.radius.14",
-      "designName": "foundation/radius/14",
-      "cssVariable": "--csa-foundation-radius-14",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "radius",
-      "value": "14px",
-      "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed-exception"
-    },
-    {
-      "name": "foundation.radius.15",
-      "designName": "foundation/radius/15",
-      "cssVariable": "--csa-foundation-radius-15",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "radius",
-      "value": "15px",
-      "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed"
+      "description": "Approved corner radius primitive.",
+      "status": "approved-update"
     },
     {
       "name": "foundation.radius.16",
@@ -2568,32 +2484,8 @@
       "category": "radius",
       "value": "16px",
       "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.radius.17",
-      "designName": "foundation/radius/17",
-      "cssVariable": "--csa-foundation-radius-17",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "radius",
-      "value": "17px",
-      "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed-exception"
-    },
-    {
-      "name": "foundation.radius.18",
-      "designName": "foundation/radius/18",
-      "cssVariable": "--csa-foundation-radius-18",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "radius",
-      "value": "18px",
-      "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed-exception"
+      "description": "Approved corner radius primitive.",
+      "status": "approved-update"
     },
     {
       "name": "foundation.radius.20",
@@ -2604,56 +2496,8 @@
       "category": "radius",
       "value": "20px",
       "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed-exception"
-    },
-    {
-      "name": "foundation.radius.21",
-      "designName": "foundation/radius/21",
-      "cssVariable": "--csa-foundation-radius-21",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "radius",
-      "value": "21px",
-      "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.radius.22",
-      "designName": "foundation/radius/22",
-      "cssVariable": "--csa-foundation-radius-22",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "radius",
-      "value": "22px",
-      "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.radius.23",
-      "designName": "foundation/radius/23",
-      "cssVariable": "--csa-foundation-radius-23",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "radius",
-      "value": "23px",
-      "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed-exception"
-    },
-    {
-      "name": "foundation.radius.30",
-      "designName": "foundation/radius/30",
-      "cssVariable": "--csa-foundation-radius-30",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "radius",
-      "value": "30px",
-      "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed-exception"
+      "description": "Approved corner radius primitive.",
+      "status": "approved-update"
     },
     {
       "name": "foundation.radius.999",
@@ -2664,8 +2508,8 @@
       "category": "radius",
       "value": "999px",
       "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed"
+      "description": "Fully rounded corners for pills and circular controls.",
+      "status": "approved-update"
     },
     {
       "name": "foundation.border.width.1",
@@ -4151,9 +3995,9 @@
       "layer": "component",
       "category": "button",
       "value": "10px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
+      "reference": "foundation.radius.10",
+      "description": "Component radius mapped to the approved foundation scale.",
+      "status": "approved-update"
     },
     {
       "name": "component.button.panel-radius",
@@ -4164,7 +4008,7 @@
       "category": "button",
       "value": "10px",
       "reference": "foundation.radius.10",
-      "description": "User-requested 10 px radius, matching the general button radius.",
+      "description": "Component radius mapped to the approved foundation scale.",
       "status": "approved-update"
     },
     {
@@ -4399,9 +4243,9 @@
       "layer": "component",
       "category": "field",
       "value": "10px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
+      "reference": "foundation.radius.10",
+      "description": "Component radius mapped to the approved foundation scale.",
+      "status": "approved-update"
     },
     {
       "name": "component.field.background",
@@ -4489,9 +4333,9 @@
       "layer": "component",
       "category": "status",
       "value": "2px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
+      "reference": "foundation.radius.2",
+      "description": "Component radius mapped to the approved foundation scale.",
+      "status": "approved-update"
     },
     {
       "name": "component.status.padding-inline",
@@ -4613,9 +4457,9 @@
       "layer": "component",
       "category": "chip",
       "value": "999px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
+      "reference": "foundation.radius.999",
+      "description": "Component radius mapped to the approved foundation scale.",
+      "status": "approved-update"
     },
     {
       "name": "component.chip.format.background",
@@ -4736,10 +4580,10 @@
       "type": "dimension",
       "layer": "component",
       "category": "project-card",
-      "value": "21px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
+      "value": "20px",
+      "reference": "foundation.radius.20",
+      "description": "Component radius mapped to the approved foundation scale.",
+      "status": "approved-update"
     },
     {
       "name": "component.project-card.radius.mobile",
@@ -4749,9 +4593,9 @@
       "layer": "component",
       "category": "project-card",
       "value": "16px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
+      "reference": "foundation.radius.16",
+      "description": "Component radius mapped to the approved foundation scale.",
+      "status": "approved-update"
     },
     {
       "name": "component.project-card.padding",
@@ -4773,9 +4617,9 @@
       "layer": "component",
       "category": "variant-card",
       "value": "8px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
+      "reference": "foundation.radius.8",
+      "description": "Component radius mapped to the approved foundation scale.",
+      "status": "approved-update"
     },
     {
       "name": "component.variant-card.selected-background",
@@ -4863,9 +4707,9 @@
       "layer": "component",
       "category": "checkbox",
       "value": "2px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
+      "reference": "foundation.radius.2",
+      "description": "Component radius mapped to the approved foundation scale.",
+      "status": "approved-update"
     },
     {
       "name": "component.checkbox.selected-background",
@@ -4930,10 +4774,10 @@
       "type": "dimension",
       "layer": "component",
       "category": "dialog",
-      "value": "22px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
+      "value": "20px",
+      "reference": "foundation.radius.20",
+      "description": "Component radius mapped to the approved foundation scale.",
+      "status": "approved-update"
     },
     {
       "name": "component.dialog.radius.mobile",
@@ -4943,9 +4787,9 @@
       "layer": "component",
       "category": "dialog",
       "value": "16px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
+      "reference": "foundation.radius.16",
+      "description": "Component radius mapped to the approved foundation scale.",
+      "status": "approved-update"
     },
     {
       "name": "component.popover.width",
@@ -4967,9 +4811,9 @@
       "layer": "component",
       "category": "popover",
       "value": "16px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
+      "reference": "foundation.radius.16",
+      "description": "Component radius mapped to the approved foundation scale.",
+      "status": "approved-update"
     },
     {
       "name": "component.navigation.rail-width",
@@ -5194,7 +5038,7 @@
       "category": "editor-toolbar",
       "value": "10px",
       "reference": "foundation.radius.10",
-      "description": "User-requested 10 px corner radius, matching dropdown fields and menus.",
+      "description": "Component radius mapped to the approved foundation scale.",
       "status": "approved-update"
     },
     {
@@ -5254,7 +5098,7 @@
       "category": "dropdown",
       "value": "10px",
       "reference": "foundation.radius.10",
-      "description": "User-requested 10 px corner radius for open dropdown menus.",
+      "description": "Component radius mapped to the approved foundation scale.",
       "status": "approved-update"
     }
   ]

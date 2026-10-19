@@ -9,7 +9,7 @@ import { createToolDropdowns } from './tool-dropdowns.js?v=20261018-variant-cont
 import { createRailNavigation } from './navigation.js?v=20261018-nav-tooltips';
 import { createProjectSources } from './sources.js?v=20261017-disabled-sent';
 import { projectOutputs, sampleVariant, outputIsReady, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261018-variant-controls';
-import { createEditorTabs } from './editor-tabs.js?v=20261017-disabled-sent';
+import { createEditorTabs } from './editor-tabs.js?v=20261018-tab-order';
 import { createOutputSettings } from './output-settings.js?v=20261018-variant-controls';
 import { createOutputPresets } from './output-presets.js?v=20261018-variant-controls';
 

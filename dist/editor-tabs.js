@@ -39,7 +39,7 @@ export function createEditorTabs({ onSelect }) {
 
   return {
     render(project) {
-      const outputs = projectOutputs(project).filter(outputIsReady).reverse();
+      const outputs = projectOutputs(project).filter(outputIsReady);
       const activeId = outputs.some(output => output.id === project?.selectedOutputId) ? project.selectedOutputId : outputs[0]?.id;
       const nextSignature = JSON.stringify([project?.id, activeId, outputs.map(({ id, title, cmsSentAt }) => [id, title, cmsSentAt])]);
       if (signature === nextSignature) return;

@@ -227,7 +227,8 @@ main:focus { outline: none; }
 .tool-dropdown-toolbar button, .tool-option-favorite { display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; padding: 8px; border: 0; border-radius: 50%; background: transparent; color: var(--ink); }
 .tool-dropdown-toolbar svg, .tool-option-favorite svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .tool-dropdown-toolbar button { width: 28px; height: 28px; min-width: 28px; min-height: 28px; padding: 6px; --icon-circle: radial-gradient(circle closest-side, var(--icon-circle-color) calc(100% - .75px), transparent) center / 28px 28px no-repeat; }
-.tool-saved-toggle svg { fill: currentColor; }
+.tool-saved-toggle svg { fill: none; }
+.tool-saved-toggle[aria-pressed="true"] svg { fill: currentColor; }
 .tool-saved-toggle:hover, .tool-saved-toggle[aria-pressed="true"] { --icon-circle-color: #edf0f5; background: var(--icon-circle); }
 .tool-filter-placeholder:disabled { color: var(--muted); }
 .tool-filter-placeholder svg { stroke-width: 2.5; stroke-linecap: square; }
@@ -652,7 +653,7 @@ select:focus-visible { outline: 3px solid #99abc6; outline-offset: 3px; }
 .results-direction { margin-top: 28px; }
 .composer-direction { margin-top: 24px; }
 .results-direction label, .composer-direction label { color: var(--heading); display: block; margin-bottom: 10px; font-size: 14px; font-weight: 650; }
-.results-direction label span, .composer-direction label span { color: var(--muted); font-weight: 500; }
+.results-direction label span, .composer-direction label span { color: var(--muted); font-weight: 400; }
 .results-direction textarea, .composer-direction textarea { display: block; width: 100%; min-height: 72px; max-height: 280px; resize: vertical; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: white; color: var(--ink); font: inherit; font-size: 14px; line-height: 1.6; }
 .results-actions { display: flex; gap: 12px; justify-content: center; margin: 22px auto 0; width: min(375px, 100%); }
 .draft-button { display: grid; place-items: center; flex: 1; height: var(--button-height); border: 1px solid var(--line); border-radius: 11px; background: white; color: var(--ink); font-size: 16px; font-weight: 700; }

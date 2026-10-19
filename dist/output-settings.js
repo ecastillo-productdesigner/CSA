@@ -1,3 +1,5 @@
+import { outputName } from './outputs.js?v=20261019-independent-variant-names';
+
 export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
   const menu = document.querySelector('#output-edit-menu');
   const form = document.querySelector('#output-edit-form');
@@ -45,7 +47,7 @@ export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
     close();
     active = { projectId, outputId: output.id };
     triggerContainer = container;
-    name.value = output.title;
+    name.value = outputName(output);
     voice.value = output.toolPreferences?.voice || '';
     voice.dispatchEvent(new Event('change', { bubbles: true }));
     direction.value = typeof output.editorialDirection === 'string' ? output.editorialDirection : '';
@@ -66,9 +68,9 @@ export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
   form.addEventListener('submit', event => {
     event.preventDefault();
     if (!active) return;
-    const title = name.value.trim();
-    if (!title) { error.textContent = 'Enter a variant name.'; error.hidden = false; name.focus(); return; }
-    const saved = onSave({ ...active, title, voice: voice.value, editorialDirection: direction.value });
+    const variantName = name.value.trim();
+    if (!variantName) { error.textContent = 'Enter a variant name.'; error.hidden = false; name.focus(); return; }
+    const saved = onSave({ ...active, name: variantName, voice: voice.value, editorialDirection: direction.value });
     if (saved) close(true);
     else { error.textContent = 'Changes could not be saved. Please try again.'; error.hidden = false; position(); }
   });

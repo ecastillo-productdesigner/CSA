@@ -1,19 +1,19 @@
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261019-card-selection-name';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261019-independent-variant-names';
 import { createVariantFeedback } from './variant-feedback.js?v=20261018-connected-sources';
-import { createProfile } from './profile.js?v=20261019-card-selection-name';
-import { createSearchExperience } from './search.js?v=20261019-card-selection-name';
-import { createDashboard } from './dashboard.js?v=20261019-card-selection-name';
+import { createProfile } from './profile.js?v=20261019-independent-variant-names';
+import { createSearchExperience } from './search.js?v=20261019-independent-variant-names';
+import { createDashboard } from './dashboard.js?v=20261019-independent-variant-names';
 import { createMaterialEditor } from './editor.js?v=20261018-active-revision';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261018-project-delete';
 import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
 import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261018-search-preview';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261019-card-selection-name';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261019-independent-variant-names';
 import { createRailNavigation } from './navigation.js?v=20261019-mobile-workspace';
 import { createProjectSources } from './sources.js?v=20261018-variant-source-selection';
-import { projectOutputs, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, createOutputEditButton, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261019-editor-variant-edit';
-import { createEditorTabs } from './editor-tabs.js?v=20261018-status-icons';
-import { createOutputSettings } from './output-settings.js?v=20261019-card-selection-name';
-import { createOutputPresets } from './output-presets.js?v=20261019-card-selection-name';
+import { projectOutputs, outputName, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, createOutputEditButton, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261019-independent-variant-names';
+import { createEditorTabs } from './editor-tabs.js?v=20261019-independent-variant-names';
+import { createOutputSettings } from './output-settings.js?v=20261019-independent-variant-names';
+import { createOutputPresets } from './output-presets.js?v=20261019-independent-variant-names';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -129,6 +129,7 @@ const richEditor = createMaterialEditor({
     project.sources = snapshot.sources;
     const output = projectOutputs(project).find(entry => entry.id === project.selectedOutputId);
     if (output) {
+      output.name = outputName(output);
       for (const key of ['title', 'document', 'draftText', 'metadata', 'updatedAt']) output[key] = snapshot[key];
       if (typeof snapshot.cmsSentContent === 'string') output.cmsSentContent = snapshot.cmsSentContent;
       project.toolPreferences = snapshot.toolPreferences;
@@ -235,20 +236,20 @@ function deleteVariant({ projectId, outputId }) {
   return true;
 }
 
-function saveOutputSettings({ projectId, outputId, title, voice, editorialDirection }) {
+function saveOutputSettings({ projectId, outputId, name, voice, editorialDirection }) {
   richEditor.flush();
   const project = projects.find(entry => entry.id === projectId);
   const output = projectOutputs(project).find(entry => entry.id === outputId);
   if (!output || project.outputProcessing) return false;
-  const nextTitle = typeof title === 'string' ? title.trim().slice(0, 180) : output.title;
-  if (!nextTitle) return false;
+  const nextName = typeof name === 'string' ? name.trim().slice(0, 180) : outputName(output);
+  if (!nextName) return false;
   const settingsChanged = (output.toolPreferences?.voice || '') !== voice || (output.editorialDirection || '') !== editorialDirection;
   if (!settingsChanged) {
-    if (output.title === nextTitle) return true;
-    const before = { title: output.title, updatedAt: output.updatedAt, projectUpdatedAt: project.updatedAt };
-    output.title = nextTitle;
+    if (outputName(output) === nextName) return true;
+    const before = { name: output.name, updatedAt: output.updatedAt, projectUpdatedAt: project.updatedAt };
+    output.name = nextName;
     output.updatedAt = project.updatedAt = Date.now();
-    if (!saveProjects()) { output.title = before.title; output.updatedAt = before.updatedAt; project.updatedAt = before.projectUpdatedAt; return false; }
+    if (!saveProjects()) { output.name = before.name; output.updatedAt = before.updatedAt; project.updatedAt = before.projectUpdatedAt; return false; }
     showEditorProject(project);
     notify('Variant renamed.');
     return true;
@@ -256,7 +257,7 @@ function saveOutputSettings({ projectId, outputId, title, voice, editorialDirect
   const hasCreatedContent = outputIsReady(output) || Boolean(output.needsRegeneration && (output.draftText?.trim() || output.document?.ops?.some(op => typeof op.insert === 'string' && op.insert.trim())));
   const before = structuredClone(output);
   const projectBefore = { updatedAt: project.updatedAt, selectedOutputId: project.selectedOutputId, selectedOutputIds: project.selectedOutputIds, viewOriginalDraft: project.viewOriginalDraft, lastPendingOutputId: project.lastPendingOutputId };
-  output.title = nextTitle;
+  output.name = nextName;
   output.toolPreferences = { ...output.toolPreferences, voice };
   output.editorialDirection = editorialDirection;
   output.labels = (Array.isArray(output.labels) ? output.labels : []).filter(label => label && label.key !== 'voice');
@@ -385,6 +386,7 @@ function loadProjects() {
     if (!Array.isArray(saved)) return [];
     return saved.filter((project) => project && typeof project.id === 'string' && typeof project.title === 'string' && Number.isFinite(project.createdAt) && Array.isArray(project.sources) && project.sources.every((source) => source && ['link', 'search', 'file', 'text'].includes(source.type) && typeof source.title === 'string' && (source.text === undefined || typeof source.text === 'string') && (source.url === undefined || typeof source.url === 'string'))).map(project => {
       for (const output of projectOutputs(project)) {
+        output.name = outputName(output);
         output.sourceCount = outputSourceCount(output);
         if (!Array.isArray(output.sourceSnapshots)) output.sourceSnapshots = (Array.isArray(output.selectedSourceIndexes) ? output.selectedSourceIndexes : []).map(index => project.sources[index]).filter(Boolean).map(source => structuredClone(source));
       }

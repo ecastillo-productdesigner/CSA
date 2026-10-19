@@ -1,4 +1,4 @@
-import { projectOutputs, createOutputBadges } from './outputs.js?v=20261018-variant-source-panel';
+import { projectOutputs, createOutputBadges } from './outputs.js?v=20261019-independent-variant-names';
 
 export function createOutputPresets({ onSelect, onDelete }) {
   const root = document.querySelector('#output-presets');

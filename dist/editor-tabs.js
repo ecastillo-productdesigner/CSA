@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261018-variant-source-panel';
+import { projectOutputs, outputIsReady, outputIsSent, outputName } from './outputs.js?v=20261019-independent-variant-names';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');
@@ -42,7 +42,7 @@ export function createEditorTabs({ onSelect }) {
       const outputs = allOutputs.filter(output => outputIsReady(output) || output.needsRegeneration);
       const showCreateTab = Boolean(project?.viewOriginalDraft || allOutputs.some(output => output.id === project?.lastPendingOutputId && !outputIsReady(output)));
       const activeId = project?.viewOriginalDraft ? null : outputs.some(output => output.id === project?.selectedOutputId) ? project.selectedOutputId : outputs[0]?.id;
-      const nextSignature = JSON.stringify([project?.id, activeId, showCreateTab, outputs.map(({ id, title, cmsSentAt }) => [id, title, cmsSentAt])]);
+      const nextSignature = JSON.stringify([project?.id, activeId, showCreateTab, outputs.map(output => [output.id, outputName(output), output.cmsSentAt])]);
       if (signature === nextSignature) return;
       signature = nextSignature;
       root.hidden = !outputs.length;
@@ -54,7 +54,9 @@ export function createEditorTabs({ onSelect }) {
         return;
       }
       const entries = [...(showCreateTab ? [{ id: null, title: 'Create Variant', preview: true }] : []), ...outputs];
-      root.replaceChildren(...entries.map(({ id, title, cmsSentAt, preview }) => {
+      root.replaceChildren(...entries.map(output => {
+        const { id, cmsSentAt, preview } = output;
+        const title = outputName(output);
         const sent = outputIsSent({ cmsSentAt });
         const status = sent ? 'Sent' : 'Draft';
         const tab = document.createElement('button');

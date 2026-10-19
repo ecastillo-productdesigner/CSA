@@ -288,7 +288,7 @@ main:focus { outline: none; }
 .output-card[data-selected="true"] { border-color: var(--line); background: #f8f1ee; }
 .output-card[data-ready="false"] { border-color: transparent; }
 .output-card-dash { position: absolute; inset: -1px; width: calc(100% + 2px); height: calc(100% + 2px); overflow: visible; pointer-events: none; }
-.output-card-dash rect { width: calc(100% - 1px); height: calc(100% - 1px); fill: none; stroke: var(--line); stroke-width: 1px; stroke-dasharray: 4px 4px; }
+.output-card-dash rect { width: calc(100% - 1px); height: calc(100% - 1px); fill: none; stroke: var(--heading); stroke-width: 1px; stroke-dasharray: 4px 4px; }
 .output-open { display: block; width: 100%; padding: 10px; border: 0; border-radius: 7px; background: transparent; color: inherit; text-align: left; }
 .output-open:focus-visible { outline-offset: -3px; }
 .output-open:disabled { color: inherit; opacity: 1; cursor: default; }

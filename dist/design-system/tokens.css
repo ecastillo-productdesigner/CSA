@@ -146,7 +146,6 @@
   --csa-foundation-radius-8: 8px;
   --csa-foundation-radius-9: 9px;
   --csa-foundation-radius-10: 10px;
-  --csa-foundation-radius-11: 11px;
   --csa-foundation-radius-12: 12px;
   --csa-foundation-radius-14: 14px;
   --csa-foundation-radius-15: 15px;
@@ -297,7 +296,7 @@
   --csa-semantic-shadow-input-focus: 0px 0px 0px 3px #4d5d7908;
   --csa-component-button-height: 46px;
   --csa-component-button-radius: 10px;
-  --csa-component-button-panel-radius: 11px;
+  --csa-component-button-panel-radius: var(--csa-foundation-radius-10);
   --csa-component-button-primary-background: var(--csa-semantic-color-action-primary);
   --csa-component-button-primary-hover: var(--csa-semantic-color-action-primary-hover);
   --csa-component-button-primary-label: var(--csa-semantic-color-text-inverse);

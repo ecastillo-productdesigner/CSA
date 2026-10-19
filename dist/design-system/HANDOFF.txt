@@ -4,7 +4,7 @@ Extracted 2026-10-19 from CSA app source baa4775.
 SOURCE OF TRUTH
   dist/design-system/tokens.json
   Three layers: foundation > semantic > component.
-  312 tokens in DTCG 2025.10-compatible JSON.
+  311 tokens in DTCG 2025.10-compatible JSON.
   Every token includes a type, description, and observed status.
   observed-exception retains a component-specific existing value.
   approved-update identifies the requested compact toolbar additions.
@@ -44,7 +44,8 @@ TYPOGRAPHY
 COMPONENT CONTRACTS
   Primary action: #3b82f6, hover #2563eb, 46 px height,
     Inter 16 / 20, weight 700. General radius 10 px;
-    workspace panel action radius 11 px.
+    workspace panel action radius 10 px.
+    The former foundation.radius.11 token is consolidated into radius.10.
   Rename, profile/variant settings, and feedback footer actions: Inter 12 px, weight 600,
     matching their Cancel labels. Optional markers use #a3a3a3 at weight 400.
   Disabled actions: white background and #a3a3a3 text.

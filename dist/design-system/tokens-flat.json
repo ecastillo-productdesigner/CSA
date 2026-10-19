@@ -2524,18 +2524,6 @@
       "status": "observed"
     },
     {
-      "name": "foundation.radius.11",
-      "designName": "foundation/radius/11",
-      "cssVariable": "--csa-foundation-radius-11",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "radius",
-      "value": "11px",
-      "reference": "",
-      "description": "Observed corner radius.",
-      "status": "observed"
-    },
-    {
       "name": "foundation.radius.12",
       "designName": "foundation/radius/12",
       "cssVariable": "--csa-foundation-radius-12",
@@ -4174,10 +4162,10 @@
       "type": "dimension",
       "layer": "component",
       "category": "button",
-      "value": "11px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
+      "value": "10px",
+      "reference": "foundation.radius.10",
+      "description": "User-requested 10 px radius, matching the general button radius.",
+      "status": "approved-update"
     },
     {
       "name": "component.button.primary.background",

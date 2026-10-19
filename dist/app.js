@@ -1,7 +1,7 @@
 import { createVariantFeedback } from './variant-feedback.js?v=20261018-connected-sources';
 import { createProfile } from './profile.js?v=20261017-disabled-sent';
 import { createSearchExperience } from './search.js?v=20261018-content-preview';
-import { createDashboard } from './dashboard.js?v=20261018-feedback-report';
+import { createDashboard } from './dashboard.js?v=20261018-home-sent-plane';
 import { createMaterialEditor } from './editor.js?v=20261018-active-revision';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261018-project-delete';
 import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';

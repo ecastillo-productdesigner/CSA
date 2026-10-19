@@ -1,19 +1,19 @@
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261019-variant-actions';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261019-card-selection-name';
 import { createVariantFeedback } from './variant-feedback.js?v=20261018-connected-sources';
-import { createProfile } from './profile.js?v=20261019-variant-actions';
-import { createSearchExperience } from './search.js?v=20261019-variant-actions';
-import { createDashboard } from './dashboard.js?v=20261019-variant-actions';
+import { createProfile } from './profile.js?v=20261019-card-selection-name';
+import { createSearchExperience } from './search.js?v=20261019-card-selection-name';
+import { createDashboard } from './dashboard.js?v=20261019-card-selection-name';
 import { createMaterialEditor } from './editor.js?v=20261018-active-revision';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261018-project-delete';
 import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
 import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261018-search-preview';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261019-variant-actions';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261019-card-selection-name';
 import { createRailNavigation } from './navigation.js?v=20261019-mobile-workspace';
 import { createProjectSources } from './sources.js?v=20261018-variant-source-selection';
 import { projectOutputs, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, createOutputEditButton, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261019-editor-variant-edit';
 import { createEditorTabs } from './editor-tabs.js?v=20261018-status-icons';
-import { createOutputSettings } from './output-settings.js?v=20261019-variant-actions';
-import { createOutputPresets } from './output-presets.js?v=20261019-variant-actions';
+import { createOutputSettings } from './output-settings.js?v=20261019-card-selection-name';
+import { createOutputPresets } from './output-presets.js?v=20261019-card-selection-name';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -235,15 +235,28 @@ function deleteVariant({ projectId, outputId }) {
   return true;
 }
 
-function saveOutputSettings({ projectId, outputId, voice, editorialDirection }) {
+function saveOutputSettings({ projectId, outputId, title, voice, editorialDirection }) {
   richEditor.flush();
   const project = projects.find(entry => entry.id === projectId);
   const output = projectOutputs(project).find(entry => entry.id === outputId);
   if (!output || project.outputProcessing) return false;
-  if ((output.toolPreferences?.voice || '') === voice && (output.editorialDirection || '') === editorialDirection) return true;
+  const nextTitle = typeof title === 'string' ? title.trim().slice(0, 180) : output.title;
+  if (!nextTitle) return false;
+  const settingsChanged = (output.toolPreferences?.voice || '') !== voice || (output.editorialDirection || '') !== editorialDirection;
+  if (!settingsChanged) {
+    if (output.title === nextTitle) return true;
+    const before = { title: output.title, updatedAt: output.updatedAt, projectUpdatedAt: project.updatedAt };
+    output.title = nextTitle;
+    output.updatedAt = project.updatedAt = Date.now();
+    if (!saveProjects()) { output.title = before.title; output.updatedAt = before.updatedAt; project.updatedAt = before.projectUpdatedAt; return false; }
+    showEditorProject(project);
+    notify('Variant renamed.');
+    return true;
+  }
   const hasCreatedContent = outputIsReady(output) || Boolean(output.needsRegeneration && (output.draftText?.trim() || output.document?.ops?.some(op => typeof op.insert === 'string' && op.insert.trim())));
   const before = structuredClone(output);
   const projectBefore = { updatedAt: project.updatedAt, selectedOutputId: project.selectedOutputId, selectedOutputIds: project.selectedOutputIds, viewOriginalDraft: project.viewOriginalDraft, lastPendingOutputId: project.lastPendingOutputId };
+  output.title = nextTitle;
   output.toolPreferences = { ...output.toolPreferences, voice };
   output.editorialDirection = editorialDirection;
   output.labels = (Array.isArray(output.labels) ? output.labels : []).filter(label => label && label.key !== 'voice');

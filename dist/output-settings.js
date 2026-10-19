@@ -1,6 +1,9 @@
 export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
   const menu = document.querySelector('#output-edit-menu');
   const form = document.querySelector('#output-edit-form');
+  const name = document.querySelector('#output-edit-name');
+  const submit = form.querySelector('[type="submit"]');
+  let initialSettings = {};
   const voice = document.querySelector('#output-edit-voice');
   const direction = document.querySelector('#output-edit-direction');
   const error = document.querySelector('#output-edit-error');
@@ -42,19 +45,30 @@ export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
     close();
     active = { projectId, outputId: output.id };
     triggerContainer = container;
+    name.value = output.title;
     voice.value = output.toolPreferences?.voice || '';
     voice.dispatchEvent(new Event('change', { bubbles: true }));
     direction.value = typeof output.editorialDirection === 'string' ? output.editorialDirection : '';
+    initialSettings = { voice: voice.value, editorialDirection: direction.value };
+    updateSaveLabel();
     error.hidden = true;
     menu.hidden = false;
     position();
     document.querySelector('#output-edit-voice-trigger').focus({ preventScroll: true });
   }
 
+  function updateSaveLabel() {
+    submit.textContent = voice.value !== initialSettings.voice || direction.value !== initialSettings.editorialDirection ? 'Recreate variant' : 'Save changes';
+  }
+  voice.addEventListener('change', updateSaveLabel);
+  direction.addEventListener('input', updateSaveLabel);
+
   form.addEventListener('submit', event => {
     event.preventDefault();
     if (!active) return;
-    const saved = onSave({ ...active, voice: voice.value, editorialDirection: direction.value });
+    const title = name.value.trim();
+    if (!title) { error.textContent = 'Enter a variant name.'; error.hidden = false; name.focus(); return; }
+    const saved = onSave({ ...active, title, voice: voice.value, editorialDirection: direction.value });
     if (saved) close(true);
     else { error.textContent = 'Changes could not be saved. Please try again.'; error.hidden = false; position(); }
   });

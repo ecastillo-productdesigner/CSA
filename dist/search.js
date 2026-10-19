@@ -170,7 +170,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       selection.title = state.selected.has(article.id) ? 'Unselect this story' : 'Select this story for your draft';
       const thumbnail = node('span', `result-thumbnail${article.referenceImage ? ' result-thumbnail--reference' : ''}`);
       thumbnail.setAttribute('aria-hidden', 'true');
-      if (!article.referenceImage) thumbnail.textContent = state.query.split(/\s+/).slice(0, 2).map((word) => word[0]).join('').toUpperCase();
+      if (!article.referenceImage) thumbnail.append(node('span', 'material-symbols-outlined', 'photo_camera'));
       const copy = node('span', 'result-copy');
       const meta = node('span', 'result-meta');
       const publication = node('span', 'result-publication', article.source);

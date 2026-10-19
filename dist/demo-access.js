@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261018-mobile-results');
+  await import('./app.js?v=20261019-mobile-workspace');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

@@ -24,6 +24,8 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
     const label = field.dataset.label;
     const key = select.id.replace(/^(composer-|output-edit-)/, '');
     const floating = select.id === 'output-edit-voice' || field.matches('.feedback-select-field');
+    const inWorkspacePanel = Boolean(field.closest('#composer-tools'));
+    const mobileWorkspacePanel = () => inWorkspacePanel && window.matchMedia('(max-width: 768px)').matches;
     const placeholder = field.dataset.placeholder || (['format', 'audience', 'voice'].includes(key) ? `Select ${label}` : label);
     const supportsFavorites = ['format', 'audience'].includes(key);
     const plural = key === 'format' ? 'formats' : 'audiences';
@@ -157,6 +159,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
     }
     function close(restoreFocus = false) {
       menu.hidden = true;
+      menu.removeAttribute('style');
       field.classList.remove('is-open');
       trigger.setAttribute('aria-expanded', 'false');
       if (restoreFocus) trigger.focus();
@@ -168,17 +171,18 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
       menu.hidden = false;
       field.classList.add('is-open');
       trigger.setAttribute('aria-expanded', 'true');
-      if (floating) {
+      if (floating || mobileWorkspacePanel()) {
         const bounds = trigger.getBoundingClientRect();
         const below = document.documentElement.clientHeight - bounds.bottom - 12;
-        const above = bounds.top - 12;
+        const topLimit = mobileWorkspacePanel() ? 90 : 12;
+        const above = bounds.top - topLimit;
         const opensUp = below < 160 && above > below;
         menu.style.position = 'fixed';
         menu.style.left = `${bounds.left}px`;
         menu.style.right = 'auto';
         menu.style.width = `${bounds.width}px`;
         menu.style.maxHeight = `${Math.max(80, Math.min(360, opensUp ? above : below))}px`;
-        menu.style.top = `${opensUp ? Math.max(12, bounds.top - menu.getBoundingClientRect().height - 8) : bounds.bottom + 8}px`;
+        menu.style.top = `${opensUp ? Math.max(topLimit, bounds.top - menu.getBoundingClientRect().height - 8) : bounds.bottom + 8}px`;
       }
       const selected = rows[select.selectedIndex];
       (selected && !selected.row.hidden ? selected.button : rows.find(choice => !choice.row.hidden)?.button || savedToggle).focus();
@@ -205,8 +209,8 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
     });
     field.addEventListener('focusout', event => { if (!field.contains(event.relatedTarget)) close(); });
     select.addEventListener('change', refresh);
-    if (floating) {
-      document.addEventListener('scroll', event => { if (!menu.hidden && !menu.contains(event.target)) close(); }, true);
+    if (floating || inWorkspacePanel) {
+      document.addEventListener('scroll', event => { if ((floating || mobileWorkspacePanel()) && !menu.hidden && !menu.contains(event.target)) close(); }, true);
       window.addEventListener('resize', () => close());
     }
     refresh();

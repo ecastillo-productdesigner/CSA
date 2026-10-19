@@ -6,8 +6,8 @@ import { createMaterialEditor } from './editor.js?v=20261018-active-revision';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261018-project-delete';
 import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
 import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261018-search-preview';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261018-feedback-report';
-import { createRailNavigation } from './navigation.js?v=20261018-mobile-results';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261019-mobile-workspace';
+import { createRailNavigation } from './navigation.js?v=20261019-mobile-workspace';
 import { createProjectSources } from './sources.js?v=20261018-variant-source-selection';
 import { projectOutputs, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261018-variant-source-panel';
 import { createEditorTabs } from './editor-tabs.js?v=20261018-status-icons';
@@ -105,6 +105,7 @@ const projectSourcesPanel = createProjectSources({
 const railNavigation = createRailNavigation({
   onSourcesOpen() { projectSourcesPanel.render(projects.find(project => project.id === activeProjectId && project.kind === 'draft') || null); },
   onSourcesClose() { sourcePanelOutputId = null; syncSourceBadges(); },
+  onNewVariantOpen() { setNewVariantCollapsed(false); },
   onOpen: () => { toolDropdowns.close(); outputPresets.close(); outputSettings.close(); richEditor.closePanels(); },
 });
 createProfile({
@@ -480,26 +481,12 @@ function closeComposer() {
 }
 
 function showProjectStart() {
-  closeComposer();
-  activeProjectId = null;
+  richEditor.flush();
   railNavigation.close();
-  searchExperience.hide();
-  document.body.classList.remove('showing-results');
-  document.body.classList.add('showing-composer');
-  $('#home').hidden = true;
-  $('#workspace').hidden = true;
-  $('#project-start').hidden = true;
-  $('#composer').hidden = false;
-  $('#composer-heading').textContent = 'New project';
-  for (const select of document.querySelectorAll('.composer-field select')) select.value = '';
-  toolDropdowns.refresh();
-  updateComposerActions();
-  renderOutputs(null);
-  setNewVariantCollapsed(false);
+  outputSettings.close();
+  outputPresets.close();
+  toolDropdowns.close();
   closeProfile();
-  document.title = 'New project — CSA';
-  window.scrollTo({ top: 0 });
-  $('#main').focus({ preventScroll: true });
   openProjectDialog();
 }
 
@@ -517,7 +504,8 @@ function openProjectDialog(reset = true, sourceProjectId = null) {
   if (reset) $('#new-project-query').value = '';
   $('#new-project-submit').disabled = !$('#new-project-query').value.trim();
   if (!$('#new-project-dialog').open) $('#new-project-dialog').showModal();
-  $('#new-project-query').focus();
+  const focusTarget = window.matchMedia('(max-width: 768px)').matches ? $('.new-project-close') : $('#new-project-query');
+  focusTarget.focus({ preventScroll: true });
 }
 
 function returnFromSourceAddition() {
@@ -784,6 +772,7 @@ $('.create-variant').addEventListener('click', () => {
   project.updatedAt = Date.now();
   const saved = saveProjects();
   showEditorProject(project);
+  if (window.matchMedia('(max-width: 768px)').matches) railNavigation.open('variants');
   [...$('#output-list').querySelectorAll('[data-output-id]')].find(button => button.dataset.outputId === output.id)?.focus({ preventScroll: true });
   if (saved) notify('Variant added.');
 });
@@ -847,11 +836,12 @@ $('#output-list').addEventListener('click', event => {
     [...$('#output-list').querySelectorAll(selector)].find(button => (button.dataset.selectOutput || button.dataset.outputId) === output.id)?.focus({ preventScroll: true });
     return;
   }
+  railNavigation.close();
   openEditorTab(output.id);
 });
 
 function openVariantSources(button) {
-  if (button.getAttribute('aria-expanded') === 'true') { railNavigation.closeDrawer(); return; }
+  if (button.getAttribute('aria-expanded') === 'true') { railNavigation.close(); railNavigation.closeDrawer(); return; }
   richEditor.flush();
   outputSettings.close();
   outputPresets.close();
@@ -888,6 +878,7 @@ function finishOutputProcessing(project, renderWhenReady = true) {
   delete project.outputProcessing;
   saveProjects();
   if (active && renderWhenReady) {
+    railNavigation.close();
     showEditorProject(project);
     notify(latestCreated ? 'Variant ready. The newest variant is open in the editor.' : 'Variant processing finished.');
   }
@@ -1179,7 +1170,6 @@ for (const id of ['material-dialog', 'new-project-dialog']) $(`#${id}`).addEvent
 
 for (const button of document.querySelectorAll('[data-close]')) button.addEventListener('click', () => {
   if (sourceTargetProjectId && ['new-project-dialog', 'material-dialog'].includes(button.dataset.close)) returnFromSourceAddition();
-  else if (button.dataset.close === 'new-project-dialog') showHome();
   else $(`#${button.dataset.close}`).close();
 });
 for (const dialog of document.querySelectorAll('dialog')) {

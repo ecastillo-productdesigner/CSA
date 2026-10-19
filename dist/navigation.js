@@ -1,6 +1,8 @@
-export function createRailNavigation({ onSourcesOpen, onSourcesClose, onOpen }) {
+export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVariantOpen, onOpen }) {
   const panels = {
     sources: { trigger: document.querySelector('#show-sources'), panel: document.querySelector('#editor-sources') },
+    newVariant: { trigger: document.querySelector('#show-new-variant'), panel: document.querySelector('#composer-tools'), mobileOnly: true },
+    variants: { trigger: document.querySelector('#show-variants'), panel: document.querySelector('#composer-outputs'), mobileOnly: true },
     profile: { trigger: document.querySelector('#show-profile'), panel: document.querySelector('#profile-menu') },
   };
   const sidebar = document.querySelector('#navigation-drawer');
@@ -8,7 +10,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onOpen }) 
   const newProject = document.querySelector('#new-project');
   const home = document.querySelector('#home');
   const mobile = window.matchMedia('(max-width: 768px)');
-  const mobileTopBar = () => mobile.matches && (!home.hidden || document.body.classList.contains('showing-results'));
+  const mobileTopBar = () => mobile.matches && (!home.hidden || document.body.matches('.showing-results, .showing-composer'));
   const tooltips = [
     { trigger: newProject, tooltip: document.querySelector('#new-project-tooltip') },
     { trigger: panels.sources.trigger, tooltip: document.querySelector('#sources-tooltip') },
@@ -35,8 +37,9 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onOpen }) 
 
   function close(name = active, restoreFocus = false) {
     if (!name || !panels[name]) return;
-    const { trigger, panel } = panels[name];
-    panel.hidden = true;
+    const { trigger, panel, mobileOnly } = panels[name];
+    if (mobileOnly) delete panel.dataset.mobileOpen;
+    else panel.hidden = true;
     trigger.setAttribute('aria-expanded', 'false');
     if (name === 'sources') onSourcesClose?.();
     if (active === name) active = null;
@@ -58,13 +61,15 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onOpen }) 
   }
 
   function open(name) {
-    if (document.querySelector('dialog[open]') || !panels[name]) return;
+    if (document.querySelector('dialog[open]') || !panels[name] || (panels[name].mobileOnly && (!mobile.matches || !document.body.classList.contains('showing-composer')))) return;
     setDrawer(!mobileTopBar());
     if (active === name) return;
     close();
     onOpen?.();
     if (name === 'sources') onSourcesOpen();
-    panels[name].panel.hidden = false;
+    if (name === 'newVariant') onNewVariantOpen?.();
+    if (panels[name].mobileOnly) panels[name].panel.dataset.mobileOpen = 'true';
+    else panels[name].panel.hidden = false;
     panels[name].trigger.setAttribute('aria-expanded', 'true');
     active = name;
   }
@@ -85,13 +90,15 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onOpen }) 
       else {
         open(name);
         if (name === 'profile' && mobileTopBar()) panel.querySelector('.profile-navigation')?.focus({ preventScroll: true });
+        else if (panels[name].mobileOnly) panel.querySelector('h2')?.focus({ preventScroll: true });
       }
     });
     trigger.addEventListener('keydown', event => {
       if (!['ArrowRight', 'ArrowDown'].includes(event.key)) return;
       event.preventDefault();
       open(name);
-      (panel.querySelector(name === 'sources' ? '#editor-add-source-button:not(:disabled), .editor-source-checkbox' : '.profile-navigation') || panel.querySelector('[data-close-navigation]'))?.focus();
+      const focusSelector = name === 'sources' ? '#editor-add-source-button:not(:disabled), .editor-source-checkbox' : name === 'newVariant' ? '.tool-dropdown-trigger' : name === 'variants' ? '.output-open:not(:disabled)' : '.profile-navigation';
+      (panel.querySelector(focusSelector) || panel.querySelector('[data-close-navigation]'))?.focus();
     });
   }
   panels.profile.panel.addEventListener('keydown', event => {
@@ -100,7 +107,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onOpen }) 
   for (const button of document.querySelectorAll('[data-close-navigation]')) button.addEventListener('click', () => close(button.dataset.closeNavigation, true));
   document.addEventListener('pointerdown', event => {
     if (document.querySelector('dialog[open]')) return;
-    if (mobileTopBar() && !sidebar.contains(event.target)) close();
+    if (mobileTopBar() && !sidebar.contains(event.target) && !panels[active]?.panel.contains(event.target) && !event.target.closest('.output-edit-menu, .editor-flyover, [data-variant-sources]')) close();
     else if (drawerOpen && !sidebar.contains(event.target) && !event.target.closest('[data-variant-sources]')) setDrawer(false);
   });
   document.addEventListener('keydown', event => {

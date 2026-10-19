@@ -23,6 +23,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
     const select = field.querySelector('select');
     const label = field.dataset.label;
     const key = select.id.replace(/^(composer-|output-edit-)/, '');
+    field.dataset.tool = key;
     const floating = select.id === 'output-edit-voice' || field.matches('.feedback-select-field');
     const inWorkspacePanel = Boolean(field.closest('#composer-tools'));
     const mobileWorkspacePanel = () => inWorkspacePanel && window.matchMedia('(max-width: 768px)').matches;
@@ -146,6 +147,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
     }
     function refresh() {
       trigger.disabled = select.disabled;
+      field.dataset.hasValue = String(Boolean(select.value));
       trigger.title = select.title;
       if (select.disabled) close();
       const selected = select.options[select.selectedIndex];

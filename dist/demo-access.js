@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261019-mobile-greeting');
+  await import('./app.js?v=20261019-editor-variant-edit');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

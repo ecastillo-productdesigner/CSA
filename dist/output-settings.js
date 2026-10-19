@@ -5,9 +5,10 @@ export function createOutputSettings({ onSave, closeDropdowns }) {
   const direction = document.querySelector('#output-edit-direction');
   const error = document.querySelector('#output-edit-error');
   let active = null;
+  let triggerContainer = null;
 
   function trigger() {
-    return active && [...document.querySelectorAll('[data-edit-output]')].find(button => button.dataset.editOutput === active.outputId);
+    return active && triggerContainer && [...triggerContainer.querySelectorAll('[data-edit-output]')].find(button => button.dataset.editOutput === active.outputId);
   }
 
   function close(restoreFocus = false) {
@@ -15,6 +16,7 @@ export function createOutputSettings({ onSave, closeDropdowns }) {
     const button = trigger();
     button?.setAttribute('aria-expanded', 'false');
     active = null;
+    triggerContainer = null;
     menu.hidden = true;
     if (restoreFocus && button?.isConnected) button.focus({ preventScroll: true });
   }
@@ -35,10 +37,11 @@ export function createOutputSettings({ onSave, closeDropdowns }) {
     button.setAttribute('aria-expanded', 'true');
   }
 
-  function open(projectId, output) {
-    if (active?.projectId === projectId && active.outputId === output.id) { close(true); return; }
+  function open(projectId, output, container = document.querySelector('#output-list')) {
+    if (active?.projectId === projectId && active.outputId === output.id && triggerContainer === container) { close(true); return; }
     close();
     active = { projectId, outputId: output.id };
+    triggerContainer = container;
     voice.value = output.toolPreferences?.voice || '';
     voice.dispatchEvent(new Event('change', { bubbles: true }));
     direction.value = typeof output.editorialDirection === 'string' ? output.editorialDirection : '';

@@ -61,6 +61,25 @@ export function createOutputBadges(output, { maxLabelLength = 20, includeSourceC
   return badges;
 }
 
+export function createOutputEditButton(output, { disabled = false, inEditor = false } = {}) {
+  const edit = document.createElement('button');
+  edit.type = 'button';
+  edit.className = `icon-button output-edit-button${inEditor ? ' editor-variant-edit' : ''}`;
+  edit.dataset.editOutput = output.id;
+  edit.disabled = disabled;
+  edit.setAttribute('aria-label', `Edit variant settings: ${output.title}`);
+  edit.setAttribute('aria-haspopup', 'dialog');
+  edit.setAttribute('aria-controls', 'output-edit-menu');
+  edit.setAttribute('aria-expanded', 'false');
+  edit.title = 'Edit variant settings';
+  const editIcon = document.createElement('span');
+  editIcon.className = 'material-symbols-outlined';
+  editIcon.setAttribute('aria-hidden', 'true');
+  editIcon.textContent = 'edit';
+  edit.append(editIcon);
+  return edit;
+}
+
 export function selectedOutputs(project) {
   const legacyIds = [...(Array.isArray(project?.selectedPendingOutputIds) ? project.selectedPendingOutputIds : []), ...(project?.selectedOutputId ? [project.selectedOutputId] : [])];
   const selectedIds = new Set(Array.isArray(project?.selectedOutputIds) ? project.selectedOutputIds : legacyIds);
@@ -328,21 +347,7 @@ export function renderOutputs(project) {
     heading.textContent = output.title;
     heading.title = output.title;
     open.append(top, heading);
-    const edit = document.createElement('button');
-    edit.type = 'button';
-    edit.className = 'icon-button output-edit-button';
-    edit.dataset.editOutput = output.id;
-    edit.disabled = processing;
-    edit.setAttribute('aria-label', `Edit variant settings: ${output.title}`);
-    edit.setAttribute('aria-haspopup', 'dialog');
-    edit.setAttribute('aria-controls', 'output-edit-menu');
-    edit.setAttribute('aria-expanded', 'false');
-    edit.title = 'Edit variant settings';
-    const editIcon = document.createElement('span');
-    editIcon.className = 'material-symbols-outlined';
-    editIcon.setAttribute('aria-hidden', 'true');
-    editIcon.textContent = 'edit';
-    edit.append(editIcon);
+    const edit = createOutputEditButton(output, { disabled: processing });
     const favorite = document.createElement('button');
     favorite.type = 'button';
     favorite.className = 'output-favorite-button';

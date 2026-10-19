@@ -6,12 +6,12 @@ import { createMaterialEditor } from './editor.js?v=20261018-active-revision';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261018-project-delete';
 import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
 import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261018-search-preview';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261019-mobile-workspace';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261019-editor-variant-edit';
 import { createRailNavigation } from './navigation.js?v=20261019-mobile-workspace';
 import { createProjectSources } from './sources.js?v=20261018-variant-source-selection';
-import { projectOutputs, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261018-variant-source-panel';
+import { projectOutputs, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, createOutputEditButton, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261019-editor-variant-edit';
 import { createEditorTabs } from './editor-tabs.js?v=20261018-status-icons';
-import { createOutputSettings } from './output-settings.js?v=20261018-variant-controls';
+import { createOutputSettings } from './output-settings.js?v=20261019-editor-variant-edit';
 import { createOutputPresets } from './output-presets.js?v=20261018-preset-actions';
 
 const $ = (selector) => document.querySelector(selector);
@@ -142,14 +142,15 @@ const richEditor = createMaterialEditor({
 function renderOutputs(project) {
   $('#show-sources').hidden = project?.kind !== 'draft';
   renderProjectOutputs(project);
-  outputSettings.sync(project);
   outputPresets.render(projects, project?.variantPreset || null);
   editorTabs.render(project);
   const selectedOutput = projectOutputs(project).find(output => output.id === project?.selectedOutputId && (outputIsReady(output) || output.needsRegeneration));
   const labels = $('#editor-variant-labels');
   labels.replaceChildren(...createOutputBadges(selectedOutput));
+  if (selectedOutput) labels.append(createOutputEditButton(selectedOutput, { disabled: Boolean(project?.outputProcessing), inEditor: true }));
   labels.hidden = !labels.childElementCount;
   syncSourceBadges();
+  outputSettings.sync(project);
 }
 
 function syncSourceBadges() {
@@ -783,19 +784,7 @@ $('#output-list').addEventListener('click', event => {
   const sources = event.target.closest('[data-variant-sources]');
   if (sources) { openVariantSources(sources); return; }
   const edit = event.target.closest('[data-edit-output]');
-  if (edit) {
-    if (project.outputProcessing) return;
-    richEditor.flush();
-    const output = projectOutputs(project).find(entry => entry.id === edit.dataset.editOutput);
-    if (output) {
-      railNavigation.close();
-      toolDropdowns.close();
-      outputPresets.close();
-      richEditor.closePanels();
-      outputSettings.open(project.id, output);
-    }
-    return;
-  }
+  if (edit) { openVariantSettings(edit); return; }
   const favorite = event.target.closest('[data-favorite-output]');
   if (favorite) {
     richEditor.flush();
@@ -840,6 +829,21 @@ $('#output-list').addEventListener('click', event => {
   openEditorTab(output.id);
 });
 
+function openVariantSettings(button) {
+  const project = projects.find(entry => entry.id === activeProjectId);
+  if (!project || project.outputProcessing) return;
+  const triggerContainer = button.closest('#editor-variant-labels') || $('#output-list');
+  const outputId = button.dataset.editOutput;
+  richEditor.flush();
+  const output = projectOutputs(project).find(entry => entry.id === outputId);
+  if (!output) return;
+  if (triggerContainer.id === 'editor-variant-labels' || !window.matchMedia('(max-width: 768px)').matches) railNavigation.close();
+  toolDropdowns.close();
+  outputPresets.close();
+  richEditor.closePanels();
+  outputSettings.open(project.id, output, triggerContainer);
+}
+
 function openVariantSources(button) {
   if (button.getAttribute('aria-expanded') === 'true') { railNavigation.close(); railNavigation.closeDrawer(); return; }
   richEditor.flush();
@@ -856,6 +860,8 @@ function openVariantSources(button) {
   }
 }
 $('#editor-variant-labels').addEventListener('click', event => {
+  const edit = event.target.closest('[data-edit-output]');
+  if (edit) { openVariantSettings(edit); return; }
   const button = event.target.closest('[data-variant-sources]');
   if (button) openVariantSources(button);
 });

@@ -54,7 +54,7 @@ COMPONENT CONTRACTS
   Icons: Material Symbols Outlined font with FILL 1 throughout.
     Keep custom SVG geometry where already supplied.
   Editor toolbar: compact pill, document-aligned; horizontally scrollable
-    on small screens. Saved hearts retain pink without a persistent circle.
+    on small screens. Variant hearts retain pink without a persistent circle.
   Footer: Inter 11 / 18, muted. Creation time belongs to the
     active variant or original document, using the browser's timezone.
 

@@ -308,9 +308,9 @@ main:focus { outline: none; }
 .output-edit-button .material-symbols-outlined { font-size: var(--csa-foundation-font-size-18); }
 .output-edit-button:disabled { opacity: .4; }
 .output-edit-button[aria-expanded="true"] { --icon-circle-color: #edf0f5; background: var(--icon-circle); }
-.output-favorite-button { position: absolute; top: 0; right: -2px; display: grid; place-items: center; width: 48px; height: 48px; padding: 11px; border: 0; border-radius: 50%; background: transparent; color: var(--ink); }
+.output-favorite-button { position: absolute; top: 0; right: -2px; display: grid; place-items: center; width: 48px; height: 48px; padding: 11px; border: 0; border-radius: 50%; background: transparent; color: var(--csa-semantic-color-favorite-active); }
 .output-favorite-button .material-symbols-outlined { font-size: var(--csa-foundation-font-size-18); font-variation-settings: "FILL" var(--csa-component-icon-fill), "wght" 400, "GRAD" 0, "opsz" 20; }
-.output-favorite-button:hover { --icon-circle-color: #f9edf6; background: var(--icon-circle); color: var(--csa-foundation-color-observed-hex-a34d88); }
+.output-favorite-button:hover { --icon-circle-color: var(--icon-hover-background); background: var(--icon-circle); color: var(--csa-semantic-color-favorite-active); }
 .output-favorite-button[aria-pressed="true"] .material-symbols-outlined { font-variation-settings: "FILL" var(--csa-component-icon-fill), "wght" 400, "GRAD" 0, "opsz" 20; }
 .tool-saved-toggle[aria-pressed="true"], .tool-option-favorite[aria-pressed="true"], .output-favorite-button[aria-pressed="true"] { color: var(--color-rose-400); }
 .composer-outputs-header { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; gap: var(--csa-foundation-space-12); }

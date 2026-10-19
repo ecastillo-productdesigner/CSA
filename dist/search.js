@@ -162,7 +162,11 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       const selection = node('button', 'result-select-button');
       selection.type = 'button';
       selection.setAttribute('aria-label', `Select story ${article.id.split('-').pop()}: ${article.title}`);
-      selection.setAttribute('aria-pressed', String(state.selected.has(article.id)));
+      selection.setAttribute('role', 'checkbox');
+      selection.setAttribute('aria-checked', String(state.selected.has(article.id)));
+      const indicator = node('span', 'result-selection-indicator');
+      indicator.setAttribute('aria-hidden', 'true');
+      if (state.selected.has(article.id)) indicator.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
       selection.title = state.selected.has(article.id) ? 'Unselect this story' : 'Select this story for your draft';
       const thumbnail = node('span', `result-thumbnail${article.referenceImage ? ' result-thumbnail--reference' : ''}`);
       thumbnail.setAttribute('aria-hidden', 'true');
@@ -191,7 +195,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
         node('strong', 'result-title', article.title),
         node('span', 'result-snippet', article.excerpt),
       );
-      card.append(selection, thumbnail, copy);
+      card.append(selection, indicator, thumbnail, copy);
       const previewButton = node('button', 'icon-button result-preview-button');
       previewButton.type = 'button';
       previewButton.disabled = true;

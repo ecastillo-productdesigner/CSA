@@ -164,7 +164,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
       menu.removeAttribute('style');
       field.classList.remove('is-open');
       trigger.setAttribute('aria-expanded', 'false');
-      if (restoreFocus) trigger.focus();
+      if (restoreFocus) trigger.focus({ preventScroll: true });
     }
     function open() {
       if (select.disabled) return;
@@ -187,7 +187,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
         menu.style.top = `${opensUp ? Math.max(topLimit, bounds.top - menu.getBoundingClientRect().height - 8) : bounds.bottom + 8}px`;
       }
       const selected = rows[select.selectedIndex];
-      (selected && !selected.row.hidden ? selected.button : rows.find(choice => !choice.row.hidden)?.button || savedToggle).focus();
+      (selected && !selected.row.hidden ? selected.button : rows.find(choice => !choice.row.hidden)?.button || savedToggle).focus({ preventScroll: true });
     }
     trigger.addEventListener('click', () => { if (menu.hidden) open(); else close(true); });
     trigger.addEventListener('keydown', event => {
@@ -209,7 +209,6 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
       event.preventDefault();
       visible[next]?.button.focus();
     });
-    field.addEventListener('focusout', event => { if (!field.contains(event.relatedTarget)) close(); });
     select.addEventListener('change', refresh);
     if (floating || inWorkspacePanel) {
       document.addEventListener('scroll', event => { if ((floating || mobileWorkspacePanel()) && !menu.hidden && !menu.contains(event.target)) close(); }, true);
@@ -220,8 +219,12 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
   });
 
   function closeAll() { controls.forEach(control => control.close()); }
-  document.addEventListener('pointerdown', event => {
-    controls.forEach(control => { if (!control.field.contains(event.target)) control.close(); });
-  });
+  // On touch browsers, moving between buttons can blur to the page before click.
+  // Close on an actual outside interaction, not that temporary loss of focus.
+  for (const eventName of ['pointerdown', 'focusin']) {
+    document.addEventListener(eventName, event => {
+      controls.forEach(control => { if (!control.field.contains(event.target)) control.close(); });
+    });
+  }
   return { close: closeAll, refresh: () => controls.forEach(control => control.refresh()) };
 }

@@ -60,7 +60,6 @@ export function createProfile({ notify, onClose, onSessionEnd }) {
   name.addEventListener('input', () => name.setCustomValidity(''));
   dialog.addEventListener('close', () => trigger.focus({ preventScroll: true }));
 
-  document.querySelector('#profile-reset-photo').addEventListener('click', () => { if (save({ ...profile, photo: '' })) notify('Profile photo reset.'); });
 
   document.querySelector('#profile-change-photo').addEventListener('click', () => { onClose(); photo.click(); });
   photo.addEventListener('change', async () => {

@@ -1,4 +1,4 @@
-export function createOutputSettings({ onSave, closeDropdowns }) {
+export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
   const menu = document.querySelector('#output-edit-menu');
   const form = document.querySelector('#output-edit-form');
   const voice = document.querySelector('#output-edit-voice');
@@ -57,6 +57,12 @@ export function createOutputSettings({ onSave, closeDropdowns }) {
     const saved = onSave({ ...active, voice: voice.value, editorialDirection: direction.value });
     if (saved) close(true);
     else { error.textContent = 'Changes could not be saved. Please try again.'; error.hidden = false; position(); }
+  });
+  document.querySelector('#output-delete-variant').addEventListener('click', () => {
+    if (!active) return;
+    const deleted = onDelete({ ...active });
+    if (deleted) close();
+    else if (active) { error.textContent = 'Could not delete this variant. Please try again.'; error.hidden = false; position(); }
   });
   for (const button of menu.querySelectorAll('[data-close-output-edit]')) button.addEventListener('click', () => close(true));
   menu.addEventListener('keydown', event => {

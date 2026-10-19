@@ -10,7 +10,7 @@ export function createOutputPresets({ onSelect, onDelete }) {
   actions.id = 'output-preset-actions';
   actions.className = 'output-preset-actions';
   actions.setAttribute('role', 'menu');
-  actions.setAttribute('aria-label', 'Preset actions');
+  actions.setAttribute('aria-label', 'Saved variant actions');
   actions.hidden = true;
   const remove = document.createElement('button');
   remove.type = 'button';
@@ -114,7 +114,7 @@ export function createOutputPresets({ onSelect, onDelete }) {
       if (signature === lastSignature) return;
       lastSignature = signature;
       close();
-      const triggerLabel = selection ? `Preset: ${summaryFor(selectedOutput, selectedSettings)}` : 'Presets';
+      const triggerLabel = selection ? `Saved Variant: ${summaryFor(selectedOutput, selectedSettings)}` : 'Saved Variants';
       trigger.querySelector('span').textContent = triggerLabel;
       trigger.title = triggerLabel;
       trigger.setAttribute('aria-label', triggerLabel);
@@ -153,7 +153,7 @@ export function createOutputPresets({ onSelect, onDelete }) {
         more.className = 'icon-button output-preset-more';
         more.tabIndex = -1;
         more.setAttribute('role', 'menuitem');
-        more.setAttribute('aria-label', `Preset options: ${summaryFor(output, settings)}`);
+        more.setAttribute('aria-label', `Saved variant options: ${summaryFor(output, settings)}`);
         more.setAttribute('aria-haspopup', 'menu');
         more.setAttribute('aria-expanded', 'false');
         more.setAttribute('aria-controls', actions.id);

@@ -234,7 +234,7 @@ export function createDashboard({ onNew, onOpen, onDelete, onRename }) {
       title.title = project.title;
       const meta = node('div', 'project-meta');
       const date = node('span'); date.append(document.createTextNode(projectDate(project.createdAt)));
-      const count = node('span'); count.append(icon('variants'), document.createTextNode(`${variants.length} ${variants.length === 1 ? 'variant' : 'variants'} created`));
+      const count = node('span'); count.append(icon('variants'), document.createTextNode(`${variants.length} ${variants.length === 1 ? 'variant' : 'variants'}`));
       const separator = node('span', 'meta-dot', '·');
       separator.setAttribute('aria-hidden', 'true');
       meta.append(date, separator, count);

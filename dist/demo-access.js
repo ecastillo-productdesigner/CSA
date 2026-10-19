@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261019-editor-variant-edit');
+  await import('./app.js?v=20261019-variant-actions');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

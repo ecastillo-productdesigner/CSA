@@ -1,18 +1,19 @@
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261019-variant-actions';
 import { createVariantFeedback } from './variant-feedback.js?v=20261018-connected-sources';
-import { createProfile } from './profile.js?v=20261019-mobile-greeting';
-import { createSearchExperience } from './search.js?v=20261018-mobile-results';
-import { createDashboard } from './dashboard.js?v=20261018-home-compact-cards';
+import { createProfile } from './profile.js?v=20261019-variant-actions';
+import { createSearchExperience } from './search.js?v=20261019-variant-actions';
+import { createDashboard } from './dashboard.js?v=20261019-variant-actions';
 import { createMaterialEditor } from './editor.js?v=20261018-active-revision';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261018-project-delete';
 import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
 import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261018-search-preview';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261019-editor-variant-edit';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261019-variant-actions';
 import { createRailNavigation } from './navigation.js?v=20261019-mobile-workspace';
 import { createProjectSources } from './sources.js?v=20261018-variant-source-selection';
 import { projectOutputs, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, createOutputEditButton, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261019-editor-variant-edit';
 import { createEditorTabs } from './editor-tabs.js?v=20261018-status-icons';
-import { createOutputSettings } from './output-settings.js?v=20261019-editor-variant-edit';
-import { createOutputPresets } from './output-presets.js?v=20261018-preset-actions';
+import { createOutputSettings } from './output-settings.js?v=20261019-variant-actions';
+import { createOutputPresets } from './output-presets.js?v=20261019-variant-actions';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -78,7 +79,7 @@ const outputTimers = new Map();
 const toolDropdowns = createToolDropdowns({ notify });
 const variantFeedback = createVariantFeedback({ save: saveProjects, refreshDropdowns: toolDropdowns.refresh, closeDropdowns: toolDropdowns.close });
 const outputPresets = createOutputPresets({ onSelect: applyOutputPreset, onDelete: deleteOutputPreset });
-const outputSettings = createOutputSettings({ onSave: saveOutputSettings, closeDropdowns: toolDropdowns.close });
+const outputSettings = createOutputSettings({ onSave: saveOutputSettings, onDelete: deleteVariant, closeDropdowns: toolDropdowns.close });
 const contentPreview = createContentPreview({
   onChange(text) {
     const project = projects.find(entry => entry.id === activeProjectId);
@@ -204,6 +205,36 @@ function removeProjectSource(projectId, source) {
   });
 }
 
+function deleteVariant({ projectId, outputId }) {
+  richEditor.flush();
+  const persist = next => localStorage.setItem(storageKey, JSON.stringify(next));
+  const refresh = () => {
+    const project = projects.find(entry => entry.id === projectId && !entry.deletedAt);
+    if (project && activeProjectId === projectId && !$('#composer').hidden) showEditorProject(project);
+    else {
+      outputPresets.render(projects, projects.find(entry => entry.id === activeProjectId)?.variantPreset || null);
+      dashboard?.render(projects);
+    }
+  };
+  let deletion;
+  try { deletion = removeVariant(projects, projectId, outputId, persist); }
+  catch { notify('Could not delete this variant. Please try again.'); return false; }
+  if (!deletion) return false;
+  projects = deletion.projects;
+  refresh();
+  notify('Variant deleted.', () => {
+    richEditor.flush();
+    let restored;
+    try { restored = restoreVariant(projects, deletion.undo, persist); }
+    catch { notify('Could not restore this variant. Please try again.'); return; }
+    if (!restored) { notify('This variant could not be restored.'); return; }
+    projects = restored.projects;
+    refresh();
+    notify('Variant restored.');
+  });
+  return true;
+}
+
 function saveOutputSettings({ projectId, outputId, voice, editorialDirection }) {
   richEditor.flush();
   const project = projects.find(entry => entry.id === projectId);
@@ -283,13 +314,13 @@ function deleteOutputPreset(projectId, outputId) {
     output.favoritedAt = favoritedAt;
     references.forEach(project => { project.variantPreset = { projectId, outputId }; });
     refresh();
-    notify('Could not delete this preset. Please try again.');
+    notify('Could not delete this saved variant. Please try again.');
     return;
   }
   refresh();
   const focusTarget = $('#output-presets').hidden ? $('#composer-format-trigger') : $('#output-presets-trigger');
   focusTarget?.focus({ preventScroll: true });
-  notify('Preset deleted.', () => {
+  notify('Saved variant deleted.', () => {
     output.isFavorite = true;
     output.favoritedAt = favoritedAt;
     const restored = references.filter(project => !project.variantPreset);
@@ -299,11 +330,11 @@ function deleteOutputPreset(projectId, outputId) {
       delete output.favoritedAt;
       restored.forEach(project => { delete project.variantPreset; });
       refresh();
-      notify('Could not restore this preset. Please try again.');
+      notify('Could not restore this saved variant. Please try again.');
       return;
     }
     refresh();
-    notify('Preset restored.');
+    notify('Saved variant restored.');
   });
 }
 
@@ -708,12 +739,12 @@ function updateComposerActions() {
     const select = $(`#composer-${key}`);
     if (select.disabled !== !canConfigure) changed = true;
     select.disabled = !canConfigure;
-    select.title = canConfigure ? '' : 'Add content or select a preset first';
+    select.title = canConfigure ? '' : 'Add content or choose a saved variant first';
   }
   if (changed) toolDropdowns.refresh();
   const enabled = hasPreset || (hasContent && ['format', 'audience', 'voice'].some(key => $(`#composer-${key}`).value));
   $('.create-variant').disabled = !enabled;
-  $('.create-variant').title = enabled ? 'Add variant' : !hasContent ? 'Add content or select a preset first' : 'Select a preset, format, audience, or voice to add a variant';
+  $('.create-variant').title = enabled ? 'Add variant' : !hasContent ? 'Add content or choose a saved variant first' : 'Choose a saved variant, format, audience, or voice to add a variant';
 }
 
 function ensureComposerProject(allowEmpty = false) {

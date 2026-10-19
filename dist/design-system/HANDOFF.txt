@@ -58,6 +58,7 @@ COMPONENT CONTRACTS
     horizontally scrollable
     on small screens. The text-style menu reuses the shared dropdown.
   Title-to-toolbar and toolbar-to-body gaps: foundation.space.20 (20 px).
+  New/Edit variant dropdown labels: Inter 14 / 20, weight 600.
   Open dropdown menus: 10 px corner radius.
   Navigation: hover and active surfaces use neutral gray #f5f5f5,
     with dark gray #404040 labels and icons. Variant hearts retain pink without a persistent circle.

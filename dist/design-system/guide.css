@@ -72,8 +72,8 @@
 .ds-card-edit { margin-left: auto; }
 .ds-variant .material-symbols-outlined { font-size: 18px; }
 .ds-field-grid { display: grid; gap: 18px; }
-.ds-field-label { display: grid; gap: 6px; font-size: 11px; font-weight: 550; }
-.ds-native-field { width: 100%; min-width: 0; height: var(--csa-component-field-height-desktop); padding: 6px 12px; border: 1px solid var(--line); border-radius: var(--csa-component-field-radius); background: var(--csa-component-field-background); color: var(--ink); font-size: 16px; font-weight: 650; }
+.ds-field-label { display: grid; gap: 6px; font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-600); }
+.ds-native-field { width: 100%; min-width: 0; height: var(--csa-component-field-height-desktop); padding: 6px 12px; border: 1px solid var(--line); border-radius: var(--csa-component-field-radius); background: var(--csa-component-field-background); color: var(--ink); font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-600); }
 .ds-native-field[data-kind="format"] { background: var(--csa-component-chip-format-background); }
 .ds-native-field[data-kind="audience"] { background: var(--csa-component-chip-audience-background); }
 .ds-source { display: grid; grid-template-columns: 18px 90px 1fr; gap: 16px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; }

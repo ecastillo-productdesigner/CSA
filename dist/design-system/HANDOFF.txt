@@ -61,12 +61,15 @@ COMPONENT CONTRACTS
     on small screens. The text-style menu reuses the shared dropdown.
   Title-to-toolbar and toolbar-to-body gaps: foundation.space.20 (20 px).
   New/Edit variant dropdown labels: Inter 14 / 20, weight 600.
-  Open dropdown menus: 10 px corner radius.
+  Open dropdown, profile, and project menus: 10 px corner radius,
+    including the mobile profile menu.
+  Profile and project name labels: Inter 14 px, weight 600.
   Navigation: hover and active surfaces use neutral gray #f5f5f5,
     with dark gray #404040 labels and icons. Variant hearts retain pink without a persistent circle.
   Profile menu: neutral gray #f5f5f5 hover and focus surface.
     Settings combines name and photo; both save together or cancel together.
-    A filled edit icon in a circle overlaps the photo at bottom right.
+    A 14 px filled edit icon in a 32 px circle overlaps the photo
+    at bottom right, retaining a 40 px click target.
     Profile Save changes stays disabled until name or photo changes;
     its inactive label and Cancel use #a3a3a3.
   Footer: Inter 11 / 18, muted. Creation time belongs to the

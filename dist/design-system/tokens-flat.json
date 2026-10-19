@@ -5256,6 +5256,18 @@
       "reference": "foundation.space.2",
       "description": "User-requested 2 px top and bottom padding of the compact toolbar.",
       "status": "approved-update"
+    },
+    {
+      "name": "component.dropdown.radius",
+      "designName": "component/dropdown/radius",
+      "cssVariable": "--csa-component-dropdown-radius",
+      "type": "dimension",
+      "layer": "component",
+      "category": "dropdown",
+      "value": "10px",
+      "reference": "foundation.radius.10",
+      "description": "User-requested 10 px corner radius for open dropdown menus.",
+      "status": "approved-update"
     }
   ]
 }

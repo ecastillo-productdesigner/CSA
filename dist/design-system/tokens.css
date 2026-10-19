@@ -367,4 +367,5 @@
   --csa-component-editor-toolbar-inset-mobile: var(--csa-foundation-space-16);
   --csa-component-editor-toolbar-padding-inline: var(--csa-foundation-space-14);
   --csa-component-editor-toolbar-padding-block: var(--csa-foundation-space-2);
+  --csa-component-dropdown-radius: var(--csa-foundation-radius-10);
 }

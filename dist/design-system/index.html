@@ -8,10 +8,10 @@
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:opsz,wght@6..72,700&amp;display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=alt_route,chevron_forward,description,draw,edit,favorite,folder_open,photo_camera,upload_file">
-  <link rel="stylesheet" href="tokens.css?v=20261019-toolbar-radius18">
-  <link rel="stylesheet" href="../styles.css?v=20261019-toolbar-radius18">
-  <link rel="stylesheet" href="guide.css?v=20261019-toolbar-radius18">
-  <script src="guide.js?v=20261019-toolbar-radius18" type="module"></script>
+  <link rel="stylesheet" href="tokens.css?v=20261019-menu-radius10">
+  <link rel="stylesheet" href="../styles.css?v=20261019-menu-radius10">
+  <link rel="stylesheet" href="guide.css?v=20261019-menu-radius10">
+  <script src="guide.js?v=20261019-menu-radius10" type="module"></script>
 </head>
 <body class="ds-page">
   <a class="ds-skip" href="#overview">Skip to reference</a>
@@ -26,7 +26,7 @@
       <h1 id="ds-title">A shared language<br>for every next idea.</h1>
       <p class="ds-lead">The colors, type, spacing, and components behind CSA. Extracted from the product and connected to its stylesheets.</p>
       <div class="ds-actions"><a class="primary-button" href="#tokens">Explore the tokens</a><a class="ds-text-link" href="tokens.json" download>Download token JSON <span aria-hidden="true">↗</span></a></div>
-      <div class="ds-metrics"><div><strong id="ds-token-total">311</strong><span>named tokens</span></div><div><strong>3</strong><span>connected layers</span></div><div><strong>1</strong><span>source of truth</span></div></div>
+      <div class="ds-metrics"><div><strong id="ds-token-total">312</strong><span>named tokens</span></div><div><strong>3</strong><span>connected layers</span></div><div><strong>1</strong><span>source of truth</span></div></div>
     </section>
 
     <section class="ds-section" id="foundations" aria-labelledby="foundations-title">
@@ -34,7 +34,7 @@
       <article class="ds-panel"><div class="ds-panel-heading"><h3>Color roles</h3><span>Semantic aliases → foundation values</span></div><div class="ds-palette" id="ds-palette"></div><p class="ds-caption">Format, Audience, and Voice keep their distinct backgrounds. Blue identifies the primary action and selection border.</p></article>
       <div class="ds-two-column">
         <article class="ds-panel"><div class="ds-panel-heading"><h3>Typography</h3><span>Inter + Newsreader</span></div><div id="ds-type-specimens"></div><p class="ds-caption">Interface text uses Inter. Newsreader is reserved for the home greeting. Composite type tokens export one CSS variable per property.</p></article>
-        <article class="ds-panel"><div class="ds-panel-heading"><h3>Space &amp; shape</h3><span>4 px rhythm · 2 px refinements</span></div><div class="ds-spacing" id="ds-spacing"></div><div class="ds-radius-row"><div style="border-radius:var(--csa-foundation-radius-8)">8<span>Variant</span></div><div style="border-radius:var(--csa-foundation-radius-10)">10<span>Field / button</span></div><div style="border-radius:var(--csa-foundation-radius-21)">21<span>Project card</span></div><div style="border-radius:var(--csa-foundation-radius-999)">999<span>Chip</span></div></div><p class="ds-caption">Existing component exceptions remain in the inventory, including desktop and mobile corner radii. Use component tokens when those values differ.</p></article>
+        <article class="ds-panel"><div class="ds-panel-heading"><h3>Space &amp; shape</h3><span>4 px rhythm · 2 px refinements</span></div><div class="ds-spacing" id="ds-spacing"></div><div class="ds-radius-row"><div style="border-radius:var(--csa-foundation-radius-8)">8<span>Variant</span></div><div style="border-radius:var(--csa-foundation-radius-10)">10<span>Field / menu / button</span></div><div style="border-radius:var(--csa-foundation-radius-21)">21<span>Project card</span></div><div style="border-radius:var(--csa-foundation-radius-999)">999<span>Chip</span></div></div><p class="ds-caption">Existing component exceptions remain in the inventory, including desktop and mobile corner radii. Use component tokens when those values differ.</p></article>
       </div>
       <div class="ds-two-column">
         <article class="ds-panel"><div class="ds-panel-heading"><h3>Elevation</h3><span>Subtle, cool shadows</span></div><div class="ds-elevations"><div style="box-shadow:var(--csa-semantic-shadow-dropdown)">Dropdown</div><div style="box-shadow:var(--csa-semantic-shadow-popover)">Popover</div><div style="box-shadow:var(--csa-semantic-shadow-dialog)">Dialog</div></div><p class="ds-caption">Shadows are composite tokens with offset, blur, spread, and color. Preserve the supplied shadow for each surface.</p></article>

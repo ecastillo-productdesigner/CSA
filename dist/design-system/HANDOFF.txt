@@ -300,8 +300,8 @@ All checkbox checkmarks use the official shared white material-check.svg at 16px
 
 Source headings use primary blue on hover.
 
-Desktop Sources to Add new source gap: 16px. Add new source to selection-count gap: 8px. Selection count to first row: 16px (8px margin + 8px list padding).
+Desktop Sources to Add new source gap: 16px. Add new source to selection-count gap: 16px. Selection count to first row: 8px (no bottom margin + 8px list padding).
 
 Source-preview header label has no background fill.
 
-CSA Home brand text turns primary blue on hover.
+CSA Home brand text is Neutral 700 by default. Hover uses the primary-blue background with white text.

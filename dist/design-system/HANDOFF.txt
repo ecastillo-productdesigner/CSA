@@ -95,6 +95,14 @@ VARIANT STATUS SEGMENTS
   Cards: 14 px gap. Create action appears only in To Create.
   Arrow keys, Home/End, and roving tab focus select the segment.
 
+ICONS
+  All interface pictograms use Google Material Symbols Outlined, FILL 1.
+  dist/icons.js is the shared DOM helper and semantic alias map.
+  Toolbar formatting uses Material Symbols; Quill renders content only.
+  Native checkbox/cursor assets retain official Google symbol paths.
+  Font subset names are identical in product and visual reference.
+  Preserve accessible labels on controls; glyphs are decorative.
+
 RESPONSIVE / INPUT
   Mobile <=768 px. Desktop >=769 px.
   Editor adapts at <=1100 px. Dashboard container thresholds 999/579 px.

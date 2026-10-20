@@ -79,7 +79,7 @@
 .ds-source { display: grid; grid-template-columns: 18px 90px 1fr; gap: 16px; padding: 16px; border: 1px solid var(--line); border-radius: var(--csa-foundation-radius-10); }
 .ds-source input { appearance: none; width: var(--csa-component-checkbox-size); height: var(--csa-component-checkbox-size); margin: 0; border: 1px solid var(--line); border-radius: var(--csa-component-checkbox-radius); background: white; }
 .ds-source input:checked { background: var(--csa-component-checkbox-selected-background); }
-.ds-source input:checked::after { content: '✓'; display: grid; place-items: center; color: white; font-size: 13px; }
+.ds-source input:checked { background-image: url("../assets/material-check.svg"); background-position: center; background-repeat: no-repeat; background-size: 14px 14px; }
 .ds-photo { display: grid; place-items: center; min-height: 90px; border-radius: var(--csa-foundation-radius-10); background: var(--csa-foundation-color-stone-200); color: var(--muted); }
 .ds-source .ds-caption { margin: 0; }
 .ds-source h4 { margin: 6px 0; font-size: 14px; }
@@ -169,3 +169,5 @@
 
 .ds-heart { position: static; width: 40px; height: 40px; }
 .ds-toolbar { margin: 0; max-width: 100%; }
+
+.ds-text-link .material-symbols-outlined, .ds-downloads .material-symbols-outlined, .ds-end .material-symbols-outlined { font-size: 16px; vertical-align: middle; }

@@ -1,20 +1,21 @@
+import { createIcon as icon } from './icons.js?v=20261020-material-symbols';
 import { parseSourceLinks, formatSourceLinks } from './source-links.js';
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261020-empty-segment-labels';
-import { createVariantFeedback } from './variant-feedback.js?v=20261018-connected-sources';
-import { createProfile } from './profile.js?v=20261019-profile-dirty-state';
-import { createSearchExperience } from './search.js?v=20261019-saved-variant-names';
-import { createDashboard } from './dashboard.js?v=20261020-empty-segment-labels';
-import { createMaterialEditor } from './editor.js?v=20261019-toolbar-style';
-import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261018-project-delete';
-import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
-import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261018-search-preview';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261019-toolbar-style';
-import { createRailNavigation } from './navigation.js?v=20261019-mobile-option-taps';
-import { createProjectSources } from './sources.js?v=20261018-variant-source-selection';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, createOutputEditButton, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261020-empty-segment-labels';
-import { createEditorTabs } from './editor-tabs.js?v=20261020-empty-segment-labels';
-import { createOutputSettings } from './output-settings.js?v=20261020-empty-segment-labels';
-import { createOutputPresets } from './output-presets.js?v=20261020-empty-segment-labels';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261020-material-symbols';
+import { createVariantFeedback } from './variant-feedback.js?v=20261020-material-symbols';
+import { createProfile } from './profile.js?v=20261020-material-symbols';
+import { createSearchExperience } from './search.js?v=20261020-material-symbols';
+import { createDashboard } from './dashboard.js?v=20261020-material-symbols';
+import { createMaterialEditor } from './editor.js?v=20261020-material-symbols';
+import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261020-material-symbols';
+import { removeProjectContent } from './project-deletion.js?v=20261020-material-symbols';
+import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261020-material-symbols';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261020-material-symbols';
+import { createRailNavigation } from './navigation.js?v=20261020-material-symbols';
+import { createProjectSources } from './sources.js?v=20261020-material-symbols';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, createOutputEditButton, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261020-material-symbols';
+import { createEditorTabs } from './editor-tabs.js?v=20261020-material-symbols';
+import { createOutputSettings } from './output-settings.js?v=20261020-material-symbols';
+import { createOutputPresets } from './output-presets.js?v=20261020-material-symbols';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -464,14 +465,7 @@ function element(tag, className, text) {
   return node;
 }
 
-function icon(name) {
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-  svg.setAttribute('aria-hidden', 'true');
-  use.setAttribute('href', `#icon-${name}`);
-  svg.append(use);
-  return svg;
-}
+
 
 function titleFrom(text) {
   const line = text.trim().split('\n')[0].replace(/^#+\s*/, '');

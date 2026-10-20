@@ -1,3 +1,4 @@
+import { createIcon } from './icons.js?v=20261020-material-symbols';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',
@@ -379,7 +380,7 @@ export function renderOutputs(project, requestedView) {
     const indicator = document.createElement('span');
     indicator.className = 'output-selection-indicator';
     indicator.setAttribute('aria-hidden', 'true');
-    if (selected) indicator.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
+    if (selected) indicator.append(createIcon('check'));
     const selection = document.createElement('button');
     selection.type = 'button';
     selection.className = 'output-selection-button';

@@ -1,3 +1,4 @@
+import { createIcon } from './icons.js?v=20261020-material-symbols';
 // Sample content for the results-screen prototype. No live news requests are made.
 function sampleArticles(query) {
   const isKelly = /^kelly\s+clarkson$/i.test(query.trim());
@@ -166,7 +167,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       selection.setAttribute('aria-checked', String(state.selected.has(article.id)));
       const indicator = node('span', 'result-selection-indicator');
       indicator.setAttribute('aria-hidden', 'true');
-      if (state.selected.has(article.id)) indicator.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
+      if (state.selected.has(article.id)) indicator.append(createIcon('check'));
       selection.title = state.selected.has(article.id) ? 'Unselect this story' : 'Select this story for your draft';
       const thumbnail = node('span', `result-thumbnail${article.referenceImage ? ' result-thumbnail--reference' : ''}`);
       thumbnail.setAttribute('aria-hidden', 'true');
@@ -180,9 +181,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       inspect.setAttribute('aria-label', `Inspect story ${article.id.split('-').pop()}: ${article.title}`);
       inspect.setAttribute('aria-haspopup', 'dialog');
       inspect.setAttribute('aria-controls', 'article-preview-dialog');
-      const eye = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      const eyeUse = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-      eye.setAttribute('aria-hidden', 'true'); eyeUse.setAttribute('href', '#icon-eye'); eye.append(eyeUse);
+      const eye = createIcon('visibility');
       inspect.append(eye);
       const separator = node('span', '', '|');
       separator.setAttribute('aria-hidden', 'true');
@@ -202,9 +201,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       previewButton.dataset.previewArticleId = article.id;
       previewButton.setAttribute('aria-label', `Preview story ${article.id.split('-').pop()}: ${article.title}`);
       previewButton.title = 'Article preview';
-      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-      svg.setAttribute('aria-hidden', 'true'); use.setAttribute('href', '#icon-open'); svg.append(use);
+      const svg = createIcon('open_in_new');
       previewButton.append(svg);
       item.append(card, previewButton);
       const addition = node('div', 'result-addition');

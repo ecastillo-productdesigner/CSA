@@ -1,4 +1,4 @@
-import { customVariantName, savedVariantName } from './outputs.js?v=20261020-empty-segment-labels';
+import { customVariantName, savedVariantName } from './outputs.js?v=20261020-material-symbols';
 
 export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
   const menu = document.querySelector('#output-edit-menu');

@@ -1,4 +1,4 @@
-import { projectOutputs, createOutputBadges, savedVariantName } from './outputs.js?v=20261020-empty-segment-labels';
+import { projectOutputs, createOutputBadges, savedVariantName } from './outputs.js?v=20261020-material-symbols';
 
 export function createOutputPresets({ onSelect, onDelete }) {
   const root = document.querySelector('#output-presets');
@@ -15,7 +15,7 @@ export function createOutputPresets({ onSelect, onDelete }) {
   const remove = document.createElement('button');
   remove.type = 'button';
   remove.setAttribute('role', 'menuitem');
-  remove.innerHTML = '<svg aria-hidden="true"><use href="#icon-delete-project"/></svg><span>Delete</span>';
+  remove.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">delete</span><span>Delete</span>';
   actions.append(remove);
   root.append(actions);
 
@@ -161,7 +161,7 @@ export function createOutputPresets({ onSelect, onDelete }) {
         more.setAttribute('aria-haspopup', 'menu');
         more.setAttribute('aria-expanded', 'false');
         more.setAttribute('aria-controls', actions.id);
-        more.innerHTML = '<svg aria-hidden="true"><use href="#icon-more"/></svg>';
+        more.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">more_horiz</span>';
         more.addEventListener('click', () => openActions(project.id, output.id, more));
         more.addEventListener('keydown', event => {
           if (['ArrowRight', 'Enter', ' '].includes(event.key)) { event.preventDefault(); event.stopPropagation(); openActions(project.id, output.id, more); }

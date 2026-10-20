@@ -60,11 +60,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     quill.root.setAttribute('spellcheck', 'true');
     quill.on('text-change', () => { if (!loading) { updateCounts(); updateToolbar(); updateFind(); scheduleSave(); if (!$('#editor-metadata').hidden) updateMetadata(); onContentChange(); } });
     quill.on('selection-change', (range) => { if (range) { selection = range; updateToolbar(); } });
-    const icons = Quill.import('ui/icons');
-    for (const button of $('#editor-toolbar').querySelectorAll('[data-format], [data-list], [data-editor-action="clear"]')) {
-      const icon = button.dataset.format ? icons[button.dataset.format] : button.dataset.list ? icons.list[button.dataset.list] : icons.clean;
-      if (typeof icon === 'string') button.innerHTML = icon;
-    }
+
   }
 
   function resizeTitle() { title.style.height = 'auto'; title.style.height = `${Math.max(44, title.scrollHeight)}px`; }

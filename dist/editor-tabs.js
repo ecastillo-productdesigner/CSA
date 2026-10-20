@@ -1,4 +1,5 @@
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261020-empty-segment-labels';
+import { createIcon } from './icons.js?v=20261020-material-symbols';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261020-material-symbols';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');
@@ -72,18 +73,7 @@ export function createEditorTabs({ onSelect }) {
           const badge = document.createElement('span');
           badge.className = 'editor-tab-draft';
           badge.setAttribute('aria-hidden', 'true');
-          if (sent) {
-            const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-            use.setAttribute('href', '#icon-sent');
-            icon.append(use);
-            badge.append(icon);
-          } else {
-            const icon = document.createElement('span');
-            icon.className = 'material-symbols-outlined';
-            icon.textContent = 'draw';
-            badge.append(icon);
-          }
+          badge.append(createIcon(sent ? 'send' : 'draw'));
           badge.append(document.createTextNode(status));
           badge.dataset.sent = String(sent);
           tab.append(badge);

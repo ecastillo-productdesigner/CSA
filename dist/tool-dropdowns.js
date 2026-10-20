@@ -1,18 +1,9 @@
-import { bindTapActivation } from './tap-activation.js?v=20261019-mobile-option-taps';
+import { createIcon } from './icons.js?v=20261020-material-symbols';
+import { bindTapActivation } from './tap-activation.js?v=20261020-material-symbols';
 
 const favoritesStorageKey = 'csa.tool-favorites.v1';
 
-function toolIcon(name) {
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', '0 0 24 24');
-  svg.setAttribute('aria-hidden', 'true');
-  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  path.setAttribute('d', name === 'heart'
-    ? 'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.9-8.6a5.5 5.5 0 0 0-.1-7.8Z'
-    : 'M3 6h18M7 12h10M10 18h4');
-  svg.append(path);
-  return svg;
-}
+function toolIcon(name) { return createIcon(name === 'heart' ? 'favorite' : 'filter_list'); }
 
 export function createToolDropdowns({ notify = () => {} } = {}) {
   let savedFavorites = {};
@@ -45,12 +36,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
     trigger.setAttribute('aria-expanded', 'false');
     trigger.setAttribute('aria-controls', `${select.id}-options`);
     const text = document.createElement('span');
-    const chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    chevron.setAttribute('viewBox', '0 0 24 24');
-    chevron.setAttribute('aria-hidden', 'true');
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', 'm6 9 6 6 6-6');
-    chevron.append(path);
+    const chevron = createIcon('keyboard_arrow_down', 'tool-dropdown-chevron');
     trigger.append(text, chevron);
 
     const menu = document.createElement('div');
@@ -99,6 +85,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
       button.className = 'tool-dropdown-option';
       if (!supportsFavorites) { button.setAttribute('role', 'option'); button.tabIndex = -1; }
       button.textContent = option.textContent;
+      button.append(createIcon('check', 'tool-dropdown-check'));
       bindTapActivation(button, () => {
         if (menu.hidden || select.disabled) return;
         select.value = option.value;

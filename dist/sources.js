@@ -46,7 +46,7 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
   const remove = document.createElement('button');
   remove.type = 'button';
   remove.setAttribute('role', 'menuitem');
-  remove.innerHTML = '<svg aria-hidden="true"><use href="#icon-delete-project"/></svg><span>Delete</span>';
+  remove.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">delete</span><span>Delete</span>';
   menu.append(remove);
   list.parentElement.append(menu);
 
@@ -211,7 +211,7 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
       more.setAttribute('aria-haspopup', 'menu');
       more.setAttribute('aria-expanded', 'false');
       more.setAttribute('aria-controls', menu.id);
-      more.innerHTML = '<svg aria-hidden="true"><use href="#icon-more"/></svg>';
+      more.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">more_horiz</span>';
       more.addEventListener('click', () => openMenu(source, more));
       more.addEventListener('keydown', event => { if (['ArrowDown', 'ArrowUp'].includes(event.key)) { event.preventDefault(); openMenu(source, more); } });
       if (available) row.append(more);

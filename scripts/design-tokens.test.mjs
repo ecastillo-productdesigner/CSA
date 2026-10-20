@@ -55,7 +55,8 @@ test('mobile viewport thresholds stay in sync with documented tokens',async()=>{
 test('embedded SVG images keep literal colors because CSS variables cannot cross into assets',async()=>{
   const css=await readFile(new URL('../dist/styles.css',import.meta.url),'utf8');
   const assets=[...css.matchAll(/url\("(data:[^"]+)"\)/g)].map(match=>decodeURIComponent(match[1]));
-  assert.ok(assets.length>0);
   for(const asset of assets) assert.ok(!asset.includes('var('),'Custom property inside an isolated data URL');
-  assert.ok(assets.some(asset=>asset.includes("stroke='#ffffff'")&&asset.includes('m5 12 4 4L19 6')),'Checkbox retains its visible white tick');
+  const check = await readFile(new URL('../dist/assets/material-check.svg', import.meta.url), 'utf8');
+  assert.match(check, /fill="#ffffff"/, 'Checkbox retains its visible white Google glyph');
+  assert.match(check, /M382-240 154-468/, 'Checkbox uses the official Material Symbols check path');
 });

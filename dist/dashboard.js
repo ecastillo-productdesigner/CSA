@@ -1,4 +1,5 @@
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261020-empty-segment-labels';
+import { createIcon as icon } from './icons.js?v=20261020-material-symbols';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261020-material-symbols';
 
 function node(tag, className, text) {
   const element = document.createElement(tag);
@@ -7,14 +8,7 @@ function node(tag, className, text) {
   return element;
 }
 
-function icon(name) {
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-  svg.setAttribute('aria-hidden', 'true');
-  use.setAttribute('href', `#icon-${name}`);
-  svg.append(use);
-  return svg;
-}
+
 
 function projectDate(timestamp) {
   const day = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' });

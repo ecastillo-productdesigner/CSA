@@ -1,0 +1,8 @@
+Google Material Symbols (Outlined, FILL 1)
+https://github.com/google/material-design-icons
+
+material-check.svg: symbols/web/check/materialsymbolsoutlined/check_fill1_24px.svg
+sidebar-expand-cursor.svg: symbols/web/arrow_forward/materialsymbolsoutlined/arrow_forward_fill1_24px.svg
+Only colors/cursor outline are adapted. Paths are the official Google shapes.
+Font glyphs are served by Google Fonts using the verified subset in index.html.
+License: material-symbols-LICENSE.txt (Apache 2.0).

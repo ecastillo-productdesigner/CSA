@@ -8,11 +8,11 @@
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=alt_route,chevron_forward,description,draw,edit,expand_all,favorite,folder_open,keyboard_arrow_down,keyboard_arrow_up,photo_camera,right_panel_close,right_panel_open,upload_file">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,1,0&amp;icon_names=add_circle,alt_route,archive,arrow_forward,arrow_upward,auto_awesome,build,check,chevron_forward,close,contract_edit,delete,description,draw,edit,expand_all,favorite,filter_list,folder_open,format_bold,format_clear,format_color_text,format_indent_decrease,format_indent_increase,format_italic,format_list_bulleted,format_list_numbered,format_strikethrough,format_underlined,history,ink_highlighter,keyboard_arrow_down,keyboard_arrow_up,link,more_horiz,open_in_new,photo_camera,redo,restore_from_trash,right_panel_open,search,send,thumb_down,thumb_up,tune,undo,upload,upload_file,visibility&amp;display=block">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:opsz,wght@6..72,700&amp;display=swap">
     <link rel="stylesheet" href="./design-system/tokens.css?v=20261019-radius-scale">
-    <link rel="stylesheet" href="./styles.css?v=20261020-empty-segment-labels">
-    <script src="./demo-access.js?v=20261020-empty-segment-labels" type="module"></script>
+    <link rel="stylesheet" href="./styles.css?v=20261020-material-symbols">
+    <script src="./demo-access.js?v=20261020-material-symbols" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -35,35 +35,7 @@
 
     <div id="workspace-app" hidden inert>
     <a class="skip-link" href="#main">Skip to content</a>
-    <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <symbol id="icon-plus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M12 7v10M7 12h10" stroke="var(--icon-cutout, white)" stroke-width="2" stroke-linecap="round"/></symbol>
-      <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h13M12 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
-      <symbol id="icon-sent" viewBox="0 0 24 24"><path d="M22 3 2 11l6 2.5V22l3.5-5.5L17 21 22 3ZM8 13.5 22 3 11.5 16.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icon-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="19" cy="12" r="1.8" fill="currentColor"/></symbol>
-      <symbol id="icon-delete-project" viewBox="0 -960 960 960"><path fill="currentColor" d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></symbol>
-      <symbol id="icon-open" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7L10 14M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icon-thumb-up" viewBox="0 0 24 24"><path d="M7 10v11H3V10Zm0 0 5-7a2.5 2.5 0 0 1 2 3l-1 4h6a2 2 0 0 1 2 2.4l-1.5 7A2 2 0 0 1 17.5 21H7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icon-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
-      <symbol id="icon-undo" viewBox="0 0 24 24"><path d="m9 4-5 5 5 5M4 9h9a6 6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icon-redo" viewBox="0 0 24 24"><path d="m15 4 5 5-5 5m5-5h-9a6 6 0 0 0 0 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icon-history" viewBox="0 0 24 24"><path d="M4.5 8A8.3 8.3 0 1 1 4 15M4 3.5V8h4.5M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icon-file" viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8Zm0 0v5h5M9 13h6M9 17h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icon-document" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8h-4a2 2 0 0 1-2-2Zm2 0v4h4Z" fill="currentColor"/><path d="M9 14h6m-6 4h3" fill="none" stroke="var(--icon-cutout, white)" stroke-width="1.8" stroke-linecap="round"/></symbol>
-      <symbol id="icon-link" viewBox="0 0 24 24"><path d="m10 13 4-4m-5 7-2 2a3.5 3.5 0 0 1-5-5l4-4a3.5 3.5 0 0 1 5 0m2 0 2-2a3.5 3.5 0 1 1 5 5l-4 4a3.5 3.5 0 0 1-5 0" transform="translate(1 -1)" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
-      <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
-      <symbol id="icon-filters" viewBox="0 0 24 24"><path d="M5 8h14M5 16h14" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 4h5v8H8zm4 8h5v8h-5z" fill="currentColor"/></symbol>
-      <symbol id="icon-edit-output" viewBox="0 0 24 24"><path d="M3 4h12M3 8h12M3 12h7m3 6 7-7 3 3-7 7h-3Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="round"/></symbol>
-      <symbol id="icon-archive" viewBox="0 0 24 24"><path d="M4 8h16v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z" fill="currentColor"/><path d="M3 3h18v5H3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12h6" stroke="var(--icon-cutout, white)" stroke-width="1.7"/></symbol>
-      <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M6 6h12l-1 15H7z" fill="currentColor"/><path d="M4 5h16M9 3h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10 9v8m4-8v8" stroke="var(--icon-cutout, white)" stroke-width="1.2"/></symbol>
-      <symbol id="icon-restore" viewBox="0 0 24 24"><path d="M4 9a8 8 0 1 1 0 6M4 4v5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icon-tools" viewBox="0 0 24 24"><path d="m14 5 5-2-1 5-3 1-9 11-3-3L14 8ZM4 3l4 4m2 3 10 10M3 4l2-2 4 4-2 2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icon-variants" viewBox="0 -960 960 960" fill="currentColor"><path d="M360-600v-80h360v80H360Zm0 120v-80h360v80H360Zm120 320H200h280Zm0 80H240q-50 0-85-35t-35-85v-120h120v-560h600v361q-20-2-40.5 1.5T760-505v-295H320v480h240l-80 80H200v40q0 17 11.5 28.5T240-160h240v80Zm80 0v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-300L683-80H560Zm300-263-37-37 37 37ZM620-140h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z"/></symbol>
-      <symbol id="icon-outputs" viewBox="0 0 24 24"><path d="M8 3v2m0 8v2M2 9h2m8 0h2M4 5l1.5 1.5m5 5L12 13M4 13l1.5-1.5m5-5L12 5m5 6v2m0 8v2m-6-6h2m8 0h2m-10-4 1.5 1.5m5 5L21 21m-8 0 1.5-1.5m5-5L21 13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="9" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
-    </svg>
-
-    <span class="navigation-tooltip" id="new-project-tooltip" role="tooltip" hidden>New Project</span>
+<span class="navigation-tooltip" id="new-project-tooltip" role="tooltip" hidden>New Project</span>
     <span class="navigation-tooltip" id="sources-tooltip" role="tooltip" hidden>Sources</span>
     <span class="navigation-tooltip" id="account-tooltip" role="tooltip" hidden>My account</span>
     <aside class="sidebar" id="navigation-drawer" aria-label="Main navigation. Press Enter to open drawer." data-expanded="false" tabindex="0">
@@ -73,11 +45,11 @@
       </div>
       <nav class="navigation" id="workspace-navigation" aria-label="Workspace">
         <button class="icon-button nav-button mobile-workspace-trigger" id="show-new-variant" type="button" aria-label="New Variant" title="New Variant" aria-controls="composer-tools" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">alt_route</span></button>
-        <button class="icon-button nav-button mobile-workspace-trigger" id="show-variants" type="button" aria-label="Variants" title="Variants" aria-controls="composer-outputs" aria-expanded="false"><svg aria-hidden="true"><use href="#icon-variants"/></svg></button>
+        <button class="icon-button nav-button mobile-workspace-trigger" id="show-variants" type="button" aria-label="Variants" title="Variants" aria-controls="composer-outputs" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">contract_edit</span></button>
         <button class="icon-button nav-button" id="show-sources" type="button" aria-label="Sources" aria-describedby="sources-tooltip" hidden aria-controls="editor-sources" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">folder_open</span><span class="nav-label">Sources</span></button>
-        <button class="icon-button nav-button" id="new-project" type="button" aria-label="New project" aria-describedby="new-project-tooltip"><svg aria-hidden="true"><use href="#icon-plus"/></svg><span class="nav-label">New project</span></button>
+        <button class="icon-button nav-button" id="new-project" type="button" aria-label="New project" aria-describedby="new-project-tooltip"><span class="material-symbols-outlined" aria-hidden="true">add_circle</span><span class="nav-label">New project</span></button>
     <section class="recents-panel sources-panel" id="editor-sources" role="region" aria-label="Sources" hidden>
-      <div class="mobile-panel-heading"><h2>Sources</h2><button class="icon-button" type="button" data-close-navigation="sources" aria-label="Close Sources panel"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></div>
+      <div class="mobile-panel-heading"><h2>Sources</h2><button class="icon-button" type="button" data-close-navigation="sources" aria-label="Close Sources panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
       <div class="sources-panel-content">
         <button class="editor-add-source-button" id="editor-add-source-button" type="button">Add new source</button>
         <p class="editor-source-selection-status" id="editor-source-selection-status" role="status"></p>
@@ -124,8 +96,8 @@
               <div class="editor-navigation">
               </div>
               <div class="editor-document-actions" hidden>
-                <button class="editor-nav-button" id="editor-find-button" type="button" aria-label="Find and replace" aria-expanded="false" aria-controls="editor-find"><svg aria-hidden="true"><use href="#icon-search"/></svg></button>
-                <details class="editor-download" id="editor-download"><summary>Download <span aria-hidden="true">⌄</span></summary><div><button type="button" data-export="html">Formatted document (.html)</button><button type="button" data-export="text">Plain text (.txt)</button><button type="button" id="editor-copy">Copy text</button><button type="button" id="editor-print">Print / Save as PDF</button></div></details>
+                <button class="editor-nav-button" id="editor-find-button" type="button" aria-label="Find and replace" aria-expanded="false" aria-controls="editor-find"><span class="material-symbols-outlined" aria-hidden="true">search</span></button>
+                <details class="editor-download" id="editor-download"><summary>Download <span class="material-symbols-outlined" aria-hidden="true">keyboard_arrow_down</span></summary><div><button type="button" data-export="html">Formatted document (.html)</button><button type="button" data-export="text">Plain text (.txt)</button><button type="button" id="editor-copy">Copy text</button><button type="button" id="editor-print">Print / Save as PDF</button></div></details>
               </div>
 
             </div>
@@ -137,18 +109,18 @@
             <div class="editor-sheet">
               <header class="editor-document-header"><div class="editor-document-status"><span class="editor-draft-badge editor-tab-draft"><span class="material-symbols-outlined" aria-hidden="true">draw</span>Draft</span></div><div class="editor-variant-labels" id="editor-variant-labels" role="group" aria-label="Variant settings" hidden></div><label class="visually-hidden" for="editor-title">Story title</label><textarea id="editor-title" rows="1" maxlength="180" placeholder="Untitled story"></textarea></header>
               <div class="editor-toolbar" id="editor-toolbar" role="toolbar" aria-label="Text formatting">
-                <div class="editor-toolbar-group"><button type="button" data-editor-action="undo" aria-label="Undo" title="Undo (⌘/Ctrl+Z)"><svg aria-hidden="true"><use href="#icon-undo"/></svg></button><button type="button" data-editor-action="redo" aria-label="Redo" title="Redo (⌘/Ctrl+Shift+Z)"><svg aria-hidden="true"><use href="#icon-redo"/></svg></button></div>
+                <div class="editor-toolbar-group"><button type="button" data-editor-action="undo" aria-label="Undo" title="Undo (⌘/Ctrl+Z)"><span class="material-symbols-outlined" aria-hidden="true">undo</span></button><button type="button" data-editor-action="redo" aria-label="Redo" title="Redo (⌘/Ctrl+Shift+Z)"><span class="material-symbols-outlined" aria-hidden="true">redo</span></button></div>
                 <div class="editor-toolbar-group"><div class="editor-style-field" data-label="Text style" data-placeholder="Normal text"><select id="editor-block" aria-label="Text style" hidden><option value="">Normal text</option><option value="1">Heading 1</option><option value="2">Heading 2</option><option value="3">Heading 3</option><option value="quote">Quote</option></select></div></div>
-                <div class="editor-toolbar-group"><button type="button" data-format="bold" aria-label="Bold" aria-pressed="false" title="Bold (⌘/Ctrl+B)"><b>B</b></button><button type="button" data-format="italic" aria-label="Italic" aria-pressed="false" title="Italic (⌘/Ctrl+I)"><i>I</i></button><button type="button" data-format="underline" aria-label="Underline" aria-pressed="false" title="Underline (⌘/Ctrl+U)"><u>U</u></button><button type="button" data-format="strike" aria-label="Strikethrough" aria-pressed="false"><s>S</s></button></div>
-                <div class="editor-toolbar-group" hidden><button type="button" data-editor-action="link" aria-label="Add or edit link" title="Add link (⌘/Ctrl+K)"><svg aria-hidden="true"><use href="#icon-link"/></svg></button><label class="editor-color-control" title="Text color"><span aria-hidden="true">A</span><input id="editor-color" type="color" value="#26344a" aria-label="Text color"></label><button type="button" data-editor-action="highlight" aria-label="Highlight text" aria-pressed="false" title="Highlight text"><mark>A</mark></button><button type="button" data-editor-action="clear" aria-label="Clear formatting" title="Clear formatting">T<span class="editor-clear-mark">×</span></button></div>
-                <div class="editor-toolbar-group" hidden><button type="button" data-list="bullet" aria-label="Bulleted list" aria-pressed="false" title="Bulleted list">≡<span class="editor-list-dot">•</span></button><button type="button" data-list="ordered" aria-label="Numbered list" aria-pressed="false" title="Numbered list">1.</button><button type="button" data-editor-action="outdent" aria-label="Decrease indent" title="Decrease indent">⇤</button><button type="button" data-editor-action="indent" aria-label="Increase indent" title="Increase indent">⇥</button><select id="editor-align" aria-label="Text alignment"><option value="">Align left</option><option value="center">Center</option><option value="right">Align right</option><option value="justify">Justify</option></select></div>
+                <div class="editor-toolbar-group"><button type="button" data-format="bold" aria-label="Bold" aria-pressed="false" title="Bold (⌘/Ctrl+B)"><span class="material-symbols-outlined" aria-hidden="true">format_bold</span></button><button type="button" data-format="italic" aria-label="Italic" aria-pressed="false" title="Italic (⌘/Ctrl+I)"><span class="material-symbols-outlined" aria-hidden="true">format_italic</span></button><button type="button" data-format="underline" aria-label="Underline" aria-pressed="false" title="Underline (⌘/Ctrl+U)"><span class="material-symbols-outlined" aria-hidden="true">format_underlined</span></button><button type="button" data-format="strike" aria-label="Strikethrough" aria-pressed="false"><span class="material-symbols-outlined" aria-hidden="true">format_strikethrough</span></button></div>
+                <div class="editor-toolbar-group" hidden><button type="button" data-editor-action="link" aria-label="Add or edit link" title="Add link (⌘/Ctrl+K)"><span class="material-symbols-outlined" aria-hidden="true">link</span></button><label class="editor-color-control" title="Text color"><span class="material-symbols-outlined" aria-hidden="true">format_color_text</span><input id="editor-color" type="color" value="#26344a" aria-label="Text color"></label><button type="button" data-editor-action="highlight" aria-label="Highlight text" aria-pressed="false" title="Highlight text"><span class="material-symbols-outlined" aria-hidden="true">ink_highlighter</span></button><button type="button" data-editor-action="clear" aria-label="Clear formatting" title="Clear formatting"><span class="material-symbols-outlined" aria-hidden="true">format_clear</span></button></div>
+                <div class="editor-toolbar-group" hidden><button type="button" data-list="bullet" aria-label="Bulleted list" aria-pressed="false" title="Bulleted list"><span class="material-symbols-outlined" aria-hidden="true">format_list_bulleted</span></button><button type="button" data-list="ordered" aria-label="Numbered list" aria-pressed="false" title="Numbered list"><span class="material-symbols-outlined" aria-hidden="true">format_list_numbered</span></button><button type="button" data-editor-action="outdent" aria-label="Decrease indent" title="Decrease indent"><span class="material-symbols-outlined" aria-hidden="true">format_indent_decrease</span></button><button type="button" data-editor-action="indent" aria-label="Increase indent" title="Increase indent"><span class="material-symbols-outlined" aria-hidden="true">format_indent_increase</span></button><select id="editor-align" aria-label="Text alignment"><option value="">Align left</option><option value="center">Center</option><option value="right">Align right</option><option value="justify">Justify</option></select></div>
               </div>
               <div id="rich-text-editor"></div>
               <div class="editor-publish-actions"><button class="editor-wordpress-button" id="editor-wordpress" type="button">Send to WordPress</button></div>
               <footer class="editor-footer"><button class="editor-metadata-trigger" id="editor-metadata-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-metadata">Metadata<span class="material-symbols-outlined editor-flyover-chevron" aria-hidden="true">chevron_forward</span></button><span id="editor-word-count">0 words</span><span id="editor-character-count">0 characters</span><span id="editor-read-time">0 min read</span><span id="editor-save-status" role="status">Saved on this device</span><span class="editor-created" id="editor-created" hidden>Created: <time id="editor-created-time"></time></span><span class="editor-spellcheck">Spellcheck on</span><p class="editor-content-note">No new facts or information will be added. Each draft adapts your approved content while maintaining factual accuracy.</p></footer>
             </div>
             <div class="editor-context-panel editor-flyover" id="editor-metadata" role="dialog" aria-labelledby="editor-metadata-heading" tabindex="-1" hidden>
-              <div class="editor-panel-heading"><h2 id="editor-metadata-heading">Metadata</h2><button class="icon-button" type="button" data-editor-close="metadata" aria-label="Close metadata" title="Close metadata"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></div>
+              <div class="editor-panel-heading"><h2 id="editor-metadata-heading">Metadata</h2><button class="icon-button" type="button" data-editor-close="metadata" aria-label="Close metadata" title="Close metadata"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
               <dl class="editor-seo-metadata"><div><dt>SEO title:</dt> <dd id="editor-seo-title">—</dd></div><div><dt>Meta description:</dt> <dd id="editor-meta-description">—</dd></div><div><dt>SEO keywords:</dt> <dd id="editor-seo-keywords">—</dd></div></dl>
             </div>
           </section>
@@ -156,11 +128,11 @@
         </div>
         <aside class="composer-rail" aria-label="Project tools and variants">
           <section class="composer-panel composer-tools" id="composer-tools" aria-labelledby="composer-tools-heading">
-            <div class="composer-tools-header"><h2 id="composer-tools-heading" tabindex="-1"><span class="material-symbols-outlined" aria-hidden="true">alt_route</span><span>New Variant</span></h2><div class="composer-tools-actions"><button class="icon-button mobile-panel-close" type="button" data-close-navigation="newVariant" aria-label="Close New Variant panel"><svg aria-hidden="true"><use href="#icon-close"/></svg></button><button class="icon-button tool-collapse-button" id="toggle-new-variant" type="button" aria-label="Collapse New Variant" aria-expanded="true" aria-controls="composer-variant-form" title="Collapse New Variant"><span class="material-symbols-outlined" aria-hidden="true">keyboard_arrow_up</span></button></div></div>
+            <div class="composer-tools-header"><h2 id="composer-tools-heading" tabindex="-1"><span class="material-symbols-outlined" aria-hidden="true">alt_route</span><span>New Variant</span></h2><div class="composer-tools-actions"><button class="icon-button mobile-panel-close" type="button" data-close-navigation="newVariant" aria-label="Close New Variant panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button><button class="icon-button tool-collapse-button" id="toggle-new-variant" type="button" aria-label="Collapse New Variant" aria-expanded="true" aria-controls="composer-variant-form" title="Collapse New Variant"><span class="material-symbols-outlined" aria-hidden="true">keyboard_arrow_up</span></button></div></div>
             <div id="composer-variant-form">
             <div class="composer-fields">
             <div class="output-presets" id="output-presets" hidden>
-              <button class="tool-dropdown-trigger" id="output-presets-trigger" type="button" aria-haspopup="menu" aria-controls="output-presets-options" aria-expanded="false"><span>Saved Variants</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+              <button class="tool-dropdown-trigger" id="output-presets-trigger" type="button" aria-haspopup="menu" aria-controls="output-presets-options" aria-expanded="false"><span>Saved Variants</span><span class="material-symbols-outlined tool-dropdown-chevron" aria-hidden="true">keyboard_arrow_down</span></button>
               <div class="output-presets-menu" id="output-presets-options" role="menu" aria-label="Saved Variants" hidden></div>
             </div>
               <div class="composer-field" data-label="Format">
@@ -183,7 +155,7 @@
             </div>
           </section>
           <section class="composer-panel composer-outputs" id="composer-outputs" aria-labelledby="composer-outputs-heading">
-            <div class="composer-outputs-header"><h2 id="composer-outputs-heading" tabindex="-1"><svg aria-hidden="true"><use href="#icon-variants"/></svg><span>Variants</span></h2><button class="icon-button mobile-panel-close" type="button" data-close-navigation="variants" aria-label="Close Variants panel"><svg aria-hidden="true"><use href="#icon-close"/></svg></button>
+            <div class="composer-outputs-header"><h2 id="composer-outputs-heading" tabindex="-1"><span class="material-symbols-outlined" aria-hidden="true">contract_edit</span><span>Variants</span></h2><button class="icon-button mobile-panel-close" type="button" data-close-navigation="variants" aria-label="Close Variants panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
             </div>
             <div class="output-status-tabs" role="tablist" aria-label="Variant status">
               <button id="output-pending-tab" type="button" role="tab" aria-selected="true" aria-controls="output-status-content" data-output-view="pending">To Create</button>
@@ -205,7 +177,7 @@
         <form class="search-form" id="start-form" role="search">
           <label class="visually-hidden" for="source-input">Search or paste URLs to start</label>
           <input id="source-input" name="source" type="text" placeholder="Search or paste URLs to start" autocomplete="off" maxlength="4000" required>
-          <button class="submit-button" id="start-button" type="submit" aria-label="Start a project" disabled><svg><use href="#icon-arrow"/></svg></button>
+          <button class="submit-button" id="start-button" type="submit" aria-label="Start a project" disabled><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></button>
         </form>
         <p class="divider">Or</p>
         <div class="material-options">
@@ -219,7 +191,7 @@
         <form class="search-form results-search-form" id="results-search-form" role="search">
           <label class="visually-hidden" for="results-query">Search articles</label>
           <input id="results-query" type="text" placeholder="Search or paste URLs to start" autocomplete="off" maxlength="4000" required>
-          <button class="submit-button" id="results-search-button" type="submit" aria-label="Search again"><svg><use href="#icon-arrow"/></svg></button>
+          <button class="submit-button" id="results-search-button" type="submit" aria-label="Search again"><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></button>
         </form>
         <div class="results-toolbar">
           <div class="results-sort results-sort-field" data-label="Sort articles"><span>Sort by:</span><select class="visually-hidden" id="results-sort" aria-label="Sort articles" aria-hidden="true" tabindex="-1"><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="relevance">Relevance</option></select></div>
@@ -263,7 +235,7 @@
 
     <dialog class="rename-project-dialog" id="rename-project-dialog" aria-labelledby="rename-project-heading">
       <form id="rename-project-form">
-        <div class="rename-project-heading"><h2 id="rename-project-heading">Edit project name</h2><button class="icon-button" type="button" data-close="rename-project-dialog" aria-label="Close project name dialog"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></div>
+        <div class="rename-project-heading"><h2 id="rename-project-heading">Edit project name</h2><button class="icon-button" type="button" data-close="rename-project-dialog" aria-label="Close project name dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
         <label for="rename-project-name">Project name<input id="rename-project-name" type="text" maxlength="200" autocomplete="off" required autofocus></label>
         <p class="form-error" id="rename-project-error" role="alert" hidden></p>
         <div class="dialog-footer"><button class="secondary-button" type="button" data-close="rename-project-dialog">Cancel</button><button class="primary-button dialog-action-button" id="rename-project-save" type="submit" disabled>Save name</button></div>
@@ -280,10 +252,10 @@
 
     <dialog class="new-project-dialog" id="new-project-dialog" aria-labelledby="new-project-dialog-title">
       <h2 id="new-project-dialog-title">New Project</h2>
-      <button class="icon-button new-project-close" type="button" data-close="new-project-dialog" aria-label="Close new project modal"><svg aria-hidden="true"><use href="#icon-close"/></svg></button>
+      <button class="icon-button new-project-close" type="button" data-close="new-project-dialog" aria-label="Close new project modal"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
       <form class="new-project-search" id="new-project-search-form" role="search">
         <label class="visually-hidden" for="new-project-query">Search a topic or paste URLs</label>
-        <div class="new-project-input"><svg aria-hidden="true"><use href="#icon-search"/></svg><textarea id="new-project-query" rows="1" wrap="off" placeholder="Search a topic or paste URLs" autocomplete="off" maxlength="4000" required></textarea></div>
+        <div class="new-project-input"><span class="material-symbols-outlined" aria-hidden="true">search</span><textarea id="new-project-query" rows="1" wrap="off" placeholder="Search a topic or paste URLs" autocomplete="off" maxlength="4000" required></textarea></div>
         <button class="new-project-continue" id="new-project-submit" type="submit" disabled>Continue</button>
       </form>
       <div class="new-project-divider"><span>or</span></div>
@@ -294,7 +266,7 @@
     </dialog>
 
     <dialog class="article-preview-dialog" id="article-preview-dialog" aria-labelledby="article-preview-title" aria-describedby="article-preview-notice">
-      <div class="panel-heading"><span class="article-preview-badge">Fictional article preview</span><button class="icon-button" type="button" data-close="article-preview-dialog" aria-label="Close article preview"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></div>
+      <div class="panel-heading"><span class="article-preview-badge">Fictional article preview</span><button class="icon-button" type="button" data-close="article-preview-dialog" aria-label="Close article preview"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
       <h2 id="article-preview-title"></h2><p class="article-preview-meta" id="article-preview-meta"></p>
       <p class="article-preview-notice" id="article-preview-notice">Made-up content for the CSA demo.</p>
       <div class="article-preview-body" id="article-preview-body" tabindex="0" role="region" aria-label="Article text"></div>
@@ -302,13 +274,13 @@
     </dialog>
 
     <dialog class="experience-feedback-dialog" id="experience-feedback-dialog" aria-labelledby="experience-feedback-heading">
-      <div class="panel-heading"><h2 id="experience-feedback-heading">Draft feedback</h2><button class="icon-button" type="button" data-close="experience-feedback-dialog" aria-label="Close feedback"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></div>
+      <div class="panel-heading"><h2 id="experience-feedback-heading">Draft feedback</h2><button class="icon-button" type="button" data-close="experience-feedback-dialog" aria-label="Close feedback"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
       <form id="experience-feedback-form" novalidate>
         <div class="experience-feedback-body">
           <fieldset class="feedback-rating-field"><legend>How would you rate this draft? <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></legend>
             <div class="experience-feedback-options" id="experience-feedback-options">
-              <button type="button" data-experience-rating="up" aria-label="Good" aria-pressed="false"><svg aria-hidden="true"><use href="#icon-thumb-up"/></svg><span>Good</span></button>
-              <button type="button" data-experience-rating="down" aria-label="Could be better" aria-pressed="false"><svg class="thumb-down" aria-hidden="true"><use href="#icon-thumb-up"/></svg><span>Could be better</span></button>
+              <button type="button" data-experience-rating="up" aria-label="Good" aria-pressed="false"><span class="material-symbols-outlined" aria-hidden="true">thumb_up</span><span>Good</span></button>
+              <button type="button" data-experience-rating="down" aria-label="Could be better" aria-pressed="false"><span class="material-symbols-outlined" aria-hidden="true">thumb_down</span><span>Could be better</span></button>
             </div>
           </fieldset>
           <div class="feedback-field-row">
@@ -330,16 +302,16 @@
       <div class="experience-feedback-complete" id="experience-feedback-complete" hidden><p class="experience-feedback-thanks" id="experience-feedback-thanks" role="status">Thanks for your feedback!</p><button class="primary-button experience-feedback-done" id="experience-feedback-done" type="button" data-close="experience-feedback-dialog">Done</button></div>
     </dialog>
 
-    <dialog class="editor-link-dialog" id="editor-link-dialog" aria-labelledby="editor-link-heading"><form id="editor-link-form"><div class="editor-panel-heading"><h2 id="editor-link-heading">Add a link</h2><button class="icon-button" type="button" data-close="editor-link-dialog" aria-label="Close link dialog"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></div><label for="editor-link-text">Link text<input id="editor-link-text" type="text" placeholder="Text to display" maxlength="2000"></label><label for="editor-link-url">URL<input id="editor-link-url" type="text" placeholder="https://" required></label><p class="form-error" id="editor-link-error" role="alert" hidden></p><div class="dialog-footer"><button class="secondary-button" id="editor-remove-link" type="button">Remove link</button><button class="primary-button" type="submit">Apply link</button></div></form></dialog>
+    <dialog class="editor-link-dialog" id="editor-link-dialog" aria-labelledby="editor-link-heading"><form id="editor-link-form"><div class="editor-panel-heading"><h2 id="editor-link-heading">Add a link</h2><button class="icon-button" type="button" data-close="editor-link-dialog" aria-label="Close link dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div><label for="editor-link-text">Link text<input id="editor-link-text" type="text" placeholder="Text to display" maxlength="2000"></label><label for="editor-link-url">URL<input id="editor-link-url" type="text" placeholder="https://" required></label><p class="form-error" id="editor-link-error" role="alert" hidden></p><div class="dialog-footer"><button class="secondary-button" id="editor-remove-link" type="button">Remove link</button><button class="primary-button" type="submit">Apply link</button></div></form></dialog>
 
     <dialog class="material-dialog" id="material-dialog" aria-labelledby="material-title">
-      <div class="panel-heading"><div><p class="eyebrow">A PLACE TO BEGIN</p><h2 id="material-title">Start with your material</h2></div><button class="icon-button" type="button" data-close="material-dialog" aria-label="Close material dialog"><svg><use href="#icon-close"/></svg></button></div>
+      <div class="panel-heading"><div><p class="eyebrow">A PLACE TO BEGIN</p><h2 id="material-title">Start with your material</h2></div><button class="icon-button" type="button" data-close="material-dialog" aria-label="Close material dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
       <div class="material-tabs" id="material-tabs" role="tablist" aria-label="Material type">
         <button id="upload-tab" type="button" role="tab" aria-selected="true" aria-controls="upload-panel" data-tab="upload">Choose files</button>
         <button id="paste-tab" type="button" role="tab" aria-selected="false" aria-controls="paste-panel" tabindex="-1" data-tab="paste">Paste text</button>
       </div>
       <div id="upload-panel" role="tabpanel" aria-labelledby="upload-tab">
-        <label class="drop-zone" id="drop-zone" for="file-input"><svg aria-hidden="true"><use href="#icon-upload"/></svg><strong>Drop your files here</strong><span>or <span class="browse-label">browse files</span></span><small>PDF, DOCX, PPTX, TXT or MD · Up to 10 MB each · 20 files max</small><input class="visually-hidden" id="file-input" type="file" aria-label="Upload documents" multiple accept=".pdf,.docx,.pptx,.txt,.md"></label>
+        <label class="drop-zone" id="drop-zone" for="file-input"><span class="material-symbols-outlined" aria-hidden="true">upload</span><strong>Drop your files here</strong><span>or <span class="browse-label">browse files</span></span><small>PDF, DOCX, PPTX, TXT or MD · Up to 10 MB each · 20 files max</small><input class="visually-hidden" id="file-input" type="file" aria-label="Upload documents" multiple accept=".pdf,.docx,.pptx,.txt,.md"></label>
         <ul class="selected-files" id="selected-files"></ul>
         <p class="file-status" id="file-status" role="status" aria-live="polite"></p>
         <p class="material-hint">Documents stay in this browser. You can download the originals from your project. Text and Markdown files also include a text preview.</p>
@@ -353,7 +325,7 @@
     </dialog>
     <dialog class="profile-settings-dialog" id="profile-settings-dialog" aria-labelledby="profile-settings-heading">
       <form id="profile-settings-form">
-        <div class="panel-heading"><h2 id="profile-settings-heading">Settings</h2><button class="icon-button" type="button" data-close-profile-settings aria-label="Close profile settings"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></div>
+        <div class="panel-heading"><h2 id="profile-settings-heading">Settings</h2><button class="icon-button" type="button" data-close-profile-settings aria-label="Close profile settings"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
         <div class="profile-settings-photo">
           <img id="profile-settings-photo" src="./assets/profile-photo.png" alt="Profile photo preview" width="64" height="64">
           <button class="icon-button profile-photo-edit" id="profile-change-photo" type="button" aria-label="Edit profile photo" title="Edit profile photo"><span class="material-symbols-outlined" aria-hidden="true">edit</span></button>
@@ -365,13 +337,13 @@
     </dialog>
     <section class="output-edit-menu" id="output-edit-menu" role="dialog" aria-labelledby="output-edit-heading" tabindex="-1" hidden>
       <form id="output-edit-form">
-        <div class="output-edit-heading"><h2 id="output-edit-heading">Edit Variant</h2><button class="icon-button" type="button" data-close-output-edit aria-label="Close variant settings"><svg aria-hidden="true"><use href="#icon-close"/></svg></button></div>
+        <div class="output-edit-heading"><h2 id="output-edit-heading">Edit Variant</h2><button class="icon-button" type="button" data-close-output-edit aria-label="Close variant settings"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
         <div class="output-edit-voice-field"><div class="composer-field output-edit-voice-control" data-label="Voice"><select id="output-edit-voice" aria-label="Voice" hidden><option value="">None Selected</option><option value="house-standard">House Standard</option><option value="apple-news">Apple News</option><option value="centre-daily-times">Centre Daily Times</option><option value="idaho-statesman-voice-guide">Idaho Statesman Voice Guide</option><option value="msn-syndication">MSN Syndication</option><option value="national-team-voice-guide">National Team Voice Guide</option><option value="kansas-city-star-voice-guide">The Kansas City Star Voice Guide</option><option value="news-observer-voice-guide">The News &amp; Observer Voice Guide</option><option value="trend-hunter-b2c">Trend Hunter B2C</option><option value="us-weekly">Us Weekly</option><option value="womans-world">Womans World</option><option value="yahoo-news">Yahoo News</option></select></div></div>
         <label for="output-edit-direction"><span>Editorial Direction <span class="field-optional">(optional)</span></span><textarea id="output-edit-direction" rows="2" maxlength="8000" placeholder="Example: “Focus on the economy” or “Use a conversational tone.”"></textarea></label>
         <label for="output-edit-name"><span>Edit Variant Name <span class="field-optional">(optional)</span></span><input id="output-edit-name" type="text" maxlength="180" autocomplete="off"></label>
         <p class="form-error" id="output-edit-error" role="alert" hidden></p>
         <div class="output-edit-actions"><button class="secondary-button" type="button" data-close-output-edit>Cancel</button><button class="primary-button dialog-action-button" type="submit" disabled>Save changes</button></div>
-        <div class="output-edit-delete"><button class="output-delete-button" id="output-delete-variant" type="button" aria-label="Delete variant" title="Delete variant"><svg aria-hidden="true"><use href="#icon-delete-project"/></svg></button></div>
+        <div class="output-edit-delete"><button class="output-delete-button" id="output-delete-variant" type="button" aria-label="Delete variant" title="Delete variant"><span class="material-symbols-outlined" aria-hidden="true">delete</span></button></div>
       </form>
     </section>
     <div class="toast" id="toast" role="status" hidden><span id="toast-message"></span><button id="toast-undo" type="button" hidden>Undo</button></div>

@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261019-saved-variant-names';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261019-saved-variant-names';
 
 function node(tag, className, text) {
   const element = document.createElement(tag);
@@ -167,16 +167,6 @@ export function createDashboard({ onNew, onOpen, onDelete, onRename }) {
       const card = node('article', 'dashboard-project');
       card.setAttribute('aria-label', project.title);
       const variants = projectOutputs(project).filter(outputIsReady);
-      const sentCount = variants.filter(outputIsSent).length;
-      const badges = node('div', 'project-badges');
-      const badge = node('span', `project-badge${sentCount ? ' project-badge--sent' : ' project-badge--draft'}`, sentCount ? `${sentCount} ${sentCount === 1 ? 'variant' : 'variants'} sent to CMS` : 'Draft');
-      if (sentCount) badge.prepend(icon('sent'));
-      else {
-        const draw = node('span', 'material-symbols-outlined', 'draw');
-        draw.setAttribute('aria-hidden', 'true');
-        badge.prepend(draw);
-      }
-      badges.append(badge);
       const more = node('button', 'icon-button project-card-menu-button');
       more.type = 'button';
       more.setAttribute('aria-label', `Project options: ${project.title}`);
@@ -245,7 +235,7 @@ export function createDashboard({ onNew, onOpen, onDelete, onRename }) {
       open.setAttribute('aria-label', `Open ${project.title}`);
       open.addEventListener('click', () => { closeMenu(); onOpen(project.id); });
       actions.append(open);
-      card.append(badges, more, menu, title, meta, actions);
+      card.append(more, menu, title, meta, actions);
       grid.append(card);
     }
     updateVisible();

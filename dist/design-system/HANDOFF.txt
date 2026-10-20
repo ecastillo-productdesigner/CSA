@@ -55,6 +55,8 @@ COMPONENT CONTRACTS
   Variant selected state: #3b82f6 border, #f8f1ee fill, dark text.
   Pending variant: dashed outline.
   Saved variant names and article headings are independent.
+  Homepage project cards show the title, creation date, variant count,
+    project menu, and Open action without Draft/Sent to CMS badges.
   Source checkbox: 18 px, outside photo area at top left.
   Icons: Material Symbols Outlined font with FILL 1 throughout.
     Keep custom SVG geometry where already supplied.
@@ -66,6 +68,8 @@ COMPONENT CONTRACTS
   Open dropdown, profile, and project menus: 10 px corner radius,
     including the mobile profile menu.
   Profile and project name labels: Inter 14 px, weight 600.
+  New Variant panel: 24 px above the heading, 24 px from heading to
+    first dropdown, and 24 px below Add Variant, on desktop and mobile.
   Edit variant field groups are separated by foundation.space.24 (24 px).
   Editorial Direction fields start at two rows, with padding and
     borders added to the current line height. They remain resizable.

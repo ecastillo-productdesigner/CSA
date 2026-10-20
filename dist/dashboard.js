@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261020-empty-create-label';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261020-empty-segment-labels';
 
 function node(tag, className, text) {
   const element = document.createElement(tag);

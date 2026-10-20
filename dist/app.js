@@ -1,9 +1,9 @@
 import { parseSourceLinks, formatSourceLinks } from './source-links.js';
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261020-empty-create-label';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261020-empty-segment-labels';
 import { createVariantFeedback } from './variant-feedback.js?v=20261018-connected-sources';
 import { createProfile } from './profile.js?v=20261019-profile-dirty-state';
 import { createSearchExperience } from './search.js?v=20261019-saved-variant-names';
-import { createDashboard } from './dashboard.js?v=20261020-empty-create-label';
+import { createDashboard } from './dashboard.js?v=20261020-empty-segment-labels';
 import { createMaterialEditor } from './editor.js?v=20261019-toolbar-style';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261018-project-delete';
 import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
@@ -11,10 +11,10 @@ import { createContentPreview, formatContentPreview } from './content-preview.js
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261019-toolbar-style';
 import { createRailNavigation } from './navigation.js?v=20261019-mobile-option-taps';
 import { createProjectSources } from './sources.js?v=20261018-variant-source-selection';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, createOutputEditButton, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261020-empty-create-label';
-import { createEditorTabs } from './editor-tabs.js?v=20261020-empty-create-label';
-import { createOutputSettings } from './output-settings.js?v=20261020-empty-create-label';
-import { createOutputPresets } from './output-presets.js?v=20261020-empty-create-label';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, createOutputEditButton, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261020-empty-segment-labels';
+import { createEditorTabs } from './editor-tabs.js?v=20261020-empty-segment-labels';
+import { createOutputSettings } from './output-settings.js?v=20261020-empty-segment-labels';
+import { createOutputPresets } from './output-presets.js?v=20261020-empty-segment-labels';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';

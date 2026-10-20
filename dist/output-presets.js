@@ -1,4 +1,4 @@
-import { projectOutputs, createOutputBadges, savedVariantName } from './outputs.js?v=20261020-empty-create-label';
+import { projectOutputs, createOutputBadges, savedVariantName } from './outputs.js?v=20261020-empty-segment-labels';
 
 export function createOutputPresets({ onSelect, onDelete }) {
   const root = document.querySelector('#output-presets');

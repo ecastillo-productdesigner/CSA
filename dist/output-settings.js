@@ -1,4 +1,4 @@
-import { customVariantName, savedVariantName } from './outputs.js?v=20261020-empty-create-label';
+import { customVariantName, savedVariantName } from './outputs.js?v=20261020-empty-segment-labels';
 
 export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
   const menu = document.querySelector('#output-edit-menu');

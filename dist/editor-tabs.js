@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261020-empty-create-label';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261020-empty-segment-labels';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');

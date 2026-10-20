@@ -5435,7 +5435,7 @@
       "category": "shadow",
       "value": "0px 4px 12px 0px #40404014",
       "reference": "",
-      "description": "Subtle elevation for open choice and action dropdown menus.",
+      "description": "Subtle elevation for open dropdown menus and floating settings/metadata menus.",
       "status": "observed"
     },
     {

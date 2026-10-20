@@ -218,7 +218,7 @@ REFERENCES
 
 SAVED PRESETS / FAVORITES
   Changing Format, Audience, or Voice away from an applied preset clears
-    its selection and returns the trigger to Saved preset, retaining values.
+    its selection and returns the trigger to My Saved Variants, retaining values.
   Saved preset options include Edit and Delete. Edit reuses the Edit Variant
     panel for name, Voice, and Editorial Direction without altering the
     generated variant body, status, sources, or original settings.
@@ -259,8 +259,9 @@ SHARED COLOR UPDATES — 2026-10-20
     Sources icon neutral-100 background and retains its red icon.
 
 FLAT SURFACES
-  Cards, popovers, dialogs, editor sheets, toasts and mobile panels stay flat.
-  Open dropdown menus alone use semantic.shadow.dropdown: 0px 4px 12px,
+  Cards, dialogs, editor sheets, toasts and mobile panels stay flat.
+  Open dropdowns and floating settings/metadata menus use
+    semantic.shadow.dropdown: 0px 4px 12px,
     neutral-700 tint at 8% opacity, shared across desktop and mobile.
   Keyboard-focus outlines remain blue-500. Modal backdrop dimming uses
     semantic.color.overlay.scrim; it is independent of elevation.

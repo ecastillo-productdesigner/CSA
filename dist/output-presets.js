@@ -123,7 +123,7 @@ export function createOutputPresets({ onSelect, onDelete, onEdit }) {
       if (signature === lastSignature) return;
       lastSignature = signature;
       close();
-      const triggerLabel = selectedOutput ? savedPresetName(selectedOutput) : 'Saved preset';
+      const triggerLabel = selectedOutput ? savedPresetName(selectedOutput) : 'My Saved Variants';
       trigger.querySelector('span').textContent = triggerLabel;
       trigger.title = triggerLabel;
       trigger.setAttribute('aria-label', triggerLabel);

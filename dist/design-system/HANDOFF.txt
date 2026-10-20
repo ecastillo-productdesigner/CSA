@@ -117,7 +117,7 @@ REQUEST REVISION
   The editor header has no settings pencil; settings remain on cards.
 
 PROFILE AVATAR
-  Fixed A initial in a 32 px circle, white surface with heading text.
+  Fixed A initial in a 32 px circle, heading-color background with white text.
   Uses interface typography at 16 px / 20 px, weight 600.
   Expanded profile shows the email only, with no name or arrow icons.
   Profile menu contains Log out only; photo and Settings UI are removed.

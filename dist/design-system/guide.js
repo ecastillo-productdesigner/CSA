@@ -112,3 +112,9 @@ try {
   $('#ds-token-empty').textContent='Serve this folder over HTTP to load the token inventory. The JSON, CSS, and CSV downloads remain available.';
   console.error(error);
 }
+
+for (const button of document.querySelectorAll('[data-segment-specimen]')) {
+  button.addEventListener('click', () => {
+    for (const peer of button.parentElement.querySelectorAll('button')) peer.setAttribute('aria-pressed', String(peer === button));
+  });
+}

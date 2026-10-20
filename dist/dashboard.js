@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261019-saved-variant-names';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261020-variant-segments';
 
 function node(tag, className, text) {
   const element = document.createElement(tag);

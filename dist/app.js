@@ -1,9 +1,9 @@
 import { parseSourceLinks, formatSourceLinks } from './source-links.js';
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261019-saved-variant-names';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261020-variant-segments';
 import { createVariantFeedback } from './variant-feedback.js?v=20261018-connected-sources';
 import { createProfile } from './profile.js?v=20261019-profile-dirty-state';
 import { createSearchExperience } from './search.js?v=20261019-saved-variant-names';
-import { createDashboard } from './dashboard.js?v=20261020-home-cards';
+import { createDashboard } from './dashboard.js?v=20261020-variant-segments';
 import { createMaterialEditor } from './editor.js?v=20261019-toolbar-style';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261018-project-delete';
 import { removeProjectContent } from './project-deletion.js?v=20261018-project-delete';
@@ -11,10 +11,10 @@ import { createContentPreview, formatContentPreview } from './content-preview.js
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261019-toolbar-style';
 import { createRailNavigation } from './navigation.js?v=20261019-mobile-option-taps';
 import { createProjectSources } from './sources.js?v=20261018-variant-source-selection';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, createOutputEditButton, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261019-saved-variant-names';
-import { createEditorTabs } from './editor-tabs.js?v=20261019-saved-variant-names';
-import { createOutputSettings } from './output-settings.js?v=20261019-edit-dirty-state';
-import { createOutputPresets } from './output-presets.js?v=20261019-saved-variant-names';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, createOutputEditButton, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261020-variant-segments';
+import { createEditorTabs } from './editor-tabs.js?v=20261020-variant-segments';
+import { createOutputSettings } from './output-settings.js?v=20261020-variant-segments';
+import { createOutputPresets } from './output-presets.js?v=20261020-variant-segments';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -77,6 +77,7 @@ let toastAction = null;
 let sourcePanelOutputId = null;
 let dashboard = null;
 const outputTimers = new Map();
+const outputViews = new Map();
 const toolDropdowns = createToolDropdowns({ notify });
 const variantFeedback = createVariantFeedback({ save: saveProjects, refreshDropdowns: toolDropdowns.refresh, closeDropdowns: toolDropdowns.close });
 const outputPresets = createOutputPresets({ onSelect: applyOutputPreset, onDelete: deleteOutputPreset });
@@ -144,7 +145,9 @@ const richEditor = createMaterialEditor({
 
 function renderOutputs(project) {
   $('#show-sources').hidden = project?.kind !== 'draft';
-  renderProjectOutputs(project);
+  const view = variantPanelState(project, outputViews.get(project?.id)).view;
+  outputViews.set(project?.id, view);
+  renderProjectOutputs(project, view);
   outputPresets.render(projects, project?.variantPreset || null);
   editorTabs.render(project);
   const selectedOutput = projectOutputs(project).find(output => output.id === project?.selectedOutputId && (outputIsReady(output) || output.needsRegeneration));
@@ -155,6 +158,30 @@ function renderOutputs(project) {
   syncSourceBadges();
   outputSettings.sync(project);
 }
+
+function selectOutputView(view) {
+  const project = projects.find(entry => entry.id === activeProjectId);
+  if (!project || !['pending', 'created'].includes(view)) return;
+  richEditor.flush();
+  outputSettings.close();
+  outputViews.set(project.id, view);
+  renderOutputs(project);
+  $('#output-list').scrollTop = 0;
+}
+
+$('.output-status-tabs').addEventListener('click', event => {
+  const tab = event.target.closest('[data-output-view]');
+  if (tab) selectOutputView(tab.dataset.outputView);
+});
+$('.output-status-tabs').addEventListener('keydown', event => {
+  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+  const tab = event.target.closest('[data-output-view]');
+  if (!tab) return;
+  event.preventDefault();
+  const view = event.key === 'Home' ? 'pending' : event.key === 'End' ? 'created' : tab.dataset.outputView === 'pending' ? 'created' : 'pending';
+  selectOutputView(view);
+  $(`[data-output-view="${view}"]`).focus({ preventScroll: true });
+});
 
 function syncSourceBadges() {
   const open = $('#show-sources').getAttribute('aria-expanded') === 'true';
@@ -286,6 +313,7 @@ function saveOutputSettings({ projectId, outputId, name, voice, editorialDirecti
     Object.assign(project, projectBefore);
     return false;
   }
+  outputViews.set(project.id, 'pending');
   showEditorProject(project);
   requestAnimationFrame(() => [...$('#output-list').querySelectorAll('[data-select-output]')].find(button => button.dataset.selectOutput === output.id)?.focus({ preventScroll: true }));
   notify('Variant updated. Create it again to apply the changes.');
@@ -296,6 +324,7 @@ function openEditorTab(outputId) {
   richEditor.flush();
   const project = projects.find(entry => entry.id === activeProjectId);
   if (project && !outputId) {
+    outputViews.set(project.id, 'pending');
     const selected = selectedPendingOutputs(project);
     const pending = projectOutputs(project).filter(output => !outputIsReady(output));
     const target = pending.find(output => output.id === project.lastPendingOutputId) || selected[0] || pending[0];
@@ -309,6 +338,7 @@ function openEditorTab(outputId) {
   }
   const output = projectOutputs(project).find(output => output.id === outputId && (outputIsReady(output) || output.needsRegeneration));
   if (!project || !output) return;
+  outputViews.set(project.id, outputIsReady(output) ? 'created' : 'pending');
   project.selectedOutputIds = outputIsReady(output) ? [outputId] : [...new Set([...selectedPendingOutputs(project).map(output => output.id), outputId])];
   project.selectedOutputId = outputId;
   project.viewOriginalDraft = false;
@@ -802,6 +832,7 @@ $('.create-variant').addEventListener('click', () => {
   if (!project || (!selections.length && !project.variantPreset)) return;
   const output = sampleVariant(project, selections);
   project.lastPendingOutputId = output.id;
+  outputViews.set(project.id, 'pending');
   project.selectedOutputIds = [...selectedPendingOutputs(project).map(entry => entry.id), output.id];
   project.selectedOutputId = null;
   project.viewOriginalDraft = true;
@@ -922,6 +953,7 @@ function finishOutputProcessing(project, renderWhenReady = true) {
     if (ids.has(output.id)) { output.status = 'ready'; delete output.needsRegeneration; output.processedAt = Date.now(); populateOutputContent(output); }
   }
   const latestCreated = projectOutputs(project).find(output => output.id === job.openOutputId && outputIsReady(output)) || projectOutputs(project).filter(output => ids.has(output.id) && outputIsReady(output)).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))[0];
+  if (latestCreated) outputViews.set(project.id, 'created');
   if (latestCreated) { project.selectedOutputId = latestCreated.id; project.viewOriginalDraft = false; }
   delete project.selectedPendingOutputIds;
   delete project.outputProcessing;

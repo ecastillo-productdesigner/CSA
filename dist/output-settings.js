@@ -1,4 +1,4 @@
-import { customVariantName, savedVariantName } from './outputs.js?v=20261019-saved-variant-names';
+import { customVariantName, savedVariantName } from './outputs.js?v=20261020-variant-segments';
 
 export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
   const menu = document.querySelector('#output-edit-menu');

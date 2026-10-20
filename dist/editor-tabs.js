@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261019-saved-variant-names';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261020-variant-segments';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');

@@ -279,11 +279,30 @@ export function sampleVariant(project, selections) {
   };
 }
 
-export function renderOutputs(project) {
+export function variantPanelState(project, requestedView) {
   const outputs = projectOutputs(project);
-  const pendingOutputs = outputs.filter(output => !outputIsReady(output));
-  const createdOutputs = outputs.filter(outputIsReady);
-  const showCreatedLabel = pendingOutputs.length > 0 && createdOutputs.length > 0;
+  const pending = outputs.filter(output => !outputIsReady(output));
+  const created = outputs.filter(outputIsReady);
+  const activeCreated = !project?.viewOriginalDraft && created.some(output => output.id === project?.selectedOutputId);
+  const view = ['pending', 'created'].includes(requestedView) ? requestedView : activeCreated || (!pending.length && created.length) ? 'created' : 'pending';
+  return {
+    view,
+    outputs: view === 'pending' ? pending : created,
+    pendingLabel: pending.length ? `${pending.length} To Create` : 'To Create',
+    createdLabel: created.length ? `${created.length} Created` : 'Created',
+  };
+}
+
+export function renderOutputs(project, requestedView) {
+  const state = variantPanelState(project, requestedView);
+  for (const tab of document.querySelectorAll('[data-output-view]')) {
+    const selected = tab.dataset.outputView === state.view;
+    tab.textContent = tab.dataset.outputView === 'pending' ? state.pendingLabel : state.createdLabel;
+    tab.setAttribute('aria-selected', String(selected));
+    tab.tabIndex = selected ? 0 : -1;
+  }
+  document.querySelector('#output-status-content').setAttribute('aria-labelledby', `output-${state.view}-tab`);
+  document.querySelector('.outputs-footer').hidden = state.view !== 'pending';
   const processing = Boolean(project?.outputProcessing);
   const selectedPending = selectedPendingOutputs(project);
   const selectedIds = new Set(selectedOutputs(project).map(output => output.id));
@@ -295,9 +314,12 @@ export function renderOutputs(project) {
   document.querySelector('#create-output-label').textContent = processing ? 'Processing…' : `Create ${selectedPending.length} Variant${selectedPending.length === 1 ? '' : 's'}`;
   document.querySelector('#output-processing-spinner').hidden = !processing;
   document.querySelector('#output-processing-status').textContent = processing ? 'Processing your selected variants. This takes about four seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
-  document.querySelector('#outputs-empty').hidden = outputs.length > 0;
-  list.hidden = outputs.length === 0;
-  list.replaceChildren(...[...pendingOutputs, ...createdOutputs].map((output, index) => {
+  const empty = document.querySelector('#outputs-empty');
+  empty.hidden = state.outputs.length > 0;
+  empty.querySelector('p').textContent = state.view === 'pending' ? 'No variants to create yet.' : 'No created variants yet.';
+  list.hidden = state.outputs.length === 0;
+  list.setAttribute('aria-label', state.view === 'pending' ? 'Variants to create' : 'Created variants');
+  list.replaceChildren(...state.outputs.map(output => {
     const item = document.createElement('li');
     const card = document.createElement('article');
     const ready = outputIsReady(output);
@@ -387,12 +409,6 @@ export function renderOutputs(project) {
     card.append(open);
     if (!ready) card.append(selection);
     card.append(badges, edit, favorite);
-    if (showCreatedLabel && index === pendingOutputs.length) {
-      const label = document.createElement('div');
-      label.className = 'output-created-label';
-      label.textContent = 'DRAFTED';
-      item.append(label);
-    }
     item.append(card);
     return item;
   }));

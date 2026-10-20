@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady, selectedOutputs } from './outputs.js?v=20261019-saved-variant-names';
+import { projectOutputs, outputIsReady, selectedOutputs } from './outputs.js?v=20261020-variant-segments';
 
 const selectionKeys = ['selectedOutputId', 'selectedOutputIds', 'selectedPendingOutputIds', 'lastPendingOutputId', 'viewOriginalDraft'];
 const selectionOf = project => Object.fromEntries(selectionKeys.map(key => [key, structuredClone(project[key])]));

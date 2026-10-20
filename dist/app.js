@@ -5,7 +5,7 @@ import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261020-
 import { createVariantFeedback } from './variant-feedback.js?v=20261020-request-revision';
 import { createProfile } from './profile.js?v=20261020-request-revision';
 import { createSearchExperience } from './search.js?v=20261020-request-revision';
-import { createDashboard } from './dashboard.js?v=20261020-request-revision';
+import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=20261020-home-card-contract';
 import { createMaterialEditor } from './editor.js?v=20261020-request-revision';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261020-request-revision';
 import { removeProjectContent } from './project-deletion.js?v=20261020-request-revision';
@@ -434,6 +434,10 @@ function loadProjects() {
       }
       return project;
     });
+    if (normalizeProjectTitles(restored)) {
+      try { localStorage.setItem(storageKey, JSON.stringify(restored)); }
+      catch { /* Clean names remain available for this session. */ }
+    }
     initializeVariantNames(restored);
     return restored;
   } catch {
@@ -1338,7 +1342,7 @@ const searchExperience = createSearchExperience({
   onDraft({ query, articles, editorialDirection }) {
     const sources = articles.map((article) => ({ type: 'text', title: article.title, text: `Fictional sample article · ${article.source} · ${article.date}\n\n${article.paragraphs.join('\n\n')}` }));
     if (sourceTargetProjectId) { appendProjectSources(sources); return; }
-    createProject(sources, { title: `${titleFrom(query)} — Draft`, kind: 'draft', awaitingOutput: true, editorialDirection });
+    createProject(sources, { title: titleFrom(query), kind: 'draft', awaitingOutput: true, editorialDirection });
   },
 });
 

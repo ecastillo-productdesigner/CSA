@@ -5,6 +5,7 @@
   --csa-foundation-color-neutral-100: #f5f5f5;
   --csa-foundation-color-neutral-200: #e5e5e5;
   --csa-foundation-color-neutral-400: #a3a3a3;
+  --csa-foundation-color-neutral-500: #737373;
   --csa-foundation-color-neutral-700: #404040;
   --csa-foundation-color-stone-200: #e7e5e4;
   --csa-foundation-color-stone-900: #1c1917;
@@ -188,6 +189,7 @@
   --csa-semantic-color-text-heading: var(--csa-foundation-color-neutral-700);
   --csa-semantic-color-text-muted: var(--csa-foundation-color-neutral-400);
   --csa-semantic-color-text-inverse: var(--csa-foundation-color-neutral-0);
+  --csa-semantic-color-text-secondary: var(--csa-foundation-color-neutral-500);
   --csa-semantic-color-border-default: var(--csa-foundation-color-neutral-200);
   --csa-semantic-color-border-selected: var(--csa-foundation-color-blue-500);
   --csa-semantic-color-action-primary: var(--csa-foundation-color-blue-500);
@@ -313,11 +315,11 @@
   --csa-component-chip-audience-background: var(--csa-foundation-color-indigo-50);
   --csa-component-chip-voice-background: var(--csa-foundation-color-orange-100);
   --csa-component-chip-label: var(--csa-semantic-color-text-primary);
-  --csa-component-project-card-height-desktop: 257px;
+  --csa-component-project-card-height-desktop: 208px;
   --csa-component-project-card-height-mobile: 104px;
   --csa-component-project-card-radius-desktop: var(--csa-foundation-radius-20);
   --csa-component-project-card-radius-mobile: var(--csa-foundation-radius-16);
-  --csa-component-project-card-padding: 20px;
+  --csa-component-project-card-padding: var(--csa-foundation-space-24);
   --csa-component-variant-card-radius: var(--csa-foundation-radius-8);
   --csa-component-variant-card-selected-background: var(--csa-semantic-color-surface-selected);
   --csa-component-variant-card-selected-border: var(--csa-semantic-color-border-selected);

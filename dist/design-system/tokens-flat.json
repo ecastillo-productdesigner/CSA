@@ -112,6 +112,28 @@
       }
     },
     {
+      "name": "foundation.color.neutral.500",
+      "designName": "foundation/color/neutral/500",
+      "cssVariable": "--csa-foundation-color-neutral-500",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#737373",
+      "reference": "",
+      "description": "Secondary readable text, distinct from inactive-control gray.",
+      "status": "approved-update",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.45098039215686275,
+          0.45098039215686275,
+          0.45098039215686275
+        ],
+        "alpha": 1,
+        "hex": "#737373"
+      }
+    },
+    {
       "name": "foundation.color.neutral.700",
       "designName": "foundation/color/neutral/700",
       "cssVariable": "--csa-foundation-color-neutral-700",
@@ -3118,6 +3140,28 @@
       }
     },
     {
+      "name": "semantic.color.text.secondary",
+      "designName": "semantic/color/text/secondary",
+      "cssVariable": "--csa-semantic-color-text-secondary",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#737373",
+      "reference": "foundation.color.neutral.500",
+      "description": "Readable secondary information such as dashboard dates and variant counts.",
+      "status": "approved-update",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.45098039215686275,
+          0.45098039215686275,
+          0.45098039215686275
+        ],
+        "alpha": 1,
+        "hex": "#737373"
+      }
+    },
+    {
       "name": "semantic.color.border.default",
       "designName": "semantic/color/border/default",
       "cssVariable": "--csa-semantic-color-border-default",
@@ -4556,10 +4600,10 @@
       "type": "dimension",
       "layer": "component",
       "category": "project-card",
-      "value": "257px",
+      "value": "208px",
       "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
+      "description": "Compact desktop card minimum height; grows when content requires it.",
+      "status": "approved-update"
     },
     {
       "name": "component.project-card.height.mobile",
@@ -4604,10 +4648,10 @@
       "type": "dimension",
       "layer": "component",
       "category": "project-card",
-      "value": "20px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
+      "value": "24px",
+      "reference": "foundation.space.24",
+      "description": "Shared desktop card padding.",
+      "status": "approved-update"
     },
     {
       "name": "component.variant-card.radius",

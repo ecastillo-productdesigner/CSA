@@ -10,9 +10,27 @@ function node(tag, className, text) {
 
 
 
-function projectDate(timestamp) {
+export function cleanProjectTitle(title) {
+  return title.replace(/\s*—\s*Draft\s*$/i, '').trim() || 'Untitled story';
+}
+
+export function normalizeProjectTitles(projects) {
+  let changed = false;
+  for (const project of projects) {
+    const title = cleanProjectTitle(project.title);
+    if (title !== project.title) { project.title = title; changed = true; }
+  }
+  return changed;
+}
+
+export function projectUpdatedDate(project, now = Date.now()) {
+  const timestamp = Number.isFinite(project.updatedAt) && project.updatedAt > 0 ? project.updatedAt : project.createdAt;
+  const date = new Date(timestamp);
   const day = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' });
-  return day.format(timestamp) === day.format(Date.now()) ? 'Today' : new Date(timestamp).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric' });
+  const year = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric' });
+  const sameYear = year.format(timestamp) === year.format(now);
+  const label = day.format(timestamp) === day.format(now) ? 'today' : new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', ...(!sameYear ? { year: 'numeric' } : {}) }).format(date);
+  return { timestamp, label: `Updated ${label}`, full: new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', dateStyle: 'medium', timeStyle: 'short' }).format(date) };
 }
 
 export function createDashboard({ onNew, onOpen, onDelete, onRename }) {
@@ -214,10 +232,18 @@ export function createDashboard({ onNew, onOpen, onDelete, onRename }) {
       more.addEventListener('keydown', event => {
         if (['ArrowDown', 'ArrowUp'].includes(event.key)) { event.preventDefault(); showMenu(more, menu); }
       });
-      const title = node('h2', '', project.title);
-      title.title = project.title;
+      const title = node('h2');
+      const titleButton = node('button', 'project-title-button', project.title);
+      titleButton.type = 'button';
+      titleButton.title = project.title;
+      titleButton.setAttribute('aria-label', `Open project: ${project.title}`);
+      titleButton.addEventListener('click', () => { closeMenu(); onOpen(project.id); });
+      title.append(titleButton);
       const meta = node('div', 'project-meta');
-      const date = node('span'); date.append(document.createTextNode(projectDate(project.createdAt)));
+      const updated = projectUpdatedDate(project);
+      const date = node('time', '', updated.label);
+      date.dateTime = new Date(updated.timestamp).toISOString();
+      date.title = updated.full;
       const count = node('span'); count.append(icon('variants'), document.createTextNode(`${variants.length} ${variants.length === 1 ? 'variant' : 'variants'}`));
       const separator = node('span', 'meta-dot', '·');
       separator.setAttribute('aria-hidden', 'true');

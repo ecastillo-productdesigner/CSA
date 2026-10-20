@@ -4,7 +4,7 @@ Extracted 2026-10-19 from CSA app source baa4775.
 SOURCE OF TRUTH
   dist/design-system/tokens.json
   Three layers: foundation > semantic > component.
-  298 tokens in DTCG 2025.10-compatible JSON.
+  300 tokens in DTCG 2025.10-compatible JSON.
   Every token includes a type, description, and observed status.
   observed-exception retains a component-specific existing value.
   approved-update identifies the requested compact toolbar additions.
@@ -115,6 +115,19 @@ REQUEST REVISION
     replaces only its body with a different sample, then shows a toast.
   Instructions/completion are saved locally. Jobs resume after reload.
   The editor header has no settings pencil; settings remain on cards.
+
+HOMEPAGE PROJECT CARDS
+  Desktop: 208 px minimum height, 24 px padding and grid gap, 20 px radius.
+  Mobile: 104 px minimum height, 16 px padding and grid gap, 16 px radius.
+  Reserve two title lines: desktop 18 / 25, mobile 16 / 22. Titles open
+    the project, with their own hover/focus state. Options stay separate.
+  Card hover/focus-within uses the selected-border token.
+  Dates/counts use semantic.color.text.secondary (#737373); inactive
+    controls and optional labels retain the muted token (#a3a3a3).
+  Dates read Updated today / Updated Oct 19, using the last edit time
+    with creation time as a fallback. Older years are shown explicitly.
+  Legacy trailing — Draft suffixes are removed from project names;
+    new projects no longer append the suffix. Variant titles are retained.
 
 RESPONSIVE / INPUT
   Mobile <=768 px. Desktop >=769 px.

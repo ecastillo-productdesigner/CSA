@@ -87,7 +87,7 @@ body:has(#home:not([hidden])) #new-project { display: none; }
 .navigation-tooltip { position: fixed; z-index: var(--csa-foundation-layer-50); transform: translateY(-50%); padding: 7px var(--csa-foundation-space-10); border-radius: var(--csa-foundation-radius-4); background: var(--ink); color: var(--csa-foundation-color-neutral-0); font-size: var(--csa-foundation-font-size-12); font-weight: var(--csa-foundation-font-weight-500); white-space: nowrap; pointer-events: none; }
 .profile-button { position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin: var(--csa-foundation-space-8) auto var(--csa-foundation-space-18); width: 40px; height: 40px; padding: var(--csa-foundation-space-4); border: 0; border-radius: 50%; background: transparent; }
 .profile-button:hover { background: var(--csa-foundation-color-observed-hex-f2f3f5); }
-.profile-expand { display: none; }
+.profile-button .profile-expand { display: none; }
 .profile-button img { display: block; flex-shrink: 0; border-radius: 50%; object-fit: cover; }
 .nav-label { display: none; white-space: nowrap; font-size: var(--csa-foundation-font-size-14); line-height: var(--csa-foundation-line-height-20); font-weight: var(--csa-foundation-font-weight-550); }
 .drawer-toggle { display: none; margin-right: var(--csa-foundation-space-8); }

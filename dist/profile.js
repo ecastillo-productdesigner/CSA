@@ -120,7 +120,6 @@ export function createProfile({ notify, onClose, onSessionEnd }) {
       }
     }
   });
-  document.querySelector('#demo-lock').addEventListener('click', () => onSessionEnd(false));
   document.querySelector('#profile-logout').addEventListener('click', () => onSessionEnd(true));
   apply();
 }

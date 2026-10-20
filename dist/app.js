@@ -3,7 +3,7 @@ import { createIcon as icon } from './icons.js?v=20261020-request-revision';
 import { parseSourceLinks, formatSourceLinks } from './source-links.js';
 import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261020-request-revision';
 import { createVariantFeedback } from './variant-feedback.js?v=20261020-request-revision';
-import { createProfile } from './profile.js?v=20261020-request-revision';
+import { createProfile } from './profile.js?v=20261020-profile-menu-cleanup';
 import { createSearchExperience } from './search.js?v=20261020-request-revision';
 import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=20261020-home-card-contract';
 import { createMaterialEditor } from './editor.js?v=20261020-request-revision';

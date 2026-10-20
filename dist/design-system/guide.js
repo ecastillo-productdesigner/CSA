@@ -52,7 +52,7 @@ try {
     swatch.append(sample,element('h4','',label),element('code','',token.value.toUpperCase()),element('small','',name));
     $('#ds-palette').append(swatch);
   }
-  for (const [path,text] of [['greeting.desktop','Hello Julia,'],['editor-heading.desktop','A story worth sharing'],['body','Bring your notes, an article, or a rough idea.'],['metadata','235 words · Saved on this device']]) {
+  for (const [path,text] of [['greeting.desktop','Hello Athena,'],['editor-heading.desktop','A story worth sharing'],['body','Bring your notes, an article, or a rough idea.'],['metadata','235 words · Saved on this device']]) {
     const token=byName.get('semantic.typography.'+path);
     const type=token.properties;
     const row=element('div','ds-type-row'); const specimen=element('p','',text);

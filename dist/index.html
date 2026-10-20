@@ -60,8 +60,8 @@
       <div class="profile-menu" id="profile-menu" role="menu" aria-label="Profile options" hidden>
         <button class="profile-navigation profile-logout" id="profile-logout" type="button" role="menuitem">Log out</button>
       </div>
-      <button class="profile-button" id="show-profile" type="button" aria-label="Profile options for julia@example.com" aria-describedby="account-tooltip profile-email" aria-haspopup="menu" aria-controls="profile-menu" aria-expanded="false">
-        <span class="profile-avatar" aria-hidden="true">A</span><span class="nav-label profile-details"><span class="profile-email" id="profile-email">julia@example.com</span></span>
+      <button class="profile-button" id="show-profile" type="button" aria-label="Profile options for athena@example.com" aria-describedby="account-tooltip profile-email" aria-haspopup="menu" aria-controls="profile-menu" aria-expanded="false">
+        <span class="profile-avatar" aria-hidden="true">A</span><span class="nav-label profile-details"><span class="profile-email" id="profile-email">athena@example.com</span></span>
       </button>
     </aside>
 
@@ -233,15 +233,15 @@
 
     <dialog class="rename-project-dialog" id="rename-project-dialog" aria-labelledby="rename-project-heading">
       <form id="rename-project-form">
-        <div class="rename-project-heading"><h2 id="rename-project-heading">Edit project name</h2><button class="icon-button" type="button" data-close="rename-project-dialog" aria-label="Close project name dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
-        <label for="rename-project-name">Project name<input id="rename-project-name" type="text" maxlength="200" autocomplete="off" required autofocus></label>
+        <div class="rename-project-heading"><h2 id="rename-project-heading">Edit Project Name</h2><button class="icon-button" type="button" data-close="rename-project-dialog" aria-label="Close project name dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
+        <label class="visually-hidden" for="rename-project-name">Project name</label><input id="rename-project-name" type="text" maxlength="200" autocomplete="off" required autofocus>
         <p class="form-error" id="rename-project-error" role="alert" hidden></p>
         <div class="dialog-footer"><button class="secondary-button" type="button" data-close="rename-project-dialog">Cancel</button><button class="primary-button dialog-action-button" id="rename-project-save" type="submit" disabled>Save name</button></div>
       </form>
     </dialog>
 
     <dialog class="delete-project-dialog" id="delete-project-dialog" role="alertdialog" aria-labelledby="delete-project-heading" aria-describedby="delete-project-name delete-project-warning">
-      <h2 id="delete-project-heading">Delete project?</h2>
+      <h2 id="delete-project-heading">Delete Project?</h2>
       <p class="delete-project-name" id="delete-project-name"></p>
       <p class="delete-project-warning" id="delete-project-warning">This will permanently delete this project, its sources, and all outputs. This action cannot be undone.</p>
       <p class="form-error" id="delete-project-error" role="alert" hidden></p>

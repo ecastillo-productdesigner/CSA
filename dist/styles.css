@@ -292,6 +292,7 @@ main:focus { outline: none; }
 .output-status-tabs button:hover { background: var(--csa-semantic-color-surface-hover); }
 .output-status-tabs button:is([aria-selected="true"], [aria-pressed="true"]) { background: var(--csa-component-button-primary-background); color: var(--csa-component-button-primary-label); }
 .output-status-tabs button:is([aria-selected="true"], [aria-pressed="true"]):hover { background: var(--csa-component-button-primary-hover); }
+.output-status-tabs button[data-empty="true"]:not([aria-selected="true"]) { color: var(--csa-component-button-disabled-label); }
 .output-status-tabs button:focus-visible { position: relative; z-index: var(--csa-foundation-layer-2); }
 .output-status-content { display: flex; flex: 1; flex-direction: column; min-height: 0; }
 .output-list { display: grid; align-content: start; gap: var(--csa-foundation-space-14); min-height: 0; margin: calc(var(--csa-foundation-space-24) - 3px) -3px 0; padding: 3px; overflow-y: auto; list-style: none; }

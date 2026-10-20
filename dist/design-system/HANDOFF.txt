@@ -90,6 +90,7 @@ VARIANT STATUS SEGMENTS
   Inter 14 / 20, weight 600. Pill radius 999 px.
   Selected: button primary background and inverse label. Unselected:
     default surface, primary text, button border (#e5e5e5). No checkmark.
+  Empty, unselected To Create uses disabled-label gray (#a3a3a3).
   Heading -> segments and segments -> first card: 24 px.
   Cards: 14 px gap. Create action appears only in To Create.
   Arrow keys, Home/End, and roving tab focus select the segment.

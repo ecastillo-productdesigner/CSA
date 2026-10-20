@@ -178,28 +178,6 @@
       }
     },
     {
-      "name": "foundation.color.blue.50",
-      "designName": "foundation/color/blue/50",
-      "cssVariable": "--csa-foundation-color-blue-50",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#eff6ff",
-      "reference": "",
-      "description": "Implemented palette value.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.9372549019607843,
-          0.9647058823529412,
-          1
-        ],
-        "alpha": 1,
-        "hex": "#eff6ff"
-      }
-    },
-    {
       "name": "foundation.color.blue.500",
       "designName": "foundation/color/blue/500",
       "cssVariable": "--csa-foundation-color-blue-500",
@@ -5471,7 +5449,7 @@
       "type": "dimension",
       "layer": "component",
       "category": "checkbox",
-      "value": "20px",
+      "value": "24px",
       "reference": "",
       "description": "Variant selection indicator size; its button keeps a 44px target.",
       "status": "observed"

@@ -8,7 +8,6 @@
   --csa-foundation-color-neutral-500: #737373;
   --csa-foundation-color-neutral-700: #404040;
   --csa-foundation-color-warm-canvas: #fbf6f4;
-  --csa-foundation-color-blue-50: #eff6ff;
   --csa-foundation-color-blue-500: #3b82f6;
   --csa-foundation-color-blue-600: #2563eb;
   --csa-foundation-color-blue-focus: var(--csa-foundation-color-blue-500);
@@ -429,7 +428,7 @@
   --csa-component-variant-card-label: var(--csa-semantic-color-text-primary);
   --csa-component-variant-card-border-width: var(--csa-foundation-border-width-1);
   --csa-component-variant-card-selected-border-width: var(--csa-foundation-border-width-2);
-  --csa-component-checkbox-size: 20px;
+  --csa-component-checkbox-size: 24px;
   --csa-component-checkbox-radius: var(--csa-foundation-radius-2);
   --csa-component-checkbox-selected-background: var(--csa-semantic-color-action-primary);
   --csa-component-checkbox-check: var(--csa-semantic-color-text-inverse);

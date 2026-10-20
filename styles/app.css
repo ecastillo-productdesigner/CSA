@@ -11,8 +11,6 @@
   --color-rose-100: var(--csa-component-chip-format-background);
   --color-indigo-50: var(--csa-component-chip-audience-background);
   --color-orange-100: var(--csa-component-chip-voice-background);
-  --color-blue-50: var(--csa-foundation-color-blue-50);
-  --color-blue-100: var(--csa-foundation-color-blue-50);
   --color-rose-400: var(--csa-foundation-color-pink-700);
   --color-green-200: var(--csa-foundation-color-green-200);
   --color-green-600: var(--csa-foundation-color-neutral-700);
@@ -66,7 +64,7 @@ svg { display: block; width: var(--csa-foundation-space-24); height: var(--csa-f
 .demo-password-field input { width: 100%; min-width: 0; height: 100%; padding: 0; border: 0; background: transparent; color: var(--ink); font-size: var(--csa-foundation-font-size-16); }
 .demo-password-field input:focus-visible { outline: none; }
 .demo-password-field button { flex-shrink: 0; padding: var(--csa-foundation-space-8) var(--csa-foundation-space-2); border: 0; border-radius: var(--csa-foundation-radius-4); background: transparent; font-size: var(--csa-foundation-font-size-12); font-weight: var(--csa-foundation-font-weight-600); }
-.demo-access-info { margin-top: var(--csa-foundation-space-24); padding: var(--csa-foundation-space-16); border-radius: var(--csa-foundation-radius-10); background: var(--csa-foundation-color-blue-50); color: var(--csa-foundation-color-blue-600); text-align: center; }
+.demo-access-info { margin-top: var(--csa-foundation-space-24); padding: var(--csa-foundation-space-16); border-radius: var(--csa-foundation-radius-10); background: var(--csa-foundation-color-indigo-50); color: var(--csa-foundation-color-blue-600); text-align: center; }
 .demo-access-info p { margin: 0; font-size: var(--csa-foundation-font-size-12); line-height: var(--csa-foundation-line-height-20); }
 .demo-access-info .demo-access-info-title { margin-bottom: var(--csa-foundation-space-4); font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-600); }
 .demo-access-footer { margin-top: var(--csa-foundation-space-32); padding-top: var(--csa-foundation-space-24); border-top: var(--csa-foundation-border-width-1) solid var(--line); color: var(--csa-semantic-color-text-secondary); text-align: center; font-size: var(--csa-foundation-font-size-12); line-height: var(--csa-foundation-line-height-20); }
@@ -318,7 +316,7 @@ main:focus { outline: none; }
 .output-open:focus-visible { outline-offset: calc(-1 * var(--csa-foundation-border-width-3)); }
 .output-open:disabled { color: inherit; opacity: 1; cursor: default; }
 .output-card-top { display: flex; align-items: flex-start; gap: var(--csa-foundation-space-8); min-height: var(--csa-foundation-space-28); padding-right: var(--csa-foundation-space-78); }
-.output-selection-button { position: absolute; top: var(--csa-foundation-space-2); left: calc(-1 * var(--csa-foundation-space-3)); display: grid; place-items: center; width: var(--csa-foundation-space-44); height: var(--csa-foundation-space-44); padding: var(--csa-foundation-space-12); border: 0; border-radius: var(--csa-foundation-radius-999); background: transparent; }
+.output-selection-button { position: absolute; top: var(--csa-foundation-space-2); left: calc(-1 * var(--csa-foundation-space-3)); display: grid; place-items: center; width: var(--csa-foundation-space-44); height: var(--csa-foundation-space-44); padding: var(--csa-foundation-space-10); border: 0; border-radius: var(--csa-foundation-radius-999); background: transparent; }
 .output-selection-button:focus-visible { outline-offset: calc(-1 * var(--csa-foundation-border-width-4)); }
 .output-selection-indicator { display: grid; place-items: center; flex-shrink: 0; width: var(--csa-component-checkbox-size); height: var(--csa-component-checkbox-size); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-component-checkbox-radius); font-size: var(--csa-foundation-font-size-12); line-height: var(--csa-foundation-font-leading-1); }
 .output-selection-indicator .material-symbols-outlined { font-size: var(--csa-foundation-font-size-16); width: var(--csa-foundation-space-16); height: var(--csa-foundation-space-16); }

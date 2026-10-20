@@ -1208,6 +1208,27 @@
       }
     },
     {
+      "name": "foundation.color.shadow.dropdown",
+      "designName": "foundation/color/shadow/dropdown",
+      "cssVariable": "--csa-foundation-color-shadow-dropdown",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#40404014",
+      "reference": "",
+      "description": "Subtle neutral shadow tint for open dropdown menus.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.25098039215686274,
+          0.25098039215686274,
+          0.25098039215686274
+        ],
+        "alpha": 0.08
+      }
+    },
+    {
       "name": "foundation.space.0",
       "designName": "foundation/space/0",
       "cssVariable": "--csa-foundation-space-0",
@@ -5404,6 +5425,18 @@
           "unit": "px"
         }
       }
+    },
+    {
+      "name": "semantic.shadow.dropdown",
+      "designName": "semantic/shadow/dropdown",
+      "cssVariable": "--csa-semantic-shadow-dropdown",
+      "type": "shadow",
+      "layer": "semantic",
+      "category": "shadow",
+      "value": "0px 4px 12px 0px #40404014",
+      "reference": "",
+      "description": "Subtle elevation for open choice and action dropdown menus.",
+      "status": "observed"
     },
     {
       "name": "component.button.height",

@@ -55,6 +55,7 @@
   --csa-foundation-color-overlay-canvas-fade: #fbf6f4e6;
   --csa-foundation-color-overlay-canvas-transparent: #fbf6f400;
   --csa-foundation-color-overlay-scrim: #25355029;
+  --csa-foundation-color-shadow-dropdown: #40404014;
   --csa-foundation-space-0: 0px;
   --csa-foundation-space-1: 1px;
   --csa-foundation-space-2: 2px;
@@ -415,6 +416,7 @@
   --csa-semantic-typography-dialog-title-font-weight: var(--csa-foundation-font-weight-650);
   --csa-semantic-typography-dialog-title-letter-spacing: -0.6px;
   --csa-semantic-typography-dialog-title-line-height: 1.3;
+  --csa-semantic-shadow-dropdown: var(--csa-foundation-space-0) var(--csa-foundation-space-4) var(--csa-foundation-space-12) var(--csa-foundation-space-0) var(--csa-foundation-color-shadow-dropdown);
   --csa-component-button-height: 46px;
   --csa-component-button-radius: var(--csa-foundation-radius-10);
   --csa-component-button-panel-radius: var(--csa-foundation-radius-10);

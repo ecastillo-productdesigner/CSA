@@ -238,8 +238,8 @@ AVATAR PALETTE
 COLOR CONSOLIDATION / EFFECTS
   Eight near-identical gray values now share existing white, neutral,
     and selected-surface tokens. Avatar pinks remain unchanged.
-  Shadow colors share five levels: #253550 at 2%, 5%, 8%, 12%, and 16%.
-    Offsets, blur, and spread are preserved for each elevation.
+  Open dropdown menus use one shared neutral shadow at 8% opacity;
+    0px horizontal offset, 4px vertical offset, 12px blur, no spread.
   Loading overlays share white at 90%; warm canvas fades retain their tint.
   The collapsed project navigation rail uses the official Google
     chevron_forward path inside a 40 px white circle with a gray border.
@@ -259,8 +259,8 @@ SHARED COLOR UPDATES — 2026-10-20
     Sources icon neutral-100 background and retains its red icon.
 
 FLAT SURFACES
-  All product and reference shadows are removed, including hover, focus,
-    dropdowns, popovers, dialogs, editor sheets, toasts and mobile panels.
-  Shadow tokens and shadow-only colors are removed from the inventory.
+  Cards, popovers, dialogs, editor sheets, toasts and mobile panels stay flat.
+  Open dropdown menus alone use semantic.shadow.dropdown: 0px 4px 12px,
+    neutral-700 tint at 8% opacity, shared across desktop and mobile.
   Keyboard-focus outlines remain blue-500. Modal backdrop dimming uses
     semantic.color.overlay.scrim; it is independent of elevation.

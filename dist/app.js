@@ -3,7 +3,7 @@ import { createIcon as icon } from './icons.js?v=20261020-request-revision';
 import { parseSourceLinks, formatSourceLinks } from './source-links.js';
 import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261020-request-revision';
 import { createVariantFeedback } from './variant-feedback.js?v=20261020-request-revision';
-import { createProfile } from './profile.js?v=20261020-home-greeting';
+import { createProfile } from './profile.js?v=20261020-profile-simple';
 import { createSearchExperience } from './search.js?v=20261020-request-revision';
 import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=20261020-count-without-icon';
 import { createMaterialEditor } from './editor.js?v=20261020-request-revision';
@@ -115,7 +115,6 @@ const railNavigation = createRailNavigation({
   onOpen: () => { toolDropdowns.close(); outputPresets.close(); outputSettings.close(); richEditor.closePanels(); },
 });
 createProfile({
-  notify,
   onClose: restoreFocus => railNavigation.close('profile', restoreFocus),
   onSessionEnd(logout) {
     richEditor.flush();

@@ -116,6 +116,12 @@ REQUEST REVISION
   Instructions/completion are saved locally. Jobs resume after reload.
   The editor header has no settings pencil; settings remain on cards.
 
+PROFILE AVATAR
+  Fixed A initial in a 32 px circle, white surface with heading text.
+  Uses interface typography at 16 px / 20 px, weight 600.
+  Expanded profile shows the email only, with no name or arrow icons.
+  Profile menu contains Log out only; photo and Settings UI are removed.
+
 HOMEPAGE PROJECT CARDS
   Desktop: 208 px minimum height, 24 px padding and grid gap, 20 px radius.
   Mobile: 104 px minimum height, 16 px padding and grid gap, 16 px radius.

@@ -305,3 +305,9 @@ Desktop Sources to Add new source gap: 16px. Add new source to selection-count g
 Source-preview header label has no background fill.
 
 CSA Home brand text is Neutral 700 by default. Hover uses the primary-blue background with white text.
+
+Serif-formatted article content and serif export text use the shared Newsreader, serif family. Georgia is removed from explicit app/export stacks; the vendored Quill stylesheet is overridden. Newsreader loads normal and italic weights 400–700; HTML exports include the same font request. Generic serif remains the fallback when the font is unavailable. These formats preserve pasted/older saved content; the current editor exposes no font-family selector and its export controls remain hidden.
+
+Variants panel heading and mobile Variants navigation use the filled Material Symbols turn_slight_left icon.
+
+New Variant and Variants headings use a 4px icon-to-text gap; heading icons remain in 20px boxes.

@@ -106,7 +106,7 @@
   --csa-foundation-font-weight-700: 700;
   --csa-foundation-font-weight-750: 750;
   --csa-foundation-font-family-interface: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --csa-foundation-font-family-editorial: Newsreader, Georgia, serif;
+  --csa-foundation-font-family-editorial: Newsreader, serif;
   --csa-foundation-font-family-icons: "Material Symbols Outlined";
   --csa-foundation-font-family-monospace: ui-monospace, SFMono-Regular, Menlo, monospace;
   --csa-foundation-font-family-export: system-ui, sans-serif;
@@ -412,7 +412,7 @@
   --csa-component-export-scale-huge: 2;
   --csa-component-export-text: var(--csa-foundation-color-neutral-700);
   --csa-component-export-quote-border: var(--csa-foundation-color-neutral-200);
-  --csa-component-export-serif-family: Georgia, serif;
+  --csa-component-export-serif-family: var(--csa-foundation-font-family-editorial);
   --csa-component-brand-favicon-background: var(--csa-foundation-color-neutral-100);
   --csa-component-brand-favicon-radius: 15px;
   --csa-component-brand-favicon-font-size: 21px;

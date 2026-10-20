@@ -1,4 +1,4 @@
-/* Offline documents retain their design-system values without a network dependency. */
+/* Export layout and colors are self-contained. Newsreader loads from the export font link, with generic serif fallback when unavailable. */
 body { max-width: var(--csa-foundation-size-760); margin: var(--csa-foundation-space-60) auto; padding: var(--csa-foundation-space-24); font: var(--csa-foundation-font-size-17) / var(--csa-foundation-font-leading-1-8) var(--csa-foundation-font-family-export); color: var(--csa-component-export-text); }
 h1, h2, h3 { line-height: var(--csa-foundation-font-leading-1-3); }
 blockquote { border-left: var(--csa-foundation-border-width-3) solid var(--csa-component-export-quote-border); padding-left: var(--csa-foundation-space-20); }

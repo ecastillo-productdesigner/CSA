@@ -1486,9 +1486,9 @@
       "type": "fontFamily",
       "layer": "foundation",
       "category": "font",
-      "value": "Newsreader, Georgia, serif",
+      "value": "Newsreader, serif",
       "reference": "",
-      "description": "Homepage greeting and project-start heading.",
+      "description": "Newsreader for homepage/project-start headings and serif-formatted article content; generic serif is the fallback.",
       "status": "observed"
     },
     {
@@ -4043,14 +4043,13 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "700 32px/1.4 Newsreader, Georgia, serif",
+      "value": "700 32px/1.4 Newsreader, serif",
       "reference": "",
       "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
       "status": "observed",
       "properties": {
         "fontFamily": [
           "Newsreader",
-          "Georgia",
           "serif"
         ],
         "fontSize": {
@@ -5414,9 +5413,9 @@
       "type": "fontFamily",
       "layer": "component",
       "category": "export",
-      "value": "Georgia, serif",
-      "reference": "",
-      "description": "Serif override in exported rich text.",
+      "value": "Newsreader, serif",
+      "reference": "foundation.font.family.editorial",
+      "description": "Exported serif text shares the Newsreader editorial family.",
       "status": "observed"
     },
     {

@@ -322,7 +322,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     flush();
     const heading = title.value.trim() || 'Untitled story';
     const text = `${heading}\n\n${quill.getText()}`;
-    const html = `<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>${escaped(heading)}</title><style>${documentStyles}</style></head><body><h1>${escaped(heading)}</h1>${quill.getSemanticHTML()}</body></html>`;
+    const html = `<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>${escaped(heading)}</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap"><style>${documentStyles}</style></head><body><h1>${escaped(heading)}</h1>${quill.getSemanticHTML()}</body></html>`;
     const blob = new Blob([type === 'html' ? html : text], { type: type === 'html' ? 'text/html;charset=utf-8' : 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob); const anchor = document.createElement('a');
     anchor.href = url; anchor.download = `${heading.replace(/[^\p{L}\p{N} _-]/gu, '').slice(0, 90) || 'CSA-story'}.${type === 'html' ? 'html' : 'txt'}`;

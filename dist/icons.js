@@ -23,7 +23,7 @@ export const iconAliases = {
   "trash": "delete",
   "restore": "restore_from_trash",
   "tools": "build",
-  "variants": "contract_edit",
+  "variants": "turn_slight_left",
   "outputs": "auto_awesome"
 };
 

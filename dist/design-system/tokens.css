@@ -356,4 +356,6 @@
   --csa-component-editor-toolbar-padding-inline: var(--csa-foundation-space-14);
   --csa-component-editor-toolbar-padding-block: var(--csa-foundation-space-2);
   --csa-component-dropdown-radius: var(--csa-foundation-radius-10);
+  --csa-component-access-card-max-width: 600px;
+  --csa-component-access-card-content-width: 400px;
 }

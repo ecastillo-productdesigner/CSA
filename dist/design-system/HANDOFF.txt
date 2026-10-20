@@ -4,7 +4,7 @@ Extracted 2026-10-19 from CSA app source baa4775.
 SOURCE OF TRUTH
   dist/design-system/tokens.json
   Three layers: foundation > semantic > component.
-  300 tokens in DTCG 2025.10-compatible JSON.
+  302 tokens in DTCG 2025.10-compatible JSON.
   Every token includes a type, description, and observed status.
   observed-exception retains a component-specific existing value.
   approved-update identifies the requested compact toolbar additions.
@@ -115,6 +115,14 @@ REQUEST REVISION
     replaces only its body with a different sample, then shows a toast.
   Instructions/completion are saved locally. Jobs resume after reload.
   The editor header has no settings pencil; settings remain on cards.
+
+PASSWORD CARD
+  Centered CSA mark and Sign in to continue heading in Inter.
+  Card maximum width 600 px, content maximum width 400 px.
+  Desktop padding 32 px, mobile padding 24 px; corners 20 / 16 px.
+  Password field, blue information panel, divided product footer, and
+    Open workspace action last. Existing demo password behavior is retained.
+  Information describes demo access; no OAuth or AI-provider claim.
 
 PROFILE AVATAR
   Fixed A initial in a 32 px circle, heading-color background with white text.

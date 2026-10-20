@@ -5144,6 +5144,30 @@
       "reference": "foundation.radius.10",
       "description": "Component radius mapped to the approved foundation scale.",
       "status": "approved-update"
+    },
+    {
+      "name": "component.access-card.max-width",
+      "designName": "component/access-card/max-width",
+      "cssVariable": "--csa-component-access-card-max-width",
+      "type": "dimension",
+      "layer": "component",
+      "category": "access-card",
+      "value": "600px",
+      "reference": "",
+      "description": "Maximum width of the centered sign-in card.",
+      "status": "approved-update"
+    },
+    {
+      "name": "component.access-card.content-width",
+      "designName": "component/access-card/content-width",
+      "cssVariable": "--csa-component-access-card-content-width",
+      "type": "dimension",
+      "layer": "component",
+      "category": "access-card",
+      "value": "400px",
+      "reference": "",
+      "description": "Maximum width of the sign-in form, information panel, and footer.",
+      "status": "approved-update"
     }
   ]
 }

@@ -42,6 +42,7 @@ export function projectUpdatedDate(project, now = Date.now()) {
 
 export function createDashboard({ onNew, onOpen, onDelete }) {
   let revealTimer;
+  let layoutAnimation;
   const home = document.querySelector('#home');
   const grid = document.querySelector('#dashboard-grid');
   const loadMore = document.querySelector('#dashboard-load-more');
@@ -137,11 +138,29 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
     closeMenu();
     clearTimeout(revealTimer);
     home.classList.remove('is-entering');
+    const previousHeight = grid.getBoundingClientRect().height;
+    layoutAnimation?.cancel();
+    grid.classList.remove('is-switching-layout');
     layout = next;
     visibleRows = 6;
     try { localStorage.setItem(layoutKey, layout); } catch { /* The layout still works for this session. */ }
     render(currentProjects);
     updateVisible(true);
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const nextHeight = grid.getBoundingClientRect().height;
+      const styles = getComputedStyle(grid);
+      grid.classList.add('is-switching-layout');
+      const animation = grid.animate([
+        { height: `${previousHeight}px`, opacity: .35 },
+        { height: `${nextHeight}px`, opacity: 1 }
+      ], { duration: parseFloat(styles.getPropertyValue('--csa-foundation-motion-duration-200')), easing: styles.getPropertyValue('--csa-foundation-motion-easing-arrive').trim() });
+      layoutAnimation = animation;
+      animation.finished.then(() => {
+        if (layoutAnimation !== animation) return;
+        grid.classList.remove('is-switching-layout');
+        layoutAnimation = null;
+      }).catch(() => { /* A newer layout choice cancelled this transition. */ });
+    }
   }
   for (const button of layoutButtons) button.addEventListener('click', () => setLayout(button.dataset.dashboardLayout));
   layoutSwitch.addEventListener('keydown', event => {

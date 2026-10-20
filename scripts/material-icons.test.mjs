@@ -15,7 +15,7 @@ test('every interface symbol is included in the Google Fonts subset for both ent
   for (const html of pages) {
     const subset = new Set(html.match(/icon_names=([^&"]+)/)[1].split(','));
     for (const name of required) assert.ok(subset.has(name), `Missing glyph in font subset: ${name}`);
-    assert.match(html, /FILL,GRAD@20\.\.48,100\.\.700,1,0/);
+    assert.match(html, /FILL,GRAD@20\.\.48,100\.\.700,0\.\.1,0/);
     assert.doesNotMatch(html, /<svg|<symbol|href="#icon-/);
   }
 });

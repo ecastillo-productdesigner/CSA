@@ -47,6 +47,7 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
   const loadMore = document.querySelector('#dashboard-load-more');
   const status = document.querySelector('#dashboard-load-status');
   const layoutSwitch = document.querySelector('#dashboard-layout-switch');
+  const layoutTools = document.querySelector('.dashboard-layout-tools');
   const layoutButtons = [...layoutSwitch.querySelectorAll('[data-dashboard-layout]')];
   let layout = readLayout();
   let currentProjects = [];
@@ -92,7 +93,7 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
   deleteDialog.addEventListener('close', () => {
     const trigger = pendingDelete?.trigger;
     pendingDelete = null;
-    (trigger?.isConnected ? trigger : grid.querySelector('.project-card-menu-button') || grid.querySelector('#dashboard-new-project'))?.focus({ preventScroll: true });
+    (trigger?.isConnected ? trigger : grid.querySelector('.project-card-menu-button') || home.querySelector('#dashboard-new-project'))?.focus({ preventScroll: true });
   });
   deleteConfirm.addEventListener('click', async () => {
     if (!pendingDelete || deleting) return;
@@ -212,7 +213,7 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
     const caption = node('caption', 'visually-hidden', 'Projects');
     const head = node('thead');
     const headerRow = node('tr');
-    for (const label of ['Title', 'Sources', 'Date', 'Role', 'Actions']) {
+    for (const label of ['Title', 'Variants', 'Date', 'Actions']) {
       const cell = node('th', `project-column-${label.toLowerCase()}`);
       cell.scope = 'col';
       cell.append(node('span', label === 'Actions' ? 'visually-hidden' : '', label));
@@ -229,9 +230,9 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
       open.setAttribute('aria-label', `Open project: ${project.title}`);
       open.addEventListener('click', () => { closeMenu(); onOpen(project.id); });
       title.append(open);
-      const sourceCount = project.sources.length;
-      const sources = node('td', 'project-table-sources', `${sourceCount} ${sourceCount === 1 ? 'source' : 'sources'}`);
-      sources.dataset.label = 'Sources';
+      const variantCount = projectOutputs(project).filter(outputIsReady).length;
+      const variants = node('td', 'project-table-variants', `${variantCount} ${variantCount === 1 ? 'variant' : 'variants'}`);
+      variants.dataset.label = 'Variants';
       const date = node('td', 'project-table-date');
       date.dataset.label = 'Date';
       const updated = projectUpdatedDate(project);
@@ -239,19 +240,17 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
       time.dateTime = new Date(updated.timestamp).toISOString();
       time.title = updated.full;
       date.append(time);
-      const role = node('td', 'project-table-role', 'Owner');
-      role.dataset.label = 'Role';
       const actions = node('td', 'project-row-actions');
       const { more, menu } = projectActions(project);
       actions.append(more, menu);
-      row.append(title, sources, date, role, actions);
+      row.append(title, variants, date, actions);
       projectItems.push(row);
       body.append(row);
     }
     if (!projects.length) {
       const row = node('tr');
       const empty = node('td', 'project-table-empty', 'No projects yet. Create a project to get started.');
-      empty.colSpan = 5;
+      empty.colSpan = 4;
       row.append(empty);
       body.append(row);
     }
@@ -267,12 +266,13 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
     for (const button of layoutButtons) button.setAttribute('aria-pressed', String(button.dataset.dashboardLayout === layout));
     const dashboardProjects = projects.filter(project => project.dashboard === true && !project.archivedAt && !project.deletedAt);
     grid.replaceChildren();
+    layoutTools.querySelector('#dashboard-new-project')?.remove();
     const button = node('button', 'new-project-tile');
     button.id = 'dashboard-new-project';
     button.type = 'button';
     button.append(icon('plus'), node('span', '', 'New Project'));
     button.addEventListener('click', onNew);
-    grid.append(button);
+    (layout === 'list' ? layoutTools : grid).append(button);
 
     if (layout === 'list') grid.append(projectTable(dashboardProjects));
     else for (const project of dashboardProjects) {

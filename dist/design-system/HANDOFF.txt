@@ -139,13 +139,16 @@ NAVIGATION RAIL
   Homepage card action menus contain Delete only; no rename action/dialog.
 
 HOMEPAGE LAYOUTS
-  Grid/list switch sits above New Project, aligned left; Material Symbols
-    view_module / menu, 18 px glyphs in 40 px targets.
-  White container uses radius 20; primary-blue selected surface uses
-    radius 16 with white icons. Unselected icons use primary text color.
+  Grid/list switch sits at the left of the homepage toolbar; Material Symbols
+    view_module / menu, 16 px glyphs in 40 px targets; 84 × 44 px control.
+  White container uses radius 20; light-gray selected surface uses
+    radius 16 with dark icons. Grid is filled when selected and outlined
+    when unselected; all other symbols keep the shared filled style.
   Choice is saved locally and supports arrow keys, Home, and End.
-  List shows Title, Sources, Date, Role, and a Delete-only action menu.
-  Date keeps Today / Updated Today semantics. Local projects show Owner.
+  List shows Title, created Variants, Date, and a Delete-only action menu.
+  New Project sits at the right of the layout toolbar in list view;
+    grid view keeps its New Project tile.
+  Date keeps Today / Updated Today semantics.
   Title opens the project. Rows use 14 px Inter and shared dividers/hover.
   Mobile rows stack their details without horizontal scrolling.
 

@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261020-profile-simple');
+  await import('./app.js?v=20261020-created-updated-dates');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

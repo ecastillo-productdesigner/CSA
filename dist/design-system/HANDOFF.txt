@@ -130,8 +130,9 @@ HOMEPAGE PROJECT CARDS
   Card hover/focus-within uses the selected-border token.
   Dates/counts use semantic.color.text.secondary (#737373); inactive
     controls and optional labels retain the muted token (#a3a3a3).
-  Dates read Updated today / Updated Oct 19, using the last edit time
-    with creation time as a fallback. Older years are shown explicitly.
+  Unedited projects show Today / Oct 19 using the creation date.
+  Projects edited after creation show Updated Today / Updated Oct 19
+    using the last edit date. Older years are shown explicitly.
   Legacy trailing — Draft suffixes are removed from project names;
     new projects no longer append the suffix. Variant titles are retained.
 

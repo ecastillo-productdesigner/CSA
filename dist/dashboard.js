@@ -24,13 +24,14 @@ export function normalizeProjectTitles(projects) {
 }
 
 export function projectUpdatedDate(project, now = Date.now()) {
-  const timestamp = Number.isFinite(project.updatedAt) && project.updatedAt > 0 ? project.updatedAt : project.createdAt;
+  const wasUpdated = Number.isFinite(project.updatedAt) && project.updatedAt > project.createdAt;
+  const timestamp = wasUpdated ? project.updatedAt : project.createdAt;
   const date = new Date(timestamp);
   const day = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' });
   const year = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric' });
   const sameYear = year.format(timestamp) === year.format(now);
-  const label = day.format(timestamp) === day.format(now) ? 'today' : new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', ...(!sameYear ? { year: 'numeric' } : {}) }).format(date);
-  return { timestamp, label: `Updated ${label}`, full: new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', dateStyle: 'medium', timeStyle: 'short' }).format(date) };
+  const label = day.format(timestamp) === day.format(now) ? 'Today' : new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', ...(!sameYear ? { year: 'numeric' } : {}) }).format(date);
+  return { timestamp, label: wasUpdated ? `Updated ${label}` : label, full: new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', dateStyle: 'medium', timeStyle: 'short' }).format(date) };
 }
 
 export function createDashboard({ onNew, onOpen, onDelete, onRename }) {

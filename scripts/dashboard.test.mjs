@@ -25,12 +25,24 @@ test('dashboard labels the last edit rather than the creation date', () => {
   const createdAt = Date.parse('2026-10-18T16:00:00Z');
   const updatedAt = Date.parse('2026-10-19T16:00:00Z');
   assert.equal(projectUpdatedDate({ createdAt, updatedAt }, now).label, 'Updated Oct 19');
-  assert.equal(projectUpdatedDate({ createdAt, updatedAt: now }, now).label, 'Updated today');
-  assert.equal(projectUpdatedDate({ createdAt, updatedAt: NaN }, now).label, 'Updated Oct 18');
+  assert.equal(projectUpdatedDate({ createdAt, updatedAt: now }, now).label, 'Updated Today');
+  assert.equal(projectUpdatedDate({ createdAt, updatedAt: NaN }, now).label, 'Oct 18');
   assert.equal(projectUpdatedDate({ createdAt, updatedAt }, now).timestamp, updatedAt);
 });
 
 test('older dates include their year and use the project date timezone at midnight', () => {
-  assert.equal(projectUpdatedDate({ createdAt: Date.parse('2025-10-19T16:00:00Z') }, now).label, 'Updated Oct 19, 2025');
-  assert.equal(projectUpdatedDate({ createdAt: Date.parse('2026-10-20T02:00:00Z') }, now).label, 'Updated Oct 19');
+  assert.equal(projectUpdatedDate({ createdAt: Date.parse('2025-10-19T16:00:00Z') }, now).label, 'Oct 19, 2025');
+  assert.equal(projectUpdatedDate({ createdAt: Date.parse('2026-10-20T02:00:00Z') }, now).label, 'Oct 19');
+});
+
+test('unedited projects show only the creation date, including a same-time initial timestamp', () => {
+  for (const updatedAt of [undefined, now, now - 1, NaN, Infinity]) {
+    const result = projectUpdatedDate({ createdAt: now, updatedAt }, now);
+    assert.equal(result.label, 'Today');
+    assert.equal(result.timestamp, now);
+  }
+  const createdAt = Date.parse('2026-10-19T16:00:00Z');
+  assert.equal(projectUpdatedDate({ createdAt }, now).label, 'Oct 19');
+  assert.equal(projectUpdatedDate({ createdAt, updatedAt: now }, now).label, 'Updated Today');
+  assert.equal(projectUpdatedDate({ createdAt: Date.parse('2024-10-18T16:00:00Z'), updatedAt: Date.parse('2025-10-19T16:00:00Z') }, now).label, 'Updated Oct 19, 2025');
 });

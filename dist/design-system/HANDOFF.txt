@@ -152,7 +152,7 @@ HOMEPAGE LAYOUTS
   New Project sits at the right of the layout toolbar in list view;
     grid view keeps its New Project tile.
   Date keeps Today / Updated Today semantics.
-  Title opens the project. Rows use 14 px Inter, 14 px top/bottom padding,
+  Title opens the project. Rows use 14 px Inter, 12 px top/bottom padding,
     and shared dividers/hover.
   Mobile rows stack their details without horizontal scrolling.
 

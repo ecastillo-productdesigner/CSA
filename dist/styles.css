@@ -1120,7 +1120,7 @@ body #home[data-layout="list"] .new-project-tile .material-symbols-outlined { wi
 .project-table .project-column-variants { width: 18%; }
 .project-table .project-column-date { width: 24%; }
 .project-table .project-column-actions { width: var(--csa-component-navigation-rail-width); }
-.project-table td { padding: var(--csa-foundation-space-14) var(--csa-foundation-space-16); border-bottom: var(--csa-foundation-border-width-1) solid var(--line); vertical-align: middle; text-align: left; }
+.project-table td { padding: var(--csa-foundation-space-12) var(--csa-foundation-space-16); border-bottom: var(--csa-foundation-border-width-1) solid var(--line); vertical-align: middle; text-align: left; }
 .project-table-row:hover, .project-table-row:focus-within { background: var(--csa-semantic-color-surface-hover); }
 .project-table-title .project-title-button { font-weight: var(--csa-foundation-font-weight-600); }
 .project-table-date { color: var(--csa-semantic-color-text-secondary); }
@@ -1133,7 +1133,7 @@ body #home[data-layout="list"] .new-project-tile .material-symbols-outlined { wi
   .project-table { display: block; }
   .project-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .project-table tbody { display: block; }
-  .project-table-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: var(--csa-foundation-space-16); padding: var(--csa-foundation-space-14) 0; border-bottom: var(--csa-foundation-border-width-1) solid var(--line); }
+  .project-table-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: var(--csa-foundation-space-16); padding: var(--csa-foundation-space-12) 0; border-bottom: var(--csa-foundation-border-width-1) solid var(--line); }
   .project-table .project-table-title { grid-column: 1 / -1; padding: 0 var(--csa-foundation-space-48) 0 0; }
   .project-table td { display: block; min-width: 0; padding: 0; border: 0; }
   .project-table td[data-label] { font-size: var(--csa-foundation-font-size-12); overflow-wrap: anywhere; }

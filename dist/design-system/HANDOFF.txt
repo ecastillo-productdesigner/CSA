@@ -86,8 +86,8 @@ COMPONENT CONTRACTS
 
 VARIANT STATUS SEGMENTS
   To Create / Created separate pending and ready variants.
-  Prefix nonzero counts: "2 To Create", "4 Created"; omit zero counts.
-  Inter 14 / 20, weight 600. Pill radius 999 px.
+  Prefix nonzero counts: "2 to Create", "4 Created"; omit zero counts.
+  Inter 14 / 20, weight 600. Radius matches component.dropdown.radius (10 px).
   Selected: button primary background and inverse label. Unselected:
     default surface, primary text, button border (#e5e5e5). No checkmark.
   Empty, unselected To Create and Created use disabled-label gray (#a3a3a3).
@@ -234,3 +234,14 @@ AVATAR PALETTE
   foundation.color.pink.100: #FCE7F3 (Tailwind classic pink-100)
   foundation.color.pink.700: #BE185D (Tailwind classic pink-700)
   component.avatar.background and foreground alias these colors.
+
+COLOR CONSOLIDATION / EFFECTS
+  Eight near-identical gray values now share existing white, neutral,
+    and selected-surface tokens. Avatar pinks remain unchanged.
+  Shadow colors share five levels: #253550 at 2%, 5%, 8%, 12%, and 16%.
+    Offsets, blur, and spread are preserved for each elevation.
+  Loading overlays share white at 90%; warm canvas fades retain their tint.
+  The collapsed project navigation rail uses the official Google
+    chevron_forward path inside a 40 px white circle with a gray border.
+  Variant status tabs share the dropdown radius token (10 px), including
+    the outside corners of the first and last segments.

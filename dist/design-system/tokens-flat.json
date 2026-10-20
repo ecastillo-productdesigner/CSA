@@ -156,28 +156,6 @@
       }
     },
     {
-      "name": "foundation.color.stone.200",
-      "designName": "foundation/color/stone/200",
-      "cssVariable": "--csa-foundation-color-stone-200",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#e7e5e4",
-      "reference": "",
-      "description": "Implemented palette value.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.9058823529411765,
-          0.8980392156862745,
-          0.8941176470588236
-        ],
-        "alpha": 1,
-        "hex": "#e7e5e4"
-      }
-    },
-    {
       "name": "foundation.color.stone.900",
       "designName": "foundation/color/stone/900",
       "cssVariable": "--csa-foundation-color-stone-900",
@@ -596,50 +574,6 @@
       }
     },
     {
-      "name": "foundation.color.observed.hex-4d5d7908",
-      "designName": "foundation/color/observed/hex-4d5d7908",
-      "cssVariable": "--csa-foundation-color-observed-hex-4d5d7908",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#4d5d7908",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.30196078431372547,
-          0.36470588235294116,
-          0.4745098039215686
-        ],
-        "alpha": 0.03137254901960784,
-        "hex": "#4d5d79"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-f8f9fb",
-      "designName": "foundation/color/observed/hex-f8f9fb",
-      "cssVariable": "--csa-foundation-color-observed-hex-f8f9fb",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#f8f9fb",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.9725490196078431,
-          0.9764705882352941,
-          0.984313725490196
-        ],
-        "alpha": 1,
-        "hex": "#f8f9fb"
-      }
-    },
-    {
       "name": "foundation.color.observed.hex-f2f3f5",
       "designName": "foundation/color/observed/hex-f2f3f5",
       "cssVariable": "--csa-foundation-color-observed-hex-f2f3f5",
@@ -684,94 +618,6 @@
       }
     },
     {
-      "name": "foundation.color.observed.hex-25355016",
-      "designName": "foundation/color/observed/hex-25355016",
-      "cssVariable": "--csa-foundation-color-observed-hex-25355016",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#25355016",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1450980392156863,
-          0.20784313725490197,
-          0.3137254901960784
-        ],
-        "alpha": 0.08627450980392157,
-        "hex": "#253550"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-fbf6f400",
-      "designName": "foundation/color/observed/hex-fbf6f400",
-      "cssVariable": "--csa-foundation-color-observed-hex-fbf6f400",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#fbf6f400",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.984313725490196,
-          0.9647058823529412,
-          0.9568627450980393
-        ],
-        "alpha": 0,
-        "hex": "#fbf6f4"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-fbf6f4e6",
-      "designName": "foundation/color/observed/hex-fbf6f4e6",
-      "cssVariable": "--csa-foundation-color-observed-hex-fbf6f4e6",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#fbf6f4e6",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.984313725490196,
-          0.9647058823529412,
-          0.9568627450980393
-        ],
-        "alpha": 0.9019607843137255,
-        "hex": "#fbf6f4"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-17171714",
-      "designName": "foundation/color/observed/hex-17171714",
-      "cssVariable": "--csa-foundation-color-observed-hex-17171714",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#17171714",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.09019607843137255,
-          0.09019607843137255,
-          0.09019607843137255
-        ],
-        "alpha": 0.0784313725490196,
-        "hex": "#171717"
-      }
-    },
-    {
       "name": "foundation.color.observed.hex-cfd4d7",
       "designName": "foundation/color/observed/hex-cfd4d7",
       "cssVariable": "--csa-foundation-color-observed-hex-cfd4d7",
@@ -791,28 +637,6 @@
         ],
         "alpha": 1,
         "hex": "#cfd4d7"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-2535500a",
-      "designName": "foundation/color/observed/hex-2535500a",
-      "cssVariable": "--csa-foundation-color-observed-hex-2535500a",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#2535500a",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1450980392156863,
-          0.20784313725490197,
-          0.3137254901960784
-        ],
-        "alpha": 0.0392156862745098,
-        "hex": "#253550"
       }
     },
     {
@@ -860,50 +684,6 @@
       }
     },
     {
-      "name": "foundation.color.observed.hex-f7f8fa",
-      "designName": "foundation/color/observed/hex-f7f8fa",
-      "cssVariable": "--csa-foundation-color-observed-hex-f7f8fa",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#f7f8fa",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.9686274509803922,
-          0.9725490196078431,
-          0.9803921568627451
-        ],
-        "alpha": 1,
-        "hex": "#f7f8fa"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-29354c0d",
-      "designName": "foundation/color/observed/hex-29354c0d",
-      "cssVariable": "--csa-foundation-color-observed-hex-29354c0d",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#29354c0d",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1607843137254902,
-          0.20784313725490197,
-          0.2980392156862745
-        ],
-        "alpha": 0.050980392156862744,
-        "hex": "#29354c"
-      }
-    },
-    {
       "name": "foundation.color.observed.hex-edf0f5",
       "designName": "foundation/color/observed/hex-edf0f5",
       "cssVariable": "--csa-foundation-color-observed-hex-edf0f5",
@@ -923,28 +703,6 @@
         ],
         "alpha": 1,
         "hex": "#edf0f5"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-f3f5f8",
-      "designName": "foundation/color/observed/hex-f3f5f8",
-      "cssVariable": "--csa-foundation-color-observed-hex-f3f5f8",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#f3f5f8",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.9529411764705882,
-          0.9607843137254902,
-          0.9725490196078431
-        ],
-        "alpha": 1,
-        "hex": "#f3f5f8"
       }
     },
     {
@@ -1036,160 +794,6 @@
       }
     },
     {
-      "name": "foundation.color.observed.hex-29354c14",
-      "designName": "foundation/color/observed/hex-29354c14",
-      "cssVariable": "--csa-foundation-color-observed-hex-29354c14",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#29354c14",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1607843137254902,
-          0.20784313725490197,
-          0.2980392156862745
-        ],
-        "alpha": 0.0784313725490196,
-        "hex": "#29354c"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-25355020",
-      "designName": "foundation/color/observed/hex-25355020",
-      "cssVariable": "--csa-foundation-color-observed-hex-25355020",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#25355020",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1450980392156863,
-          0.20784313725490197,
-          0.3137254901960784
-        ],
-        "alpha": 0.12549019607843137,
-        "hex": "#253550"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-27354c28",
-      "designName": "foundation/color/observed/hex-27354c28",
-      "cssVariable": "--csa-foundation-color-observed-hex-27354c28",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#27354c28",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.15294117647058825,
-          0.20784313725490197,
-          0.2980392156862745
-        ],
-        "alpha": 0.1568627450980392,
-        "hex": "#27354c"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-25355018",
-      "designName": "foundation/color/observed/hex-25355018",
-      "cssVariable": "--csa-foundation-color-observed-hex-25355018",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#25355018",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1450980392156863,
-          0.20784313725490197,
-          0.3137254901960784
-        ],
-        "alpha": 0.09411764705882353,
-        "hex": "#253550"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-27354c24",
-      "designName": "foundation/color/observed/hex-27354c24",
-      "cssVariable": "--csa-foundation-color-observed-hex-27354c24",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#27354c24",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.15294117647058825,
-          0.20784313725490197,
-          0.2980392156862745
-        ],
-        "alpha": 0.1411764705882353,
-        "hex": "#27354c"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-edf1f6",
-      "designName": "foundation/color/observed/hex-edf1f6",
-      "cssVariable": "--csa-foundation-color-observed-hex-edf1f6",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#edf1f6",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.9294117647058824,
-          0.9450980392156862,
-          0.9647058823529412
-        ],
-        "alpha": 1,
-        "hex": "#edf1f6"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-25355024",
-      "designName": "foundation/color/observed/hex-25355024",
-      "cssVariable": "--csa-foundation-color-observed-hex-25355024",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#25355024",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1450980392156863,
-          0.20784313725490197,
-          0.3137254901960784
-        ],
-        "alpha": 0.1411764705882353,
-        "hex": "#253550"
-      }
-    },
-    {
       "name": "foundation.color.observed.hex-f0f3f8",
       "designName": "foundation/color/observed/hex-f0f3f8",
       "cssVariable": "--csa-foundation-color-observed-hex-f0f3f8",
@@ -1212,28 +816,6 @@
       }
     },
     {
-      "name": "foundation.color.observed.hex-25355014",
-      "designName": "foundation/color/observed/hex-25355014",
-      "cssVariable": "--csa-foundation-color-observed-hex-25355014",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#25355014",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1450980392156863,
-          0.20784313725490197,
-          0.3137254901960784
-        ],
-        "alpha": 0.0784313725490196,
-        "hex": "#253550"
-      }
-    },
-    {
       "name": "foundation.color.observed.hex-f3f5f9",
       "designName": "foundation/color/observed/hex-f3f5f9",
       "cssVariable": "--csa-foundation-color-observed-hex-f3f5f9",
@@ -1253,28 +835,6 @@
         ],
         "alpha": 1,
         "hex": "#f3f5f9"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-25355005",
-      "designName": "foundation/color/observed/hex-25355005",
-      "cssVariable": "--csa-foundation-color-observed-hex-25355005",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#25355005",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1450980392156863,
-          0.20784313725490197,
-          0.3137254901960784
-        ],
-        "alpha": 0.0196078431372549,
-        "hex": "#253550"
       }
     },
     {
@@ -1410,50 +970,6 @@
       }
     },
     {
-      "name": "foundation.color.observed.hex-2535501f",
-      "designName": "foundation/color/observed/hex-2535501f",
-      "cssVariable": "--csa-foundation-color-observed-hex-2535501f",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#2535501f",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1450980392156863,
-          0.20784313725490197,
-          0.3137254901960784
-        ],
-        "alpha": 0.12156862745098039,
-        "hex": "#253550"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-fcfcfd",
-      "designName": "foundation/color/observed/hex-fcfcfd",
-      "cssVariable": "--csa-foundation-color-observed-hex-fcfcfd",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#fcfcfd",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.9882352941176471,
-          0.9882352941176471,
-          0.9921568627450981
-        ],
-        "alpha": 1,
-        "hex": "#fcfcfd"
-      }
-    },
-    {
       "name": "foundation.color.observed.hex-fafbfc",
       "designName": "foundation/color/observed/hex-fafbfc",
       "cssVariable": "--csa-foundation-color-observed-hex-fafbfc",
@@ -1495,28 +1011,6 @@
         ],
         "alpha": 1,
         "hex": "#d4d8df"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-f6f7f9",
-      "designName": "foundation/color/observed/hex-f6f7f9",
-      "cssVariable": "--csa-foundation-color-observed-hex-f6f7f9",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#f6f7f9",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.9647058823529412,
-          0.9686274509803922,
-          0.9764705882352941
-        ],
-        "alpha": 1,
-        "hex": "#f6f7f9"
       }
     },
     {
@@ -1564,72 +1058,6 @@
       }
     },
     {
-      "name": "foundation.color.observed.hex-27354c16",
-      "designName": "foundation/color/observed/hex-27354c16",
-      "cssVariable": "--csa-foundation-color-observed-hex-27354c16",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#27354c16",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.15294117647058825,
-          0.20784313725490197,
-          0.2980392156862745
-        ],
-        "alpha": 0.08627450980392157,
-        "hex": "#27354c"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-ffffffde",
-      "designName": "foundation/color/observed/hex-ffffffde",
-      "cssVariable": "--csa-foundation-color-observed-hex-ffffffde",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#ffffffde",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          1,
-          1,
-          1
-        ],
-        "alpha": 0.8705882352941177,
-        "hex": "#ffffff"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-4d5d7909",
-      "designName": "foundation/color/observed/hex-4d5d7909",
-      "cssVariable": "--csa-foundation-color-observed-hex-4d5d7909",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#4d5d7909",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.30196078431372547,
-          0.36470588235294116,
-          0.4745098039215686
-        ],
-        "alpha": 0.03529411764705882,
-        "hex": "#4d5d79"
-      }
-    },
-    {
       "name": "foundation.color.observed.hex-e7e2dd",
       "designName": "foundation/color/observed/hex-e7e2dd",
       "cssVariable": "--csa-foundation-color-observed-hex-e7e2dd",
@@ -1649,116 +1077,6 @@
         ],
         "alpha": 1,
         "hex": "#e7e2dd"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-f0f1f4",
-      "designName": "foundation/color/observed/hex-f0f1f4",
-      "cssVariable": "--csa-foundation-color-observed-hex-f0f1f4",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#f0f1f4",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.9411764705882353,
-          0.9450980392156862,
-          0.9568627450980393
-        ],
-        "alpha": 1,
-        "hex": "#f0f1f4"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-25355025",
-      "designName": "foundation/color/observed/hex-25355025",
-      "cssVariable": "--csa-foundation-color-observed-hex-25355025",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#25355025",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1450980392156863,
-          0.20784313725490197,
-          0.3137254901960784
-        ],
-        "alpha": 0.1450980392156863,
-        "hex": "#253550"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-29354c24",
-      "designName": "foundation/color/observed/hex-29354c24",
-      "cssVariable": "--csa-foundation-color-observed-hex-29354c24",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#29354c24",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
-      "status": "observed-exception",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1607843137254902,
-          0.20784313725490197,
-          0.2980392156862745
-        ],
-        "alpha": 0.1411764705882353,
-        "hex": "#29354c"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-0000000a",
-      "designName": "foundation/color/observed/hex-0000000a",
-      "cssVariable": "--csa-foundation-color-observed-hex-0000000a",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#0000000a",
-      "reference": "",
-      "description": "Preserved reference UI color.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0,
-          0,
-          0
-        ],
-        "alpha": 0.0392156862745098,
-        "hex": "#0000000a"
-      }
-    },
-    {
-      "name": "foundation.color.observed.hex-00000012",
-      "designName": "foundation/color/observed/hex-00000012",
-      "cssVariable": "--csa-foundation-color-observed-hex-00000012",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#00000012",
-      "reference": "",
-      "description": "Preserved reference UI color.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0,
-          0,
-          0
-        ],
-        "alpha": 0.07058823529411765,
-        "hex": "#00000012"
       }
     },
     {
@@ -1803,6 +1121,174 @@
         ],
         "alpha": 1,
         "hex": "#be185d"
+      }
+    },
+    {
+      "name": "foundation.color.shadow.faint",
+      "designName": "foundation/color/shadow/faint",
+      "cssVariable": "--csa-foundation-color-shadow-faint",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#25355005",
+      "reference": "",
+      "description": "Shared shadow tint at 2% opacity; blur and geometry are specified by elevation recipes.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.20784313725490197,
+          0.3137254901960784
+        ],
+        "alpha": 0.02
+      }
+    },
+    {
+      "name": "foundation.color.shadow.soft",
+      "designName": "foundation/color/shadow/soft",
+      "cssVariable": "--csa-foundation-color-shadow-soft",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#2535500d",
+      "reference": "",
+      "description": "Shared shadow tint at 5% opacity; blur and geometry are specified by elevation recipes.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.20784313725490197,
+          0.3137254901960784
+        ],
+        "alpha": 0.05
+      }
+    },
+    {
+      "name": "foundation.color.shadow.default",
+      "designName": "foundation/color/shadow/default",
+      "cssVariable": "--csa-foundation-color-shadow-default",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#25355014",
+      "reference": "",
+      "description": "Shared shadow tint at 8% opacity; blur and geometry are specified by elevation recipes.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.20784313725490197,
+          0.3137254901960784
+        ],
+        "alpha": 0.08
+      }
+    },
+    {
+      "name": "foundation.color.shadow.raised",
+      "designName": "foundation/color/shadow/raised",
+      "cssVariable": "--csa-foundation-color-shadow-raised",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#2535501f",
+      "reference": "",
+      "description": "Shared shadow tint at 12% opacity; blur and geometry are specified by elevation recipes.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.20784313725490197,
+          0.3137254901960784
+        ],
+        "alpha": 0.12
+      }
+    },
+    {
+      "name": "foundation.color.shadow.strong",
+      "designName": "foundation/color/shadow/strong",
+      "cssVariable": "--csa-foundation-color-shadow-strong",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#25355029",
+      "reference": "",
+      "description": "Shared shadow tint at 16% opacity; blur and geometry are specified by elevation recipes.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.20784313725490197,
+          0.3137254901960784
+        ],
+        "alpha": 0.16
+      }
+    },
+    {
+      "name": "foundation.color.overlay.loading",
+      "designName": "foundation/color/overlay/loading",
+      "cssVariable": "--csa-foundation-color-overlay-loading",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#ffffffe6",
+      "reference": "",
+      "description": "",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 0.9
+      }
+    },
+    {
+      "name": "foundation.color.overlay.canvas-fade",
+      "designName": "foundation/color/overlay/canvas-fade",
+      "cssVariable": "--csa-foundation-color-overlay-canvas-fade",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#fbf6f4e6",
+      "reference": "",
+      "description": "",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.984313725490196,
+          0.9647058823529412,
+          0.9568627450980393
+        ],
+        "alpha": 0.9019607843137255
+      }
+    },
+    {
+      "name": "foundation.color.overlay.canvas-transparent",
+      "designName": "foundation/color/overlay/canvas-transparent",
+      "cssVariable": "--csa-foundation-color-overlay-canvas-transparent",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#fbf6f400",
+      "reference": "",
+      "description": "",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.984313725490196,
+          0.9647058823529412,
+          0.9568627450980393
+        ],
+        "alpha": 0
       }
     },
     {
@@ -5478,6 +4964,69 @@
       }
     },
     {
+      "name": "semantic.color.overlay.loading",
+      "designName": "semantic/color/overlay/loading",
+      "cssVariable": "--csa-semantic-color-overlay-loading",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#ffffffe6",
+      "reference": "foundation.color.overlay.loading",
+      "description": "Shared loading and revision-progress surface.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 0.9
+      }
+    },
+    {
+      "name": "semantic.color.overlay.canvas-fade",
+      "designName": "semantic/color/overlay/canvas-fade",
+      "cssVariable": "--csa-semantic-color-overlay-canvas-fade",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#fbf6f4e6",
+      "reference": "foundation.color.overlay.canvas-fade",
+      "description": "Canvas-colored navigation and page fade.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.984313725490196,
+          0.9647058823529412,
+          0.9568627450980393
+        ],
+        "alpha": 0.9019607843137255
+      }
+    },
+    {
+      "name": "semantic.color.overlay.canvas-transparent",
+      "designName": "semantic/color/overlay/canvas-transparent",
+      "cssVariable": "--csa-semantic-color-overlay-canvas-transparent",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#fbf6f400",
+      "reference": "foundation.color.overlay.canvas-transparent",
+      "description": "Transparent end of canvas fade gradients.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.984313725490196,
+          0.9647058823529412,
+          0.9568627450980393
+        ],
+        "alpha": 0
+      }
+    },
+    {
       "name": "semantic.typography.greeting.desktop",
       "designName": "semantic/typography/greeting/desktop",
       "cssVariable": "--csa-semantic-typography-greeting-desktop",
@@ -5926,9 +5475,9 @@
       "type": "shadow",
       "layer": "semantic",
       "category": "shadow",
-      "value": "0px 8px 28px 0px #17171714",
+      "value": "0px 8px 28px 0px #25355014",
       "reference": "",
-      "description": "Existing elevation; no new shadow added.",
+      "description": "Shared shadow color; existing elevation geometry preserved.",
       "status": "observed"
     },
     {
@@ -5938,9 +5487,9 @@
       "type": "shadow",
       "layer": "semantic",
       "category": "shadow",
-      "value": "0px 8px 36px 0px #29354c0d",
+      "value": "0px 8px 36px 0px #2535500d",
       "reference": "",
-      "description": "Existing elevation; no new shadow added.",
+      "description": "Shared shadow color; existing elevation geometry preserved.",
       "status": "observed"
     },
     {
@@ -5950,9 +5499,9 @@
       "type": "shadow",
       "layer": "semantic",
       "category": "shadow",
-      "value": "0px 10px 36px 0px #29354c24",
+      "value": "0px 10px 36px 0px #25355029",
       "reference": "",
-      "description": "Existing elevation; no new shadow added.",
+      "description": "Shared shadow color; existing elevation geometry preserved.",
       "status": "observed"
     },
     {
@@ -5962,9 +5511,9 @@
       "type": "shadow",
       "layer": "semantic",
       "category": "shadow",
-      "value": "0px 16px 65px 0px #25355024",
+      "value": "0px 16px 65px 0px #25355029",
       "reference": "",
-      "description": "Existing elevation; no new shadow added.",
+      "description": "Shared shadow color; existing elevation geometry preserved.",
       "status": "observed"
     },
     {
@@ -5974,9 +5523,9 @@
       "type": "shadow",
       "layer": "semantic",
       "category": "shadow",
-      "value": "0px 16px 65px 0px #25355018",
+      "value": "0px 16px 65px 0px #25355014",
       "reference": "",
-      "description": "Existing elevation; no new shadow added.",
+      "description": "Shared shadow color; existing elevation geometry preserved.",
       "status": "observed"
     },
     {
@@ -5986,9 +5535,9 @@
       "type": "shadow",
       "layer": "semantic",
       "category": "shadow",
-      "value": "0px 10px 36px 0px #25355025",
+      "value": "0px 10px 36px 0px #25355029",
       "reference": "",
-      "description": "Existing elevation; no new shadow added.",
+      "description": "Shared shadow color; existing elevation geometry preserved.",
       "status": "observed"
     },
     {
@@ -5998,9 +5547,9 @@
       "type": "shadow",
       "layer": "semantic",
       "category": "shadow",
-      "value": "8px 0px 32px 0px #25355016",
+      "value": "8px 0px 32px 0px #25355014",
       "reference": "",
-      "description": "Existing elevation; no new shadow added.",
+      "description": "Shared shadow color; existing elevation geometry preserved.",
       "status": "observed"
     },
     {
@@ -6012,7 +5561,7 @@
       "category": "shadow",
       "value": "0px 4px 26px 0px #25355005",
       "reference": "",
-      "description": "Existing elevation; no new shadow added.",
+      "description": "Shared shadow color; existing elevation geometry preserved.",
       "status": "observed"
     },
     {
@@ -6022,9 +5571,9 @@
       "type": "shadow",
       "layer": "semantic",
       "category": "shadow",
-      "value": "0px 0px 0px 3px #4d5d7908",
+      "value": "0px 0px 0px 3px #25355005",
       "reference": "",
-      "description": "Existing elevation; no new shadow added.",
+      "description": "Shared shadow color; existing elevation geometry preserved.",
       "status": "observed"
     },
     {
@@ -6444,19 +5993,19 @@
       "type": "color",
       "layer": "component",
       "category": "status",
-      "value": "#e7e5e4",
-      "reference": "foundation.color.stone.200",
+      "value": "#e5e5e5",
+      "reference": "foundation.color.neutral.200",
       "description": "Status draft background.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.9058823529411765,
           0.8980392156862745,
-          0.8941176470588236
+          0.8980392156862745,
+          0.8980392156862745
         ],
         "alpha": 1,
-        "hex": "#e7e5e4"
+        "hex": "#e5e5e5"
       }
     },
     {
@@ -6994,9 +6543,9 @@
       "type": "number",
       "layer": "component",
       "category": "navigation",
-      "value": "12",
+      "value": "20",
       "reference": "",
-      "description": "Preserved shared design value.",
+      "description": "Center of the 40px circular chevron hover cursor.",
       "status": "observed"
     },
     {
@@ -7010,6 +6559,84 @@
       "reference": "foundation.radius.10",
       "description": "Corner radius shared by the navigation panel and homepage layout switch.",
       "status": "observed"
+    },
+    {
+      "name": "component.navigation.cursor-size",
+      "designName": "component/navigation/cursor-size",
+      "cssVariable": "--csa-component-navigation-cursor-size",
+      "type": "dimension",
+      "layer": "component",
+      "category": "navigation",
+      "value": "40px",
+      "reference": "foundation.space.40",
+      "description": "Circular navigation chevron hover cursor.",
+      "status": "observed"
+    },
+    {
+      "name": "component.navigation.cursor-background",
+      "designName": "component/navigation/cursor-background",
+      "cssVariable": "--csa-component-navigation-cursor-background",
+      "type": "color",
+      "layer": "component",
+      "category": "navigation",
+      "value": "#ffffff",
+      "reference": "semantic.color.surface.default",
+      "description": "Circular navigation chevron hover cursor.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      }
+    },
+    {
+      "name": "component.navigation.cursor-border",
+      "designName": "component/navigation/cursor-border",
+      "cssVariable": "--csa-component-navigation-cursor-border",
+      "type": "color",
+      "layer": "component",
+      "category": "navigation",
+      "value": "#e5e5e5",
+      "reference": "semantic.color.border.default",
+      "description": "Circular navigation chevron hover cursor.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8980392156862745,
+          0.8980392156862745,
+          0.8980392156862745
+        ],
+        "alpha": 1,
+        "hex": "#e5e5e5"
+      }
+    },
+    {
+      "name": "component.navigation.cursor-foreground",
+      "designName": "component/navigation/cursor-foreground",
+      "cssVariable": "--csa-component-navigation-cursor-foreground",
+      "type": "color",
+      "layer": "component",
+      "category": "navigation",
+      "value": "#4d5d79",
+      "reference": "foundation.color.slate.brand",
+      "description": "Circular navigation chevron hover cursor.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.30196078431372547,
+          0.36470588235294116,
+          0.4745098039215686
+        ],
+        "alpha": 1,
+        "hex": "#4d5d79"
+      }
     },
     {
       "name": "component.layout.page-min-width",

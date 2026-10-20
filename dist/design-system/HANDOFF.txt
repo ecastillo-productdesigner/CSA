@@ -229,3 +229,8 @@ SAVED PRESETS / FAVORITES
   Dropdown option hover shares the Sources hover surface (#f5f5f5).
   Draft rating icons share one pill beside Request Revision and open
     feedback with Good or Could be better preselected.
+
+AVATAR PALETTE
+  foundation.color.pink.100: #FCE7F3 (Tailwind classic pink-100)
+  foundation.color.pink.700: #BE185D (Tailwind classic pink-700)
+  component.avatar.background and foreground alias these colors.

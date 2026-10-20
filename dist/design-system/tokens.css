@@ -80,6 +80,8 @@
   --csa-foundation-color-observed-hex-29354c24: #29354c24;
   --csa-foundation-color-observed-hex-0000000a: #0000000a;
   --csa-foundation-color-observed-hex-00000012: #00000012;
+  --csa-foundation-color-pink-100: #fce7f3;
+  --csa-foundation-color-pink-700: #be185d;
   --csa-foundation-space-0: 0px;
   --csa-foundation-space-1: 1px;
   --csa-foundation-space-2: 2px;
@@ -556,4 +558,6 @@
   --csa-component-layout-switch-padding: var(--csa-foundation-space-2);
   --csa-component-favorite-unsaved-color: var(--csa-semantic-color-text-primary);
   --csa-component-favorite-saved-color: var(--csa-foundation-color-rose-400);
+  --csa-component-avatar-background: var(--csa-foundation-color-pink-100);
+  --csa-component-avatar-foreground: var(--csa-foundation-color-pink-700);
 }

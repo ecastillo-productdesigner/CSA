@@ -1762,6 +1762,50 @@
       }
     },
     {
+      "name": "foundation.color.pink.100",
+      "designName": "foundation/color/pink/100",
+      "cssVariable": "--csa-foundation-color-pink-100",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#fce7f3",
+      "reference": "",
+      "description": "Tailwind classic pink-100; approved avatar palette.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9882352941176471,
+          0.9058823529411765,
+          0.9529411764705882
+        ],
+        "alpha": 1,
+        "hex": "#fce7f3"
+      }
+    },
+    {
+      "name": "foundation.color.pink.700",
+      "designName": "foundation/color/pink/700",
+      "cssVariable": "--csa-foundation-color-pink-700",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#be185d",
+      "reference": "",
+      "description": "Tailwind classic pink-700; approved avatar palette.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.7450980392156863,
+          0.09411764705882353,
+          0.36470588235294116
+        ],
+        "alpha": 1,
+        "hex": "#be185d"
+      }
+    },
+    {
       "name": "foundation.space.0",
       "designName": "foundation/space/0",
       "cssVariable": "--csa-foundation-space-0",
@@ -7613,6 +7657,50 @@
         ],
         "alpha": 1,
         "hex": "#fb7185"
+      }
+    },
+    {
+      "name": "component.avatar.background",
+      "designName": "component/avatar/background",
+      "cssVariable": "--csa-component-avatar-background",
+      "type": "color",
+      "layer": "component",
+      "category": "avatar",
+      "value": "#fce7f3",
+      "reference": "foundation.color.pink.100",
+      "description": "Profile avatar background.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9882352941176471,
+          0.9058823529411765,
+          0.9529411764705882
+        ],
+        "alpha": 1,
+        "hex": "#fce7f3"
+      }
+    },
+    {
+      "name": "component.avatar.foreground",
+      "designName": "component/avatar/foreground",
+      "cssVariable": "--csa-component-avatar-foreground",
+      "type": "color",
+      "layer": "component",
+      "category": "avatar",
+      "value": "#be185d",
+      "reference": "foundation.color.pink.700",
+      "description": "Profile avatar initial.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.7450980392156863,
+          0.09411764705882353,
+          0.36470588235294116
+        ],
+        "alpha": 1,
+        "hex": "#be185d"
       }
     }
   ]

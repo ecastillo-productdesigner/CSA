@@ -43,7 +43,8 @@ try {
     ['Text','semantic.color.text.primary'], ['Muted','semantic.color.text.muted'],
     ['Border','semantic.color.border.default'], ['Primary','semantic.color.action.primary'],
     ['Selected card','component.variant-card.selected-background'], ['Format','component.chip.format.background'],
-    ['Audience','component.chip.audience.background'], ['Voice','component.chip.voice.background']
+    ['Audience','component.chip.audience.background'], ['Voice','component.chip.voice.background'],
+    ['Avatar background','component.avatar.background'], ['Avatar initial','component.avatar.foreground']
   ];
   for (const [label,name] of palette) {
     const token=byName.get(name);

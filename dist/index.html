@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:opsz,wght@6..72,700&amp;display=swap">
     <link rel="stylesheet" href="./design-system/tokens.css?v=20261020-home-card-contract">
     <link rel="stylesheet" href="./styles.css?v=20261020-profile-menu-cleanup">
-    <script src="./demo-access.js?v=20261020-profile-menu-cleanup" type="module"></script>
+    <script src="./demo-access.js?v=20261020-home-greeting" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -69,7 +69,7 @@
     <main id="main" tabindex="-1">
       <section class="home" id="home" aria-labelledby="greeting">
         <header class="home-header">
-          <h1 id="greeting"><span id="greeting-name">Hello Julia,</span><span class="greeting-prompt"> what are you making today?</span></h1>
+          <h1 id="greeting"><span>Hello,</span><span class="greeting-prompt"> what are you making today?</span></h1>
         </header>
         <div class="dashboard-grid" id="dashboard-grid"></div>
         <button class="load-more" id="dashboard-load-more" type="button" aria-controls="dashboard-grid" hidden>Load more</button>
@@ -172,7 +172,7 @@
 
       <section class="project-start" id="project-start" aria-labelledby="project-start-heading" hidden>
         <button class="text-button starter-back" id="back-dashboard" type="button">← Home</button>
-        <h1 id="project-start-heading">Hello Julia, what are you making today?</h1>
+        <h1 id="project-start-heading">Hello, what are you making today?</h1>
         <form class="search-form" id="start-form" role="search">
           <label class="visually-hidden" for="source-input">Search or paste URLs to start</label>
           <input id="source-input" name="source" type="text" placeholder="Search or paste URLs to start" autocomplete="off" maxlength="4000" required>

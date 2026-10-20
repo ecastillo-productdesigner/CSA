@@ -244,7 +244,7 @@ export function createDashboard({ onNew, onOpen, onDelete, onRename }) {
       const date = node('time', '', updated.label);
       date.dateTime = new Date(updated.timestamp).toISOString();
       date.title = updated.full;
-      const count = node('span'); count.append(icon('variants'), document.createTextNode(`${variants.length} ${variants.length === 1 ? 'variant' : 'variants'}`));
+      const count = node('span', '', `${variants.length} ${variants.length === 1 ? 'variant' : 'variants'}`);
       const separator = node('span', 'meta-dot', '·');
       separator.setAttribute('aria-hidden', 'true');
       meta.append(date, separator, count);

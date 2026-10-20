@@ -33,8 +33,6 @@ export function createProfile({ notify, onClose, onSessionEnd }) {
     document.querySelector('#profile-name').textContent = profile.name;
     trigger.setAttribute('aria-label', `Profile options for ${profile.name}`);
     document.querySelector('#profile-photo').src = profile.photo || './assets/profile-photo.png';
-    document.querySelector('#greeting-name').textContent = `Hello ${profile.name},`;
-    document.querySelector('#project-start-heading').textContent = `Hello ${profile.name}, what are you making today?`;
   }
   function save(next) {
     try { localStorage.setItem(profileKey, JSON.stringify(next)); }

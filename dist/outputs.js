@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261020-request-revision';
+import { createIcon } from './icons.js?v=20261020-ds-centralized';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',

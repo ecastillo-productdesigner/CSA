@@ -1,3 +1,4 @@
+import { tokenNumber } from './design-system/runtime.js?v=20261020-ds-centralized';
 export function sourceSelectionFor(project, variant = null) {
   const available = project?.sources || [];
   if (!variant) return { sources: available, selectedSources: new Set(available.filter(source => source.selected !== false)) };
@@ -66,8 +67,8 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
     menu.hidden = false;
     const anchor = button.getBoundingClientRect();
     const bounds = menu.getBoundingClientRect();
-    menu.style.left = `${Math.max(12, Math.min(anchor.right - bounds.width, window.innerWidth - bounds.width - 12))}px`;
-    menu.style.top = `${Math.max(12, Math.min(anchor.bottom + 4, window.innerHeight - bounds.height - 12))}px`;
+    menu.style.left = `${Math.max(tokenNumber('foundation.space.12'), Math.min(anchor.right - bounds.width, window.innerWidth - bounds.width - tokenNumber('foundation.space.12')))}px`;
+    menu.style.top = `${Math.max(tokenNumber('foundation.space.12'), Math.min(anchor.bottom + tokenNumber('foundation.space.4'), window.innerHeight - bounds.height - tokenNumber('foundation.space.12')))}px`;
     remove.focus({ preventScroll: true });
   }
   remove.addEventListener('click', () => {

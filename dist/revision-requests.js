@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261020-request-revision';
+import { createIcon } from './icons.js?v=20261020-ds-centralized';
 
 export function createRevisionButton(output, disabled = false) {
   const button = document.createElement('button');

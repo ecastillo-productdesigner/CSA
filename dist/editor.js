@@ -1,3 +1,5 @@
+import { documentStyles } from './design-system/export-styles.js?v=20261020-ds-centralized';
+import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261020-ds-centralized';
 import './vendor/quill-2.0.3.js';
 
 const Quill = window.Quill;
@@ -64,7 +66,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
 
   }
 
-  function resizeTitle() { title.style.height = 'auto'; title.style.height = `${Math.max(44, title.scrollHeight)}px`; }
+  function resizeTitle() { title.style.height = 'auto'; title.style.height = `${Math.max(tokenNumber('foundation.space.44'), title.scrollHeight)}px`; }
 
   function contentSignature() {
     const ops = quill.getContents().ops.map(op => ({
@@ -153,7 +155,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       case 'undo': quill.history.undo(); break;
       case 'redo': quill.history.redo(); break;
       case 'link': openLink(); break;
-      case 'highlight': format('background', quill.getFormat(selection.index, selection.length).background ? false : '#fff0a8'); break;
+      case 'highlight': format('background', quill.getFormat(selection.index, selection.length).background ? false : tokenValue('foundation.color.observed.hex-fff0a8')); break;
       case 'indent': format('indent', '+1'); break;
       case 'outdent': format('indent', '-1'); break;
       case 'clear': restoreSelection(); quill.history.cutoff(); quill.removeFormat(selection.index, selection.length, 'user'); quill.history.cutoff(); break;
@@ -216,15 +218,15 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     const dropdown = $(`#editor-${name}`);
     if (dropdown.hidden) return;
     const trigger = $(`#editor-${name}-button`).getBoundingClientRect();
-    const width = Math.min(620, root.getBoundingClientRect().width, window.innerWidth - 24);
+    const width = Math.min(tokenNumber('foundation.size.620'), root.getBoundingClientRect().width, window.innerWidth - tokenNumber('foundation.space.24'));
     dropdown.style.width = `${width}px`;
-    const above = trigger.top - 12;
-    const below = window.innerHeight - trigger.bottom - 12;
-    const openAbove = above >= Math.min(dropdown.scrollHeight, 420) || above > below;
-    dropdown.style.maxHeight = `${Math.max(0, Math.min(420, (openAbove ? above : below) - 8))}px`;
-    const top = openAbove ? trigger.top - dropdown.offsetHeight - 8 : trigger.bottom + 8;
-    dropdown.style.top = `${Math.max(8, Math.min(top, window.innerHeight - dropdown.offsetHeight - 8))}px`;
-    dropdown.style.left = `${Math.max(12, Math.min(trigger.left, window.innerWidth - width - 12))}px`;
+    const above = trigger.top - tokenNumber('foundation.space.12');
+    const below = window.innerHeight - trigger.bottom - tokenNumber('foundation.space.12');
+    const openAbove = above >= Math.min(dropdown.scrollHeight, tokenNumber('foundation.size.420')) || above > below;
+    dropdown.style.maxHeight = `${Math.max(0, Math.min(tokenNumber('foundation.size.420'), (openAbove ? above : below) - tokenNumber('foundation.space.8')))}px`;
+    const top = openAbove ? trigger.top - dropdown.offsetHeight - tokenNumber('foundation.space.8') : trigger.bottom + tokenNumber('foundation.space.8');
+    dropdown.style.top = `${Math.max(tokenNumber('foundation.space.8'), Math.min(top, window.innerHeight - dropdown.offsetHeight - tokenNumber('foundation.space.8')))}px`;
+    dropdown.style.left = `${Math.max(tokenNumber('foundation.space.12'), Math.min(trigger.left, window.innerWidth - width - tokenNumber('foundation.space.12')))}px`;
   }
   document.addEventListener('pointerdown', event => {
     for (const name of ['metadata']) {
@@ -320,7 +322,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     flush();
     const heading = title.value.trim() || 'Untitled story';
     const text = `${heading}\n\n${quill.getText()}`;
-    const html = `<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>${escaped(heading)}</title><style>body{max-width:760px;margin:60px auto;padding:24px;font:17px/1.8 system-ui,sans-serif;color:#26344a}h1,h2,h3{line-height:1.3}blockquote{border-left:3px solid #ccd3df;padding-left:20px}.ql-align-center{text-align:center}.ql-align-right{text-align:right}.ql-align-justify{text-align:justify}.ql-font-serif{font-family:Georgia,serif}.ql-font-monospace{font-family:monospace}.ql-size-small{font-size:.8em}.ql-size-large{font-size:1.5em}.ql-size-huge{font-size:2em}</style></head><body><h1>${escaped(heading)}</h1>${quill.getSemanticHTML()}</body></html>`;
+    const html = `<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>${escaped(heading)}</title><style>${documentStyles}</style></head><body><h1>${escaped(heading)}</h1>${quill.getSemanticHTML()}</body></html>`;
     const blob = new Blob([type === 'html' ? html : text], { type: type === 'html' ? 'text/html;charset=utf-8' : 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob); const anchor = document.createElement('a');
     anchor.href = url; anchor.download = `${heading.replace(/[^\p{L}\p{N} _-]/gu, '').slice(0, 90) || 'CSA-story'}.${type === 'html' ? 'html' : 'txt'}`;

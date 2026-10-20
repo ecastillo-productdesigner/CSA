@@ -93,11 +93,31 @@ export function compileTokens(source) {
   return { css:lines.join('\n'), flat, csv };
 }
 
+// CSS query conditions cannot read custom properties. Resolve only token()
+// references at build time; every editable threshold stays in tokens.json.
+export function compileStyleSheet(css, source) {
+  const tokens = new Map(flattenTokens(source).map(token => [token.path, token]));
+  return '/* Generated from styles/ and design-system/tokens.json. Do not edit directly. */\n' + css.replace(/token\(([\w.-]+)\)/g, (_, path) => {
+    const token = tokens.get(path);
+    if (!token) throw new Error(`Unknown stylesheet token: ${path}`);
+    return cssValue(token.$type, resolveToken(path, tokens), false);
+  });
+}
+
 async function main() {
   const dir=new URL('../dist/design-system/',import.meta.url);
   const source=JSON.parse(await readFile(new URL('tokens.json',dir),'utf8'));
   const {css,flat,csv}=compileTokens(source);
   const outputs={'tokens.css':css,'tokens-flat.json':JSON.stringify({version:source.$extensions['com.csa'].version,tokens:flat},null,2)+'\n','tokens.csv':csv};
+  for (const [input, output] of [['../../styles/app.css', '../styles.css'], ['../../styles/guide.css', 'guide.css']]) {
+    outputs[output] = compileStyleSheet(await readFile(new URL(input, dir), 'utf8'), source);
+  }
+  const exportCSS = compileStyleSheet(await readFile(new URL('../../styles/export.css', dir), 'utf8'), source);
+  outputs['export-styles.js'] = '// Generated from design-system tokens and styles/export.css.\nexport const documentStyles = ' + JSON.stringify(css + exportCSS) + ';\n';
+  for (const [input, output] of [['material-check.svg', '../assets/material-check.svg'], ['sidebar-expand-cursor.svg', '../sidebar-expand-cursor.svg'], ['favicon.svg', '../favicon.svg']]) {
+    const asset = await readFile(new URL('../../styles/assets/' + input, dir), 'utf8');
+    outputs[output] = compileStyleSheet(asset, source).replace(/^\/\*[^\n]*\*\/\n/, '');
+  }
   for(const [name,content] of Object.entries(outputs)) {
     const file=new URL(name,dir);
     if(process.argv.includes('--check')) {

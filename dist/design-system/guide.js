@@ -1,4 +1,4 @@
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261020-request-revision';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261020-ds-centralized';
 const $ = selector => document.querySelector(selector);
 createToolDropdowns();
 let toastTimer;
@@ -69,8 +69,8 @@ try {
     row.append(element('span','',value+' px'),bar,element('code','',`space.${value}`));
     $('#ds-spacing').append(row);
   }
-  $('#ds-muted-contrast').textContent=ratio(byName.get('semantic.color.text.muted').value,'#ffffff');
-  $('#ds-primary-contrast').textContent=ratio('#ffffff',byName.get('semantic.color.action.primary').value);
+  $('#ds-muted-contrast').textContent=ratio(byName.get('semantic.color.text.muted').value,byName.get('semantic.color.surface.default').value);
+  $('#ds-primary-contrast').textContent=ratio(byName.get('semantic.color.surface.default').value,byName.get('semantic.color.action.primary').value);
   function copiedValue(token) {
     if(token.type !== 'typography') return `var(${token.cssVariable})`;
     return Object.keys(token.properties).map(prop=>{

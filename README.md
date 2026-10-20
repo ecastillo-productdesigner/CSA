@@ -1,6 +1,6 @@
 # CSA
 
-A responsive implementation of the supplied CSA designs. Plain HTML, CSS, and JavaScript with a locally bundled Quill editor and no build step.
+A responsive implementation of the supplied CSA designs. Plain HTML, CSS, and JavaScript with a locally bundled Quill editor. The app runs directly from `dist`; design-system styles are generated before publishing.
 
 ## Published website
 
@@ -91,3 +91,10 @@ Run `npm run check` for JavaScript syntax checks. Static hosting serves the `dis
 ## Editor dependency
 
 Quill 2.0.3 is bundled under `dist/vendor/` from the official npm package. The editor works without runtime CDN requests. Quill's BSD license and its bundled dependency notices are retained alongside the assets. The upstream editor documentation is at https://quilljs.com/docs/quickstart.
+
+
+## Design-system source
+
+Edit shared values in `dist/design-system/tokens.json` and custom styles in `styles/app.css`, `styles/guide.css`, or `styles/export.css`. Run `npm run design-system:build` after editing either source. The generated product stylesheet, reference stylesheet, token exports, and offline document styles stay synchronized.
+
+Use CSS custom properties for component styles, `token(foundation.breakpoint.name)` for source CSS query thresholds, and `dist/design-system/runtime.js` for design values needed by JavaScript positioning or responsive behavior. `npm run check` catches stale generated output; tests reject fixed design dimensions, durations, typography, and colors in editable styles.

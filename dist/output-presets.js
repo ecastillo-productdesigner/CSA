@@ -1,4 +1,5 @@
-import { projectOutputs, createOutputBadges, savedVariantName } from './outputs.js?v=20261020-request-revision';
+import { tokenNumber } from './design-system/runtime.js?v=20261020-ds-centralized';
+import { projectOutputs, createOutputBadges, savedVariantName } from './outputs.js?v=20261020-ds-centralized';
 
 export function createOutputPresets({ onSelect, onDelete }) {
   const root = document.querySelector('#output-presets');
@@ -34,8 +35,8 @@ export function createOutputPresets({ onSelect, onDelete }) {
     actions.hidden = false;
     const anchor = button.getBoundingClientRect();
     const bounds = actions.getBoundingClientRect();
-    actions.style.left = `${Math.max(12, Math.min(anchor.right - bounds.width, window.innerWidth - bounds.width - 12))}px`;
-    actions.style.top = `${Math.max(12, Math.min(anchor.bottom + 4, window.innerHeight - bounds.height - 12))}px`;
+    actions.style.left = `${Math.max(tokenNumber('foundation.space.12'), Math.min(anchor.right - bounds.width, window.innerWidth - bounds.width - tokenNumber('foundation.space.12')))}px`;
+    actions.style.top = `${Math.max(tokenNumber('foundation.space.12'), Math.min(anchor.bottom + tokenNumber('foundation.space.4'), window.innerHeight - bounds.height - tokenNumber('foundation.space.12')))}px`;
     remove.focus({ preventScroll: true });
   }
   remove.addEventListener('click', () => {
@@ -74,12 +75,12 @@ export function createOutputPresets({ onSelect, onDelete }) {
     if (root.hidden) return;
     menu.hidden = false;
     const bounds = root.getBoundingClientRect();
-    const below = document.documentElement.clientHeight - bounds.bottom - 16;
-    const above = bounds.top - 16;
-    const opensUp = below < 160 && above > below;
-    menu.style.top = opensUp ? 'auto' : 'calc(100% + 8px)';
-    menu.style.bottom = opensUp ? 'calc(100% + 8px)' : 'auto';
-    menu.style.maxHeight = `${Math.max(80, Math.min(320, opensUp ? above : below))}px`;
+    const below = document.documentElement.clientHeight - bounds.bottom - tokenNumber('foundation.space.16');
+    const above = bounds.top - tokenNumber('foundation.space.16');
+    const opensUp = below < tokenNumber('foundation.size.160') && above > below;
+    menu.style.top = opensUp ? 'auto' : 'calc(100% + var(--csa-foundation-space-8))';
+    menu.style.bottom = opensUp ? 'calc(100% + var(--csa-foundation-space-8))' : 'auto';
+    menu.style.maxHeight = `${Math.max(tokenNumber('foundation.size.80'), Math.min(tokenNumber('foundation.size.320'), opensUp ? above : below))}px`;
     trigger.setAttribute('aria-expanded', 'true');
     (menu.querySelector('[aria-checked="true"]') || menu.querySelector('button'))?.focus({ preventScroll: true });
   }

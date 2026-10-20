@@ -1,4 +1,5 @@
-import { customVariantName, savedVariantName } from './outputs.js?v=20261020-request-revision';
+import { tokenNumber } from './design-system/runtime.js?v=20261020-ds-centralized';
+import { customVariantName, savedVariantName } from './outputs.js?v=20261020-ds-centralized';
 
 export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
   const menu = document.querySelector('#output-edit-menu');
@@ -33,10 +34,10 @@ export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
     const bounds = menu.getBoundingClientRect();
     const width = document.documentElement.clientWidth;
     const height = document.documentElement.clientHeight;
-    const left = Math.max(12, Math.min(anchor.right - bounds.width, width - bounds.width - 12));
-    const below = anchor.bottom + 8;
-    const preferredTop = below + bounds.height <= height - 12 ? below : anchor.top - bounds.height - 8;
-    const top = Math.max(12, Math.min(preferredTop, height - bounds.height - 12));
+    const left = Math.max(tokenNumber('foundation.space.12'), Math.min(anchor.right - bounds.width, width - bounds.width - tokenNumber('foundation.space.12')));
+    const below = anchor.bottom + tokenNumber('foundation.space.8');
+    const preferredTop = below + bounds.height <= height - tokenNumber('foundation.space.12') ? below : anchor.top - bounds.height - tokenNumber('foundation.space.8');
+    const top = Math.max(tokenNumber('foundation.space.12'), Math.min(preferredTop, height - bounds.height - tokenNumber('foundation.space.12')));
     menu.style.left = `${left}px`;
     menu.style.top = `${top}px`;
     button.setAttribute('aria-expanded', 'true');

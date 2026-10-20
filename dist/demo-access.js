@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261020-layout-motion');
+  await import('./app.js?v=20261020-ds-centralized');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

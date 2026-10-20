@@ -1,22 +1,23 @@
-import { createRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261020-request-revision';
-import { createIcon as icon } from './icons.js?v=20261020-request-revision';
+import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261020-ds-centralized';
+import { createRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261020-ds-centralized';
+import { createIcon as icon } from './icons.js?v=20261020-ds-centralized';
 import { parseSourceLinks, formatSourceLinks } from './source-links.js';
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261020-request-revision';
-import { createVariantFeedback } from './variant-feedback.js?v=20261020-request-revision';
-import { createProfile } from './profile.js?v=20261020-profile-simple';
-import { createSearchExperience } from './search.js?v=20261020-request-revision';
-import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=20261020-layout-motion';
-import { createMaterialEditor } from './editor.js?v=20261020-request-revision';
-import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261020-request-revision';
-import { removeProjectContent } from './project-deletion.js?v=20261020-request-revision';
-import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261020-request-revision';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261020-request-revision';
-import { createRailNavigation } from './navigation.js?v=20261020-home-sidebar';
-import { createProjectSources } from './sources.js?v=20261020-request-revision';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261020-request-revision';
-import { createEditorTabs } from './editor-tabs.js?v=20261020-request-revision';
-import { createOutputSettings } from './output-settings.js?v=20261020-request-revision';
-import { createOutputPresets } from './output-presets.js?v=20261020-request-revision';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261020-ds-centralized';
+import { createVariantFeedback } from './variant-feedback.js?v=20261020-ds-centralized';
+import { createProfile } from './profile.js?v=20261020-ds-centralized';
+import { createSearchExperience } from './search.js?v=20261020-ds-centralized';
+import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=20261020-ds-centralized';
+import { createMaterialEditor } from './editor.js?v=20261020-ds-centralized';
+import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261020-ds-centralized';
+import { removeProjectContent } from './project-deletion.js?v=20261020-ds-centralized';
+import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261020-ds-centralized';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261020-ds-centralized';
+import { createRailNavigation } from './navigation.js?v=20261020-ds-centralized';
+import { createProjectSources } from './sources.js?v=20261020-ds-centralized';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261020-ds-centralized';
+import { createEditorTabs } from './editor-tabs.js?v=20261020-ds-centralized';
+import { createOutputSettings } from './output-settings.js?v=20261020-ds-centralized';
+import { createOutputPresets } from './output-presets.js?v=20261020-ds-centralized';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -580,7 +581,7 @@ function openProjectDialog(reset = true, sourceProjectId = null) {
   if (reset) $('#new-project-query').value = '';
   if (!$('#new-project-dialog').open) $('#new-project-dialog').showModal();
   updateStarterInput();
-  const focusTarget = window.matchMedia('(max-width: 768px)').matches ? $('.new-project-close') : $('#new-project-query');
+  const focusTarget = window.matchMedia(breakpointQuery()).matches ? $('.new-project-close') : $('#new-project-query');
   focusTarget.focus({ preventScroll: true });
 }
 
@@ -849,7 +850,7 @@ $('.create-variant').addEventListener('click', () => {
   project.updatedAt = Date.now();
   const saved = saveProjects();
   showEditorProject(project);
-  if (window.matchMedia('(max-width: 768px)').matches) railNavigation.open('variants');
+  if (window.matchMedia(breakpointQuery()).matches) railNavigation.open('variants');
   [...$('#output-list').querySelectorAll('[data-output-id]')].find(button => button.dataset.outputId === output.id)?.focus({ preventScroll: true });
   if (saved) notify('Variant added.');
 });
@@ -913,7 +914,7 @@ function openVariantSettings(button) {
   richEditor.flush();
   const output = projectOutputs(project).find(entry => entry.id === outputId);
   if (!output) return;
-  if (triggerContainer.id === 'editor-variant-labels' || !window.matchMedia('(max-width: 768px)').matches) railNavigation.close();
+  if (triggerContainer.id === 'editor-variant-labels' || !window.matchMedia(breakpointQuery()).matches) railNavigation.close();
   toolDropdowns.close();
   outputPresets.close();
   richEditor.closePanels();
@@ -965,7 +966,7 @@ function requestVariantRevision({ projectId, outputId, instructions }) {
   renderOutputs(project);
   resumeOutputProcessing(project);
   requestAnimationFrame(() => {
-    if (window.matchMedia('(max-width: 768px)').matches) railNavigation.open('variants');
+    if (window.matchMedia(breakpointQuery()).matches) railNavigation.open('variants');
     const list = $('#output-list');
     const card = list.querySelector('[data-revising="true"]');
     if (!card) return;
@@ -1087,7 +1088,7 @@ function updateStarterInput() {
     field.setSelectionRange(Math.max(0, caret), Math.max(0, caret));
   }
   field.style.height = 'auto';
-  field.style.height = `${Math.max(24, Math.min(144, field.scrollHeight))}px`;
+  field.style.height = `${Math.max(tokenNumber('foundation.space.24'), Math.min(tokenNumber('foundation.size.144'), field.scrollHeight))}px`;
   $('#new-project-submit').disabled = !field.value.trim();
 }
 $('#new-project-query').addEventListener('input', updateStarterInput);

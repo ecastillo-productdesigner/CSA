@@ -1,5 +1,6 @@
-import { createIcon as icon } from './icons.js?v=20261020-request-revision';
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261020-request-revision';
+import { tokenNumber } from './design-system/runtime.js?v=20261020-ds-centralized';
+import { createIcon as icon } from './icons.js?v=20261020-ds-centralized';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261020-ds-centralized';
 
 const layoutKey = 'csa.dashboard.layout.v1';
 function readLayout() {
@@ -151,7 +152,7 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
       const styles = getComputedStyle(grid);
       grid.classList.add('is-switching-layout');
       const animation = grid.animate([
-        { height: `${previousHeight}px`, opacity: .35 },
+        { height: `${previousHeight}px`, opacity: tokenNumber('component.layout.switch-start-opacity') },
         { height: `${nextHeight}px`, opacity: 1 }
       ], { duration: parseFloat(styles.getPropertyValue('--csa-foundation-motion-duration-200')), easing: styles.getPropertyValue('--csa-foundation-motion-easing-arrive').trim() });
       layoutAnimation = animation;
@@ -183,7 +184,7 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     void home.offsetWidth;
     home.classList.add('is-entering');
-    revealTimer = setTimeout(() => home.classList.remove('is-entering'), 1400);
+    revealTimer = setTimeout(() => home.classList.remove('is-entering'), tokenNumber('component.layout.enter-cleanup'));
   }
 
   function projectActions(project) {
@@ -327,7 +328,7 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
       projectItems.push(card);
     }
     updateVisible();
-    for (const [index, card] of [...grid.children].entries()) card.style.setProperty('--reveal-order', Math.min(index, 7));
+    for (const [index, card] of [...grid.children].entries()) card.style.setProperty('--reveal-order', Math.min(index, tokenNumber('component.layout.max-entry-order')));
   }
 
   return { render, reveal };

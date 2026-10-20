@@ -1,5 +1,6 @@
-import { createIcon } from './icons.js?v=20261020-request-revision';
-import { bindTapActivation } from './tap-activation.js?v=20261020-request-revision';
+import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261020-ds-centralized';
+import { createIcon } from './icons.js?v=20261020-ds-centralized';
+import { bindTapActivation } from './tap-activation.js?v=20261020-ds-centralized';
 
 const favoritesStorageKey = 'csa.tool-favorites.v1';
 
@@ -20,7 +21,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
     const editorStyle = field.matches('.editor-style-field');
     const floating = select.id === 'output-edit-voice' || field.matches('.feedback-select-field') || editorStyle;
     const inWorkspacePanel = Boolean(field.closest('#composer-tools'));
-    const mobileWorkspacePanel = () => inWorkspacePanel && window.matchMedia('(max-width: 768px)').matches;
+    const mobileWorkspacePanel = () => inWorkspacePanel && window.matchMedia(breakpointQuery()).matches;
     const placeholder = field.dataset.placeholder || (['format', 'audience', 'voice'].includes(key) ? `Select ${label}` : label);
     const supportsFavorites = ['format', 'audience'].includes(key);
     const plural = key === 'format' ? 'formats' : 'audiences';
@@ -166,24 +167,24 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
       if (mobileWorkspacePanel() || editorStyle) {
         document.body.append(menu);
         menu.dataset.workspaceDropdown = 'true';
-        menu.style.zIndex = '30';
+        menu.style.zIndex = tokenValue('foundation.layer.30');
       }
       menu.hidden = false;
       field.classList.add('is-open');
       trigger.setAttribute('aria-expanded', 'true');
       if (floating || mobileWorkspacePanel()) {
         const bounds = trigger.getBoundingClientRect();
-        const below = document.documentElement.clientHeight - bounds.bottom - 12;
-        const topLimit = mobileWorkspacePanel() ? 90 : 12;
+        const below = document.documentElement.clientHeight - bounds.bottom - tokenNumber('foundation.space.12');
+        const topLimit = mobileWorkspacePanel() ? tokenNumber('foundation.size.90') : tokenNumber('foundation.space.12');
         const above = bounds.top - topLimit;
-        const opensUp = below < 160 && above > below;
-        const menuWidth = editorStyle ? Math.min(220, document.documentElement.clientWidth - 24) : bounds.width;
+        const opensUp = below < tokenNumber('foundation.size.160') && above > below;
+        const menuWidth = editorStyle ? Math.min(tokenNumber('foundation.size.220'), document.documentElement.clientWidth - tokenNumber('foundation.space.24')) : bounds.width;
         menu.style.position = 'fixed';
-        menu.style.left = `${editorStyle ? Math.max(12, Math.min(bounds.left, document.documentElement.clientWidth - menuWidth - 12)) : bounds.left}px`;
+        menu.style.left = `${editorStyle ? Math.max(tokenNumber('foundation.space.12'), Math.min(bounds.left, document.documentElement.clientWidth - menuWidth - tokenNumber('foundation.space.12'))) : bounds.left}px`;
         menu.style.right = 'auto';
         menu.style.width = `${menuWidth}px`;
-        menu.style.maxHeight = `${Math.max(80, Math.min(360, opensUp ? above : below))}px`;
-        menu.style.top = `${opensUp ? Math.max(topLimit, bounds.top - menu.getBoundingClientRect().height - 8) : bounds.bottom + 8}px`;
+        menu.style.maxHeight = `${Math.max(tokenNumber('foundation.size.80'), Math.min(tokenNumber('foundation.size.360'), opensUp ? above : below))}px`;
+        menu.style.top = `${opensUp ? Math.max(topLimit, bounds.top - menu.getBoundingClientRect().height - tokenNumber('foundation.space.8')) : bounds.bottom + tokenNumber('foundation.space.8')}px`;
       }
       const selected = rows[select.selectedIndex];
       (selected && !selected.row.hidden ? selected.button : rows.find(choice => !choice.row.hidden)?.button || savedToggle).focus({ preventScroll: true });

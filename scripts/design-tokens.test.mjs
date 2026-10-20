@@ -60,3 +60,38 @@ test('embedded SVG images keep literal colors because CSS variables cannot cross
   assert.match(check, /fill="#ffffff"/, 'Checkbox retains its visible white Google glyph');
   assert.match(check, /M382-240 154-468/, 'Checkbox uses the official Material Symbols check path');
 });
+
+test('editable styles contain token references rather than fixed design dimensions and colors', async()=>{
+  for (const path of ['../styles/app.css','../styles/guide.css','../styles/export.css']) {
+    const css=(await readFile(new URL(path,import.meta.url),'utf8')).replace(/\/\*[\s\S]*?\*\//g,'');
+    assert.doesNotMatch(css,/(?<![\w-])(?:\d*\.)?\d+(?:px|ms)\b/,`${path}: fixed dimension or duration`);
+    assert.doesNotMatch(css,/#[\da-f]{3,8}\b/i,`${path}: fixed color`);
+    assert.doesNotMatch(css,/(?:font-size|font-weight|line-height|letter-spacing)\s*:\s*(?!0(?:\s|;))[\d.]/,`${path}: fixed typography`);
+  }
+});
+
+test('responsive CSS compilation follows token changes and rejects missing query tokens', async()=>{
+  const {compileStyleSheet}=await import('./build-design-tokens.mjs');
+  const source={foundation:{breakpoint:{mobile:dimension(700)}}};
+  const css='@media (max-width: token(foundation.breakpoint.mobile)) { .x { display: block; } }';
+  assert.match(compileStyleSheet(css,source),/max-width: 700px/);
+  source.foundation.breakpoint.mobile.$value.value=800;
+  assert.match(compileStyleSheet(css,source),/max-width: 800px/);
+  assert.throws(()=>compileStyleSheet('token(missing)',source),/Unknown stylesheet token/);
+});
+
+test('runtime layout and offline export styles reference existing design tokens',async()=>{
+  const {readdir}=await import('node:fs/promises');
+  const source=JSON.parse(await readFile(new URL('../dist/design-system/tokens.json',import.meta.url),'utf8'));
+  const tokens=compileTokens(source).flat;
+  const names=new Set(tokens.map(t=>t.name));
+  const vars=new Set(tokens.map(t=>t.cssVariable));
+  const css=await readFile(new URL('../styles/export.css',import.meta.url),'utf8');
+  for(const match of css.matchAll(/var\((--csa-[\w-]+)/g)) assert.ok(vars.has(match[1]),`Export references missing ${match[1]}`);
+  for (const file of await readdir(new URL('../dist/',import.meta.url))) {
+    if(!file.endsWith('.js'))continue;
+    const js=await readFile(new URL('../dist/'+file,import.meta.url),'utf8');
+    for(const match of js.matchAll(/token(?:Value|Number)\('([^']+)'/g))assert.ok(names.has(match[1]),`${file}: missing ${match[1]}`);
+    assert.doesNotMatch(js, /(?:\d+px\b|#[a-f\d]{6}\b)/i,`${file}: fixed interface design value`);
+  }
+});

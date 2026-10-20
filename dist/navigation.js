@@ -1,3 +1,4 @@
+import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261020-ds-centralized';
 export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVariantOpen, onOpen }) {
   const panels = {
     sources: { trigger: document.querySelector('#show-sources'), panel: document.querySelector('#editor-sources') },
@@ -9,7 +10,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
   const drawerToggle = document.querySelector('#toggle-navigation-drawer');
   const newProject = document.querySelector('#new-project');
   const home = document.querySelector('#home');
-  const mobile = window.matchMedia('(max-width: 768px)');
+  const mobile = window.matchMedia(breakpointQuery());
   const mobileTopBar = () => mobile.matches && (!home.hidden || document.body.matches('.showing-results, .showing-composer'));
   const drawerAvailable = () => !mobileTopBar() && document.body.classList.contains('showing-composer');
   const floatingProfile = () => !drawerAvailable();
@@ -27,7 +28,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
     if (drawerOpen || active === 'profile' || mobileTopBar() || document.querySelector('dialog[open]')) return;
     const bounds = trigger.getBoundingClientRect();
     if (!bounds.width || !bounds.height) return;
-    tooltip.style.left = `${bounds.right + 12}px`;
+    tooltip.style.left = `${bounds.right + tokenNumber('foundation.space.12')}px`;
     tooltip.style.top = `${bounds.top + bounds.height / 2}px`;
     tooltip.hidden = false;
   }

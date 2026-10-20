@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261020-request-revision';
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261020-request-revision';
+import { createIcon } from './icons.js?v=20261020-ds-centralized';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261020-ds-centralized';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');

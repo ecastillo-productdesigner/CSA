@@ -174,8 +174,11 @@ RESPONSIVE / INPUT
   Mobile <=768 px. Desktop >=769 px.
   Editor adapts at <=1100 px. Dashboard container thresholds 999/579 px.
   Existing local breakpoints 700/650/480/370 px are preserved.
-  Media/container query values stay literal in CSS. CSS variables
-    cannot be substituted into query thresholds.
+  Edit styles/app.css, styles/guide.css, or styles/export.css.
+  Run npm run design-system:build after style or token changes.
+  Query conditions use token(foundation.breakpoint.*) in source CSS;
+    the build resolves them for native CSS. JavaScript reads the same
+    token properties through design-system/runtime.js.
   Fields: 36 px desktop, 46 px mobile. Icon targets: 40 / 44 px.
   Keep the touch activation helper for Format/Audience selection.
   Keep keyboard focus, selected semantics, reduced motion, and dismissal.
@@ -196,8 +199,12 @@ SCOPE / REVIEW
     and pills/circles 999 px.
   Consolidated radii: 5/6 -> 4; 7 -> 8; 9/12 -> 10;
     14/15/17 -> 16; 18/21/22/23/30 -> 20.
-  Shared declarations in the product stylesheet now consume tokens.
-  Layout-specific geometry and CSS query literals are retained.
+  Custom interface design values, including layout geometry, icon
+    targets, typography, colors, and motion, consume shared tokens.
+  Product/reference CSS, offline document styles, and interface SVG
+    colors are generated. SVG path coordinates remain intrinsic artwork.
+  Browser layout syntax (zero, full width, grid tracks, alignment) and
+    asset geometry are structural; third-party Quill code is vendored.
   Muted text #a3a3a3 on white and white on primary #3b82f6 are below
     the 4.5:1 normal-text AA contrast target. Review in a future palette
     change; this extraction preserves their current appearance.

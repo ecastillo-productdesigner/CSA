@@ -1120,12 +1120,13 @@ body #home[data-layout="list"] .new-project-tile .material-symbols-outlined { wi
 .project-table .project-column-variants { width: 18%; }
 .project-table .project-column-date { width: 24%; }
 .project-table .project-column-actions { width: var(--csa-component-navigation-rail-width); }
-.project-table td { padding: var(--csa-foundation-space-10) var(--csa-foundation-space-16); border-bottom: var(--csa-foundation-border-width-1) solid var(--line); vertical-align: middle; text-align: left; }
+.project-table td { padding: var(--csa-foundation-space-8) var(--csa-foundation-space-16); border-bottom: var(--csa-foundation-border-width-1) solid var(--line); vertical-align: middle; text-align: left; }
 .project-table-row:hover, .project-table-row:focus-within { background: var(--csa-semantic-color-surface-hover); }
 .project-table-title .project-title-button { font-weight: var(--csa-foundation-font-weight-600); }
 .project-table-date { color: var(--csa-semantic-color-text-secondary); }
 .project-row-actions { position: relative; }
-.project-row-actions .project-card-menu-button { position: static; }
+.project-row-actions .project-card-menu-button { position: static; width: var(--csa-foundation-space-24); height: var(--csa-foundation-space-24); min-width: var(--csa-foundation-space-24); min-height: var(--csa-foundation-space-24); padding: 0; --icon-circle: radial-gradient(circle closest-side, var(--icon-circle-color) calc(100% - .75px), transparent) center / var(--csa-foundation-space-24) var(--csa-foundation-space-24) no-repeat; }
+.project-row-actions .project-card-menu-button .material-symbols-outlined { width: var(--csa-foundation-space-20); height: var(--csa-foundation-space-20); font-size: var(--csa-foundation-font-size-20); }
 .project-row-actions .project-card-menu { top: calc(100% - var(--csa-foundation-space-8)); right: var(--csa-foundation-space-8); }
 .project-row-actions:has(.project-card-menu:not([hidden])) { z-index: var(--csa-foundation-layer-4); }
 .project-table .project-table-empty { padding: var(--csa-foundation-space-32) var(--csa-foundation-space-16); color: var(--csa-semantic-color-text-secondary); text-align: center; }
@@ -1133,7 +1134,7 @@ body #home[data-layout="list"] .new-project-tile .material-symbols-outlined { wi
   .project-table { display: block; }
   .project-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .project-table tbody { display: block; }
-  .project-table-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: var(--csa-foundation-space-16); padding: var(--csa-foundation-space-10) 0; border-bottom: var(--csa-foundation-border-width-1) solid var(--line); }
+  .project-table-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: var(--csa-foundation-space-16); padding: var(--csa-foundation-space-8) 0; border-bottom: var(--csa-foundation-border-width-1) solid var(--line); }
   .project-table .project-table-title { grid-column: 1 / -1; padding: 0 var(--csa-foundation-space-48) 0 0; }
   .project-table td { display: block; min-width: 0; padding: 0; border: 0; }
   .project-table td[data-label] { font-size: var(--csa-foundation-font-size-12); overflow-wrap: anywhere; }

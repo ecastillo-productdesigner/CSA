@@ -117,7 +117,7 @@ REQUEST REVISION
   The editor header has no settings pencil; settings remain on cards.
 
 PASSWORD CARD
-  Centered CSA mark and Sign in to continue heading in Inter 24 / 30, weight 600.
+  Centered CSA mark and Sign in to continue heading in Inter 20 / 30, weight 600.
   Card maximum width 600 px, content maximum width 400 px.
   Desktop padding 32 px, mobile padding 24 px; corners 20 / 16 px.
   Password field, blue information panel, divided product footer, and

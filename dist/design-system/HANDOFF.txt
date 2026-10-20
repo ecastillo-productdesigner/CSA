@@ -245,3 +245,22 @@ COLOR CONSOLIDATION / EFFECTS
     chevron_forward path inside a 40 px white circle with a gray border.
   Variant status tabs share the dropdown radius token (10 px), including
     the outside corners of the first and last segments.
+
+SHARED COLOR UPDATES — 2026-10-20
+  Active editor formatting keeps neutral-700 icons and uses the shared
+    neutral-100 hover surface. Article links use primary blue-500.
+  Keyboard-focus outlines use blue-500; the navigation hover chevron
+    uses neutral-700. Invalid-password/upload error text and Delete project
+    confirmation hover/focus use red-700. Search thumbnail placeholders
+    use the default white surface.
+  Saved preset, variant edit, saved-filter, source-preview, upload drag,
+    and search-preview interaction surfaces now share neutral-100.
+  Saved hearts use pink-700. Delete variant hover/focus shares the
+    Sources icon neutral-100 background and retains its red icon.
+
+FLAT SURFACES
+  All product and reference shadows are removed, including hover, focus,
+    dropdowns, popovers, dialogs, editor sheets, toasts and mobile panels.
+  Shadow tokens and shadow-only colors are removed from the inventory.
+  Keyboard-focus outlines remain blue-500. Modal backdrop dimming uses
+    semantic.color.overlay.scrim; it is independent of elevation.

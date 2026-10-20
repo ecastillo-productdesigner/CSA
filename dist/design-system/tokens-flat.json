@@ -316,19 +316,19 @@
       "type": "color",
       "layer": "foundation",
       "category": "color",
-      "value": "#99abc6",
-      "reference": "",
-      "description": "Implemented palette value.",
+      "value": "#3b82f6",
+      "reference": "foundation.color.blue.500",
+      "description": "Keyboard focus outline color, shared with blue-500.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.6,
-          0.6705882352941176,
-          0.7764705882352941
+          0.23137254901960785,
+          0.5098039215686274,
+          0.9647058823529412
         ],
         "alpha": 1,
-        "hex": "#99abc6"
+        "hex": "#3b82f6"
       }
     },
     {
@@ -690,19 +690,19 @@
       "type": "color",
       "layer": "foundation",
       "category": "color",
-      "value": "#edf0f5",
-      "reference": "",
-      "description": "Existing component-specific surface or effect color; prefer semantic tokens for new work.",
+      "value": "#f5f5f5",
+      "reference": "foundation.color.neutral.100",
+      "description": "Shared neutral-100 interaction surface for preset, variant, source and upload controls.",
       "status": "observed-exception",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.9294117647058824,
-          0.9411764705882353,
+          0.9607843137254902,
+          0.9607843137254902,
           0.9607843137254902
         ],
         "alpha": 1,
-        "hex": "#edf0f5"
+        "hex": "#f5f5f5"
       }
     },
     {
@@ -1124,111 +1124,6 @@
       }
     },
     {
-      "name": "foundation.color.shadow.faint",
-      "designName": "foundation/color/shadow/faint",
-      "cssVariable": "--csa-foundation-color-shadow-faint",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#25355005",
-      "reference": "",
-      "description": "Shared shadow tint at 2% opacity; blur and geometry are specified by elevation recipes.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1450980392156863,
-          0.20784313725490197,
-          0.3137254901960784
-        ],
-        "alpha": 0.02
-      }
-    },
-    {
-      "name": "foundation.color.shadow.soft",
-      "designName": "foundation/color/shadow/soft",
-      "cssVariable": "--csa-foundation-color-shadow-soft",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#2535500d",
-      "reference": "",
-      "description": "Shared shadow tint at 5% opacity; blur and geometry are specified by elevation recipes.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1450980392156863,
-          0.20784313725490197,
-          0.3137254901960784
-        ],
-        "alpha": 0.05
-      }
-    },
-    {
-      "name": "foundation.color.shadow.default",
-      "designName": "foundation/color/shadow/default",
-      "cssVariable": "--csa-foundation-color-shadow-default",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#25355014",
-      "reference": "",
-      "description": "Shared shadow tint at 8% opacity; blur and geometry are specified by elevation recipes.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1450980392156863,
-          0.20784313725490197,
-          0.3137254901960784
-        ],
-        "alpha": 0.08
-      }
-    },
-    {
-      "name": "foundation.color.shadow.raised",
-      "designName": "foundation/color/shadow/raised",
-      "cssVariable": "--csa-foundation-color-shadow-raised",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#2535501f",
-      "reference": "",
-      "description": "Shared shadow tint at 12% opacity; blur and geometry are specified by elevation recipes.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1450980392156863,
-          0.20784313725490197,
-          0.3137254901960784
-        ],
-        "alpha": 0.12
-      }
-    },
-    {
-      "name": "foundation.color.shadow.strong",
-      "designName": "foundation/color/shadow/strong",
-      "cssVariable": "--csa-foundation-color-shadow-strong",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#25355029",
-      "reference": "",
-      "description": "Shared shadow tint at 16% opacity; blur and geometry are specified by elevation recipes.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1450980392156863,
-          0.20784313725490197,
-          0.3137254901960784
-        ],
-        "alpha": 0.16
-      }
-    },
-    {
       "name": "foundation.color.overlay.loading",
       "designName": "foundation/color/overlay/loading",
       "cssVariable": "--csa-foundation-color-overlay-loading",
@@ -1289,6 +1184,27 @@
           0.9568627450980393
         ],
         "alpha": 0
+      }
+    },
+    {
+      "name": "foundation.color.overlay.scrim",
+      "designName": "foundation/color/overlay/scrim",
+      "cssVariable": "--csa-foundation-color-overlay-scrim",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#25355029",
+      "reference": "",
+      "description": "Modal backdrop tint; independent of elevation shadows.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.20784313725490197,
+          0.3137254901960784
+        ],
+        "alpha": 0.16
       }
     },
     {
@@ -4794,19 +4710,19 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#99abc6",
+      "value": "#3b82f6",
       "reference": "foundation.color.blue.focus",
       "description": "Keyboard focus outline, offset from its control.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.6,
-          0.6705882352941176,
-          0.7764705882352941
+          0.23137254901960785,
+          0.5098039215686274,
+          0.9647058823529412
         ],
         "alpha": 1,
-        "hex": "#99abc6"
+        "hex": "#3b82f6"
       }
     },
     {
@@ -4816,19 +4732,19 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#fb7185",
-      "reference": "foundation.color.rose.400",
+      "value": "#be185d",
+      "reference": "foundation.color.pink.700",
       "description": "Heart color for a saved variant.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.984313725490196,
-          0.44313725490196076,
-          0.5215686274509804
+          0.7450980392156863,
+          0.09411764705882353,
+          0.36470588235294116
         ],
         "alpha": 1,
-        "hex": "#fb7185"
+        "hex": "#be185d"
       }
     },
     {
@@ -5024,6 +4940,27 @@
           0.9568627450980393
         ],
         "alpha": 0
+      }
+    },
+    {
+      "name": "semantic.color.overlay.scrim",
+      "designName": "semantic/color/overlay/scrim",
+      "cssVariable": "--csa-semantic-color-overlay-scrim",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#25355029",
+      "reference": "foundation.color.overlay.scrim",
+      "description": "Dimming behind open dialogs.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.20784313725490197,
+          0.3137254901960784
+        ],
+        "alpha": 0.16
       }
     },
     {
@@ -5467,114 +5404,6 @@
           "unit": "px"
         }
       }
-    },
-    {
-      "name": "semantic.shadow.menu",
-      "designName": "semantic/shadow/menu",
-      "cssVariable": "--csa-semantic-shadow-menu",
-      "type": "shadow",
-      "layer": "semantic",
-      "category": "shadow",
-      "value": "0px 8px 28px 0px #25355014",
-      "reference": "",
-      "description": "Shared shadow color; existing elevation geometry preserved.",
-      "status": "observed"
-    },
-    {
-      "name": "semantic.shadow.dropdown",
-      "designName": "semantic/shadow/dropdown",
-      "cssVariable": "--csa-semantic-shadow-dropdown",
-      "type": "shadow",
-      "layer": "semantic",
-      "category": "shadow",
-      "value": "0px 8px 36px 0px #2535500d",
-      "reference": "",
-      "description": "Shared shadow color; existing elevation geometry preserved.",
-      "status": "observed"
-    },
-    {
-      "name": "semantic.shadow.popover",
-      "designName": "semantic/shadow/popover",
-      "cssVariable": "--csa-semantic-shadow-popover",
-      "type": "shadow",
-      "layer": "semantic",
-      "category": "shadow",
-      "value": "0px 10px 36px 0px #25355029",
-      "reference": "",
-      "description": "Shared shadow color; existing elevation geometry preserved.",
-      "status": "observed"
-    },
-    {
-      "name": "semantic.shadow.dialog",
-      "designName": "semantic/shadow/dialog",
-      "cssVariable": "--csa-semantic-shadow-dialog",
-      "type": "shadow",
-      "layer": "semantic",
-      "category": "shadow",
-      "value": "0px 16px 65px 0px #25355029",
-      "reference": "",
-      "description": "Shared shadow color; existing elevation geometry preserved.",
-      "status": "observed"
-    },
-    {
-      "name": "semantic.shadow.new-project",
-      "designName": "semantic/shadow/new-project",
-      "cssVariable": "--csa-semantic-shadow-new-project",
-      "type": "shadow",
-      "layer": "semantic",
-      "category": "shadow",
-      "value": "0px 16px 65px 0px #25355014",
-      "reference": "",
-      "description": "Shared shadow color; existing elevation geometry preserved.",
-      "status": "observed"
-    },
-    {
-      "name": "semantic.shadow.mobile-panel",
-      "designName": "semantic/shadow/mobile-panel",
-      "cssVariable": "--csa-semantic-shadow-mobile-panel",
-      "type": "shadow",
-      "layer": "semantic",
-      "category": "shadow",
-      "value": "0px 10px 36px 0px #25355029",
-      "reference": "",
-      "description": "Shared shadow color; existing elevation geometry preserved.",
-      "status": "observed"
-    },
-    {
-      "name": "semantic.shadow.drawer",
-      "designName": "semantic/shadow/drawer",
-      "cssVariable": "--csa-semantic-shadow-drawer",
-      "type": "shadow",
-      "layer": "semantic",
-      "category": "shadow",
-      "value": "8px 0px 32px 0px #25355014",
-      "reference": "",
-      "description": "Shared shadow color; existing elevation geometry preserved.",
-      "status": "observed"
-    },
-    {
-      "name": "semantic.shadow.editor",
-      "designName": "semantic/shadow/editor",
-      "cssVariable": "--csa-semantic-shadow-editor",
-      "type": "shadow",
-      "layer": "semantic",
-      "category": "shadow",
-      "value": "0px 4px 26px 0px #25355005",
-      "reference": "",
-      "description": "Shared shadow color; existing elevation geometry preserved.",
-      "status": "observed"
-    },
-    {
-      "name": "semantic.shadow.input-focus",
-      "designName": "semantic/shadow/input-focus",
-      "cssVariable": "--csa-semantic-shadow-input-focus",
-      "type": "shadow",
-      "layer": "semantic",
-      "category": "shadow",
-      "value": "0px 0px 0px 3px #25355005",
-      "reference": "",
-      "description": "Shared shadow color; existing elevation geometry preserved.",
-      "status": "observed"
     },
     {
       "name": "component.button.height",
@@ -6623,19 +6452,19 @@
       "type": "color",
       "layer": "component",
       "category": "navigation",
-      "value": "#4d5d79",
-      "reference": "foundation.color.slate.brand",
+      "value": "#404040",
+      "reference": "foundation.color.neutral.700",
       "description": "Circular navigation chevron hover cursor.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.30196078431372547,
-          0.36470588235294116,
-          0.4745098039215686
+          0.25098039215686274,
+          0.25098039215686274,
+          0.25098039215686274
         ],
         "alpha": 1,
-        "hex": "#4d5d79"
+        "hex": "#404040"
       }
     },
     {
@@ -7271,19 +7100,19 @@
       "type": "color",
       "layer": "component",
       "category": "favorite",
-      "value": "#fb7185",
-      "reference": "foundation.color.rose.400",
-      "description": "Saved favorites and active saved-only filters use filled rose hearts.",
+      "value": "#be185d",
+      "reference": "semantic.color.favorite.active",
+      "description": "Saved favorites and active saved-only filters use filled pink-700 hearts.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.984313725490196,
-          0.44313725490196076,
-          0.5215686274509804
+          0.7450980392156863,
+          0.09411764705882353,
+          0.36470588235294116
         ],
         "alpha": 1,
-        "hex": "#fb7185"
+        "hex": "#be185d"
       }
     },
     {

@@ -14,7 +14,7 @@
   --csa-foundation-color-blue-100: #dbeafe;
   --csa-foundation-color-blue-500: #3b82f6;
   --csa-foundation-color-blue-600: #2563eb;
-  --csa-foundation-color-blue-focus: #99abc6;
+  --csa-foundation-color-blue-focus: var(--csa-foundation-color-blue-500);
   --csa-foundation-color-slate-brand: #4d5d79;
   --csa-foundation-color-rose-100: #ffe4e6;
   --csa-foundation-color-rose-400: #fb7185;
@@ -31,7 +31,7 @@
   --csa-foundation-color-observed-hex-cfd4d7: #cfd4d7;
   --csa-foundation-color-observed-hex-f2f4f7: #f2f4f7;
   --csa-foundation-color-observed-hex-f5f6f8: #f5f6f8;
-  --csa-foundation-color-observed-hex-edf0f5: #edf0f5;
+  --csa-foundation-color-observed-hex-edf0f5: var(--csa-foundation-color-neutral-100);
   --csa-foundation-color-observed-hex-dfe5ee: #dfe5ee;
   --csa-foundation-color-observed-hex-f5f7fa: #f5f7fa;
   --csa-foundation-color-observed-hex-f9edf6: #f9edf6;
@@ -51,14 +51,10 @@
   --csa-foundation-color-observed-hex-e7e2dd: #e7e2dd;
   --csa-foundation-color-pink-100: #fce7f3;
   --csa-foundation-color-pink-700: #be185d;
-  --csa-foundation-color-shadow-faint: #25355005;
-  --csa-foundation-color-shadow-soft: #2535500d;
-  --csa-foundation-color-shadow-default: #25355014;
-  --csa-foundation-color-shadow-raised: #2535501f;
-  --csa-foundation-color-shadow-strong: #25355029;
   --csa-foundation-color-overlay-loading: #ffffffe6;
   --csa-foundation-color-overlay-canvas-fade: #fbf6f4e6;
   --csa-foundation-color-overlay-canvas-transparent: #fbf6f400;
+  --csa-foundation-color-overlay-scrim: #25355029;
   --csa-foundation-space-0: 0px;
   --csa-foundation-space-1: 1px;
   --csa-foundation-space-2: 2px;
@@ -338,7 +334,7 @@
   --csa-semantic-color-action-disabled-label: var(--csa-foundation-color-neutral-400);
   --csa-semantic-color-action-disabled-surface: var(--csa-foundation-color-neutral-0);
   --csa-semantic-color-focus-ring: var(--csa-foundation-color-blue-focus);
-  --csa-semantic-color-favorite-active: var(--csa-foundation-color-rose-400);
+  --csa-semantic-color-favorite-active: var(--csa-foundation-color-pink-700);
   --csa-semantic-color-danger-default: var(--csa-foundation-color-red-700);
   --csa-semantic-color-danger-solid: var(--csa-foundation-color-red-600);
   --csa-semantic-color-danger-subtle: var(--csa-foundation-color-red-50);
@@ -348,6 +344,7 @@
   --csa-semantic-color-overlay-loading: var(--csa-foundation-color-overlay-loading);
   --csa-semantic-color-overlay-canvas-fade: var(--csa-foundation-color-overlay-canvas-fade);
   --csa-semantic-color-overlay-canvas-transparent: var(--csa-foundation-color-overlay-canvas-transparent);
+  --csa-semantic-color-overlay-scrim: var(--csa-foundation-color-overlay-scrim);
   --csa-semantic-typography-greeting-desktop-font-family: var(--csa-foundation-font-family-editorial);
   --csa-semantic-typography-greeting-desktop-font-size: var(--csa-foundation-font-size-32);
   --csa-semantic-typography-greeting-desktop-font-weight: var(--csa-foundation-font-weight-700);
@@ -418,15 +415,6 @@
   --csa-semantic-typography-dialog-title-font-weight: var(--csa-foundation-font-weight-650);
   --csa-semantic-typography-dialog-title-letter-spacing: -0.6px;
   --csa-semantic-typography-dialog-title-line-height: 1.3;
-  --csa-semantic-shadow-menu: 0px 8px 28px 0px var(--csa-foundation-color-shadow-default);
-  --csa-semantic-shadow-dropdown: 0px 8px 36px 0px var(--csa-foundation-color-shadow-soft);
-  --csa-semantic-shadow-popover: 0px 10px 36px 0px var(--csa-foundation-color-shadow-strong);
-  --csa-semantic-shadow-dialog: 0px 16px 65px 0px var(--csa-foundation-color-shadow-strong);
-  --csa-semantic-shadow-new-project: 0px 16px 65px 0px var(--csa-foundation-color-shadow-default);
-  --csa-semantic-shadow-mobile-panel: 0px 10px 36px 0px var(--csa-foundation-color-shadow-strong);
-  --csa-semantic-shadow-drawer: 8px 0px 32px 0px var(--csa-foundation-color-shadow-default);
-  --csa-semantic-shadow-editor: 0px 4px 26px 0px var(--csa-foundation-color-shadow-faint);
-  --csa-semantic-shadow-input-focus: 0px 0px 0px 3px var(--csa-foundation-color-shadow-faint);
   --csa-component-button-height: 46px;
   --csa-component-button-radius: var(--csa-foundation-radius-10);
   --csa-component-button-panel-radius: var(--csa-foundation-radius-10);
@@ -492,7 +480,7 @@
   --csa-component-navigation-cursor-size: var(--csa-foundation-space-40);
   --csa-component-navigation-cursor-background: var(--csa-semantic-color-surface-default);
   --csa-component-navigation-cursor-border: var(--csa-semantic-color-border-default);
-  --csa-component-navigation-cursor-foreground: var(--csa-foundation-color-slate-brand);
+  --csa-component-navigation-cursor-foreground: var(--csa-foundation-color-neutral-700);
   --csa-component-layout-page-min-width: 320px;
   --csa-component-layout-home-max-width: 1260px;
   --csa-component-layout-editor-max-width: 980px;
@@ -541,7 +529,7 @@
   --csa-component-layout-switch-button-size: var(--csa-foundation-space-36);
   --csa-component-layout-switch-padding: var(--csa-foundation-space-2);
   --csa-component-favorite-unsaved-color: var(--csa-semantic-color-text-primary);
-  --csa-component-favorite-saved-color: var(--csa-foundation-color-rose-400);
+  --csa-component-favorite-saved-color: var(--csa-semantic-color-favorite-active);
   --csa-component-avatar-background: var(--csa-foundation-color-pink-100);
   --csa-component-avatar-foreground: var(--csa-foundation-color-pink-700);
 }

@@ -5,13 +5,13 @@ import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261020-
 import { createVariantFeedback } from './variant-feedback.js?v=20261020-request-revision';
 import { createProfile } from './profile.js?v=20261020-profile-simple';
 import { createSearchExperience } from './search.js?v=20261020-request-revision';
-import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=20261020-created-updated-dates';
+import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=20261020-home-layouts';
 import { createMaterialEditor } from './editor.js?v=20261020-request-revision';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261020-request-revision';
 import { removeProjectContent } from './project-deletion.js?v=20261020-request-revision';
 import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261020-request-revision';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261020-request-revision';
-import { createRailNavigation } from './navigation.js?v=20261020-request-revision';
+import { createRailNavigation } from './navigation.js?v=20261020-home-sidebar';
 import { createProjectSources } from './sources.js?v=20261020-request-revision';
 import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261020-request-revision';
 import { createEditorTabs } from './editor-tabs.js?v=20261020-request-revision';
@@ -1414,28 +1414,10 @@ async function deleteProjectPermanently(id) {
   return true;
 }
 
-function renameProject(id, title) {
-  const name = title.trim();
-  const project = projects.find(entry => entry.id === id && !entry.deletedAt && !entry.archivedAt);
-  if (!name || name.length > 200 || !project) return false;
-  const renamed = { ...project, title: name, updatedAt: Date.now() };
-  const next = projects.map(entry => entry === project ? renamed : entry);
-  // Keep the current name if browser storage cannot save the change.
-  try { localStorage.setItem(storageKey, JSON.stringify(next)); }
-  catch { return false; }
-  // Preserve references held by any output processing already in progress.
-  Object.assign(project, renamed);
-  outputPresets.render(projects, null);
-  dashboard.render(projects);
-  notify('Project name updated.');
-  return true;
-}
-
 dashboard = createDashboard({
   onNew: showProjectStart,
   onOpen: showProject,
   onDelete: deleteProjectPermanently,
-  onRename: renameProject,
 });
 dashboard.render(projects);
 dashboard.reveal();

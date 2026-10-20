@@ -4,7 +4,7 @@ Extracted 2026-10-19 from CSA app source baa4775.
 SOURCE OF TRUTH
   dist/design-system/tokens.json
   Three layers: foundation > semantic > component.
-  302 tokens in DTCG 2025.10-compatible JSON.
+  303 tokens in DTCG 2025.10-compatible JSON.
   Every token includes a type, description, and observed status.
   observed-exception retains a component-specific existing value.
   approved-update identifies the requested compact toolbar additions.
@@ -129,6 +129,23 @@ PROFILE AVATAR
   Uses interface typography at 16 px / 20 px, weight 600.
   Expanded profile shows the email only, with no name or arrow icons.
   Profile menu contains Log out only; photo and Settings UI are removed.
+
+NAVIGATION RAIL
+  Homepage rail remains collapsed and cannot expand by click or keyboard.
+  The avatar opens a standalone Log out menu beside the desktop rail,
+    or below the mobile top bar. Escape/outside click dismisses it.
+  Desktop rail expansion is available inside the project editor, where
+    New project and Sources are shown. Returning home closes the drawer.
+  Homepage card action menus contain Delete only; no rename action/dialog.
+
+HOMEPAGE LAYOUTS
+  Grid/list switch sits above New Project, aligned left; Material Symbols
+    grid_view / view_list, 18 px glyphs in 40 px targets in the neutral pill.
+  Choice is saved locally and supports arrow keys, Home, and End.
+  List shows Title, Sources, Date, Role, and a Delete-only action menu.
+  Date keeps Today / Updated Today semantics. Local projects show Owner.
+  Title opens the project. Rows use 14 px Inter and shared dividers/hover.
+  Mobile rows stack their details without horizontal scrolling.
 
 HOMEPAGE PROJECT CARDS
   Desktop: 208 px minimum height, 24 px padding and grid gap, 20 px radius.

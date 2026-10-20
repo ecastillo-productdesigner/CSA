@@ -11,6 +11,8 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
   const home = document.querySelector('#home');
   const mobile = window.matchMedia('(max-width: 768px)');
   const mobileTopBar = () => mobile.matches && (!home.hidden || document.body.matches('.showing-results, .showing-composer'));
+  const drawerAvailable = () => !mobileTopBar() && document.body.classList.contains('showing-composer');
+  const floatingProfile = () => !drawerAvailable();
   const tooltips = [
     { trigger: newProject, tooltip: document.querySelector('#new-project-tooltip') },
     { trigger: panels.sources.trigger, tooltip: document.querySelector('#sources-tooltip') },
@@ -22,7 +24,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
   function hideTooltips() { for (const { tooltip } of tooltips) tooltip.hidden = true; }
   function showTooltip(trigger, tooltip) {
     hideTooltips();
-    if (drawerOpen || mobileTopBar() || document.querySelector('dialog[open]')) return;
+    if (drawerOpen || active === 'profile' || mobileTopBar() || document.querySelector('dialog[open]')) return;
     const bounds = trigger.getBoundingClientRect();
     if (!bounds.width || !bounds.height) return;
     tooltip.style.left = `${bounds.right + 12}px`;
@@ -47,6 +49,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
   }
 
   function setDrawer(open, restoreFocus = false) {
+    open = Boolean(open && drawerAvailable());
     hideTooltips();
     if (open === drawerOpen) return;
     close();
@@ -56,13 +59,13 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
     document.body.classList.toggle('navigation-drawer-open', open);
     drawerToggle.setAttribute('aria-expanded', String(open));
     drawerToggle.setAttribute('aria-label', `${open ? 'Close' : 'Open'} navigation drawer`);
-    sidebar.setAttribute('aria-label', open ? 'Main navigation' : 'Main navigation. Press Enter to open drawer.');
+    sidebar.setAttribute('aria-label', open || !drawerAvailable() ? 'Main navigation' : 'Main navigation. Press Enter to open drawer.');
     if (restoreFocus) (open ? drawerToggle : sidebar).focus({ preventScroll: true });
   }
 
   function open(name) {
     if (document.querySelector('dialog[open]') || !panels[name] || (panels[name].mobileOnly && (!mobile.matches || !document.body.classList.contains('showing-composer')))) return;
-    setDrawer(!mobileTopBar());
+    setDrawer(drawerAvailable());
     if (active === name) return;
     close();
     onOpen?.();
@@ -76,20 +79,20 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
 
   drawerToggle.addEventListener('click', () => setDrawer(false, true));
   sidebar.addEventListener('click', event => {
-    if (!mobileTopBar() && !drawerOpen && !event.target.closest('button, a, input, textarea, select')) setDrawer(true);
+    if (drawerAvailable() && !drawerOpen && !event.target.closest('button, a, input, textarea, select')) setDrawer(true);
   });
   sidebar.addEventListener('keydown', event => {
-    if (mobileTopBar() || event.target !== sidebar || !['Enter', ' '].includes(event.key)) return;
+    if (!drawerAvailable() || event.target !== sidebar || !['Enter', ' '].includes(event.key)) return;
     event.preventDefault();
     setDrawer(!drawerOpen, true);
   });
   for (const [name, { trigger, panel }] of Object.entries(panels)) {
     trigger.addEventListener('click', () => {
-      if (name === 'profile' && !drawerOpen && !mobileTopBar()) { setDrawer(true); return; }
+      if (name === 'profile' && !drawerOpen && drawerAvailable()) { setDrawer(true); return; }
       if (active === name) close(name);
       else {
         open(name);
-        if (name === 'profile' && mobileTopBar()) panel.querySelector('.profile-navigation')?.focus({ preventScroll: true });
+        if (name === 'profile' && floatingProfile()) panel.querySelector('.profile-navigation')?.focus({ preventScroll: true });
         else if (panels[name].mobileOnly) panel.querySelector('h2')?.focus({ preventScroll: true });
       }
     });
@@ -102,11 +105,12 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
     });
   }
   panels.profile.panel.addEventListener('keydown', event => {
-    if (event.key === 'Tab' && mobileTopBar()) close('profile', true);
+    if (event.key === 'Tab' && floatingProfile()) close('profile', true);
   });
   for (const button of document.querySelectorAll('[data-close-navigation]')) button.addEventListener('click', () => close(button.dataset.closeNavigation, true));
   document.addEventListener('pointerdown', event => {
     if (document.querySelector('dialog[open]')) return;
+    if (active === 'profile' && floatingProfile() && !panels.profile.panel.contains(event.target) && !panels.profile.trigger.contains(event.target)) { close(); return; }
     if (mobileTopBar() && !sidebar.contains(event.target) && !panels[active]?.panel.contains(event.target) && !event.target.closest('.output-edit-menu, .editor-flyover, [data-variant-sources], [data-workspace-dropdown]')) close();
     else if (drawerOpen && !sidebar.contains(event.target) && !event.target.closest('[data-variant-sources]')) setDrawer(false);
   });
@@ -116,12 +120,14 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
     if (active) { event.preventDefault(); close(active, true); }
     else if (drawerOpen) { event.preventDefault(); setDrawer(false, true); }
   });
-  let topBarMode = false;
+  let layoutMode;
   function syncLayout() {
-    const next = mobileTopBar();
-    if (next !== topBarMode) { hideTooltips(); setDrawer(false); close(); topBarMode = next; }
-    sidebar.tabIndex = next ? -1 : 0;
-    sidebar.setAttribute('aria-label', next || drawerOpen ? 'Main navigation' : 'Main navigation. Press Enter to open drawer.');
+    const available = drawerAvailable();
+    const next = `${mobileTopBar()}:${available}`;
+    if (next !== layoutMode) { hideTooltips(); setDrawer(false); close(); layoutMode = next; }
+    sidebar.dataset.expandable = String(available);
+    sidebar.tabIndex = available ? 0 : -1;
+    sidebar.setAttribute('aria-label', !available || drawerOpen ? 'Main navigation' : 'Main navigation. Press Enter to open drawer.');
   }
   mobile.addEventListener('change', syncLayout);
   const layoutObserver = new MutationObserver(syncLayout);

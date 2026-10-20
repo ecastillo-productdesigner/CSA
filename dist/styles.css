@@ -1102,10 +1102,10 @@ body:has(#revision-request-dialog[open]) { overflow: hidden; }
 
 /* Homepage layout controls and project list. */
 .dashboard-layout-tools { display: flex; justify-content: flex-start; padding-top: var(--csa-foundation-space-16); margin-bottom: var(--csa-foundation-space-8); }
-.dashboard-layout-switch { display: inline-flex; gap: var(--csa-foundation-space-4); padding: var(--csa-foundation-space-4); border-radius: var(--csa-foundation-radius-999); background: var(--csa-foundation-color-neutral-100); }
-.dashboard-layout-switch button { display: grid; place-items: center; width: var(--csa-foundation-space-40); height: var(--csa-foundation-space-40); padding: 0; border: 0; border-radius: var(--csa-foundation-radius-999); background: transparent; color: var(--csa-semantic-color-text-secondary); }
-.dashboard-layout-switch button[aria-pressed="true"] { background: var(--csa-semantic-color-surface-default); color: var(--csa-semantic-color-text-primary); }
-.dashboard-layout-switch button:hover { color: var(--csa-semantic-color-action-primary); }
+.dashboard-layout-switch { display: inline-flex; gap: var(--csa-foundation-space-4); padding: var(--csa-foundation-space-4); border-radius: var(--csa-foundation-radius-20); background: var(--csa-semantic-color-surface-default); }
+.dashboard-layout-switch button { display: grid; place-items: center; width: var(--csa-foundation-space-40); height: var(--csa-foundation-space-40); padding: 0; border: 0; border-radius: var(--csa-foundation-radius-16); background: transparent; color: var(--csa-semantic-color-text-primary); }
+.dashboard-layout-switch button[aria-pressed="true"] { background: var(--csa-foundation-color-neutral-200); }
+.dashboard-layout-switch button:not([aria-pressed="true"]):hover { background: var(--csa-semantic-color-surface-hover); }
 .dashboard-layout-switch .material-symbols-outlined { width: var(--csa-foundation-space-18); height: var(--csa-foundation-space-18); font-size: var(--csa-foundation-font-size-18); }
 body #home[data-layout="list"] .dashboard-grid { display: block; }
 body #home[data-layout="list"] .new-project-tile { display: inline-flex; flex-direction: row; width: auto; min-height: var(--csa-component-button-height); height: var(--csa-component-button-height); margin: 0 0 var(--csa-foundation-space-24); padding: 0 var(--csa-foundation-space-20); gap: var(--csa-foundation-space-8); border-radius: var(--csa-component-button-radius); font-size: var(--csa-foundation-font-size-16); line-height: var(--csa-foundation-line-height-20); }

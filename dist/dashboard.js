@@ -1,5 +1,5 @@
-import { createIcon as icon } from './icons.js?v=20261020-material-symbols';
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261020-material-symbols';
+import { createIcon as icon } from './icons.js?v=20261020-request-revision';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261020-request-revision';
 
 function node(tag, className, text) {
   const element = document.createElement(tag);

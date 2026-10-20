@@ -1,4 +1,4 @@
-import { customVariantName, savedVariantName } from './outputs.js?v=20261020-material-symbols';
+import { customVariantName, savedVariantName } from './outputs.js?v=20261020-request-revision';
 
 export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
   const menu = document.querySelector('#output-edit-menu');

@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261020-material-symbols';
+import { createIcon } from './icons.js?v=20261020-request-revision';
 // Sample content for the results-screen prototype. No live news requests are made.
 function sampleArticles(query) {
   const isKelly = /^kelly\s+clarkson$/i.test(query.trim());

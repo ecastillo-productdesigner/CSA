@@ -103,6 +103,19 @@ ICONS
   Font subset names are identical in product and visual reference.
   Preserve accessible labels on controls; glyphs are decorative.
 
+REQUEST REVISION
+  Above a created draft, Request Revision sits directly after the source
+    count and shares its chip-button styling: 24 px high, pill radius,
+    12 px / 500, 1 px border, 1 px vertical / 9 px horizontal padding.
+  Uses filled Google edit_note. Opens a native modal with the variant
+    title, revision instructions, Cancel, close, and Request Revision.
+  Dialog actions share 12 px / 600. Use existing dialog/field tokens.
+  Escape/Cancel/close restore focus to the current revision trigger.
+  Demo submission shows Revising… on that Created card for four seconds,
+    replaces only its body with a different sample, then shows a toast.
+  Instructions/completion are saved locally. Jobs resume after reload.
+  The editor header has no settings pencil; settings remain on cards.
+
 RESPONSIVE / INPUT
   Mobile <=768 px. Desktop >=769 px.
   Editor adapts at <=1100 px. Dashboard container thresholds 999/579 px.

@@ -1,4 +1,4 @@
-import { projectOutputs, createOutputBadges, savedVariantName } from './outputs.js?v=20261020-material-symbols';
+import { projectOutputs, createOutputBadges, savedVariantName } from './outputs.js?v=20261020-request-revision';
 
 export function createOutputPresets({ onSelect, onDelete }) {
   const root = document.querySelector('#output-presets');

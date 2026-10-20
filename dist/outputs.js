@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261020-material-symbols';
+import { createIcon } from './icons.js?v=20261020-request-revision';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',
@@ -256,6 +256,26 @@ export function populateOutputContent(output) {
   return true;
 }
 
+export function reviseSampleOutput(output, instructions, requestedAt, completedAt = Date.now()) {
+  const normalize = text => text.replace(/\s+/g, ' ').trim();
+  const current = normalize(output.draftText || '');
+  const samples = storyParagraphs.map((opening, index) => [...opening.slice(0, -1), ...extraStoryParagraphs[index], opening.at(-1)]);
+  const choices = samples.filter(paragraphs => normalize(paragraphs.join('\n\n')) !== current);
+  const paragraphs = choices[Math.floor(Math.random() * choices.length)];
+  output.draftText = paragraphs.join('\n\n');
+  output.document = { ops: paragraphs.map(paragraph => ({ insert: `${paragraph}\n` })) };
+  output.contentInitialized = true;
+  output.contentVersion = 3;
+  output.updatedAt = completedAt;
+  output.status = 'ready';
+  delete output.needsRegeneration;
+  delete output.cmsSentAt;
+  delete output.cmsSentContent;
+  output.revisionRequests = [...(Array.isArray(output.revisionRequests) ? output.revisionRequests : []), {
+    instructions, requestedAt, completedAt, status: 'complete',
+  }];
+}
+
 export function sampleVariant(project, selections) {
   const used = new Set(projectOutputs(project).map(output => output.title));
   const available = sampleHeadlines.filter(title => !used.has(title));
@@ -315,7 +335,7 @@ export function renderOutputs(project, requestedView) {
   create.title = processing ? 'Preparing selected variants' : selectedPending.length ? `Create ${selectedPending.length} selected variant${selectedPending.length === 1 ? '' : 's'}` : 'Select at least one pending variant';
   document.querySelector('#create-output-label').textContent = processing ? 'Processing…' : `Create ${selectedPending.length} Variant${selectedPending.length === 1 ? '' : 's'}`;
   document.querySelector('#output-processing-spinner').hidden = !processing;
-  document.querySelector('#output-processing-status').textContent = processing ? 'Processing your selected variants. This takes about four seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
+  document.querySelector('#output-processing-status').textContent = project?.outputProcessing?.kind === 'revision' ? 'Revising your variant. This takes about four seconds.' : processing ? 'Processing your selected variants. This takes about four seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
   const empty = document.querySelector('#outputs-empty');
   empty.hidden = state.outputs.length > 0;
   empty.querySelector('p').textContent = state.view === 'pending' ? 'No variants to create yet.' : 'No created variants yet.';
@@ -325,6 +345,7 @@ export function renderOutputs(project, requestedView) {
     const item = document.createElement('li');
     const card = document.createElement('article');
     const ready = outputIsReady(output);
+    const revising = project?.outputProcessing?.kind === 'revision' && project.outputProcessing.ids.includes(output.id);
     const active = Boolean(((ready || output.needsRegeneration) && project.selectedOutputId === output.id)
       || (project.viewOriginalDraft && !ready && project.lastPendingOutputId === output.id && selectedIds.has(output.id)));
     const selected = ready ? active : selectedIds.has(output.id);
@@ -332,6 +353,8 @@ export function renderOutputs(project, requestedView) {
     card.dataset.selected = String(selected);
     card.dataset.active = String(active);
     card.dataset.ready = String(ready);
+    card.dataset.revising = String(revising);
+    if (revising) card.setAttribute('aria-busy', 'true');
     if (!ready) {
       const border = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       border.classList.add('output-card-dash');
@@ -348,7 +371,7 @@ export function renderOutputs(project, requestedView) {
     open.type = 'button';
     open.className = 'output-open';
     open.dataset.outputId = output.id;
-    open.disabled = !ready && processing;
+    open.disabled = revising || (!ready && processing);
     open.setAttribute('aria-label', `${!ready ? 'Pending variant' : 'Open variant'}: ${output.title}`);
     open.setAttribute('aria-pressed', String(ready ? active : selected));
     open.title = !ready ? output.needsRegeneration ? 'Open this variant in the editor' : 'View content preview for this variant' : active ? 'This variant is open in the editor' : 'Open this variant in the editor';
@@ -398,6 +421,7 @@ export function renderOutputs(project, requestedView) {
     const edit = createOutputEditButton(output, { disabled: processing });
     const favorite = document.createElement('button');
     favorite.type = 'button';
+    favorite.disabled = revising;
     favorite.className = 'output-favorite-button';
     favorite.dataset.favoriteOutput = output.id;
     favorite.setAttribute('aria-label', `${output.isFavorite ? 'Remove preset' : 'Save preset'}: ${output.title}`);
@@ -410,7 +434,18 @@ export function renderOutputs(project, requestedView) {
     favorite.append(heart);
     card.append(open);
     if (!ready) card.append(selection);
+    badges.inert = revising;
     card.append(badges, edit, favorite);
+    if (revising) {
+      const overlay = document.createElement('div');
+      overlay.className = 'output-revision-overlay';
+      overlay.setAttribute('role', 'status');
+      const spinner = document.createElement('span');
+      spinner.className = 'output-processing-spinner revision-spinner';
+      spinner.setAttribute('aria-hidden', 'true');
+      overlay.append(spinner, document.createTextNode('Revising…'));
+      card.append(overlay);
+    }
     item.append(card);
     return item;
   }));

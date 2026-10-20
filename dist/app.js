@@ -1,21 +1,22 @@
-import { createIcon as icon } from './icons.js?v=20261020-material-symbols';
+import { createRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261020-request-revision';
+import { createIcon as icon } from './icons.js?v=20261020-request-revision';
 import { parseSourceLinks, formatSourceLinks } from './source-links.js';
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261020-material-symbols';
-import { createVariantFeedback } from './variant-feedback.js?v=20261020-material-symbols';
-import { createProfile } from './profile.js?v=20261020-material-symbols';
-import { createSearchExperience } from './search.js?v=20261020-material-symbols';
-import { createDashboard } from './dashboard.js?v=20261020-material-symbols';
-import { createMaterialEditor } from './editor.js?v=20261020-material-symbols';
-import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261020-material-symbols';
-import { removeProjectContent } from './project-deletion.js?v=20261020-material-symbols';
-import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261020-material-symbols';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261020-material-symbols';
-import { createRailNavigation } from './navigation.js?v=20261020-material-symbols';
-import { createProjectSources } from './sources.js?v=20261020-material-symbols';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, createOutputEditButton, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261020-material-symbols';
-import { createEditorTabs } from './editor-tabs.js?v=20261020-material-symbols';
-import { createOutputSettings } from './output-settings.js?v=20261020-material-symbols';
-import { createOutputPresets } from './output-presets.js?v=20261020-material-symbols';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261020-request-revision';
+import { createVariantFeedback } from './variant-feedback.js?v=20261020-request-revision';
+import { createProfile } from './profile.js?v=20261020-request-revision';
+import { createSearchExperience } from './search.js?v=20261020-request-revision';
+import { createDashboard } from './dashboard.js?v=20261020-request-revision';
+import { createMaterialEditor } from './editor.js?v=20261020-request-revision';
+import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261020-request-revision';
+import { removeProjectContent } from './project-deletion.js?v=20261020-request-revision';
+import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261020-request-revision';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261020-request-revision';
+import { createRailNavigation } from './navigation.js?v=20261020-request-revision';
+import { createProjectSources } from './sources.js?v=20261020-request-revision';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261020-request-revision';
+import { createEditorTabs } from './editor-tabs.js?v=20261020-request-revision';
+import { createOutputSettings } from './output-settings.js?v=20261020-request-revision';
+import { createOutputPresets } from './output-presets.js?v=20261020-request-revision';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -83,6 +84,7 @@ const toolDropdowns = createToolDropdowns({ notify });
 const variantFeedback = createVariantFeedback({ save: saveProjects, refreshDropdowns: toolDropdowns.refresh, closeDropdowns: toolDropdowns.close });
 const outputPresets = createOutputPresets({ onSelect: applyOutputPreset, onDelete: deleteOutputPreset });
 const outputSettings = createOutputSettings({ onSave: saveOutputSettings, onDelete: deleteVariant, closeDropdowns: toolDropdowns.close });
+const revisionRequests = createRevisionRequests({ onSubmit: requestVariantRevision, closePanels() { railNavigation.close(); toolDropdowns.close(); outputSettings.close(); } });
 const contentPreview = createContentPreview({
   onChange(text) {
     const project = projects.find(entry => entry.id === activeProjectId);
@@ -152,9 +154,12 @@ function renderOutputs(project) {
   outputPresets.render(projects, project?.variantPreset || null);
   editorTabs.render(project);
   const selectedOutput = projectOutputs(project).find(output => output.id === project?.selectedOutputId && (outputIsReady(output) || output.needsRegeneration));
+  richEditor.setRevisionBusy(Boolean(project?.outputProcessing?.kind === 'revision' && project.outputProcessing.ids.includes(selectedOutput?.id)));
   const labels = $('#editor-variant-labels');
   labels.replaceChildren(...createOutputBadges(selectedOutput));
-  if (selectedOutput) labels.append(createOutputEditButton(selectedOutput, { disabled: Boolean(project?.outputProcessing), inEditor: true }));
+  if (selectedOutput) {
+    if (outputIsReady(selectedOutput)) labels.append(createRevisionButton(selectedOutput, Boolean(project?.outputProcessing)));
+  }
   labels.hidden = !labels.childElementCount;
   syncSourceBadges();
   outputSettings.sync(project);
@@ -928,11 +933,46 @@ function openVariantSources(button) {
   }
 }
 $('#editor-variant-labels').addEventListener('click', event => {
+  const revision = event.target.closest('[data-request-revision]');
+  if (revision) {
+    richEditor.flush();
+    const project = projects.find(entry => entry.id === activeProjectId);
+    const output = projectOutputs(project).find(entry => entry.id === revision.dataset.requestRevision && outputIsReady(entry));
+    if (output && !project.outputProcessing) revisionRequests.open(project, output);
+    return;
+  }
   const edit = event.target.closest('[data-edit-output]');
   if (edit) { openVariantSettings(edit); return; }
   const button = event.target.closest('[data-variant-sources]');
   if (button) openVariantSources(button);
 });
+
+function requestVariantRevision({ projectId, outputId, instructions }) {
+  richEditor.flush();
+  const project = projects.find(entry => entry.id === projectId && !entry.deletedAt);
+  const output = projectOutputs(project).find(entry => entry.id === outputId && outputIsReady(entry));
+  const text = instructions.trim();
+  if (!output || project.outputProcessing || !text || text.length > 8000) return false;
+  const requestedAt = Date.now();
+  const previousUpdatedAt = project.updatedAt;
+  project.updatedAt = requestedAt;
+  project.outputProcessing = { kind: 'revision', ids: [outputId], openOutputId: outputId, instructions: text, requestedAt, readyAt: requestedAt + 4000 };
+  if (!saveProjects()) { delete project.outputProcessing; project.updatedAt = previousUpdatedAt; return false; }
+  outputViews.set(project.id, 'created');
+  renderOutputs(project);
+  resumeOutputProcessing(project);
+  requestAnimationFrame(() => {
+    if (window.matchMedia('(max-width: 768px)').matches) railNavigation.open('variants');
+    const list = $('#output-list');
+    const card = list.querySelector('[data-revising="true"]');
+    if (!card) return;
+    const viewport = list.getBoundingClientRect();
+    const bounds = card.getBoundingClientRect();
+    if (bounds.top < viewport.top) list.scrollTop += bounds.top - viewport.top - 3;
+    else if (bounds.bottom > viewport.bottom) list.scrollTop += bounds.bottom - viewport.bottom + 3;
+  });
+  return true;
+}
 
 function finishOutputProcessing(project, renderWhenReady = true) {
   const job = project.outputProcessing;
@@ -944,19 +984,24 @@ function finishOutputProcessing(project, renderWhenReady = true) {
   const active = activeProjectId === project.id && !$('#composer').hidden;
   if (active) richEditor.close();
   for (const output of projectOutputs(project)) {
-    if (ids.has(output.id)) { output.status = 'ready'; delete output.needsRegeneration; output.processedAt = Date.now(); populateOutputContent(output); }
+    if (ids.has(output.id)) {
+      if (job.kind === 'revision') reviseSampleOutput(output, job.instructions, job.requestedAt);
+      else { output.status = 'ready'; delete output.needsRegeneration; output.processedAt = Date.now(); populateOutputContent(output); }
+    }
   }
   const latestCreated = projectOutputs(project).find(output => output.id === job.openOutputId && outputIsReady(output)) || projectOutputs(project).filter(output => ids.has(output.id) && outputIsReady(output)).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))[0];
   if (latestCreated) outputViews.set(project.id, 'created');
   if (latestCreated) { project.selectedOutputId = latestCreated.id; project.viewOriginalDraft = false; }
   delete project.selectedPendingOutputIds;
   delete project.outputProcessing;
+  if (job.kind === 'revision') project.updatedAt = Date.now();
   saveProjects();
   if (active && renderWhenReady) {
     railNavigation.close();
     showEditorProject(project);
-    notify(latestCreated ? 'Variant ready. The newest variant is open in the editor.' : 'Variant processing finished.');
+    if (job.kind !== 'revision') notify(latestCreated ? 'Variant ready. The newest variant is open in the editor.' : 'Variant processing finished.');
   }
+  if (job.kind === 'revision') notify('Revision complete. Your draft has been updated.');
 }
 
 function resumeOutputProcessing(project, renderWhenReady = true) {

@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261020-material-symbols';
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261020-material-symbols';
+import { createIcon } from './icons.js?v=20261020-request-revision';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261020-request-revision';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');

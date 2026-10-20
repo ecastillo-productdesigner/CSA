@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261020-material-symbols');
+  await import('./app.js?v=20261020-request-revision');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

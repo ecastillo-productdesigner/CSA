@@ -1,4 +1,4 @@
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261020-material-symbols';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261020-request-revision';
 const $ = selector => document.querySelector(selector);
 createToolDropdowns();
 let toastTimer;

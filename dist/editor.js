@@ -45,6 +45,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   let project = null;
   let loading = false;
   let dirty = false;
+  let revisionBusy = false;
   let sentContent = null;
   let saveTimer;
   let selection = { index: 0, length: 0 };
@@ -74,7 +75,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   }
 
   function canSend() {
-    return Boolean(project?.selectedOutputId && project.status !== 'pending' && !project.needsRegeneration && quill && (sentContent === null || contentSignature() !== sentContent));
+    return Boolean(!revisionBusy && project?.selectedOutputId && project.status !== 'pending' && !project.needsRegeneration && quill && (sentContent === null || contentSignature() !== sentContent));
   }
 
   function updateSendButton() {
@@ -353,6 +354,9 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     open(next) {
       flush(); project = next; loading = true; root.hidden = false;
       initialize();
+      revisionBusy = false;
+      quill.enable(true);
+      title.disabled = false;
       title.value = next.title === 'Untitled story' ? '' : next.title;
       const created = new Date(next.createdAt);
       const hasCreatedAt = next.createdAt != null && next.createdAt !== '' && Number.isFinite(created.getTime());
@@ -378,7 +382,15 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       loading = false; dirty = false;
       if (!next.draftText) title.focus(); else quill.setSelection(0, 0, 'silent');
     },
-    close() { flush(); project = null; root.hidden = true; setPanel('', false); if (linkDialog.open) linkDialog.close(); $('#editor-download').open = false; },
+    close() { flush(); revisionBusy = false; title.disabled = false; quill?.enable(true); project = null; root.hidden = true; setPanel('', false); if (linkDialog.open) linkDialog.close(); $('#editor-download').open = false; },
+    setRevisionBusy(value) {
+      revisionBusy = value;
+      quill?.enable(!value);
+      title.disabled = value;
+      for (const control of $('#editor-toolbar').querySelectorAll('button, input, select')) control.disabled = value;
+      onToolbarChange();
+      updateSendButton();
+    },
     closePanels() { setPanel('', false); },
     hasContent() { return Boolean(project && quill && quill.getText().replace(/[\s\u200B-\u200D\uFEFF]/gu, '')); },
     canSend,

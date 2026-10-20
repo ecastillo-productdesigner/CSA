@@ -8,11 +8,11 @@
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,1,0&amp;icon_names=add_circle,alt_route,archive,arrow_forward,arrow_upward,auto_awesome,build,check,chevron_forward,close,contract_edit,delete,description,draw,edit,expand_all,favorite,filter_list,folder_open,format_bold,format_clear,format_color_text,format_indent_decrease,format_indent_increase,format_italic,format_list_bulleted,format_list_numbered,format_strikethrough,format_underlined,history,ink_highlighter,keyboard_arrow_down,keyboard_arrow_up,link,more_horiz,open_in_new,photo_camera,redo,restore_from_trash,right_panel_open,search,send,thumb_down,thumb_up,tune,undo,upload,upload_file,visibility&amp;display=block">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,1,0&amp;icon_names=add_circle,alt_route,archive,arrow_forward,arrow_upward,auto_awesome,build,check,chevron_forward,close,contract_edit,delete,description,draw,edit,edit_note,expand_all,favorite,filter_list,folder_open,format_bold,format_clear,format_color_text,format_indent_decrease,format_indent_increase,format_italic,format_list_bulleted,format_list_numbered,format_strikethrough,format_underlined,history,ink_highlighter,keyboard_arrow_down,keyboard_arrow_up,link,more_horiz,open_in_new,photo_camera,redo,restore_from_trash,right_panel_open,search,send,thumb_down,thumb_up,tune,undo,upload,upload_file,visibility&amp;display=block">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:opsz,wght@6..72,700&amp;display=swap">
     <link rel="stylesheet" href="./design-system/tokens.css?v=20261019-radius-scale">
-    <link rel="stylesheet" href="./styles.css?v=20261020-material-symbols">
-    <script src="./demo-access.js?v=20261020-material-symbols" type="module"></script>
+    <link rel="stylesheet" href="./styles.css?v=20261020-request-revision">
+    <script src="./demo-access.js?v=20261020-request-revision" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -322,6 +322,17 @@
       </div>
       <p class="form-error" id="material-error" role="alert" hidden></p>
       <div class="dialog-footer"><button class="secondary-button" id="material-cancel" type="button" data-close="material-dialog">Cancel</button><button class="primary-button" id="use-material" type="button" disabled>Start creating</button></div>
+    </dialog>
+    <dialog class="revision-request-dialog" id="revision-request-dialog" aria-labelledby="revision-request-heading" aria-describedby="revision-request-title revision-request-description">
+      <form id="revision-request-form">
+        <div class="revision-request-heading"><h2 id="revision-request-heading">Request Revision</h2><button class="icon-button" type="button" data-close="revision-request-dialog" aria-label="Close revision request"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
+        <p class="revision-request-title" id="revision-request-title"></p>
+        <p class="revision-request-description" id="revision-request-description">Describe the change you'd like to this draft. You'll get a notification when the revision is ready.</p>
+        <label class="visually-hidden" for="revision-request-instructions">Revision instructions</label>
+        <textarea id="revision-request-instructions" rows="4" maxlength="8000" placeholder='e.g. “Make the tone less formal” or “Shorten the intro”' required></textarea>
+        <p class="form-error" id="revision-request-error" role="alert" hidden></p>
+        <div class="dialog-footer"><button class="secondary-button dialog-cancel-button" type="button" data-close="revision-request-dialog">Cancel</button><button class="primary-button dialog-action-button" id="revision-request-submit" type="submit" disabled>Request Revision</button></div>
+      </form>
     </dialog>
     <dialog class="profile-settings-dialog" id="profile-settings-dialog" aria-labelledby="profile-settings-heading">
       <form id="profile-settings-form">

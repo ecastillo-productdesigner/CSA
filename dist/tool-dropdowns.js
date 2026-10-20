@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261020-material-symbols';
-import { bindTapActivation } from './tap-activation.js?v=20261020-material-symbols';
+import { createIcon } from './icons.js?v=20261020-request-revision';
+import { bindTapActivation } from './tap-activation.js?v=20261020-request-revision';
 
 const favoritesStorageKey = 'csa.tool-favorites.v1';
 

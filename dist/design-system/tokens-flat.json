@@ -6932,6 +6932,18 @@
       "status": "observed"
     },
     {
+      "name": "component.navigation.radius",
+      "designName": "component/navigation/radius",
+      "cssVariable": "--csa-component-navigation-radius",
+      "type": "dimension",
+      "layer": "component",
+      "category": "navigation",
+      "value": "10px",
+      "reference": "foundation.radius.10",
+      "description": "Corner radius shared by the navigation panel and homepage layout switch.",
+      "status": "observed"
+    },
+    {
       "name": "component.layout.page-min-width",
       "designName": "component/layout/page-min-width",
       "cssVariable": "--csa-component-layout-page-min-width",
@@ -7497,6 +7509,18 @@
       "value": "system-ui, sans-serif",
       "reference": "",
       "description": "System font in the existing favicon artwork.",
+      "status": "observed"
+    },
+    {
+      "name": "component.layout-switch.radius",
+      "designName": "component/layout-switch/radius",
+      "cssVariable": "--csa-component-layout-switch-radius",
+      "type": "dimension",
+      "layer": "component",
+      "category": "layout-switch",
+      "value": "10px",
+      "reference": "component.navigation.radius",
+      "description": "Matches the navigation panel corner radius.",
       "status": "observed"
     }
   ]

@@ -504,6 +504,7 @@
   --csa-component-navigation-outer-inset: 10px;
   --csa-component-navigation-profile-menu-width: 200px;
   --csa-component-navigation-cursor-hotspot: 12;
+  --csa-component-navigation-radius: var(--csa-foundation-radius-10);
   --csa-component-layout-page-min-width: 320px;
   --csa-component-layout-home-max-width: 1260px;
   --csa-component-layout-editor-max-width: 980px;
@@ -548,4 +549,5 @@
   --csa-component-brand-favicon-radius: 15px;
   --csa-component-brand-favicon-font-size: 21px;
   --csa-component-brand-favicon-font-family: system-ui, sans-serif;
+  --csa-component-layout-switch-radius: var(--csa-component-navigation-radius);
 }

@@ -6672,19 +6672,19 @@
       "type": "color",
       "layer": "component",
       "category": "variant-card",
-      "value": "#f8f1ee",
-      "reference": "semantic.color.surface.selected",
+      "value": "#ffffff",
+      "reference": "foundation.color.neutral.0",
       "description": "Variant card selected background.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.9725490196078431,
-          0.9450980392156862,
-          0.9333333333333333
+          1,
+          1,
+          1
         ],
         "alpha": 1,
-        "hex": "#f8f1ee"
+        "hex": "#ffffff"
       }
     },
     {
@@ -6730,6 +6730,30 @@
         "alpha": 1,
         "hex": "#404040"
       }
+    },
+    {
+      "name": "component.variant-card.border-width",
+      "designName": "component/variant-card/border-width",
+      "cssVariable": "--csa-component-variant-card-border-width",
+      "type": "dimension",
+      "layer": "component",
+      "category": "variant-card",
+      "value": "1px",
+      "reference": "foundation.border.width.1",
+      "description": "Unselected variant card solid border and dashed outline thickness.",
+      "status": "observed"
+    },
+    {
+      "name": "component.variant-card.selected-border-width",
+      "designName": "component/variant-card/selected-border-width",
+      "cssVariable": "--csa-component-variant-card-selected-border-width",
+      "type": "dimension",
+      "layer": "component",
+      "category": "variant-card",
+      "value": "2px",
+      "reference": "foundation.border.width.2",
+      "description": "Selected variant card solid border and dashed outline thickness.",
+      "status": "observed"
     },
     {
       "name": "component.checkbox.size",
@@ -7546,6 +7570,50 @@
       "reference": "foundation.space.2",
       "description": "Inset around the layout buttons.",
       "status": "observed"
+    },
+    {
+      "name": "component.favorite.unsaved-color",
+      "designName": "component/favorite/unsaved-color",
+      "cssVariable": "--csa-component-favorite-unsaved-color",
+      "type": "color",
+      "layer": "component",
+      "category": "favorite",
+      "value": "#404040",
+      "reference": "semantic.color.text.primary",
+      "description": "Unsaved favorites and inactive saved-only filters match the chevron color.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.25098039215686274,
+          0.25098039215686274,
+          0.25098039215686274
+        ],
+        "alpha": 1,
+        "hex": "#404040"
+      }
+    },
+    {
+      "name": "component.favorite.saved-color",
+      "designName": "component/favorite/saved-color",
+      "cssVariable": "--csa-component-favorite-saved-color",
+      "type": "color",
+      "layer": "component",
+      "category": "favorite",
+      "value": "#fb7185",
+      "reference": "foundation.color.rose.400",
+      "description": "Saved favorites and active saved-only filters use filled rose hearts.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.984313725490196,
+          0.44313725490196076,
+          0.5215686274509804
+        ],
+        "alpha": 1,
+        "hex": "#fb7185"
+      }
     }
   ]
 }

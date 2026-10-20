@@ -1,4 +1,4 @@
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261020-ds-centralized';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261020-preset-settings';
 const $ = selector => document.querySelector(selector);
 createToolDropdowns();
 let toastTimer;

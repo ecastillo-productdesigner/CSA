@@ -1,3 +1,21 @@
+import { createIcon } from './icons.js?v=20261020-ds-centralized';
+
+export function createFeedbackPill(output, disabled = false) {
+  const pill = document.createElement('span');
+  pill.className = 'variant-feedback-pill';
+  pill.setAttribute('role', 'group');
+  pill.setAttribute('aria-label', 'Rate this draft');
+  for (const [rating, symbol, label] of [['up', 'thumb_up', 'Rate draft: Good'], ['down', 'thumb_down', 'Rate draft: Could be better']]) {
+    const button = document.createElement('button');
+    button.type = 'button'; button.className = 'variant-feedback-trigger';
+    button.dataset.variantFeedback = output.id; button.dataset.feedbackRating = rating;
+    button.disabled = disabled; button.setAttribute('aria-label', label); button.title = label;
+    button.setAttribute('aria-haspopup', 'dialog'); button.setAttribute('aria-controls', 'experience-feedback-dialog');
+    button.append(createIcon(symbol)); pill.append(button);
+  }
+  return pill;
+}
+
 export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }) {
   const dialog = document.querySelector('#experience-feedback-dialog');
   const form = document.querySelector('#experience-feedback-form');
@@ -59,12 +77,12 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
   dialog.addEventListener('close', () => { closeDropdowns(); target = null; });
 
   return {
-    open(project, variant) {
+    open(project, variant, initialRating) {
       closeDropdowns();
       target = { project, variant };
       form.reset();
       const feedback = variant.experienceFeedback || {};
-      rating = ['up', 'down'].includes(feedback.rating) ? feedback.rating : '';
+      rating = ['up', 'down'].includes(initialRating) ? initialRating : ['up', 'down'].includes(feedback.rating) ? feedback.rating : '';
       category.value = feedback.category || '';
       severity.value = feedback.severity || '';
       description.value = typeof feedback.description === 'string' ? feedback.description.slice(0, 500) : '';

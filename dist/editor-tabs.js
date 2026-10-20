@@ -1,5 +1,5 @@
 import { createIcon } from './icons.js?v=20261020-ds-centralized';
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261020-ds-centralized';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261020-preset-settings';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');
@@ -54,7 +54,7 @@ export function createEditorTabs({ onSelect }) {
         panel.removeAttribute('aria-labelledby');
         return;
       }
-      const entries = [...(showCreateTab ? [{ id: null, title: 'Create Variant', preview: true }] : []), ...outputs];
+      const entries = [...(showCreateTab ? [{ id: null, title: 'Variant to Create', preview: true }] : []), ...outputs];
       root.replaceChildren(...entries.map(output => {
         const { id, cmsSentAt, preview } = output;
         const title = output.title;

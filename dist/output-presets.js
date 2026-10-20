@@ -1,7 +1,9 @@
 import { tokenNumber } from './design-system/runtime.js?v=20261020-ds-centralized';
-import { projectOutputs, createOutputBadges, savedVariantName } from './outputs.js?v=20261020-ds-centralized';
+import { projectOutputs, createOutputBadges } from './outputs.js?v=20261020-preset-settings';
 
-export function createOutputPresets({ onSelect, onDelete }) {
+import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261020-preset-settings';
+
+export function createOutputPresets({ onSelect, onDelete, onEdit }) {
   const root = document.querySelector('#output-presets');
   const trigger = document.querySelector('#output-presets-trigger');
   const menu = document.querySelector('#output-presets-options');
@@ -17,7 +19,11 @@ export function createOutputPresets({ onSelect, onDelete }) {
   remove.type = 'button';
   remove.setAttribute('role', 'menuitem');
   remove.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">delete</span><span>Delete</span>';
-  actions.append(remove);
+  const edit = document.createElement('button');
+  edit.type = 'button'; edit.className = 'output-preset-edit'; edit.setAttribute('role', 'menuitem');
+  edit.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">edit</span><span>Edit</span>';
+  edit.addEventListener('click', () => { const target = actionTarget; close(); if (target) onEdit(target.projectId, target.outputId); });
+  actions.append(edit, remove);
   root.append(actions);
 
   function closeActions(restoreFocus = false) {
@@ -37,7 +43,7 @@ export function createOutputPresets({ onSelect, onDelete }) {
     const bounds = actions.getBoundingClientRect();
     actions.style.left = `${Math.max(tokenNumber('foundation.space.12'), Math.min(anchor.right - bounds.width, window.innerWidth - bounds.width - tokenNumber('foundation.space.12')))}px`;
     actions.style.top = `${Math.max(tokenNumber('foundation.space.12'), Math.min(anchor.bottom + tokenNumber('foundation.space.4'), window.innerHeight - bounds.height - tokenNumber('foundation.space.12')))}px`;
-    remove.focus({ preventScroll: true });
+    edit.focus({ preventScroll: true });
   }
   remove.addEventListener('click', () => {
     const target = actionTarget;
@@ -46,13 +52,14 @@ export function createOutputPresets({ onSelect, onDelete }) {
   });
   actions.addEventListener('keydown', event => {
     if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeActions(true); }
-    else if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) { event.preventDefault(); remove.focus(); }
+    else if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) { event.preventDefault(); const items = [edit, remove]; const index = items.indexOf(document.activeElement); const next = event.key === 'Home' ? 0 : event.key === 'End' ? 1 : (index + 1) % items.length; items[next].focus(); }
     else if (event.key === 'Tab') close(true);
   });
   menu.addEventListener('scroll', () => closeActions(), { passive: true });
   window.addEventListener('resize', () => closeActions());
 
   function settingsFor(output) {
+    output = presetConfiguration(output);
     return ['format', 'audience', 'voice'].flatMap(key => {
       const saved = (Array.isArray(output?.labels) ? output.labels : []).find(label => label?.key === key && typeof label.label === 'string' && label.label.trim());
       const value = output?.toolPreferences?.[key];
@@ -62,7 +69,7 @@ export function createOutputPresets({ onSelect, onDelete }) {
     });
   }
   function summaryFor(output, settings) {
-    return settings.map(setting => setting.label).join(' · ') || (output?.editorialDirection?.trim() ? 'Editorial direction' : 'Saved variant settings');
+    return settings.map(setting => setting.label).join(' · ') || (presetConfiguration(output).editorialDirection.trim() ? 'Editorial direction' : 'Saved variant settings');
   }
 
   function close(restoreFocus = false) {
@@ -111,12 +118,12 @@ export function createOutputPresets({ onSelect, onDelete }) {
         .sort((a, b) => (b.output.favoritedAt || 0) - (a.output.favoritedAt || 0));
       const selectedOutput = selection && projectOutputs(projects.find(project => project.id === selection.projectId)).find(output => output.id === selection.outputId);
       const selectedSettings = settingsFor(selectedOutput);
-      const signature = JSON.stringify([selection?.projectId, selection?.outputId, selectedOutput && savedVariantName(selectedOutput), selectedSettings, entries.map(({ project, output, settings }) => [project.id, output.id, savedVariantName(output), settings, Boolean(output.editorialDirection?.trim())])]);
+      const signature = JSON.stringify([selection?.projectId, selection?.outputId, selectedOutput && savedPresetName(selectedOutput), selectedSettings, entries.map(({ project, output, settings }) => [project.id, output.id, savedPresetName(output), settings, Boolean(presetConfiguration(output).editorialDirection.trim())])]);
       root.hidden = entries.length === 0 && !selection;
       if (signature === lastSignature) return;
       lastSignature = signature;
       close();
-      const triggerLabel = selectedOutput ? savedVariantName(selectedOutput) : 'Saved Variants';
+      const triggerLabel = selectedOutput ? savedPresetName(selectedOutput) : 'Saved preset';
       trigger.querySelector('span').textContent = triggerLabel;
       trigger.title = triggerLabel;
       trigger.setAttribute('aria-label', triggerLabel);
@@ -138,16 +145,16 @@ export function createOutputPresets({ onSelect, onDelete }) {
         button.setAttribute('role', 'menuitemradio');
         button.setAttribute('aria-checked', String(project.id === selection?.projectId && output.id === selection?.outputId));
         button.tabIndex = -1;
-        button.setAttribute('aria-label', [savedVariantName(output), ...settings.map(setting => `${setting.key[0].toUpperCase() + setting.key.slice(1)}: ${setting.label}`)].join(', '));
+        button.setAttribute('aria-label', [savedPresetName(output), ...settings.map(setting => `${setting.key[0].toUpperCase() + setting.key.slice(1)}: ${setting.label}`)].join(', '));
         const choices = document.createElement('span');
         choices.className = 'output-preset-settings';
         if (settings.length) choices.append(...createOutputBadges({ labels: settings }, { maxLabelLength: 20, includeSourceCount: false }));
         else choices.textContent = summaryFor(output, settings);
         const name = document.createElement('strong');
         name.className = 'output-preset-name';
-        name.textContent = savedVariantName(output);
+        name.textContent = savedPresetName(output);
         button.append(name, choices);
-        if (output.editorialDirection?.trim() && settings.length) {
+        if (presetConfiguration(output).editorialDirection.trim() && settings.length) {
           const detail = document.createElement('small');
           detail.textContent = 'Editorial direction included';
           button.append(detail);
@@ -158,7 +165,7 @@ export function createOutputPresets({ onSelect, onDelete }) {
         more.className = 'icon-button output-preset-more';
         more.tabIndex = -1;
         more.setAttribute('role', 'menuitem');
-        more.setAttribute('aria-label', `Saved variant options: ${savedVariantName(output)}`);
+        more.setAttribute('aria-label', `Saved variant options: ${savedPresetName(output)}`);
         more.setAttribute('aria-haspopup', 'menu');
         more.setAttribute('aria-expanded', 'false');
         more.setAttribute('aria-controls', actions.id);

@@ -1,7 +1,8 @@
 import { tokenNumber } from './design-system/runtime.js?v=20261020-ds-centralized';
-import { customVariantName, savedVariantName } from './outputs.js?v=20261020-ds-centralized';
+import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261020-preset-settings';
+import { customVariantName, savedVariantName } from './outputs.js?v=20261020-preset-settings';
 
-export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
+export function createOutputSettings({ onSave, onDelete, onSavePreset, onDeletePreset, closeDropdowns }) {
   const menu = document.querySelector('#output-edit-menu');
   const form = document.querySelector('#output-edit-form');
   const name = document.querySelector('#output-edit-name');
@@ -14,6 +15,7 @@ export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
   let triggerContainer = null;
 
   function trigger() {
+    if (active?.preset) return document.querySelector('#output-presets-trigger');
     return active && triggerContainer && [...triggerContainer.querySelectorAll('[data-edit-output]')].find(button => button.dataset.editOutput === active.outputId);
   }
 
@@ -43,16 +45,19 @@ export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
     button.setAttribute('aria-expanded', 'true');
   }
 
-  function open(projectId, output, container = document.querySelector('#output-list')) {
-    if (active?.projectId === projectId && active.outputId === output.id && triggerContainer === container) { close(true); return; }
+  function open(projectId, output, container = document.querySelector('#output-list'), preset = false) {
+    if (active?.projectId === projectId && active.outputId === output.id && triggerContainer === container && active.preset === preset) { close(true); return; }
     close();
-    active = { projectId, outputId: output.id };
+    active = { projectId, outputId: output.id, preset };
     triggerContainer = container;
-    name.value = customVariantName(output);
-    name.placeholder = output.savedVariantNumber ? savedVariantName(output) : 'Name this saved variant';
-    voice.value = output.toolPreferences?.voice || '';
+    const config = preset ? presetConfiguration(output) : output;
+    name.value = preset ? output.presetSettings?.name ?? customVariantName(output) : customVariantName(output);
+    name.placeholder = preset ? savedPresetName(output) : output.savedVariantNumber ? savedVariantName(output) : 'Name this saved variant';
+    document.querySelector('#output-delete-variant').setAttribute('aria-label', preset ? 'Delete saved preset' : 'Delete variant');
+    document.querySelector('#output-delete-variant').title = preset ? 'Delete saved preset' : 'Delete variant';
+    voice.value = config.toolPreferences?.voice || '';
     voice.dispatchEvent(new Event('change', { bubbles: true }));
-    direction.value = typeof output.editorialDirection === 'string' ? output.editorialDirection : '';
+    direction.value = typeof config.editorialDirection === 'string' ? config.editorialDirection : '';
     initialSettings = { name: name.value.trim(), voice: voice.value, editorialDirection: direction.value };
     updateSaveState();
     error.hidden = true;
@@ -64,7 +69,7 @@ export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
   function updateSaveState() {
     const settingsChanged = voice.value !== initialSettings.voice || direction.value !== initialSettings.editorialDirection;
     const nameChanged = name.value.trim() !== initialSettings.name;
-    submit.textContent = settingsChanged ? 'Recreate variant' : 'Save changes';
+    submit.textContent = settingsChanged && !active?.preset ? 'Recreate variant' : 'Save changes';
     submit.disabled = !active || !(settingsChanged || nameChanged);
   }
   name.addEventListener('input', updateSaveState);
@@ -76,13 +81,13 @@ export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
     updateSaveState();
     if (!active || submit.disabled) return;
     const variantName = name.value.trim();
-    const saved = onSave({ ...active, name: variantName, voice: voice.value, editorialDirection: direction.value });
+    const saved = (active.preset ? onSavePreset : onSave)({ ...active, name: variantName, voice: voice.value, editorialDirection: direction.value });
     if (saved) close(true);
     else { error.textContent = 'Changes could not be saved. Please try again.'; error.hidden = false; position(); }
   });
   document.querySelector('#output-delete-variant').addEventListener('click', () => {
     if (!active) return;
-    const deleted = onDelete({ ...active });
+    const deleted = (active.preset ? onDeletePreset : onDelete)({ ...active });
     if (deleted) close();
     else if (active) { error.textContent = 'Could not delete this variant. Please try again.'; error.hidden = false; position(); }
   });
@@ -103,9 +108,11 @@ export function createOutputSettings({ onSave, onDelete, closeDropdowns }) {
 
   return {
     open,
+    openPreset(projectId, output) { open(projectId, output, document.querySelector('#output-presets'), true); },
     close,
     sync(project) {
       if (!active) return;
+      if (active.preset) { position(); return; }
       const output = project?.outputs?.find(entry => entry.id === active.outputId);
       if (project?.id !== active.projectId || !output || project.outputProcessing || !trigger()) close();
       else position();

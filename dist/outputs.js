@@ -309,7 +309,7 @@ export function variantPanelState(project, requestedView) {
   return {
     view,
     outputs: view === 'pending' ? pending : created,
-    pendingLabel: pending.length ? `${pending.length} To Create` : 'To Create',
+    pendingLabel: pending.length ? `${pending.length} to Create` : 'to Create',
     createdLabel: created.length ? `${created.length} Created` : 'Created',
   };
 }
@@ -319,7 +319,7 @@ export function renderOutputs(project, requestedView) {
   for (const tab of document.querySelectorAll('[data-output-view]')) {
     const selected = tab.dataset.outputView === state.view;
     tab.textContent = tab.dataset.outputView === 'pending' ? state.pendingLabel : state.createdLabel;
-    tab.dataset.empty = String(tab.dataset.outputView === 'pending' ? state.pendingLabel === 'To Create' : state.createdLabel === 'Created');
+    tab.dataset.empty = String(tab.dataset.outputView === 'pending' ? state.pendingLabel === 'to Create' : state.createdLabel === 'Created');
     tab.setAttribute('aria-selected', String(selected));
     tab.tabIndex = selected ? 0 : -1;
   }

@@ -215,3 +215,17 @@ SCOPE / REVIEW
 REFERENCES
   https://www.designtokens.org/tr/2025.10/format/
   https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html
+
+SAVED PRESETS / FAVORITES
+  Changing Format, Audience, or Voice away from an applied preset clears
+    its selection and returns the trigger to Saved preset, retaining values.
+  Saved preset options include Edit and Delete. Edit reuses the Edit Variant
+    panel for name, Voice, and Editorial Direction without altering the
+    generated variant body, status, sources, or original settings.
+  Unsaved/inactive hearts are outlined and match chevrons (#404040).
+  Saved/active hearts are filled rose (#fb7185); hover does not imply saved.
+  Variant cards use a white background, 1px gray unselected borders, and
+    2px blue selected borders in both pending and created lists.
+  Dropdown option hover shares the Sources hover surface (#f5f5f5).
+  Draft rating icons share one pill beside Request Revision and open
+    feedback with Good or Could be better preselected.

@@ -7522,6 +7522,30 @@
       "reference": "component.navigation.radius",
       "description": "Matches the navigation panel corner radius.",
       "status": "observed"
+    },
+    {
+      "name": "component.layout-switch.button-size",
+      "designName": "component/layout-switch/button-size",
+      "cssVariable": "--csa-component-layout-switch-button-size",
+      "type": "dimension",
+      "layer": "component",
+      "category": "layout-switch",
+      "value": "36px",
+      "reference": "foundation.space.36",
+      "description": "Square button size; two padding insets produce a 40 px tall switch.",
+      "status": "observed"
+    },
+    {
+      "name": "component.layout-switch.padding",
+      "designName": "component/layout-switch/padding",
+      "cssVariable": "--csa-component-layout-switch-padding",
+      "type": "dimension",
+      "layer": "component",
+      "category": "layout-switch",
+      "value": "2px",
+      "reference": "foundation.space.2",
+      "description": "Inset around the layout buttons.",
+      "status": "observed"
     }
   ]
 }

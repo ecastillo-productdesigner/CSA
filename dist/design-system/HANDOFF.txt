@@ -140,7 +140,8 @@ NAVIGATION RAIL
 
 HOMEPAGE LAYOUTS
   Grid/list switch sits at the left of the homepage toolbar; Material Symbols
-    view_module / menu, 16 px glyphs in 40 px targets; 84 × 44 px control.
+    view_module / menu, 16 px glyphs in 36 px buttons; 76 × 40 px control.
+  Buttons and 2 px padding use component aliases to existing spacing tokens.
   White container, buttons, and light-gray selected surface use the
     navigation panel radius (10 px), with dark icons. Grid is filled when selected and outlined
     when unselected; all other symbols keep the shared filled style.

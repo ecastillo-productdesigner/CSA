@@ -550,4 +550,6 @@
   --csa-component-brand-favicon-font-size: 21px;
   --csa-component-brand-favicon-font-family: system-ui, sans-serif;
   --csa-component-layout-switch-radius: var(--csa-component-navigation-radius);
+  --csa-component-layout-switch-button-size: var(--csa-foundation-space-36);
+  --csa-component-layout-switch-padding: var(--csa-foundation-space-2);
 }

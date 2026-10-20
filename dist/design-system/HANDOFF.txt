@@ -141,7 +141,8 @@ NAVIGATION RAIL
 HOMEPAGE LAYOUTS
   Grid/list switch sits above New Project, aligned left; Material Symbols
     view_module / menu, 18 px glyphs in 40 px targets.
-  White container uses radius 20; gray selected surface uses radius 16.
+  White container uses radius 20; primary-blue selected surface uses
+    radius 16 with white icons. Unselected icons use primary text color.
   Choice is saved locally and supports arrow keys, Home, and End.
   List shows Title, Sources, Date, Role, and a Delete-only action menu.
   Date keeps Today / Updated Today semantics. Local projects show Owner.

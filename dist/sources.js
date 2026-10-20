@@ -178,7 +178,6 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
       });
       const content = document.createElement('div');
       content.className = 'editor-source-content';
-      const href = source.type === 'link' && sourceUrl(source.url || '');
       const open = document.createElement('button');
       open.type = 'button';
       open.className = 'editor-source-open';
@@ -189,11 +188,6 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
       const heading = document.createElement('strong');
       heading.textContent = source.title;
       open.append(heading);
-      const preview = source.text || '';
-      const detail = document.createElement('span');
-      detail.className = 'editor-source-preview';
-      detail.textContent = preview ? preview.slice(0, 260) + (preview.length > 260 ? '…' : '') : href || (source.attachmentId ? 'Document saved in this browser' : 'Local source');
-      open.append(detail);
       content.append(open);
       if (source.attachmentId) {
         const download = document.createElement('button');

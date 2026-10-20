@@ -77,10 +77,10 @@
 .ds-native-field { width: 100%; min-width: 0; height: var(--csa-component-field-height-desktop); padding: var(--csa-foundation-space-6) var(--csa-foundation-space-12); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-component-field-radius); background: var(--csa-component-field-background); color: var(--ink); font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-600); }
 .ds-native-field[data-kind="format"] { background: var(--csa-component-chip-format-background); }
 .ds-native-field[data-kind="audience"] { background: var(--csa-component-chip-audience-background); }
-.ds-source { display: grid; grid-template-columns: var(--csa-foundation-space-18) var(--csa-foundation-space-90) 1fr; gap: var(--csa-foundation-space-16); padding: var(--csa-foundation-space-16); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-10); }
+.ds-source { display: grid; grid-template-columns: var(--csa-component-checkbox-size) var(--csa-foundation-space-90) 1fr; gap: var(--csa-foundation-space-16); padding: var(--csa-foundation-space-16); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-10); }
 .ds-source input { appearance: none; width: var(--csa-component-checkbox-size); height: var(--csa-component-checkbox-size); margin: 0; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-component-checkbox-radius); background: var(--csa-semantic-color-surface-default); }
 .ds-source input:checked { background: var(--csa-component-checkbox-selected-background); }
-.ds-source input:checked { background-image: url("../assets/material-check.svg"); background-position: center; background-repeat: no-repeat; background-size: var(--csa-foundation-space-14) var(--csa-foundation-space-14); }
+.ds-source input:checked { background-image: url("../assets/material-check.svg"); background-position: center; background-repeat: no-repeat; background-size: var(--csa-foundation-space-16) var(--csa-foundation-space-16); }
 .ds-photo { display: grid; place-items: center; min-height: var(--csa-foundation-space-90); border-radius: var(--csa-foundation-radius-10); background: var(--csa-foundation-color-neutral-200); color: var(--muted); }
 .ds-source .ds-caption { margin: 0; }
 .ds-source h4 { margin: var(--csa-foundation-space-6) 0; font-size: var(--csa-foundation-font-size-14); }

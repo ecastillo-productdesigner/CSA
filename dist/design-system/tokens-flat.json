@@ -1852,18 +1852,6 @@
       "status": "observed"
     },
     {
-      "name": "foundation.line.height.14",
-      "designName": "foundation/line/height/14",
-      "cssVariable": "--csa-foundation-line-height-14",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "line",
-      "value": "14px",
-      "reference": "",
-      "description": "Observed fixed line height.",
-      "status": "observed"
-    },
-    {
       "name": "foundation.line.height.15",
       "designName": "foundation/line/height/15",
       "cssVariable": "--csa-foundation-line-height-15",
@@ -2284,18 +2272,6 @@
       "status": "observed"
     },
     {
-      "name": "foundation.layer.0",
-      "designName": "foundation/layer/0",
-      "cssVariable": "--csa-foundation-layer-0",
-      "type": "number",
-      "layer": "foundation",
-      "category": "layer",
-      "value": "0",
-      "reference": "",
-      "description": "Existing stacking level; native dialogs use the browser top layer.",
-      "status": "observed"
-    },
-    {
       "name": "foundation.layer.1",
       "designName": "foundation/layer/1",
       "cssVariable": "--csa-foundation-layer-1",
@@ -2603,18 +2579,6 @@
       "layer": "foundation",
       "category": "breakpoint",
       "value": "520px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.breakpoint.reference-compact",
-      "designName": "foundation/breakpoint/reference-compact",
-      "cssVariable": "--csa-foundation-breakpoint-reference-compact",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "breakpoint",
-      "value": "1024px",
       "reference": "",
       "description": "Preserved implementation dimension; shared through the design system.",
       "status": "observed"
@@ -3580,18 +3544,6 @@
       "status": "observed"
     },
     {
-      "name": "foundation.layout.ratio.94",
-      "designName": "foundation/layout/ratio/94",
-      "cssVariable": "--csa-foundation-layout-ratio-94",
-      "type": "number",
-      "layer": "foundation",
-      "category": "layout",
-      "value": "94",
-      "reference": "",
-      "description": "Preserved responsive layout or effect ratio.",
-      "status": "observed"
-    },
-    {
       "name": "foundation.layout.ratio.2-4",
       "designName": "foundation/layout/ratio/2-4",
       "cssVariable": "--csa-foundation-layout-ratio-2-4",
@@ -3689,28 +3641,6 @@
         ],
         "alpha": 1,
         "hex": "#f5f5f5"
-      }
-    },
-    {
-      "name": "semantic.color.surface.selected",
-      "designName": "semantic/color/surface/selected",
-      "cssVariable": "--csa-semantic-color-surface-selected",
-      "type": "color",
-      "layer": "semantic",
-      "category": "color",
-      "value": "#ffffff",
-      "reference": "foundation.color.neutral.0",
-      "description": "Warm fill for the active variant card.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          1,
-          1,
-          1
-        ],
-        "alpha": 1,
-        "hex": "#ffffff"
       }
     },
     {
@@ -3934,50 +3864,6 @@
       }
     },
     {
-      "name": "semantic.color.action.disabled-surface",
-      "designName": "semantic/color/action/disabled-surface",
-      "cssVariable": "--csa-semantic-color-action-disabled-surface",
-      "type": "color",
-      "layer": "semantic",
-      "category": "color",
-      "value": "#ffffff",
-      "reference": "foundation.color.neutral.0",
-      "description": "Background of disabled actions.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          1,
-          1,
-          1
-        ],
-        "alpha": 1,
-        "hex": "#ffffff"
-      }
-    },
-    {
-      "name": "semantic.color.focus.ring",
-      "designName": "semantic/color/focus/ring",
-      "cssVariable": "--csa-semantic-color-focus-ring",
-      "type": "color",
-      "layer": "semantic",
-      "category": "color",
-      "value": "#3b82f6",
-      "reference": "foundation.color.blue.focus",
-      "description": "Keyboard focus outline, offset from its control.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.23137254901960785,
-          0.5098039215686274,
-          0.9647058823529412
-        ],
-        "alpha": 1,
-        "hex": "#3b82f6"
-      }
-    },
-    {
       "name": "semantic.color.favorite.active",
       "designName": "semantic/color/favorite/active",
       "cssVariable": "--csa-semantic-color-favorite-active",
@@ -4019,50 +3905,6 @@
         ],
         "alpha": 1,
         "hex": "#b91c1c"
-      }
-    },
-    {
-      "name": "semantic.color.danger.solid",
-      "designName": "semantic/color/danger/solid",
-      "cssVariable": "--csa-semantic-color-danger-solid",
-      "type": "color",
-      "layer": "semantic",
-      "category": "color",
-      "value": "#b91c1c",
-      "reference": "foundation.color.red.700",
-      "description": "Filled destructive action background.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.7254901960784313,
-          0.10980392156862745,
-          0.10980392156862745
-        ],
-        "alpha": 1,
-        "hex": "#b91c1c"
-      }
-    },
-    {
-      "name": "semantic.color.danger.subtle",
-      "designName": "semantic/color/danger/subtle",
-      "cssVariable": "--csa-semantic-color-danger-subtle",
-      "type": "color",
-      "layer": "semantic",
-      "category": "color",
-      "value": "#f5f5f5",
-      "reference": "foundation.color.neutral.100",
-      "description": "Quiet background for destructive hover feedback.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.9607843137254902,
-          0.9607843137254902,
-          0.9607843137254902
-        ],
-        "alpha": 1,
-        "hex": "#f5f5f5"
       }
     },
     {
@@ -4224,35 +4066,6 @@
       }
     },
     {
-      "name": "semantic.typography.greeting.mobile",
-      "designName": "semantic/typography/greeting/mobile",
-      "cssVariable": "--csa-semantic-typography-greeting-mobile",
-      "type": "typography",
-      "layer": "semantic",
-      "category": "typography",
-      "value": "700 24px/1.25 Newsreader, Georgia, serif",
-      "reference": "",
-      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
-      "status": "observed",
-      "properties": {
-        "fontFamily": [
-          "Newsreader",
-          "Georgia",
-          "serif"
-        ],
-        "fontSize": {
-          "value": 24,
-          "unit": "px"
-        },
-        "fontWeight": 700,
-        "lineHeight": 1.25,
-        "letterSpacing": {
-          "value": -0.35,
-          "unit": "px"
-        }
-      }
-    },
-    {
       "name": "semantic.typography.editor-heading.desktop",
       "designName": "semantic/typography/editor-heading/desktop",
       "cssVariable": "--csa-semantic-typography-editor-heading-desktop",
@@ -4280,134 +4093,6 @@
         "lineHeight": 1.35,
         "letterSpacing": {
           "value": -0.7,
-          "unit": "px"
-        }
-      }
-    },
-    {
-      "name": "semantic.typography.editor-heading.mobile",
-      "designName": "semantic/typography/editor-heading/mobile",
-      "cssVariable": "--csa-semantic-typography-editor-heading-mobile",
-      "type": "typography",
-      "layer": "semantic",
-      "category": "typography",
-      "value": "650 24px/1.35 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
-      "status": "observed",
-      "properties": {
-        "fontFamily": [
-          "Inter",
-          "system-ui",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "sans-serif"
-        ],
-        "fontSize": {
-          "value": 24,
-          "unit": "px"
-        },
-        "fontWeight": 650,
-        "lineHeight": 1.35,
-        "letterSpacing": {
-          "value": -0.7,
-          "unit": "px"
-        }
-      }
-    },
-    {
-      "name": "semantic.typography.panel-heading",
-      "designName": "semantic/typography/panel-heading",
-      "cssVariable": "--csa-semantic-typography-panel-heading",
-      "type": "typography",
-      "layer": "semantic",
-      "category": "typography",
-      "value": "700 18px/1.3333333333333333 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
-      "status": "observed",
-      "properties": {
-        "fontFamily": [
-          "Inter",
-          "system-ui",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "sans-serif"
-        ],
-        "fontSize": {
-          "value": 18,
-          "unit": "px"
-        },
-        "fontWeight": 700,
-        "lineHeight": 1.3333333333333333,
-        "letterSpacing": {
-          "value": 0,
-          "unit": "px"
-        }
-      }
-    },
-    {
-      "name": "semantic.typography.project-title",
-      "designName": "semantic/typography/project-title",
-      "cssVariable": "--csa-semantic-typography-project-title",
-      "type": "typography",
-      "layer": "semantic",
-      "category": "typography",
-      "value": "700 18px/1.3888888888888888 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
-      "status": "observed",
-      "properties": {
-        "fontFamily": [
-          "Inter",
-          "system-ui",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "sans-serif"
-        ],
-        "fontSize": {
-          "value": 18,
-          "unit": "px"
-        },
-        "fontWeight": 700,
-        "lineHeight": 1.3888888888888888,
-        "letterSpacing": {
-          "value": 0,
-          "unit": "px"
-        }
-      }
-    },
-    {
-      "name": "semantic.typography.project-title-mobile",
-      "designName": "semantic/typography/project-title-mobile",
-      "cssVariable": "--csa-semantic-typography-project-title-mobile",
-      "type": "typography",
-      "layer": "semantic",
-      "category": "typography",
-      "value": "700 16px/1.375 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
-      "status": "observed",
-      "properties": {
-        "fontFamily": [
-          "Inter",
-          "system-ui",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "sans-serif"
-        ],
-        "fontSize": {
-          "value": 16,
-          "unit": "px"
-        },
-        "fontWeight": 700,
-        "lineHeight": 1.375,
-        "letterSpacing": {
-          "value": 0,
           "unit": "px"
         }
       }
@@ -4536,102 +4221,6 @@
         "lineHeight": 1.6363636363636365,
         "letterSpacing": {
           "value": 0,
-          "unit": "px"
-        }
-      }
-    },
-    {
-      "name": "semantic.typography.status",
-      "designName": "semantic/typography/status",
-      "cssVariable": "--csa-semantic-typography-status",
-      "type": "typography",
-      "layer": "semantic",
-      "category": "typography",
-      "value": "700 10px/1.6 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
-      "status": "observed",
-      "properties": {
-        "fontFamily": [
-          "Inter",
-          "system-ui",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "sans-serif"
-        ],
-        "fontSize": {
-          "value": 10,
-          "unit": "px"
-        },
-        "fontWeight": 700,
-        "lineHeight": 1.6,
-        "letterSpacing": {
-          "value": 0,
-          "unit": "px"
-        }
-      }
-    },
-    {
-      "name": "semantic.typography.chip",
-      "designName": "semantic/typography/chip",
-      "cssVariable": "--csa-semantic-typography-chip",
-      "type": "typography",
-      "layer": "semantic",
-      "category": "typography",
-      "value": "500 12px/1.6666666666666667 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
-      "status": "observed",
-      "properties": {
-        "fontFamily": [
-          "Inter",
-          "system-ui",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "sans-serif"
-        ],
-        "fontSize": {
-          "value": 12,
-          "unit": "px"
-        },
-        "fontWeight": 500,
-        "lineHeight": 1.6666666666666667,
-        "letterSpacing": {
-          "value": 0,
-          "unit": "px"
-        }
-      }
-    },
-    {
-      "name": "semantic.typography.dialog-title",
-      "designName": "semantic/typography/dialog-title",
-      "cssVariable": "--csa-semantic-typography-dialog-title",
-      "type": "typography",
-      "layer": "semantic",
-      "category": "typography",
-      "value": "650 25px/1.3 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
-      "status": "observed",
-      "properties": {
-        "fontFamily": [
-          "Inter",
-          "system-ui",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "sans-serif"
-        ],
-        "fontSize": {
-          "value": 25,
-          "unit": "px"
-        },
-        "fontWeight": 650,
-        "lineHeight": 1.3,
-        "letterSpacing": {
-          "value": -0.6,
           "unit": "px"
         }
       }
@@ -4773,50 +4362,6 @@
       }
     },
     {
-      "name": "component.button.secondary.label",
-      "designName": "component/button/secondary/label",
-      "cssVariable": "--csa-component-button-secondary-label",
-      "type": "color",
-      "layer": "component",
-      "category": "button",
-      "value": "#404040",
-      "reference": "semantic.color.text.primary",
-      "description": "Button secondary label.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.25098039215686274,
-          0.25098039215686274,
-          0.25098039215686274
-        ],
-        "alpha": 1,
-        "hex": "#404040"
-      }
-    },
-    {
-      "name": "component.button.disabled.background",
-      "designName": "component/button/disabled/background",
-      "cssVariable": "--csa-component-button-disabled-background",
-      "type": "color",
-      "layer": "component",
-      "category": "button",
-      "value": "#ffffff",
-      "reference": "semantic.color.action.disabled-surface",
-      "description": "Button disabled background.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          1,
-          1,
-          1
-        ],
-        "alpha": 1,
-        "hex": "#ffffff"
-      }
-    },
-    {
       "name": "component.button.disabled.label",
       "designName": "component/button/disabled/label",
       "cssVariable": "--csa-component-button-disabled-label",
@@ -4859,30 +4404,6 @@
         "alpha": 1,
         "hex": "#e5e5e5"
       }
-    },
-    {
-      "name": "component.icon-button.size",
-      "designName": "component/icon-button/size",
-      "cssVariable": "--csa-component-icon-button-size",
-      "type": "dimension",
-      "layer": "component",
-      "category": "icon-button",
-      "value": "40px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
-    },
-    {
-      "name": "component.icon-button.touch-size",
-      "designName": "component/icon-button/touch-size",
-      "cssVariable": "--csa-component-icon-button-touch-size",
-      "type": "dimension",
-      "layer": "component",
-      "category": "icon-button",
-      "value": "44px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
     },
     {
       "name": "component.icon-button.minimum-target",
@@ -5001,28 +4522,6 @@
       }
     },
     {
-      "name": "component.field.placeholder",
-      "designName": "component/field/placeholder",
-      "cssVariable": "--csa-component-field-placeholder",
-      "type": "color",
-      "layer": "component",
-      "category": "field",
-      "value": "#a3a3a3",
-      "reference": "semantic.color.text.muted",
-      "description": "Field placeholder.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.6392156862745098,
-          0.6392156862745098,
-          0.6392156862745098
-        ],
-        "alpha": 1,
-        "hex": "#a3a3a3"
-      }
-    },
-    {
       "name": "component.status.height",
       "designName": "component/status/height",
       "cssVariable": "--csa-component-status-height",
@@ -5047,18 +4546,6 @@
       "status": "approved-update"
     },
     {
-      "name": "component.status.padding-inline",
-      "designName": "component/status/padding-inline",
-      "cssVariable": "--csa-component-status-padding-inline",
-      "type": "dimension",
-      "layer": "component",
-      "category": "status",
-      "value": "8px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
-    },
-    {
       "name": "component.status.draft.background",
       "designName": "component/status/draft/background",
       "cssVariable": "--csa-component-status-draft-background",
@@ -5078,72 +4565,6 @@
         ],
         "alpha": 1,
         "hex": "#e5e5e5"
-      }
-    },
-    {
-      "name": "component.status.draft.label",
-      "designName": "component/status/draft/label",
-      "cssVariable": "--csa-component-status-draft-label",
-      "type": "color",
-      "layer": "component",
-      "category": "status",
-      "value": "#404040",
-      "reference": "semantic.color.text.primary",
-      "description": "Status draft label.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.25098039215686274,
-          0.25098039215686274,
-          0.25098039215686274
-        ],
-        "alpha": 1,
-        "hex": "#404040"
-      }
-    },
-    {
-      "name": "component.status.sent.background",
-      "designName": "component/status/sent/background",
-      "cssVariable": "--csa-component-status-sent-background",
-      "type": "color",
-      "layer": "component",
-      "category": "status",
-      "value": "#bbf7d0",
-      "reference": "foundation.color.green.200",
-      "description": "Status sent background.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.7333333333333333,
-          0.9686274509803922,
-          0.8156862745098039
-        ],
-        "alpha": 1,
-        "hex": "#bbf7d0"
-      }
-    },
-    {
-      "name": "component.status.sent.label",
-      "designName": "component/status/sent/label",
-      "cssVariable": "--csa-component-status-sent-label",
-      "type": "color",
-      "layer": "component",
-      "category": "status",
-      "value": "#404040",
-      "reference": "semantic.color.text.primary",
-      "description": "Status sent label.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.25098039215686274,
-          0.25098039215686274,
-          0.25098039215686274
-        ],
-        "alpha": 1,
-        "hex": "#404040"
       }
     },
     {
@@ -5234,28 +4655,6 @@
         ],
         "alpha": 1,
         "hex": "#ffedd5"
-      }
-    },
-    {
-      "name": "component.chip.label",
-      "designName": "component/chip/label",
-      "cssVariable": "--csa-component-chip-label",
-      "type": "color",
-      "layer": "component",
-      "category": "chip",
-      "value": "#404040",
-      "reference": "semantic.color.text.primary",
-      "description": "Chip label.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.25098039215686274,
-          0.25098039215686274,
-          0.25098039215686274
-        ],
-        "alpha": 1,
-        "hex": "#404040"
       }
     },
     {
@@ -5375,28 +4774,6 @@
       }
     },
     {
-      "name": "component.variant-card.label",
-      "designName": "component/variant-card/label",
-      "cssVariable": "--csa-component-variant-card-label",
-      "type": "color",
-      "layer": "component",
-      "category": "variant-card",
-      "value": "#404040",
-      "reference": "semantic.color.text.primary",
-      "description": "Variant card label.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.25098039215686274,
-          0.25098039215686274,
-          0.25098039215686274
-        ],
-        "alpha": 1,
-        "hex": "#404040"
-      }
-    },
-    {
       "name": "component.variant-card.border-width",
       "designName": "component/variant-card/border-width",
       "cssVariable": "--csa-component-variant-card-border-width",
@@ -5429,7 +4806,7 @@
       "category": "checkbox",
       "value": "24px",
       "reference": "",
-      "description": "Variant selection indicator size; its button keeps a 44px target.",
+      "description": "Shared visible checkbox size for variants, source lists and search results.",
       "status": "observed"
     },
     {
@@ -5439,8 +4816,8 @@
       "type": "dimension",
       "layer": "component",
       "category": "checkbox",
-      "value": "2px",
-      "reference": "foundation.radius.2",
+      "value": "4px",
+      "reference": "foundation.radius.4",
       "description": "Component radius mapped to the approved foundation scale.",
       "status": "approved-update"
     },
@@ -5464,28 +4841,6 @@
         ],
         "alpha": 1,
         "hex": "#3b82f6"
-      }
-    },
-    {
-      "name": "component.checkbox.check",
-      "designName": "component/checkbox/check",
-      "cssVariable": "--csa-component-checkbox-check",
-      "type": "color",
-      "layer": "component",
-      "category": "checkbox",
-      "value": "#ffffff",
-      "reference": "semantic.color.text.inverse",
-      "description": "Checkbox check.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          1,
-          1,
-          1
-        ],
-        "alpha": 1,
-        "hex": "#ffffff"
       }
     },
     {
@@ -5525,30 +4880,6 @@
       "status": "approved-update"
     },
     {
-      "name": "component.popover.width",
-      "designName": "component/popover/width",
-      "cssVariable": "--csa-component-popover-width",
-      "type": "dimension",
-      "layer": "component",
-      "category": "popover",
-      "value": "340px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
-    },
-    {
-      "name": "component.popover.radius",
-      "designName": "component/popover/radius",
-      "cssVariable": "--csa-component-popover-radius",
-      "type": "dimension",
-      "layer": "component",
-      "category": "popover",
-      "value": "16px",
-      "reference": "foundation.radius.16",
-      "description": "Component radius mapped to the approved foundation scale.",
-      "status": "approved-update"
-    },
-    {
       "name": "component.navigation.rail-width",
       "designName": "component/navigation/rail-width",
       "cssVariable": "--csa-component-navigation-rail-width",
@@ -5568,18 +4899,6 @@
       "layer": "component",
       "category": "navigation",
       "value": "360px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
-    },
-    {
-      "name": "component.navigation.mobile-height",
-      "designName": "component/navigation/mobile-height",
-      "cssVariable": "--csa-component-navigation-mobile-height",
-      "type": "dimension",
-      "layer": "component",
-      "category": "navigation",
-      "value": "64px",
       "reference": "",
       "description": "Implemented component measurement.",
       "status": "observed"
@@ -5711,18 +5030,6 @@
       }
     },
     {
-      "name": "component.layout.page-min-width",
-      "designName": "component/layout/page-min-width",
-      "cssVariable": "--csa-component-layout-page-min-width",
-      "type": "dimension",
-      "layer": "component",
-      "category": "layout",
-      "value": "320px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
-    },
-    {
       "name": "component.layout.home-max-width",
       "designName": "component/layout/home-max-width",
       "cssVariable": "--csa-component-layout-home-max-width",
@@ -5730,30 +5037,6 @@
       "layer": "component",
       "category": "layout",
       "value": "1260px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
-    },
-    {
-      "name": "component.layout.editor-max-width",
-      "designName": "component/layout/editor-max-width",
-      "cssVariable": "--csa-component-layout-editor-max-width",
-      "type": "dimension",
-      "layer": "component",
-      "category": "layout",
-      "value": "980px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
-    },
-    {
-      "name": "component.layout.panel-width",
-      "designName": "component/layout/panel-width",
-      "cssVariable": "--csa-component-layout-panel-width",
-      "type": "dimension",
-      "layer": "component",
-      "category": "layout",
-      "value": "360px",
       "reference": "",
       "description": "Implemented component measurement.",
       "status": "observed"
@@ -5792,90 +5075,6 @@
       "value": "7",
       "reference": "",
       "description": "Last staggered card in the entrance sequence.",
-      "status": "observed"
-    },
-    {
-      "name": "component.focus.width",
-      "designName": "component/focus/width",
-      "cssVariable": "--csa-component-focus-width",
-      "type": "dimension",
-      "layer": "component",
-      "category": "focus",
-      "value": "3px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
-    },
-    {
-      "name": "component.focus.offset",
-      "designName": "component/focus/offset",
-      "cssVariable": "--csa-component-focus-offset",
-      "type": "dimension",
-      "layer": "component",
-      "category": "focus",
-      "value": "4px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
-    },
-    {
-      "name": "component.icon.size.default",
-      "designName": "component/icon/size/default",
-      "cssVariable": "--csa-component-icon-size-default",
-      "type": "dimension",
-      "layer": "component",
-      "category": "icon",
-      "value": "24px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
-    },
-    {
-      "name": "component.icon.size.small",
-      "designName": "component/icon/size/small",
-      "cssVariable": "--csa-component-icon-size-small",
-      "type": "dimension",
-      "layer": "component",
-      "category": "icon",
-      "value": "16px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
-    },
-    {
-      "name": "component.icon.size.edit",
-      "designName": "component/icon/size/edit",
-      "cssVariable": "--csa-component-icon-size-edit",
-      "type": "dimension",
-      "layer": "component",
-      "category": "icon",
-      "value": "18px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
-    },
-    {
-      "name": "component.icon.size.draft",
-      "designName": "component/icon/size/draft",
-      "cssVariable": "--csa-component-icon-size-draft",
-      "type": "dimension",
-      "layer": "component",
-      "category": "icon",
-      "value": "14px",
-      "reference": "",
-      "description": "Implemented component measurement.",
-      "status": "observed"
-    },
-    {
-      "name": "component.icon.size.sent",
-      "designName": "component/icon/size/sent",
-      "cssVariable": "--csa-component-icon-size-sent",
-      "type": "dimension",
-      "layer": "component",
-      "category": "icon",
-      "value": "16px",
-      "reference": "",
-      "description": "Implemented component measurement.",
       "status": "observed"
     },
     {

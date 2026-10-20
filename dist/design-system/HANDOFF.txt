@@ -4,7 +4,7 @@ Extracted 2026-10-19 from CSA app source baa4775.
 SOURCE OF TRUTH
   dist/design-system/tokens.json
   Three layers: foundation > semantic > component.
-  442 tokens in DTCG 2025.10-compatible JSON.
+  400 tokens in DTCG 2025.10-compatible JSON.
   Every token includes a type, description, and observed status.
   observed-exception retains a component-specific existing value.
   approved-update identifies the requested compact toolbar additions.
@@ -57,7 +57,7 @@ COMPONENT CONTRACTS
   Saved variant names and article headings are independent.
   Homepage project cards show the title, creation date, variant count,
     project menu, and Open action without Draft/Sent to CMS badges.
-  Source checkbox: 18 px, outside photo area at top left.
+  Source checkbox: 24 px, outside photo area at top left.
   Icons: Material Symbols Outlined font with FILL 1 throughout.
     Keep custom SVG geometry where already supplied.
   Editor toolbar: 10 px radius, 2 px top/bottom padding, document-aligned;
@@ -284,10 +284,24 @@ AUDIENCE VARIANT WORD COUNT
 
 New Variant field rhythm: 14px between field groups, with a 1px neutral divider and 14px padding above Editorial Direction. Edit Variant keeps its 24px field-group spacing.
 
-Variant selection checkbox: 24×24px indicator, 2px radius, 1px border, 16px checkmark; 44×44px button target.
+Variant selection checkbox: 24×24px indicator, 4px radius, 1px border, 16px checkmark; 44×44px button target.
 
 Target Word Count is visible only when the New Variant audience is nonempty, or when editing a variant/preset configured with an audience. Hiding the control retains its saved preference.
 
 Demo-access information panel: Indigo 50 (#EEF2FF). Retired the now-unused Blue 50 palette entry.
 
 Neutral 100 (#F5F5F5) is also used for subtle fields, feedback fields, search-sort surfaces, upload zone, content-preview header, material-option hover, and favicon background. Retired Neutral 50.
+
+Checkboxes in variant cards, search results and source lists share component.checkbox.size (24px) and component.checkbox.radius (4px). Source and search rows reserve the full checkbox width.
+DS usage audit removes 42 tokens with no canonical references. Every retained token is directly used or required by an alias; reference-only entries are listed separately in the usage inventory.
+
+Sources list: headings use the variant-card title size/line-height (14px/1.5), with 600 semibold; supporting snippets are removed from rows. Full content remains in source preview.
+All checkbox checkmarks use the official shared white material-check.svg at 16px, including variants, sources and search results.
+
+Source headings use primary blue on hover.
+
+Desktop Sources to Add new source gap: 16px. Add new source to selection-count gap: 8px. Selection count to first row: 16px (8px margin + 8px list padding).
+
+Source-preview header label has no background fill.
+
+CSA Home brand text turns primary blue on hover.

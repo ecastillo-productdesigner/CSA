@@ -167,7 +167,6 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       selection.setAttribute('aria-checked', String(state.selected.has(article.id)));
       const indicator = node('span', 'result-selection-indicator');
       indicator.setAttribute('aria-hidden', 'true');
-      if (state.selected.has(article.id)) indicator.append(createIcon('check'));
       selection.title = state.selected.has(article.id) ? 'Unselect this story' : 'Select this story for your draft';
       const thumbnail = node('span', `result-thumbnail${article.referenceImage ? ' result-thumbnail--reference' : ''}`);
       thumbnail.setAttribute('aria-hidden', 'true');

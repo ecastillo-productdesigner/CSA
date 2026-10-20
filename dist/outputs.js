@@ -405,7 +405,6 @@ export function renderOutputs(project, requestedView) {
     const indicator = document.createElement('span');
     indicator.className = 'output-selection-indicator';
     indicator.setAttribute('aria-hidden', 'true');
-    if (selected) indicator.append(createIcon('check'));
     const selection = document.createElement('button');
     selection.type = 'button';
     selection.className = 'output-selection-button';

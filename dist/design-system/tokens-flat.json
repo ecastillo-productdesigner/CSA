@@ -24,28 +24,6 @@
       }
     },
     {
-      "name": "foundation.color.neutral.50",
-      "designName": "foundation/color/neutral/50",
-      "cssVariable": "--csa-foundation-color-neutral-50",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#fafafa",
-      "reference": "",
-      "description": "Implemented palette value.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.9803921568627451,
-          0.9803921568627451,
-          0.9803921568627451
-        ],
-        "alpha": 1,
-        "hex": "#fafafa"
-      }
-    },
-    {
       "name": "foundation.color.neutral.100",
       "designName": "foundation/color/neutral/100",
       "cssVariable": "--csa-foundation-color-neutral-100",
@@ -3676,19 +3654,19 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#fafafa",
-      "reference": "foundation.color.neutral.50",
+      "value": "#f5f5f5",
+      "reference": "foundation.color.neutral.100",
       "description": "Subtle surface used for content preview and quiet sections.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.9803921568627451,
-          0.9803921568627451,
-          0.9803921568627451
+          0.9607843137254902,
+          0.9607843137254902,
+          0.9607843137254902
         ],
         "alpha": 1,
-        "hex": "#fafafa"
+        "hex": "#f5f5f5"
       }
     },
     {
@@ -6249,19 +6227,19 @@
       "type": "color",
       "layer": "component",
       "category": "brand",
-      "value": "#fafafa",
-      "reference": "foundation.color.neutral.50",
+      "value": "#f5f5f5",
+      "reference": "foundation.color.neutral.100",
       "description": "Uses the retained shared palette for this component role.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.9803921568627451,
-          0.9803921568627451,
-          0.9803921568627451
+          0.9607843137254902,
+          0.9607843137254902,
+          0.9607843137254902
         ],
         "alpha": 1,
-        "hex": "#fafafa"
+        "hex": "#f5f5f5"
       }
     },
     {

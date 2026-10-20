@@ -4,7 +4,7 @@ Extracted 2026-10-19 from CSA app source baa4775.
 SOURCE OF TRUTH
   dist/design-system/tokens.json
   Three layers: foundation > semantic > component.
-  443 tokens in DTCG 2025.10-compatible JSON.
+  442 tokens in DTCG 2025.10-compatible JSON.
   Every token includes a type, description, and observed status.
   observed-exception retains a component-specific existing value.
   approved-update identifies the requested compact toolbar additions.
@@ -267,8 +267,8 @@ FLAT SURFACES
     semantic.color.overlay.scrim; it is independent of elevation.
 
 RETAINED PALETTE
-  21 unique color values: 17 solid and 4 transparency/effect values.
-  The 35 unused values and their obsolete foundation tokens are removed.
+  20 unique color values: 16 solid and 4 transparency/effect values.
+  The 37 unused values and their obsolete foundation tokens are removed.
   Legacy, reference, favicon and document-export roles now alias the
     retained palette. Fully transparent gradient endpoints use CSS
     transparent rather than a separate color token.
@@ -289,3 +289,5 @@ Variant selection checkbox: 24×24px indicator, 2px radius, 1px border, 16px che
 Target Word Count is visible only when the New Variant audience is nonempty, or when editing a variant/preset configured with an audience. Hiding the control retains its saved preference.
 
 Demo-access information panel: Indigo 50 (#EEF2FF). Retired the now-unused Blue 50 palette entry.
+
+Neutral 100 (#F5F5F5) is also used for subtle fields, feedback fields, search-sort surfaces, upload zone, content-preview header, material-option hover, and favicon background. Retired Neutral 50.

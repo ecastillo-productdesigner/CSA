@@ -1,7 +1,6 @@
 /* Generated from tokens.json. Edit the JSON source, then run npm run design-system:build. */
 :root {
   --csa-foundation-color-neutral-0: #ffffff;
-  --csa-foundation-color-neutral-50: #fafafa;
   --csa-foundation-color-neutral-100: #f5f5f5;
   --csa-foundation-color-neutral-200: #e5e5e5;
   --csa-foundation-color-neutral-400: #a3a3a3;
@@ -286,7 +285,7 @@
   --csa-foundation-layout-ratio-2-4: 2.4;
   --csa-semantic-color-background-canvas: var(--csa-foundation-color-warm-canvas);
   --csa-semantic-color-surface-default: var(--csa-foundation-color-neutral-0);
-  --csa-semantic-color-surface-subtle: var(--csa-foundation-color-neutral-50);
+  --csa-semantic-color-surface-subtle: var(--csa-foundation-color-neutral-100);
   --csa-semantic-color-surface-hover: var(--csa-foundation-color-neutral-100);
   --csa-semantic-color-surface-selected: var(--csa-foundation-color-neutral-0);
   --csa-semantic-color-text-primary: var(--csa-foundation-color-neutral-700);
@@ -488,7 +487,7 @@
   --csa-component-export-text: var(--csa-foundation-color-neutral-700);
   --csa-component-export-quote-border: var(--csa-foundation-color-neutral-200);
   --csa-component-export-serif-family: Georgia, serif;
-  --csa-component-brand-favicon-background: var(--csa-foundation-color-neutral-50);
+  --csa-component-brand-favicon-background: var(--csa-foundation-color-neutral-100);
   --csa-component-brand-favicon-radius: 15px;
   --csa-component-brand-favicon-font-size: 21px;
   --csa-component-brand-favicon-font-family: system-ui, sans-serif;

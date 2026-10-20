@@ -157,6 +157,10 @@
               <label for="composer-editorial-direction">Editorial Direction <span>(optional)</span></label>
               <textarea id="composer-editorial-direction" rows="2" maxlength="8000" placeholder="Example: “Focus on the economy” or “Use a conversational tone.”"></textarea>
             </div>
+            <div class="variant-word-count" hidden>
+              <label for="composer-target-word-count-trigger">Target Word Count</label>
+              <div class="word-count-field" data-label="Target Word Count"><select id="composer-target-word-count" aria-label="Target Word Count" hidden><option value="short">500–800 (Short)</option><option value="medium">800–1200 (Medium)</option><option value="long">1200–1500 (Long)</option></select></div>
+            </div>
             <div class="composer-actions">
               <button class="create-variant" type="button" disabled title="Choose a saved variant, format, audience, or voice to add a variant">Add Variant</button>
             </div>
@@ -339,6 +343,7 @@
         <div class="output-edit-heading"><h2 id="output-edit-heading">Edit Variant</h2><button class="icon-button" type="button" data-close-output-edit aria-label="Close variant settings"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
         <div class="output-edit-voice-field"><div class="composer-field output-edit-voice-control" data-label="Voice"><select id="output-edit-voice" aria-label="Voice" hidden><option value="">None Selected</option><option value="house-standard">House Standard</option><option value="apple-news">Apple News</option><option value="centre-daily-times">Centre Daily Times</option><option value="idaho-statesman-voice-guide">Idaho Statesman Voice Guide</option><option value="msn-syndication">MSN Syndication</option><option value="national-team-voice-guide">National Team Voice Guide</option><option value="kansas-city-star-voice-guide">The Kansas City Star Voice Guide</option><option value="news-observer-voice-guide">The News &amp; Observer Voice Guide</option><option value="trend-hunter-b2c">Trend Hunter B2C</option><option value="us-weekly">Us Weekly</option><option value="womans-world">Womans World</option><option value="yahoo-news">Yahoo News</option></select></div></div>
         <label for="output-edit-direction"><span>Editorial Direction <span class="field-optional">(optional)</span></span><textarea id="output-edit-direction" rows="2" maxlength="8000" placeholder="Example: “Focus on the economy” or “Use a conversational tone.”"></textarea></label>
+        <div class="variant-word-count" hidden><label for="output-edit-target-word-count-trigger">Target Word Count</label><div class="word-count-field" data-label="Target Word Count"><select id="output-edit-target-word-count" aria-label="Target Word Count" hidden><option value="short">500–800 (Short)</option><option value="medium">800–1200 (Medium)</option><option value="long">1200–1500 (Long)</option></select></div></div>
         <label for="output-edit-name"><span>Edit Variant Name <span class="field-optional">(optional)</span></span><input id="output-edit-name" type="text" maxlength="180" autocomplete="off"></label>
         <p class="form-error" id="output-edit-error" role="alert" hidden></p>
         <div class="output-edit-actions"><button class="secondary-button" type="button" data-close-output-edit>Cancel</button><button class="primary-button dialog-action-button" type="submit" disabled>Save changes</button></div>

@@ -155,7 +155,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       case 'undo': quill.history.undo(); break;
       case 'redo': quill.history.redo(); break;
       case 'link': openLink(); break;
-      case 'highlight': format('background', quill.getFormat(selection.index, selection.length).background ? false : tokenValue('foundation.color.observed.hex-fff0a8')); break;
+      case 'highlight': format('background', quill.getFormat(selection.index, selection.length).background ? false : tokenValue('foundation.color.orange.100')); break;
       case 'indent': format('indent', '+1'); break;
       case 'outdent': format('indent', '-1'); break;
       case 'clear': restoreSelection(); quill.history.cutoff(); quill.removeFormat(selection.index, selection.length, 'user'); quill.history.cutoff(); break;

@@ -1,4 +1,5 @@
 import { tokenNumber } from './design-system/runtime.js?v=20261020-ds-centralized';
+import { normalizeWordCount } from './variant-word-count.js';
 import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261020-preset-settings';
 import { customVariantName, savedVariantName } from './outputs.js?v=20261020-preset-settings';
 
@@ -10,6 +11,7 @@ export function createOutputSettings({ onSave, onDelete, onSavePreset, onDeleteP
   let initialSettings = {};
   const voice = document.querySelector('#output-edit-voice');
   const direction = document.querySelector('#output-edit-direction');
+  const wordCount = document.querySelector('#output-edit-target-word-count');
   const error = document.querySelector('#output-edit-error');
   let active = null;
   let triggerContainer = null;
@@ -58,7 +60,10 @@ export function createOutputSettings({ onSave, onDelete, onSavePreset, onDeleteP
     voice.value = config.toolPreferences?.voice || '';
     voice.dispatchEvent(new Event('change', { bubbles: true }));
     direction.value = typeof config.editorialDirection === 'string' ? config.editorialDirection : '';
-    initialSettings = { name: name.value.trim(), voice: voice.value, editorialDirection: direction.value };
+    wordCount.closest('.variant-word-count').hidden = !config.toolPreferences?.audience;
+    wordCount.value = normalizeWordCount(config.targetWordCount);
+    wordCount.dispatchEvent(new Event('change', { bubbles: true }));
+    initialSettings = { name: name.value.trim(), voice: voice.value, editorialDirection: direction.value, targetWordCount: wordCount.value };
     updateSaveState();
     error.hidden = true;
     menu.hidden = false;
@@ -67,7 +72,7 @@ export function createOutputSettings({ onSave, onDelete, onSavePreset, onDeleteP
   }
 
   function updateSaveState() {
-    const settingsChanged = voice.value !== initialSettings.voice || direction.value !== initialSettings.editorialDirection;
+    const settingsChanged = voice.value !== initialSettings.voice || direction.value !== initialSettings.editorialDirection || wordCount.value !== initialSettings.targetWordCount;
     const nameChanged = name.value.trim() !== initialSettings.name;
     submit.textContent = settingsChanged && !active?.preset ? 'Recreate variant' : 'Save changes';
     submit.disabled = !active || !(settingsChanged || nameChanged);
@@ -75,13 +80,14 @@ export function createOutputSettings({ onSave, onDelete, onSavePreset, onDeleteP
   name.addEventListener('input', updateSaveState);
   voice.addEventListener('change', updateSaveState);
   direction.addEventListener('input', updateSaveState);
+  wordCount.addEventListener('change', updateSaveState);
 
   form.addEventListener('submit', event => {
     event.preventDefault();
     updateSaveState();
     if (!active || submit.disabled) return;
     const variantName = name.value.trim();
-    const saved = (active.preset ? onSavePreset : onSave)({ ...active, name: variantName, voice: voice.value, editorialDirection: direction.value });
+    const saved = (active.preset ? onSavePreset : onSave)({ ...active, name: variantName, voice: voice.value, editorialDirection: direction.value, targetWordCount: wordCount.value });
     if (saved) close(true);
     else { error.textContent = 'Changes could not be saved. Please try again.'; error.hidden = false; position(); }
   });

@@ -1,4 +1,5 @@
 import { savedVariantName } from './outputs.js?v=20261020-preset-settings';
+import { normalizeWordCount } from './variant-word-count.js';
 const keys = ['format', 'audience', 'voice'];
 export function presetConfiguration(output) {
   const saved = output?.presetSettings;
@@ -6,6 +7,7 @@ export function presetConfiguration(output) {
     toolPreferences: saved?.toolPreferences || output?.toolPreferences || {},
     labels: saved?.labels || output?.labels || [],
     editorialDirection: saved?.editorialDirection ?? output?.editorialDirection ?? '',
+    targetWordCount: normalizeWordCount(saved?.targetWordCount ?? output?.targetWordCount),
   };
 }
 export function savedPresetName(output) {
@@ -24,5 +26,6 @@ export function setSavedPresetSettings(output, settings) {
     toolPreferences: Object.fromEntries(keys.map(key => [key, settings.toolPreferences[key] || ''])),
     labels: settings.labels.map(label => ({ ...label })),
     editorialDirection: settings.editorialDirection,
+    targetWordCount: normalizeWordCount(settings.targetWordCount ?? presetConfiguration(output).targetWordCount),
   };
 }

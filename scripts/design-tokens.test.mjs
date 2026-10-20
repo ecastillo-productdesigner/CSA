@@ -42,6 +42,14 @@ test('all production and reference CSS token references exist in generated CSS',
   }
   for(const match of result.css.matchAll(/var\((--csa-[\w-]+)/g)) assert.ok(declarations.has(match[1]),`generated alias: missing ${match[1]}`);
 });
+test('palette lookup entries resolve to their declared colors',async()=>{
+  const source=JSON.parse(await readFile(new URL('../dist/design-system/tokens.json',import.meta.url),'utf8'));
+  const tokens=new Map(compileTokens(source).flat.map(token=>[token.name,token]));
+  for(const [hex,path] of Object.entries(source.$extensions['com.csa'].cssColorPaths)) {
+    assert.equal(tokens.get(path)?.type,'color',`Missing palette color: ${path}`);
+    assert.equal(tokens.get(path).value,hex,`Stale palette lookup: ${hex} → ${path}`);
+  }
+});
 test('mobile viewport thresholds stay in sync with documented tokens',async()=>{
   const source=JSON.parse(await readFile(new URL('../dist/design-system/tokens.json',import.meta.url),'utf8'));
   const css=await readFile(new URL('../dist/styles.css',import.meta.url),'utf8');

@@ -4,7 +4,7 @@ Extracted 2026-10-19 from CSA app source baa4775.
 SOURCE OF TRUTH
   dist/design-system/tokens.json
   Three layers: foundation > semantic > component.
-  303 tokens in DTCG 2025.10-compatible JSON.
+  444 tokens in DTCG 2025.10-compatible JSON.
   Every token includes a type, description, and observed status.
   observed-exception retains a component-specific existing value.
   approved-update identifies the requested compact toolbar additions.
@@ -247,8 +247,8 @@ COLOR CONSOLIDATION / EFFECTS
     the outside corners of the first and last segments.
 
 SHARED COLOR UPDATES — 2026-10-20
-  Active editor formatting keeps neutral-700 icons and uses the shared
-    neutral-100 hover surface. Article links use primary blue-500.
+  Active editor formatting uses primary blue-500 with white icons,
+    including while hovered. Article links use primary blue-500.
   Keyboard-focus outlines use blue-500; the navigation hover chevron
     uses neutral-700. Invalid-password/upload error text and Delete project
     confirmation hover/focus use red-700. Search thumbnail placeholders
@@ -265,3 +265,25 @@ FLAT SURFACES
     neutral-700 tint at 8% opacity, shared across desktop and mobile.
   Keyboard-focus outlines remain blue-500. Modal backdrop dimming uses
     semantic.color.overlay.scrim; it is independent of elevation.
+
+RETAINED PALETTE
+  22 unique color values: 18 solid and 4 transparency/effect values.
+  The 35 unused values and their obsolete foundation tokens are removed.
+  Legacy, reference, favicon and document-export roles now alias the
+    retained palette. Fully transparent gradient endpoints use CSS
+    transparent rather than a separate color token.
+
+AUDIENCE VARIANT WORD COUNT
+  Target Word Count follows Editorial Direction
+    in New Variant and Edit Variant/saved-preset settings.
+  Choices: 500–800 (Short), 800–1200 (Medium), 1200–1500 (Long).
+  Short is the default for new and legacy records. Each variant and saved
+    preset stores its own target. Changing an applied target detaches
+    the selected saved preset while retaining other choices.
+  Generation remains the existing local demo sample flow.
+
+New Variant field rhythm: 14px between field groups, with a 1px neutral divider and 14px padding above Editorial Direction. Edit Variant keeps its 24px field-group spacing.
+
+Variant selection checkbox: 20×20px indicator, 2px radius, 1px border, 16px checkmark; 44×44px button target.
+
+Target Word Count is visible only when the New Variant audience is nonempty, or when editing a variant/preset configured with an audience. Hiding the control retains its saved preference.

@@ -1,4 +1,5 @@
 import { createIcon } from './icons.js?v=20261020-ds-centralized';
+import { normalizeWordCount } from './variant-word-count.js';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',
@@ -295,6 +296,7 @@ export function sampleVariant(project, selections) {
     sourceCount: selectedSourceIndexes.length,
     sourceSnapshots: selectedSourceIndexes.map(index => structuredClone(project.sources[index])),
     editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '',
+    targetWordCount: normalizeWordCount(project.targetWordCount),
     draftText: '',
     metadata: { author: '', tags: '' },
   };

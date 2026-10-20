@@ -13,13 +13,13 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
     if (stored && typeof stored === 'object' && !Array.isArray(stored)) savedFavorites = stored;
   } catch { /* Start with no saved choices when storage is unavailable. */ }
 
-  const controls = [...document.querySelectorAll('.composer-field, .results-sort-field, .feedback-select-field, .editor-style-field')].map(field => {
+  const controls = [...document.querySelectorAll('.composer-field, .results-sort-field, .feedback-select-field, .editor-style-field, .word-count-field')].map(field => {
     const select = field.querySelector('select');
     const label = field.dataset.label;
     const key = select.id.replace(/^(composer-|output-edit-)/, '');
     field.dataset.tool = key;
     const editorStyle = field.matches('.editor-style-field');
-    const floating = select.id === 'output-edit-voice' || field.matches('.feedback-select-field') || editorStyle;
+    const floating = Boolean(field.closest('#output-edit-menu')) || field.matches('.feedback-select-field') || editorStyle;
     const inWorkspacePanel = Boolean(field.closest('#composer-tools'));
     const mobileWorkspacePanel = () => inWorkspacePanel && window.matchMedia(breakpointQuery()).matches;
     const placeholder = field.dataset.placeholder || (['format', 'audience', 'voice'].includes(key) ? `Select ${label}` : label);
@@ -164,7 +164,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
       if (select.disabled) return;
       closeAll();
       refresh();
-      if (mobileWorkspacePanel() || editorStyle) {
+      if (inWorkspacePanel || editorStyle) {
         document.body.append(menu);
         menu.dataset.workspaceDropdown = 'true';
         menu.style.zIndex = tokenValue('foundation.layer.30');
@@ -172,7 +172,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
       menu.hidden = false;
       field.classList.add('is-open');
       trigger.setAttribute('aria-expanded', 'true');
-      if (floating || mobileWorkspacePanel()) {
+      if (floating || inWorkspacePanel) {
         const bounds = trigger.getBoundingClientRect();
         const below = document.documentElement.clientHeight - bounds.bottom - tokenNumber('foundation.space.12');
         const topLimit = mobileWorkspacePanel() ? tokenNumber('foundation.size.90') : tokenNumber('foundation.space.12');
@@ -211,7 +211,7 @@ export function createToolDropdowns({ notify = () => {} } = {}) {
     });
     select.addEventListener('change', refresh);
     if (floating || inWorkspacePanel) {
-      document.addEventListener('scroll', event => { if ((floating || mobileWorkspacePanel()) && !menu.hidden && !menu.contains(event.target)) close(); }, true);
+      document.addEventListener('scroll', event => { if (!menu.hidden && !menu.contains(event.target)) close(); }, true);
       window.addEventListener('resize', () => close());
     }
     refresh();

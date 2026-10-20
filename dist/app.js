@@ -1,4 +1,5 @@
 import { presetConfiguration, updatePresetPreferences, setSavedPresetSettings } from './preset-settings.js?v=20261020-preset-settings';
+import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js';
 import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261020-ds-centralized';
 import { createRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261020-ds-centralized';
 import { createIcon as icon } from './icons.js?v=20261020-ds-centralized';
@@ -271,14 +272,14 @@ function deleteVariant({ projectId, outputId }) {
   return true;
 }
 
-function saveOutputSettings({ projectId, outputId, name, voice, editorialDirection }) {
+function saveOutputSettings({ projectId, outputId, name, voice, editorialDirection, targetWordCount }) {
   richEditor.flush();
   const project = projects.find(entry => entry.id === projectId);
   const output = projectOutputs(project).find(entry => entry.id === outputId);
   if (!output || project.outputProcessing) return false;
   const nextName = typeof name === 'string' ? name.trim().slice(0, 180) : customVariantName(output);
   const saveNamedVariant = Boolean(nextName) && !output.isFavorite;
-  const settingsChanged = (output.toolPreferences?.voice || '') !== voice || (output.editorialDirection || '') !== editorialDirection;
+  const settingsChanged = (output.toolPreferences?.voice || '') !== voice || (output.editorialDirection || '') !== editorialDirection || normalizeWordCount(output.targetWordCount) !== normalizeWordCount(targetWordCount);
   if (!settingsChanged) {
     if (customVariantName(output) === nextName && !saveNamedVariant) return true;
     const before = { name: output.name, nameEdited: output.nameEdited, savedVariantNumber: output.savedVariantNumber, isFavorite: output.isFavorite, favoritedAt: output.favoritedAt, updatedAt: output.updatedAt, projectUpdatedAt: project.updatedAt };
@@ -301,6 +302,7 @@ function saveOutputSettings({ projectId, outputId, name, voice, editorialDirecti
   initializeVariantNames(projects);
   output.toolPreferences = { ...output.toolPreferences, voice };
   output.editorialDirection = editorialDirection;
+  output.targetWordCount = normalizeWordCount(targetWordCount);
   output.labels = (Array.isArray(output.labels) ? output.labels : []).filter(label => label && label.key !== 'voice');
   const option = [...$('#composer-voice').options].find(entry => entry.value === voice);
   if (voice && option) output.labels.push({ key: 'voice', label: option.textContent });
@@ -402,7 +404,7 @@ function editPreset(projectId, outputId) {
   const output = projectOutputs(source).find(output => output.id === outputId && output.isFavorite);
   if (output) outputSettings.openPreset(projectId, output);
 }
-function savePresetPanelSettings({ projectId, outputId, name, voice, editorialDirection }) {
+function savePresetPanelSettings({ projectId, outputId, name, voice, editorialDirection, targetWordCount }) {
   const source = projects.find(project => project.id === projectId);
   const output = projectOutputs(source).find(output => output.id === outputId && output.isFavorite);
   if (!output) return false;
@@ -410,7 +412,7 @@ function savePresetPanelSettings({ projectId, outputId, name, voice, editorialDi
   const labels = config.labels.filter(label => label.key !== 'voice');
   const option = [...$('#composer-voice').options].find(entry => entry.value === voice);
   if (voice && option) labels.push({ key: 'voice', label: option.textContent });
-  return savePresetSettings(projectId, outputId, { name, editorialDirection, toolPreferences: { ...config.toolPreferences, voice }, labels });
+  return savePresetSettings(projectId, outputId, { name, editorialDirection, targetWordCount, toolPreferences: { ...config.toolPreferences, voice }, labels });
 }
 function savePresetSettings(projectId, outputId, settings) {
   const source = projects.find(project => project.id === projectId);
@@ -446,6 +448,8 @@ function applyOutputPreset(projectId, outputId) {
     project.variantPreset = { projectId, outputId };
     project.editorialDirection = config.editorialDirection;
     $('#composer-editorial-direction').value = project.editorialDirection;
+    project.targetWordCount = config.targetWordCount;
+    $('#composer-target-word-count').value = project.targetWordCount;
   } else delete project.variantPreset;
   project.toolPreferences = Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, $(`#composer-${key}`).value]));
   project.updatedAt = Date.now();
@@ -529,6 +533,7 @@ function createProject(sources, options = {}) {
     ...(options.awaitingOutput ? { awaitingOutput: true } : {}),
     ...(options.contentPreview ? { contentPreview: options.contentPreview } : {}),
     ...(typeof options.editorialDirection === 'string' ? { editorialDirection: options.editorialDirection } : {}),
+    targetWordCount: normalizeWordCount(options.targetWordCount),
     ...(options.toolPreferences ? { toolPreferences: options.toolPreferences } : {}),
   };
   projects.unshift(project);
@@ -587,6 +592,7 @@ function closeComposer() {
   $('#output-placeholder').hidden = true;
   $('.create-variant').disabled = true;
   $('#composer-editorial-direction').value = '';
+  $('#composer-target-word-count').value = 'short';
   document.body.classList.remove('showing-composer', 'editing-material');
 }
 
@@ -783,6 +789,7 @@ function showEditorProject(project) {
     $('#composer-heading').textContent = 'Story editor';
     richEditor.open(selectedOutput ? { ...project, ...selectedOutput, id: project.id, toolPreferences: project.toolPreferences } : project);
   }
+  $('#composer-target-word-count').value = normalizeWordCount(project.targetWordCount);
   toolDropdowns.refresh();
   updateComposerActions();
   renderOutputs(project);
@@ -808,12 +815,13 @@ function closeProfile() {
 }
 
 function updateComposerActions() {
+  $('#composer-target-word-count').closest('.variant-word-count').hidden = !$('#composer-audience').value;
   const hasContent = !$('#material-editor').hidden ? richEditor.hasContent() : !$('#output-placeholder').hidden && ($('#content-preview').hidden || contentPreview.hasContent());
   const preset = projects.find(project => project.id === activeProjectId)?.variantPreset;
   const hasPreset = Boolean(preset);
   const canConfigure = hasContent || hasPreset;
   let changed = false;
-  for (const key of ['format', 'audience', 'voice']) {
+  for (const key of ['format', 'audience', 'voice', 'target-word-count']) {
     const select = $(`#composer-${key}`);
     if (select.disabled !== !canConfigure) changed = true;
     select.disabled = !canConfigure;
@@ -831,7 +839,7 @@ function ensureComposerProject(allowEmpty = false) {
   const preferences = Object.fromEntries(['format', 'audience', 'voice'].map(name => [name, $(`#composer-${name}`).value]));
   const direction = $('#composer-editorial-direction').value;
   if (!allowEmpty && !Object.values(preferences).some(Boolean) && !direction.trim()) return null;
-  project = createProject([], { kind: 'draft', awaitingOutput: true, toolPreferences: preferences, editorialDirection: direction, open: false });
+  project = createProject([], { kind: 'draft', awaitingOutput: true, toolPreferences: preferences, editorialDirection: direction, targetWordCount: $('#composer-target-word-count').value, open: false });
   activeProjectId = project.id;
   $('#show-sources').hidden = false;
   document.title = `${project.title} — CSA`;
@@ -1073,6 +1081,14 @@ $('#composer-editorial-direction').addEventListener('input', () => {
   project.editorialDirection = $('#composer-editorial-direction').value;
   project.updatedAt = Date.now();
   saveProjects();
+});
+$('#composer-target-word-count').addEventListener('change', () => {
+  const project = ensureComposerProject();
+  if (!project) return;
+  setProjectWordCount(project, $('#composer-target-word-count').value);
+  project.updatedAt = Date.now();
+  saveProjects();
+  updateComposerActions();
 });
 for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).addEventListener('change', () => {
   const preferences = Object.fromEntries(['format', 'audience', 'voice'].map(name => [name, $(`#composer-${name}`).value]));

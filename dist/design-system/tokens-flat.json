@@ -134,28 +134,6 @@
       }
     },
     {
-      "name": "foundation.color.warm.canvas",
-      "designName": "foundation/color/warm/canvas",
-      "cssVariable": "--csa-foundation-color-warm-canvas",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#fbf6f4",
-      "reference": "",
-      "description": "Implemented palette value.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.984313725490196,
-          0.9647058823529412,
-          0.9568627450980393
-        ],
-        "alpha": 1,
-        "hex": "#fbf6f4"
-      }
-    },
-    {
       "name": "foundation.color.blue.500",
       "designName": "foundation/color/blue/500",
       "cssVariable": "--csa-foundation-color-blue-500",
@@ -403,16 +381,16 @@
       "type": "color",
       "layer": "foundation",
       "category": "color",
-      "value": "#fbf6f4e6",
+      "value": "oklch(98.6% 0.002 67.8 / 0.9019607843137255)",
       "reference": "",
-      "description": "",
+      "description": "Taupe 50 canvas fade, preserving its existing opacity.",
       "status": "observed",
       "color": {
-        "colorSpace": "srgb",
+        "colorSpace": "oklch",
         "components": [
-          0.984313725490196,
-          0.9647058823529412,
-          0.9568627450980393
+          0.986,
+          0.002,
+          67.8
         ],
         "alpha": 0.9019607843137255
       }
@@ -478,6 +456,27 @@
           0.25098039215686274
         ],
         "alpha": 0.16
+      }
+    },
+    {
+      "name": "foundation.color.taupe.50",
+      "designName": "foundation/color/taupe/50",
+      "cssVariable": "--csa-foundation-color-taupe-50",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "oklch(98.6% 0.002 67.8)",
+      "reference": "",
+      "description": "Tailwind taupe-50, preserved in its original OKLCH color space. Approximate sRGB hex: #FBFAF9.",
+      "status": "approved-update",
+      "color": {
+        "colorSpace": "oklch",
+        "components": [
+          0.986,
+          0.002,
+          67.8
+        ],
+        "alpha": 1
       }
     },
     {
@@ -3583,19 +3582,18 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#fbf6f4",
-      "reference": "foundation.color.warm.canvas",
-      "description": "Warm page background behind workspace surfaces.",
+      "value": "oklch(98.6% 0.002 67.8)",
+      "reference": "foundation.color.taupe.50",
+      "description": "Tailwind taupe-50 page background behind workspace surfaces.",
       "status": "observed",
       "color": {
-        "colorSpace": "srgb",
+        "colorSpace": "oklch",
         "components": [
-          0.984313725490196,
-          0.9647058823529412,
-          0.9568627450980393
+          0.986,
+          0.002,
+          67.8
         ],
-        "alpha": 1,
-        "hex": "#fbf6f4"
+        "alpha": 1
       }
     },
     {
@@ -4022,16 +4020,16 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#fbf6f4e6",
+      "value": "oklch(98.6% 0.002 67.8 / 0.9019607843137255)",
       "reference": "foundation.color.overlay.canvas-fade",
       "description": "Canvas-colored navigation and page fade.",
       "status": "observed",
       "color": {
-        "colorSpace": "srgb",
+        "colorSpace": "oklch",
         "components": [
-          0.984313725490196,
-          0.9647058823529412,
-          0.9568627450980393
+          0.986,
+          0.002,
+          67.8
         ],
         "alpha": 0.9019607843137255
       }

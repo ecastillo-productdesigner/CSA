@@ -1,241 +1,1371 @@
 {
-  "sourceCommit": "baa477507dbd4d9df54d37ad9670a38534d86c59",
+  "date": "2026-10-21",
   "sourceFile": "dist/styles.css",
+  "tokenSource": "dist/design-system/tokens.json",
+  "status": "Current generated stylesheet and foundation color inventory. Replaces the historical pre-tokenization baseline.",
   "observed": {
-    "font-size": {
-      "15px": 8,
-      "25px": 3,
-      "14px": 39,
-      "16px": 26,
-      "12px": 52,
-      "24px": 7,
-      "22px": 6,
-      "32px": 4,
-      "18px": 10,
-      "10px": 8,
+    "color-scheme": {
+      "light": 1
+    },
+    "font-family": {
+      "var(--csa-foundation-font-family-interface)": 2,
+      "var(--csa-foundation-font-family-icons)": 1,
+      "var(--csa-foundation-font-family-editorial)": 2,
+      "inherit": 1
+    },
+    "color": {
+      "var(--ink)": 49,
+      "inherit": 9,
+      "var(--csa-semantic-color-text-secondary)": 7,
+      "var(--csa-foundation-color-blue-600)": 1,
+      "var(--csa-component-button-primary-label)": 4,
+      "var(--csa-semantic-color-text-primary)": 8,
+      "var(--csa-foundation-color-neutral-0)": 20,
+      "var(--csa-component-avatar-foreground)": 1,
+      "var(--csa-semantic-color-navigation-selected-foreground)": 2,
+      "var(--muted)": 59,
+      "var(--color-button-primary)": 1,
+      "var(--color-neutral-400)": 2,
+      "var(--csa-foundation-color-red-700)": 2,
+      "var(--heading)": 8,
+      "var(--csa-component-button-primary-background)": 3,
+      "var(--csa-component-button-disabled-label)": 3,
+      "var(--csa-semantic-color-favorite-active)": 2,
+      "var(--csa-component-favorite-saved-color)": 2,
+      "var(--color-red-700)": 5,
+      "var(--color-button-disabled-label)": 4,
+      "var(--csa-semantic-color-action-primary)": 1,
+      "var(--csa-component-button-secondary-label)": 1,
+      "var(--csa-semantic-color-danger-default)": 1,
+      "var(--csa-foundation-color-neutral-500)": 1,
+      "var(--csa-component-favorite-unsaved-color)": 1
+    },
+    "background": {
+      "var(--background)": 3,
+      "var(--surface)": 10,
+      "var(--csa-component-field-background)": 2,
+      "transparent": 37,
+      "var(--csa-foundation-color-indigo-50)": 1,
+      "var(--color-button-primary)": 13,
+      "var(--color-button-primary-interaction)": 10,
+      "var(--csa-component-button-primary-background)": 2,
+      "var(--icon-circle)": 11,
+      "var(--ink)": 3,
+      "var(--csa-foundation-color-neutral-100)": 21,
+      "var(--csa-component-avatar-background)": 1,
+      "var(--icon-hover-background)": 15,
+      "var(--csa-semantic-color-navigation-selected)": 2,
+      "var(--csa-semantic-color-navigation-selected-hover)": 1,
+      "linear-gradient(to bottom, var(--background), transparent)": 1,
+      "linear-gradient(to bottom, transparent, var(--csa-semantic-color-overlay-canvas-fade) calc(var(--csa-foundation-layout-ratio-75) * 1%), var(--background))": 1,
+      "var(--csa-foundation-color-neutral-0)": 48,
+      "var(--draft-background)": 2,
+      "var(--color-green-200)": 3,
+      "currentColor": 1,
+      "var(--csa-foundation-color-neutral-200)": 2,
+      "var(--csa-semantic-color-surface-hover)": 5,
+      "var(--csa-foundation-color-taupe-50)": 1,
+      "var(--content-preview-background)": 2,
+      "var(--color-indigo-50)": 3,
+      "var(--color-orange-100)": 3,
+      "var(--color-rose-100)": 2,
+      "var(--csa-component-button-secondary-background)": 3,
+      "var(--csa-component-button-primary-hover)": 1,
+      "var(--csa-component-variant-card-selected-background)": 1,
+      "var(--csa-semantic-color-overlay-scrim)": 4,
+      "var(--csa-foundation-color-red-700)": 2,
+      "var(--csa-semantic-color-danger-default)": 1,
+      "var(--line)": 1,
+      "var(--csa-foundation-color-orange-100)": 1,
+      "var(--color-red-700)": 1,
+      "var(--csa-component-button-secondary-hover)": 1,
+      "var(--csa-component-button-secondary-pressed)": 1,
+      "var(--csa-semantic-color-overlay-loading)": 2,
+      "var(--csa-semantic-color-surface-default)": 2
+    },
+    "font-synthesis": {
+      "none": 1
+    },
+    "-webkit-font-smoothing": {
+      "antialiased": 2
+    },
+    "box-sizing": {
+      "border-box": 1
+    },
+    "margin": {
+      "0": 44,
+      "calc(-1 * var(--csa-foundation-space-1))": 1,
+      "0 0 var(--csa-foundation-space-32)": 1,
+      "var(--csa-foundation-space-8) auto var(--csa-foundation-space-18)": 1,
+      "0 0 var(--csa-foundation-space-28)": 3,
+      "0 auto": 6,
+      "0 0 var(--csa-foundation-space-24)": 1,
+      "var(--csa-foundation-space-30) 0 var(--csa-foundation-space-29)": 1,
+      "var(--csa-foundation-space-8)": 1,
+      "0 0 var(--csa-foundation-space-20)": 4,
+      "calc(var(--csa-foundation-space-24) - var(--csa-foundation-space-3)) calc(-1 * var(--csa-foundation-space-3)) 0": 1,
+      "var(--csa-foundation-space-6)": 1,
+      "0 0 var(--csa-foundation-space-16)": 3,
+      "0 0 var(--csa-foundation-space-12)": 1,
+      "auto": 1,
+      "var(--csa-foundation-space-25) 0 var(--csa-foundation-space-20)": 1,
+      "var(--csa-foundation-space-8) var(--csa-foundation-space-2) 0": 1,
+      "var(--csa-foundation-space-12) 0 0": 2,
+      "var(--csa-foundation-space-10) 0 var(--csa-foundation-space-20)": 1,
+      "var(--csa-foundation-space-25) 0 var(--csa-foundation-space-15)": 1,
+      "var(--csa-foundation-space-20) 0": 1,
+      "var(--csa-foundation-space-2) 0 0": 1,
+      "var(--csa-foundation-space-6) 0 0": 1,
+      "calc(-1 * var(--csa-foundation-space-5)) calc(-1 * var(--csa-foundation-space-7)) calc(-1 * var(--csa-foundation-space-5)) 0": 1,
+      "calc(-1 * var(--csa-foundation-space-2)) 0 0": 1,
+      "var(--csa-foundation-space-24) 0 0 auto": 1,
+      "calc(-1 * var(--csa-foundation-space-5)) calc(-1 * var(--csa-foundation-space-7)) 0 0": 1,
+      "0 0 var(--csa-foundation-space-9)": 1,
+      "var(--csa-foundation-space-16) 0 0": 1,
+      "var(--csa-foundation-space-13) 0 0": 1,
+      "var(--csa-foundation-space-10) 0 0": 1,
+      "var(--csa-foundation-space-15) 0 0": 1,
+      "calc(-1 * var(--csa-foundation-space-6)) var(--csa-foundation-space-8) 0": 1,
+      "var(--csa-foundation-space-12) 0 var(--csa-foundation-space-42)": 1,
+      "var(--csa-foundation-space-14) auto 0": 1,
+      "var(--csa-foundation-space-22) auto 0": 1,
+      "0 0 var(--csa-foundation-space-18)": 1,
+      "calc(-1 * var(--csa-foundation-space-15)) 0 var(--csa-foundation-space-35)": 1,
+      "0 auto var(--csa-foundation-space-28)": 1,
+      "var(--csa-foundation-space-25) 0": 1,
+      "0 var(--csa-foundation-space-40) var(--csa-foundation-space-22) 0": 1,
+      "var(--csa-foundation-space-18) 0": 1,
+      "0 var(--csa-foundation-space-4)": 1,
+      "0 var(--toolbar-inset)": 1,
+      "var(--csa-foundation-space-8) 0 0": 1,
+      "var(--csa-foundation-space-16) 0 var(--csa-foundation-space-16)": 1,
+      "0 0 var(--csa-foundation-space-8)": 1
+    },
+    "min-width": {
+      "0": 51,
+      "var(--csa-foundation-size-320)": 1,
+      "var(--csa-component-icon-button-minimum-target)": 1,
+      "var(--csa-foundation-size-160)": 1,
+      "var(--csa-foundation-space-28)": 1,
+      "var(--csa-foundation-size-144)": 1,
+      "var(--csa-foundation-size-224)": 1,
+      "var(--csa-foundation-space-100)": 1,
+      "var(--csa-foundation-size-84)": 1,
+      "var(--csa-foundation-space-40)": 1,
+      "var(--csa-foundation-space-98)": 1,
+      "var(--csa-foundation-size-140)": 1
+    },
+    "font": {
+      "inherit": 13
+    },
+    "-webkit-tap-highlight-color": {
+      "transparent": 1
+    },
+    "cursor": {
+      "pointer": 6,
+      "default": 6,
+      "url(\"./sidebar-expand-cursor.svg\") var(--csa-component-navigation-cursor-hotspot) var(--csa-component-navigation-cursor-hotspot), e-resize": 1,
+      "grab": 1,
+      "grabbing": 1
+    },
+    "outline": {
       "0": 1,
-      "clamp(24px, 2.4vw, 32px)": 1,
-      "11px": 19,
-      "20px": 7,
-      "13px": 20,
-      "29px": 1,
-      "17px": 2,
-      "27px": 1,
-      "23px": 2,
-      "19px": 1,
-      "clamp(23px, 3vw, 30px)": 1,
-      "28px": 1,
+      "none": 7,
+      "var(--csa-foundation-border-width-3) solid var(--csa-foundation-color-blue-focus)": 5,
+      "var(--csa-foundation-border-width-2) solid var(--csa-foundation-color-blue-focus)": 1
+    },
+    "outline-offset": {
+      "var(--csa-foundation-space-4)": 3,
+      "calc(-1 * var(--csa-foundation-border-width-4))": 3,
+      "calc(-1 * var(--csa-foundation-border-width-3))": 6,
+      "var(--csa-foundation-space-2)": 2,
+      "var(--csa-foundation-space-8)": 1,
+      "var(--csa-foundation-border-width-3)": 1
+    },
+    "touch-action": {
+      "manipulation": 1
+    },
+    "display": {
+      "block": 43,
+      "none !important": 3,
+      "grid": 51,
+      "flex": 92,
+      "none": 23,
+      "inline-flex": 14,
+      "-webkit-box": 4,
+      "inline-grid": 3,
+      "inline": 3,
+      "contents": 1,
+      "inline-block": 1
+    },
+    "width": {
+      "0": 1,
+      "var(--csa-foundation-space-24)": 5,
+      "var(--csa-foundation-size-1)": 1,
+      "min(100%, var(--csa-component-access-card-max-width))": 1,
+      "var(--csa-foundation-space-64)": 2,
+      "min(100%, var(--csa-component-access-card-content-width))": 1,
+      "100%": 50,
+      "var(--sidebar-width)": 1,
+      "var(--csa-foundation-size-54)": 2,
+      "var(--csa-component-icon-button-width)": 1,
+      "var(--csa-foundation-space-40)": 10,
+      "var(--csa-foundation-size-22)": 3,
+      "var(--csa-foundation-space-32)": 8,
+      "var(--panel-width)": 1,
+      "calc(100% - var(--csa-foundation-space-16))": 4,
+      "var(--csa-foundation-size-38)": 1,
+      "var(--csa-foundation-space-20)": 7,
+      "var(--csa-foundation-size-15)": 1,
+      "var(--csa-foundation-space-14)": 5,
+      "var(--csa-foundation-space-16)": 11,
+      "var(--csa-foundation-space-3)": 1,
+      "var(--csa-foundation-space-18)": 10,
+      "var(--csa-foundation-size-460)": 1,
+      "var(--csa-foundation-space-36)": 3,
+      "var(--csa-foundation-size-210)": 1,
+      "var(--csa-component-navigation-profile-menu-width)": 1,
+      "calc(100% - var(--editor-frame-inset) - var(--editor-frame-inset))": 2,
+      "var(--csa-foundation-size-17)": 1,
+      "var(--csa-foundation-space-28)": 3,
+      "calc(100% + var(--csa-foundation-space-2))": 1,
+      "calc(100% - var(--csa-foundation-space-1))": 1,
+      "var(--csa-foundation-space-44)": 3,
+      "var(--csa-component-checkbox-size)": 3,
+      "var(--csa-foundation-space-48)": 2,
+      "min(var(--csa-foundation-size-420), calc(100% - var(--csa-foundation-space-32)))": 1,
+      "min(var(--csa-foundation-size-540), calc(100vw - var(--csa-foundation-space-32)))": 1,
+      "min(var(--csa-foundation-size-760), calc(100vw - var(--csa-foundation-space-32)))": 1,
+      "min(var(--panel-width), calc(100vw - var(--csa-foundation-space-20)))": 1,
+      "var(--csa-foundation-space-15)": 2,
+      "var(--csa-foundation-size-31)": 1,
+      "min(var(--csa-foundation-size-300), 100%)": 1,
+      "min(var(--csa-foundation-size-620), 100%)": 1,
+      "var(--csa-foundation-space-12)": 1,
+      "min(var(--csa-foundation-size-600), calc(100vw - var(--csa-foundation-space-32)))": 1,
+      "auto": 8,
+      "min(var(--csa-foundation-size-460), calc(100vw - var(--csa-foundation-space-32)))": 1,
+      "min(var(--csa-foundation-size-520), calc(100% - var(--csa-foundation-space-32)))": 1,
+      "var(--csa-foundation-size-27)": 1,
+      "min(var(--csa-foundation-size-360), calc(100vw - var(--sidebar-left) - var(--sidebar-width) - var(--csa-foundation-space-24)))": 1,
+      "var(--csa-foundation-space-22)": 2,
+      "min(var(--csa-foundation-size-240), calc(100vw - var(--csa-foundation-size-110)))": 1,
+      "var(--csa-foundation-size-104)": 1,
+      "min(var(--csa-foundation-size-375), 100%)": 1,
+      "calc(50% - var(--csa-foundation-space-6))": 1,
+      "max-content": 2,
+      "var(--csa-foundation-size-80)": 1,
+      "calc(50% - var(--csa-foundation-space-4))": 1,
+      "min(var(--csa-foundation-size-280), calc(100vw - var(--csa-foundation-space-20)))": 1,
+      "var(--csa-foundation-space-13)": 1,
+      "min(var(--csa-foundation-size-240), calc(100vw - var(--csa-foundation-space-40)))": 1,
+      "min(var(--csa-foundation-size-420), calc(100vw - var(--csa-foundation-space-24)))": 1,
+      "min(var(--csa-foundation-size-340), calc(100vw - var(--csa-foundation-space-24)))": 1,
+      "var(--csa-foundation-size-125)": 1,
+      "min(var(--csa-component-dialog-width), calc(100vw - var(--csa-foundation-space-32)))": 1,
+      "var(--csa-component-layout-switch-button-size)": 2,
+      "calc(var(--csa-foundation-layout-ratio-18) * 1%)": 1,
+      "calc(var(--csa-foundation-layout-ratio-24) * 1%)": 1,
+      "var(--csa-component-navigation-rail-width)": 1,
+      "var(--csa-foundation-space-1)": 1
+    },
+    "height": {
+      "0": 2,
+      "var(--csa-foundation-space-24)": 6,
+      "var(--csa-foundation-size-1)": 1,
+      "var(--csa-foundation-space-64)": 3,
+      "var(--csa-foundation-space-48)": 3,
+      "100%": 9,
+      "var(--csa-foundation-size-62)": 1,
+      "var(--csa-component-icon-button-height)": 1,
+      "var(--csa-foundation-space-40)": 13,
+      "var(--csa-foundation-size-22)": 3,
+      "var(--csa-foundation-space-32)": 8,
+      "var(--csa-foundation-space-44)": 8,
+      "var(--csa-foundation-space-36)": 5,
+      "var(--csa-foundation-space-56)": 2,
+      "var(--csa-foundation-size-38)": 1,
+      "var(--csa-foundation-space-20)": 7,
+      "var(--csa-component-status-height)": 1,
+      "var(--csa-foundation-size-15)": 1,
+      "var(--csa-foundation-space-14)": 5,
+      "var(--csa-foundation-space-16)": 10,
+      "var(--csa-foundation-space-3)": 1,
+      "var(--button-height)": 8,
+      "var(--csa-foundation-space-18)": 10,
+      "var(--csa-foundation-size-52)": 2,
+      "var(--csa-foundation-space-100)": 1,
+      "var(--editor-tabs-height)": 2,
+      "calc(100svh - var(--csa-foundation-space-20) - var(--editor-tabs-height))": 2,
+      "calc(100svh - var(--csa-foundation-size-62))": 1,
+      "calc(100svh - var(--csa-foundation-space-20))": 3,
+      "var(--csa-component-field-height-desktop)": 2,
+      "var(--csa-foundation-size-17)": 1,
+      "var(--csa-foundation-space-28)": 4,
+      "calc(100% + var(--csa-foundation-space-2))": 1,
+      "calc(100% - var(--csa-foundation-space-1))": 1,
+      "var(--csa-component-checkbox-size)": 3,
+      "var(--csa-foundation-space-1)": 2,
+      "var(--csa-foundation-space-15)": 2,
+      "var(--csa-foundation-space-12)": 1,
+      "auto": 9,
+      "var(--csa-foundation-size-27)": 1,
+      "var(--csa-foundation-space-22)": 2,
+      "var(--csa-foundation-space-30)": 2,
+      "var(--csa-foundation-size-93)": 1,
+      "calc(var(--csa-foundation-layout-ratio-65) * 1svh)": 2,
+      "var(--csa-foundation-space-50)": 1,
+      "var(--csa-foundation-space-90)": 1,
+      "var(--csa-foundation-space-13)": 1,
+      "var(--csa-foundation-size-54)": 1,
+      "var(--csa-foundation-space-72)": 1,
+      "var(--csa-foundation-size-46)": 1,
+      "calc(100svh - var(--csa-foundation-size-122) - var(--editor-tabs-height))": 1,
+      "var(--csa-component-layout-switch-button-size)": 2,
+      "var(--csa-component-button-height)": 1,
+      "var(--csa-component-field-height-mobile)": 1
+    },
+    "position": {
+      "absolute": 33,
+      "fixed": 14,
+      "relative": 36,
+      "sticky": 2,
+      "static": 4
+    },
+    "padding": {
+      "0": 31,
+      "var(--csa-foundation-space-12) var(--csa-foundation-space-18)": 3,
+      "var(--csa-foundation-space-24)": 4,
+      "var(--csa-foundation-space-32)": 1,
+      "0 var(--csa-foundation-space-12)": 1,
+      "var(--csa-foundation-space-8) var(--csa-foundation-space-2)": 1,
+      "var(--csa-foundation-space-16)": 5,
+      "var(--csa-foundation-space-12) var(--csa-foundation-space-16)": 2,
+      "var(--csa-foundation-space-20)": 3,
+      "var(--csa-foundation-space-11) 0 var(--csa-foundation-space-20)": 1,
+      "var(--csa-foundation-space-6)": 12,
+      "var(--csa-foundation-space-9)": 3,
+      "var(--csa-foundation-space-7) var(--csa-foundation-space-10)": 2,
+      "var(--csa-foundation-space-4)": 3,
+      "var(--csa-foundation-space-2) var(--csa-foundation-space-12)": 1,
+      "var(--csa-foundation-space-40) var(--csa-foundation-space-32) var(--csa-foundation-space-40) calc(var(--sidebar-left) + var(--workspace-sidebar-width) + var(--csa-foundation-space-30))": 1,
+      "var(--csa-foundation-space-8) 0 var(--csa-foundation-space-28)": 1,
+      "var(--csa-component-project-card-padding)": 1,
+      "var(--csa-foundation-space-8) var(--csa-foundation-space-10)": 5,
+      "var(--csa-foundation-space-2) var(--csa-foundation-space-8)": 2,
+      "var(--csa-foundation-space-6) var(--csa-foundation-space-12) var(--csa-foundation-space-6) var(--csa-foundation-space-20)": 1,
+      "0 var(--csa-foundation-space-8) 0 0": 1,
+      "var(--csa-foundation-space-7)": 2,
+      "var(--csa-foundation-space-19)": 1,
+      "var(--csa-foundation-space-10) var(--csa-foundation-space-12)": 3,
+      "var(--csa-foundation-space-10) var(--csa-foundation-space-10) var(--csa-foundation-space-10) calc(var(--sidebar-left) + var(--workspace-sidebar-width) + var(--csa-foundation-space-20))": 1,
+      "var(--csa-foundation-space-11) var(--csa-foundation-space-14)": 1,
+      "var(--csa-foundation-space-56) var(--csa-foundation-space-48) var(--csa-foundation-space-40)": 1,
+      "var(--csa-foundation-space-18) var(--csa-foundation-space-24)": 1,
+      "var(--csa-foundation-space-2) var(--csa-foundation-space-6)": 1,
+      "var(--csa-foundation-space-14) var(--csa-foundation-space-16)": 1,
+      "var(--csa-foundation-space-18) var(--csa-foundation-space-16)": 1,
+      "var(--csa-foundation-space-19) var(--csa-foundation-space-15)": 1,
+      "var(--csa-foundation-space-24) var(--csa-foundation-space-20)": 3,
+      "var(--csa-foundation-space-7) var(--csa-foundation-space-12)": 2,
+      "var(--csa-foundation-space-4) var(--csa-foundation-space-10)": 1,
+      "var(--csa-foundation-space-8)": 4,
+      "var(--csa-foundation-space-20) var(--csa-foundation-space-18) var(--csa-foundation-space-24)": 1,
+      "var(--csa-foundation-space-3)": 1,
+      "var(--csa-foundation-space-10)": 6,
+      "var(--csa-foundation-space-11)": 2,
+      "var(--csa-foundation-space-12)": 3,
+      "var(--csa-foundation-space-2) var(--csa-foundation-space-10)": 1,
+      "var(--csa-foundation-space-1) var(--csa-foundation-space-9)": 2,
+      "var(--csa-foundation-space-24) 0 0": 1,
+      "var(--csa-foundation-space-24) 0": 2,
+      "var(--csa-foundation-space-28)": 1,
+      "var(--csa-foundation-space-26)": 1,
+      "var(--csa-foundation-space-9) var(--csa-foundation-space-16)": 2,
+      "var(--csa-foundation-space-44) var(--csa-foundation-space-30) var(--csa-foundation-space-30)": 1,
+      "0 var(--csa-foundation-space-15)": 1,
+      "var(--csa-foundation-space-17)": 1,
+      "var(--csa-foundation-space-6) var(--csa-foundation-space-10)": 1,
+      "var(--csa-foundation-space-22)": 4,
+      "var(--csa-foundation-space-9) var(--csa-foundation-space-12)": 1,
+      "var(--csa-foundation-space-4) var(--csa-foundation-space-8) 0": 1,
+      "0 0 var(--csa-foundation-space-24)": 1,
+      "var(--csa-foundation-space-8) var(--csa-foundation-space-12)": 2,
+      "var(--csa-foundation-space-11) var(--csa-foundation-space-10)": 2,
+      "var(--csa-foundation-space-30) var(--csa-foundation-space-38) var(--csa-foundation-space-20)": 1,
+      "var(--csa-foundation-space-10) var(--csa-foundation-space-17)": 1,
+      "0 var(--csa-foundation-space-8)": 2,
+      "var(--csa-foundation-space-4) var(--csa-foundation-space-20) var(--csa-foundation-space-4) var(--csa-foundation-space-7)": 1,
+      "0 var(--csa-foundation-space-2)": 1,
+      "var(--csa-foundation-space-20) var(--csa-foundation-space-38) var(--csa-foundation-space-60)": 1,
+      "var(--csa-foundation-space-5) 0 var(--csa-foundation-space-5) var(--csa-foundation-space-20)": 1,
+      "var(--csa-foundation-space-13) var(--csa-foundation-space-24)": 1,
+      "var(--csa-foundation-space-12) var(--csa-foundation-space-24)": 2,
+      "0 var(--csa-foundation-space-24)": 1,
+      "var(--csa-foundation-space-9) var(--csa-foundation-space-11)": 1,
+      "var(--csa-foundation-space-6) var(--csa-foundation-space-11)": 1,
+      "var(--csa-foundation-space-20) var(--csa-foundation-space-24) var(--csa-foundation-space-14)": 1,
+      "var(--csa-foundation-space-8) var(--csa-foundation-space-24) var(--csa-foundation-space-24)": 2,
+      "var(--csa-foundation-space-11) var(--csa-foundation-space-12)": 1,
+      "var(--csa-foundation-space-16) var(--csa-foundation-space-24)": 1,
+      "var(--csa-foundation-space-18) var(--csa-foundation-space-18) var(--csa-foundation-space-14)": 1,
+      "var(--csa-foundation-space-8) var(--csa-foundation-space-18) var(--csa-foundation-space-20)": 1,
+      "var(--csa-foundation-space-14) var(--csa-foundation-space-18)": 1,
+      "var(--csa-foundation-space-4) 0 0": 1,
+      "var(--csa-foundation-space-24) var(--csa-foundation-space-20) var(--csa-foundation-space-20)": 2,
+      "var(--csa-foundation-space-20) var(--csa-foundation-space-20) var(--csa-foundation-space-45)": 1,
+      "var(--csa-foundation-space-13) var(--csa-foundation-space-18)": 1,
+      "var(--csa-foundation-space-18)": 3,
+      "var(--csa-foundation-space-44) var(--csa-foundation-space-24) var(--csa-foundation-space-24)": 1,
+      "var(--csa-foundation-space-14)": 2,
+      "0 !important": 1,
+      "var(--csa-foundation-space-20) 0": 1,
+      "var(--csa-foundation-space-10) var(--csa-foundation-space-14) var(--csa-foundation-space-13)": 1,
+      "var(--csa-foundation-space-25) var(--csa-foundation-space-16)": 1,
+      "var(--csa-foundation-space-5) 0": 1,
+      "var(--csa-foundation-space-8) var(--csa-foundation-space-8) var(--csa-foundation-space-6) var(--csa-foundation-space-12)": 1,
+      "0 var(--csa-foundation-space-10) var(--csa-foundation-space-10)": 3,
+      "var(--csa-foundation-space-22) var(--csa-foundation-space-20) var(--csa-foundation-space-16) var(--csa-foundation-space-24)": 1,
+      "var(--csa-foundation-space-5)": 1,
+      "0 var(--csa-foundation-space-24) var(--csa-foundation-space-24)": 1,
+      "var(--csa-foundation-space-4) 0": 1,
+      "var(--csa-foundation-space-1) 0": 1,
+      "var(--csa-foundation-space-4) var(--csa-foundation-space-6)": 1,
+      "var(--csa-foundation-space-10) var(--csa-foundation-space-14)": 2,
+      "var(--csa-foundation-space-5) var(--csa-foundation-space-12)": 1,
+      "var(--csa-foundation-space-6) var(--csa-foundation-space-9)": 1,
+      "var(--csa-foundation-space-45) var(--csa-foundation-space-20)": 1,
+      "var(--csa-foundation-space-32) var(--csa-foundation-space-24)": 1,
+      "var(--csa-foundation-space-30) var(--csa-foundation-space-20) var(--csa-foundation-space-30) calc(var(--sidebar-left) + var(--workspace-sidebar-width) + var(--csa-foundation-space-20))": 1,
+      "var(--csa-foundation-space-15) var(--csa-foundation-space-12)": 1,
+      "var(--csa-foundation-space-13) var(--csa-foundation-space-10)": 1,
+      "var(--csa-foundation-space-98) var(--csa-foundation-space-20) var(--csa-foundation-space-24)": 1,
+      "var(--csa-foundation-space-8) 0 var(--csa-foundation-space-24)": 1,
+      "var(--csa-foundation-space-16) var(--csa-foundation-space-60) var(--csa-foundation-space-16) var(--csa-foundation-space-16)": 1,
+      "var(--csa-foundation-space-6) var(--csa-foundation-space-7) var(--csa-foundation-space-6) var(--csa-foundation-space-16)": 1,
+      "var(--csa-foundation-space-8) 0 var(--csa-foundation-space-8) var(--csa-foundation-space-12)": 1,
+      "var(--csa-foundation-space-20) var(--csa-foundation-space-16)": 2,
+      "var(--csa-foundation-space-12) var(--csa-foundation-space-6)": 1,
+      "var(--csa-foundation-space-24) var(--csa-foundation-space-16) var(--csa-foundation-space-20)": 1,
+      "var(--csa-foundation-space-20) var(--csa-foundation-space-16) var(--csa-foundation-space-40)": 1,
+      "var(--csa-foundation-space-24) var(--csa-foundation-space-16)": 1,
+      "var(--csa-component-editor-toolbar-padding-block) var(--csa-component-editor-toolbar-padding-inline)": 1,
+      "var(--csa-foundation-space-4) var(--csa-foundation-space-7)": 1,
+      "var(--csa-component-layout-switch-padding)": 1,
+      "0 var(--csa-foundation-space-20)": 1,
+      "var(--csa-foundation-space-10) var(--csa-foundation-space-16)": 1,
+      "var(--csa-foundation-space-32) var(--csa-foundation-space-16)": 1,
+      "var(--csa-foundation-space-10) 0": 1,
+      "0 var(--csa-foundation-space-48) 0 0": 1
+    },
+    "overflow": {
+      "hidden": 25,
+      "visible": 6,
+      "auto": 1,
+      "clip": 1
+    },
+    "clip-path": {
+      "inset(50%)": 2
+    },
+    "white-space": {
+      "nowrap": 23,
+      "pre-wrap": 1,
+      "normal": 1
+    },
+    "border": {
+      "0": 48,
+      "var(--csa-foundation-border-width-1) solid var(--line)": 58,
+      "var(--csa-foundation-border-width-1) solid var(--csa-component-field-border)": 2,
+      "var(--csa-component-button-border) var(--csa-foundation-border-width-1) solid": 1,
+      "var(--csa-component-variant-card-border-width) dashed var(--line)": 1,
+      "var(--csa-foundation-border-width-2) solid var(--line)": 1,
+      "var(--csa-foundation-border-width-1) dashed var(--line)": 1
+    },
+    "z-index": {
+      "var(--csa-foundation-layer-20)": 6,
+      "var(--csa-foundation-layer-5)": 1,
+      "var(--csa-foundation-layer-50)": 2,
+      "var(--csa-foundation-layer-3)": 2,
+      "var(--csa-foundation-layer-2)": 7,
+      "var(--csa-foundation-layer-4)": 5,
+      "var(--csa-foundation-layer-10)": 3,
+      "var(--csa-foundation-layer-1)": 3,
+      "var(--csa-foundation-layer-8)": 1,
+      "var(--csa-foundation-layer-12)": 2,
+      "var(--csa-foundation-layer-30)": 3,
+      "auto": 1,
+      "var(--csa-foundation-layer-40)": 1,
+      "var(--csa-foundation-layer-45)": 1
+    },
+    "top": {
+      "0": 1,
+      "calc(-1 * var(--csa-foundation-space-60))": 1,
+      "var(--csa-foundation-space-14)": 1,
+      "var(--csa-foundation-space-10)": 4,
+      "50%": 4,
+      "var(--csa-foundation-space-40)": 1,
+      "100%": 1,
+      "var(--csa-foundation-space-12)": 2,
+      "var(--csa-foundation-space-56)": 1,
+      "calc(100% + var(--csa-foundation-space-8))": 3,
+      "var(--csa-foundation-space-2)": 1,
+      "var(--csa-foundation-space-4)": 3,
+      "var(--csa-foundation-space-6)": 1,
+      "var(--csa-foundation-space-16)": 2,
+      "calc(100% + var(--csa-foundation-space-7))": 1,
+      "auto": 1,
+      "var(--csa-foundation-space-8)": 2,
+      "var(--csa-foundation-space-30)": 1,
+      "var(--csa-foundation-space-90)": 1,
+      "var(--csa-foundation-space-44)": 1,
+      "var(--csa-foundation-space-82)": 2,
+      "calc(-1 * var(--csa-foundation-space-10))": 1,
+      "var(--csa-component-layout-switch-padding)": 1,
+      "calc(100% - var(--csa-foundation-space-8))": 1,
+      "calc(100% + var(--csa-foundation-space-4))": 1
+    },
+    "left": {
+      "0": 4,
+      "var(--csa-foundation-space-100)": 1,
+      "var(--sidebar-left)": 1,
+      "calc(100% + var(--csa-foundation-space-12))": 1,
+      "calc(var(--sidebar-left) + var(--workspace-sidebar-width) + var(--csa-foundation-space-30))": 1,
+      "calc(100% + var(--csa-foundation-space-8))": 1,
+      "calc(-1 * var(--csa-foundation-space-3))": 1,
+      "var(--csa-foundation-space-10)": 5,
+      "var(--csa-foundation-space-3)": 1,
+      "var(--csa-foundation-space-38)": 1,
+      "var(--csa-foundation-space-20)": 1,
+      "calc(var(--sidebar-left) + var(--sidebar-width) + var(--csa-foundation-space-12))": 1,
+      "auto": 1,
+      "calc(50% + var(--csa-foundation-space-32))": 1,
+      "calc(var(--sidebar-left) + var(--workspace-sidebar-width) + var(--csa-foundation-space-20))": 1,
+      "calc(50% + var(--csa-foundation-space-30))": 1,
+      "50%": 1,
+      "calc(100% + var(--csa-foundation-space-4))": 1,
+      "var(--csa-foundation-space-16)": 1,
+      "var(--csa-component-layout-switch-padding)": 1
+    },
+    "border-radius": {
+      "0": 4,
+      "var(--csa-foundation-radius-8)": 15,
+      "var(--csa-component-dialog-radius-desktop)": 2,
+      "var(--csa-foundation-radius-10)": 32,
+      "var(--csa-component-field-radius)": 5,
+      "var(--csa-foundation-radius-4)": 8,
+      "var(--csa-component-button-radius)": 3,
+      "var(--csa-component-dialog-radius-mobile)": 2,
+      "var(--csa-component-navigation-radius)": 1,
+      "var(--csa-foundation-radius-10) var(--csa-foundation-radius-10) 0 0": 3,
+      "var(--csa-foundation-radius-999)": 14,
+      "var(--csa-component-project-card-radius-desktop)": 1,
+      "var(--csa-component-dropdown-radius)": 7,
+      "var(--csa-component-status-radius)": 1,
+      "var(--csa-foundation-radius-20)": 9,
+      "0 0 var(--csa-foundation-radius-8) var(--csa-foundation-radius-8)": 1,
+      "var(--csa-foundation-radius-2)": 1,
+      "0 0 var(--csa-foundation-radius-16) var(--csa-foundation-radius-16)": 3,
+      "var(--csa-foundation-radius-16)": 11,
+      "var(--csa-component-dropdown-radius) 0 0 var(--csa-component-dropdown-radius)": 1,
+      "0 var(--csa-component-dropdown-radius) var(--csa-component-dropdown-radius) 0": 1,
+      "var(--csa-component-variant-card-radius)": 1,
+      "var(--csa-component-checkbox-radius)": 3,
+      "var(--csa-component-chip-radius)": 2,
+      "var(--csa-component-button-panel-radius)": 1,
+      "inherit": 3,
+      "var(--csa-component-project-card-radius-mobile)": 2,
+      "var(--csa-component-editor-toolbar-radius)": 1,
+      "var(--csa-component-layout-switch-radius)": 3
+    },
+    "place-items": {
+      "center": 26
+    },
+    "min-height": {
+      "0": 29,
+      "100svh": 2,
+      "var(--csa-component-icon-button-minimum-target)": 1,
+      "var(--csa-component-project-card-height-desktop)": 1,
+      "var(--csa-foundation-space-40)": 7,
+      "calc(2 * var(--csa-foundation-line-height-25))": 1,
+      "var(--csa-foundation-space-44)": 9,
+      "calc(100svh - var(--csa-foundation-space-20))": 1,
+      "var(--csa-foundation-space-24)": 3,
+      "var(--csa-foundation-size-72)": 1,
+      "var(--csa-foundation-space-64)": 2,
+      "var(--csa-foundation-size-594)": 1,
+      "var(--csa-component-field-height-desktop)": 1,
+      "var(--csa-foundation-space-28)": 3,
+      "var(--csa-foundation-space-56)": 1,
+      "var(--csa-component-chip-height)": 2,
+      "var(--csa-foundation-size-120)": 1,
+      "var(--button-height)": 8,
+      "var(--csa-foundation-size-84)": 1,
+      "var(--csa-foundation-space-48)": 1,
+      "var(--csa-foundation-size-46)": 1,
+      "var(--csa-foundation-size-90)": 1,
+      "var(--csa-foundation-size-280)": 2,
+      "var(--csa-foundation-size-200)": 1,
+      "var(--csa-foundation-size-190)": 1,
+      "var(--csa-foundation-space-16)": 1,
+      "var(--csa-foundation-size-116)": 1,
+      "calc(calc(var(--csa-foundation-font-scale-3-2) * 1em) + var(--csa-foundation-space-20) + 2 * var(--csa-foundation-border-width-1))": 1,
+      "var(--csa-foundation-space-36)": 1,
+      "var(--csa-foundation-space-100)": 1,
+      "var(--csa-foundation-size-125)": 1,
+      "var(--csa-component-project-card-height-mobile)": 1,
+      "calc(2 * var(--csa-foundation-line-height-22))": 1,
+      "var(--csa-foundation-size-132)": 1,
+      "var(--csa-foundation-space-32)": 1,
+      "var(--csa-foundation-size-80)": 1,
+      "min(var(--csa-foundation-size-320), calc(100dvh - var(--csa-foundation-space-98)))": 1,
+      "var(--csa-component-field-height-mobile)": 1,
+      "calc(100svh - var(--csa-foundation-size-122))": 1,
+      "var(--csa-foundation-size-320)": 1,
+      "var(--csa-foundation-size-360)": 1,
+      "calc(calc(var(--csa-foundation-font-scale-3) * 1em) + var(--csa-foundation-space-20) + 2 * var(--csa-foundation-border-width-1))": 1,
+      "var(--csa-foundation-size-52)": 1,
+      "var(--csa-foundation-size-96)": 1,
+      "calc(var(--csa-component-button-height) + var(--csa-foundation-space-16))": 1,
+      "var(--csa-component-button-height)": 1
+    },
+    "flex-direction": {
+      "column": 22,
+      "row": 4
+    },
+    "align-items": {
+      "center": 72,
+      "flex-start": 9,
+      "flex-end": 1,
+      "stretch": 2,
+      "start": 1,
+      "end": 1
+    },
+    "text-align": {
+      "center": 10,
+      "left": 24,
+      "right": 2
+    },
+    "margin-bottom": {
+      "0": 2,
+      "var(--csa-foundation-space-40)": 1,
+      "var(--csa-foundation-space-8)": 3,
+      "var(--csa-foundation-space-4)": 3,
+      "var(--csa-foundation-space-32)": 1,
+      "var(--csa-foundation-space-24)": 3,
+      "var(--csa-foundation-space-9)": 1,
+      "var(--csa-foundation-space-16)": 4,
+      "var(--csa-foundation-space-22)": 1,
+      "var(--csa-foundation-space-20)": 2,
+      "var(--csa-foundation-space-18)": 2,
+      "var(--csa-foundation-space-7)": 1,
+      "var(--csa-foundation-space-10)": 2,
+      "var(--csa-foundation-space-0)": 2,
+      "var(--csa-foundation-space-36)": 1,
+      "var(--csa-foundation-space-14)": 1,
+      "var(--csa-foundation-space-30)": 1,
+      "var(--csa-foundation-space-3)": 1,
+      "var(--csa-foundation-space-5)": 2
+    },
+    "font-size": {
+      "0": 1,
+      "var(--csa-foundation-font-size-18)": 20,
+      "var(--csa-foundation-font-size-20)": 15,
+      "var(--csa-semantic-typography-label-font-size)": 1,
+      "var(--csa-foundation-font-size-16)": 38,
+      "var(--csa-foundation-font-size-12)": 56,
+      "var(--csa-foundation-font-size-14)": 52,
+      "var(--csa-foundation-font-size-15)": 11,
+      "var(--csa-foundation-font-size-22)": 9,
+      "var(--csa-foundation-font-size-24)": 9,
+      "var(--csa-foundation-font-size-11)": 20,
+      "var(--csa-foundation-font-size-32)": 4,
+      "var(--csa-component-typography-observed-size-38)": 1,
+      "var(--csa-foundation-font-size-10)": 7,
+      "clamp(var(--csa-foundation-font-size-24), calc(var(--csa-foundation-layout-ratio-2-4) * 1vw), var(--csa-foundation-font-size-32))": 1,
+      "var(--csa-foundation-font-size-13)": 19,
+      "var(--csa-foundation-font-size-17)": 3,
+      "var(--csa-foundation-font-size-25)": 2,
+      "var(--csa-foundation-font-size-29)": 1,
+      "var(--csa-foundation-font-size-27)": 2,
+      "var(--csa-foundation-font-size-23)": 2,
+      "var(--csa-foundation-font-size-19)": 1,
+      "clamp(var(--csa-foundation-font-size-23), calc(var(--csa-foundation-layout-ratio-3) * 1vw), var(--csa-component-typography-observed-size-30))": 1,
+      "var(--csa-foundation-font-size-28)": 1,
       "var(--button-label-size)": 1
     },
     "font-weight": {
-      "700": 18,
-      "650": 15,
-      "400": 15,
-      "500": 4,
-      "550": 3,
-      "600": 27,
+      "var(--csa-foundation-font-weight-700)": 17,
+      "var(--csa-foundation-font-weight-600)": 42,
+      "var(--csa-semantic-typography-label-font-weight)": 1,
+      "var(--csa-foundation-font-weight-400)": 16,
+      "var(--csa-foundation-font-weight-500)": 4,
+      "var(--csa-foundation-font-weight-550)": 2,
+      "var(--csa-foundation-font-weight-650)": 12,
+      "var(--csa-semantic-typography-metadata-font-weight)": 1,
       "var(--button-label-weight)": 1
     },
     "line-height": {
-      "1.3": 5,
-      "1.6": 9,
-      "1": 6,
-      "20px": 13,
-      "1.4": 6,
-      "25px": 2,
-      "16px": 8,
-      "19px": 2,
-      "22px": 3,
-      "1.7": 6,
-      "18px": 9,
-      "28px": 3,
-      "24px": 3,
-      "14px": 1,
-      "1.5": 10,
-      "1.35": 4,
-      "1.65": 1,
-      "1.8": 2,
-      "17px": 3,
-      "1.45": 1,
-      "15px": 2,
-      "30px": 1
+      "var(--csa-foundation-line-height-30)": 2,
+      "var(--csa-semantic-typography-label-line-height)": 1,
+      "var(--csa-foundation-line-height-20)": 23,
+      "var(--csa-foundation-font-leading-1)": 6,
+      "var(--csa-foundation-line-height-16)": 9,
+      "var(--csa-foundation-font-leading-1-4)": 6,
+      "var(--csa-foundation-line-height-25)": 2,
+      "var(--csa-foundation-line-height-19)": 2,
+      "var(--csa-foundation-line-height-22)": 3,
+      "var(--csa-foundation-font-leading-1-3)": 3,
+      "var(--csa-foundation-font-leading-1-7)": 6,
+      "var(--csa-foundation-line-height-18)": 9,
+      "var(--csa-foundation-line-height-28)": 3,
+      "var(--csa-foundation-line-height-24)": 5,
+      "var(--csa-foundation-font-leading-1-6)": 8,
+      "var(--csa-foundation-font-leading-1-5)": 12,
+      "normal": 1,
+      "var(--csa-foundation-font-leading-1-35)": 4,
+      "var(--csa-foundation-font-leading-1-65)": 1,
+      "var(--csa-foundation-font-leading-1-8)": 2,
+      "var(--csa-foundation-line-height-17)": 3,
+      "var(--csa-foundation-font-leading-1-45)": 1,
+      "var(--csa-foundation-line-height-15)": 2
     },
-    "border-radius": {
-      "8px": 14,
-      "21px": 3,
-      "11px": 8,
-      "10px": 21,
-      "4px": 1,
-      "10px 10px 0 0": 1,
-      "50%": 13,
-      "6px": 4,
-      "12px": 12,
-      "7px": 3,
-      "2px": 5,
-      "30px": 1,
+    "gap": {
       "0": 4,
-      "0 0 8px 8px": 1,
-      "11px 11px 0 0": 2,
-      "0 0 15px 15px": 3,
-      "15px": 2,
-      "5px": 3,
-      "18px": 1,
-      "14px": 4,
-      "999px": 1,
-      "20px": 5,
-      "22px": 3,
-      "9px": 2,
-      "16px": 6,
-      "23px": 1,
-      "inherit": 2,
-      "17px": 1
+      "var(--csa-foundation-space-8)": 23,
+      "var(--csa-foundation-space-14)": 7,
+      "var(--csa-foundation-space-12)": 27,
+      "var(--csa-foundation-space-24)": 2,
+      "var(--csa-foundation-space-18)": 4,
+      "var(--csa-foundation-space-16)": 14,
+      "var(--csa-foundation-space-10)": 15,
+      "var(--csa-foundation-space-6)": 7,
+      "var(--csa-foundation-space-20)": 3,
+      "var(--csa-foundation-space-4)": 6,
+      "var(--csa-foundation-space-15)": 3,
+      "var(--csa-foundation-space-5)": 4,
+      "var(--csa-foundation-space-7)": 2,
+      "var(--csa-foundation-space-6) 0": 1,
+      "var(--csa-foundation-space-3)": 2,
+      "var(--csa-foundation-space-10) var(--csa-foundation-space-14)": 1,
+      "var(--csa-foundation-space-22)": 1,
+      "var(--csa-foundation-space-7) 0": 1,
+      "var(--csa-foundation-space-6) var(--csa-foundation-space-14)": 1,
+      "var(--csa-foundation-space-8) var(--csa-foundation-space-16)": 1,
+      "0 var(--csa-foundation-space-4)": 1,
+      "var(--csa-foundation-space-4) var(--csa-foundation-space-12)": 1
+    },
+    "border-color": {
+      "var(--line)": 25,
+      "var(--csa-semantic-color-border-selected)": 1,
+      "var(--csa-component-variant-card-selected-border)": 1,
+      "transparent": 1,
+      "currentColor": 2,
+      "var(--color-button-primary)": 1
     },
     "box-shadow": {
-      "0 0 0 3px #4d5d7908": 3,
-      "8px 0 32px #25355016": 1,
-      "0 4px 18px #4d5d7908": 1,
-      "0 8px 28px #17171714": 2,
-      "0 4px 16px #4d5d7908": 1,
-      "0 6px 20px #2535500a": 1,
-      "inset 0 -1px 0 var(--line)": 1,
-      "none": 4,
-      "0 8px 36px #29354c0d": 1,
-      "0 8px 36px #29354c14": 1,
-      "0 8px 28px #25355020": 2,
-      "0 16px 65px #25355018": 1,
-      "0 16px 65px #25355024": 2,
-      "0 8px 30px #25355014": 1,
-      "0 4px 26px #25355005": 1,
-      "0 10px 35px #2535501f": 1,
-      "0 12px 45px #25355014": 1,
-      "0 8px 25px #27354c16": 1,
-      "0 3px 12px #4d5d7909": 1,
-      "0 0 0 1px var(--color-button-primary)": 1,
-      "0 10px 36px #25355025": 2,
-      "0 10px 36px #29354c24": 1
+      "none": 23,
+      "var(--csa-semantic-shadow-dropdown)": 12
     },
-    "z-index": {
-      "20": 5,
-      "5": 1,
-      "50": 2,
-      "3": 2,
-      "2": 5,
-      "4": 3,
-      "10": 3,
-      "1": 3,
-      "8": 1,
-      "12": 2,
-      "30": 1,
+    "flex-shrink": {
+      "0": 59
+    },
+    "margin-top": {
+      "0": 2,
+      "var(--csa-foundation-space-24)": 13,
+      "var(--csa-foundation-space-32)": 1,
+      "auto": 2,
+      "var(--csa-foundation-space-4)": 1,
+      "var(--csa-foundation-space-18)": 2,
+      "var(--csa-foundation-space-12)": 2,
+      "var(--csa-foundation-space-16)": 6,
+      "var(--csa-foundation-space-20)": 1,
+      "var(--csa-foundation-space-10)": 3,
+      "var(--csa-foundation-space-5)": 2,
+      "var(--csa-foundation-space-26)": 1,
+      "var(--csa-foundation-space-2)": 2,
+      "min(calc(var(--csa-foundation-layout-ratio-15) * 1vh), var(--csa-foundation-space-130))": 1,
+      "var(--csa-foundation-space-28)": 1,
+      "var(--csa-foundation-space-14)": 2,
+      "calc(var(--csa-foundation-layout-ratio-10) * 1vh)": 1,
+      "var(--csa-foundation-space-3)": 2
+    },
+    "padding-top": {
+      "0": 1,
+      "var(--csa-foundation-space-24)": 2,
+      "var(--csa-foundation-space-16)": 2,
+      "var(--csa-foundation-space-20)": 1,
+      "var(--csa-foundation-space-32)": 1,
+      "var(--csa-foundation-space-14)": 1,
+      "var(--csa-foundation-space-8)": 2
+    },
+    "border-top": {
+      "0": 3,
+      "var(--csa-foundation-border-width-1) solid var(--line)": 8
+    },
+    "bottom": {
+      "0": 2,
+      "var(--csa-foundation-space-10)": 2,
+      "100%": 1,
+      "var(--csa-foundation-space-18)": 1,
+      "auto": 3,
+      "var(--csa-foundation-space-28)": 1,
+      "var(--csa-foundation-space-8)": 1
+    },
+    "transition": {
+      "width var(--csa-foundation-motion-duration-180) var(--csa-foundation-motion-easing-ease)": 1,
+      "opacity var(--csa-foundation-motion-duration-150)": 1,
+      "padding-left var(--csa-foundation-motion-duration-180) var(--csa-foundation-motion-easing-ease)": 1,
+      "opacity var(--csa-foundation-motion-duration-200) var(--csa-foundation-motion-easing-ease)": 1,
+      "left var(--csa-foundation-motion-duration-180) var(--csa-foundation-motion-easing-ease)": 1,
+      "border-color var(--csa-foundation-motion-duration-150) var(--csa-foundation-motion-easing-ease)": 1,
+      "border-color var(--csa-foundation-motion-duration-150), box-shadow var(--csa-foundation-motion-duration-150)": 2,
+      "background var(--csa-foundation-motion-duration-150), transform var(--csa-foundation-motion-duration-150)": 1,
+      "border-color var(--csa-foundation-motion-duration-150), box-shadow var(--csa-foundation-motion-duration-150), transform var(--csa-foundation-motion-duration-150)": 1,
+      "transform var(--csa-foundation-motion-duration-150) var(--csa-foundation-motion-easing-ease)": 2,
+      "opacity var(--csa-foundation-motion-duration-120) var(--csa-foundation-motion-easing-ease), background var(--csa-foundation-motion-duration-120) var(--csa-foundation-motion-easing-ease)": 1,
+      "none": 2,
+      "none !important": 1,
+      "transform var(--csa-foundation-motion-duration-200) var(--csa-foundation-motion-easing-arrive)": 1
+    },
+    "justify-content": {
+      "space-between": 20,
+      "center": 20,
+      "flex-start": 2,
+      "flex-end": 3
+    },
+    "border-bottom": {
+      "0": 1,
+      "var(--csa-foundation-border-width-1) solid var(--line)": 9,
+      "var(--csa-foundation-border-width-3) solid var(--line)": 1,
+      "var(--csa-foundation-border-width-2) solid var(--line)": 1
+    },
+    "letter-spacing": {
+      "0": 2,
+      "var(--csa-foundation-font-tracking-negative-0-3)": 2,
+      "normal": 1,
+      "var(--csa-foundation-font-tracking-negative-0-35)": 2,
+      "var(--csa-foundation-font-tracking-negative-0-1)": 1,
+      "var(--csa-foundation-font-tracking-negative-0-5)": 1,
+      "var(--csa-foundation-font-tracking-negative-0-6)": 2,
+      "var(--csa-foundation-font-tracking-negative-0-4)": 3,
+      "var(--csa-foundation-font-tracking-negative-0-7)": 1,
+      "var(--csa-foundation-font-tracking-1-6)": 1,
+      "var(--csa-foundation-font-tracking-negative-1-0)": 1
+    },
+    "flex": {
+      "1": 26,
+      "0 0 auto": 3,
+      "0 0 var(--csa-foundation-space-260)": 1,
+      "1 1 auto": 1,
+      "0 1 auto": 1,
+      "none": 2,
+      "0 0 100%": 1
+    },
+    "font-style": {
+      "normal": 2
+    },
+    "text-transform": {
+      "none": 1,
+      "uppercase": 3
+    },
+    "direction": {
+      "ltr": 1
+    },
+    "font-feature-settings": {
+      "\"liga\"": 1
+    },
+    "font-variation-settings": {
+      "\"FILL\" var(--csa-component-icon-fill), \"wght\" var(--csa-foundation-font-weight-400), \"GRAD\" var(--csa-component-icon-grade), \"opsz\" var(--csa-component-icon-optical-size)": 6,
+      "\"FILL\" var(--csa-component-icon-fill), \"wght\" var(--csa-foundation-font-weight-400), \"GRAD\" var(--csa-component-icon-grade), \"opsz\" 20": 2,
+      "\"FILL\" var(--csa-component-icon-outline-fill), \"wght\" var(--csa-foundation-font-weight-400), \"GRAD\" var(--csa-component-icon-grade), \"opsz\" var(--csa-component-icon-optical-size)": 3
+    },
+    "content": {
+      "attr(data-tooltip)": 1,
+      "''": 3,
+      "\"\"": 2,
+      "attr(data-label)": 1
+    },
+    "transform": {
+      "translateY(-50%)": 5,
+      "translateY(var(--csa-foundation-space-6))": 1,
+      "translateY(0)": 2,
+      "translateY(var(--csa-foundation-space-14))": 1,
+      "translateY(calc(-1 * var(--csa-foundation-space-20)))": 1,
+      "translateX(var(--csa-foundation-space-1))": 1,
+      "translateY(calc(-1 * var(--csa-foundation-space-2)))": 1,
+      "rotate(180deg)": 2,
+      "rotate(360deg)": 1,
+      "rotate(-90deg)": 1,
+      "translateX(calc(-1 * var(--csa-foundation-space-5)))": 1,
+      "translateX(0)": 1,
+      "translateX(-50%)": 1,
+      "translateY(calc(-1 * var(--csa-foundation-space-12)))": 1,
+      "none": 2,
+      "translateX(var(--csa-component-layout-switch-button-size))": 1
+    },
+    "opacity": {
+      "0": 7,
+      "1": 14,
+      "var(--csa-foundation-opacity--4)": 2,
+      "var(--csa-foundation-opacity--45)": 1
+    },
+    "visibility": {
+      "hidden": 2,
+      "visible": 2
+    },
+    "pointer-events": {
+      "none": 10,
+      "auto": 1
+    },
+    "margin-right": {
+      "var(--csa-foundation-space-8)": 1,
+      "var(--csa-foundation-space-6)": 1,
       "auto": 1,
-      "18": 2,
-      "40": 1,
-      "45": 1
+      "var(--csa-foundation-space-44)": 1
     },
-    "colors": {
-      "#fbf6f4": 2,
-      "#ffffff": 1,
-      "#404040": 2,
-      "#a3a3a3": 1,
-      "#fafafa": 4,
-      "#ffe4e6": 1,
-      "#eef2ff": 1,
-      "#ffedd5": 1,
-      "#eff6ff": 1,
-      "#dbeafe": 1,
-      "#fb7185": 1,
-      "#bbf7d0": 1,
-      "#16a34a": 1,
-      "#14532d": 1,
-      "#b91c1c": 3,
-      "#e5e5e5": 1,
-      "#f5f5f5": 1,
-      "#4d5d79": 1,
-      "#3b82f6": 1,
-      "#2563eb": 1,
-      "#e7e5e4": 1,
-      "#1c1917": 1,
-      "#99abc6": 5,
-      "#4d5d7908": 5,
-      "#f8f9fb": 2,
-      "#f2f3f5": 2,
-      "#eef1f6": 2,
-      "#25355016": 1,
-      "#fbf6f400": 2,
-      "#fbf6f4e6": 1,
-      "#17171714": 2,
-      "#cfd4d7": 1,
-      "#2535500a": 1,
-      "#f2f4f7": 1,
-      "#f5f6f8": 1,
-      "#f7f8fa": 1,
-      "#29354c0d": 1,
-      "#edf0f5": 6,
-      "#f3f5f8": 2,
-      "#dfe5ee": 1,
-      "#f5f7fa": 5,
-      "#fff": 1,
-      "#f8f1ee": 1,
-      "#f9edf6": 1,
-      "#a34d88": 1,
-      "#29354c14": 1,
-      "#25355020": 2,
-      "#27354c28": 1,
-      "#dc2626": 1,
-      "#25355018": 1,
-      "#27354c24": 1,
-      "#edf1f6": 3,
-      "#25355024": 2,
-      "#f0f3f8": 1,
-      "#25355014": 2,
-      "#f3f5f9": 1,
-      "#25355005": 1,
-      "#a74646": 1,
-      "#eaf0f7": 2,
-      "#e3eaf5": 1,
-      "#263e69": 1,
-      "#fff0a8": 1,
-      "#4a6a9d": 1,
-      "#2535501f": 1,
-      "#fcfcfd": 2,
-      "#fafbfc": 1,
-      "#d4d8df": 1,
-      "#f6f7f9": 1,
-      "#ac4848": 1,
-      "#78869c": 1,
-      "#27354c16": 1,
-      "#ffffffde": 1,
-      "#4d5d7909": 1,
-      "#e7e2dd": 1,
-      "#f0f1f4": 1,
-      "#25355025": 2,
-      "#29354c24": 1,
-      "#fef2f2": 1
+    "overflow-x": {
+      "hidden": 2,
+      "auto": 3
     },
-    "queries": [
-      "project-dashboard (max-width: 999px) ",
-      "project-dashboard (max-width: 579px) ",
-      "(max-width: 650px) ",
-      "(hover: none) ",
-      "(max-width: 700px) ",
-      "(max-width: 650px) ",
-      "(max-width: 480px) ",
-      "(max-width: 1100px) ",
-      "(max-width: 650px) ",
-      "print ",
-      "(max-width: 1100px) ",
-      "(max-width: 650px) ",
-      "(max-width: 370px) ",
-      "(max-width: 768px) ",
-      "(max-height: 520px) and (min-width: 651px) ",
-      "(prefers-reduced-motion: reduce) ",
-      "print ",
-      "(min-width: 769px) "
-    ]
+    "overflow-y": {
+      "auto": 22,
+      "hidden": 2
+    },
+    "order": {
+      "0": 1,
+      "1": 2,
+      "2": 2,
+      "3": 1,
+      "4": 1
+    },
+    "margin-left": {
+      "0": 1,
+      "var(--csa-foundation-space-8)": 1,
+      "auto": 3,
+      "var(--csa-foundation-space-4)": 1,
+      "var(--csa-foundation-space-16)": 1
+    },
+    "margin-inline": {
+      "var(--csa-foundation-space-8)": 1,
+      "auto": 1
+    },
+    "text-overflow": {
+      "ellipsis": 8
+    },
+    "grid-template-columns": {
+      "minmax(0, 1fr)": 12,
+      "repeat(3, minmax(0, 1fr))": 1,
+      "repeat(2, minmax(0, 1fr))": 3,
+      "minmax(0, 1fr) var(--panel-width)": 1,
+      "1fr 1fr": 3,
+      "1fr": 1,
+      "var(--csa-component-checkbox-size) var(--csa-foundation-size-104) minmax(0, 1fr)": 1,
+      "var(--csa-component-checkbox-size) var(--csa-foundation-size-80) minmax(0, 1fr)": 1,
+      "minmax(0, 1fr) auto": 1,
+      "var(--csa-component-checkbox-size) var(--csa-foundation-space-64) minmax(0, 1fr)": 1,
+      "minmax(0, 1fr) minmax(0, 1.5fr)": 1
+    },
+    "max-width": {
+      "var(--csa-component-layout-home-max-width)": 1,
+      "var(--csa-foundation-size-520)": 1,
+      "100%": 5,
+      "calc(100vw - var(--sidebar-left) - var(--sidebar-width) - var(--csa-foundation-space-24))": 1,
+      "calc(var(--csa-foundation-size-980) - var(--editor-frame-inset) - var(--editor-frame-inset))": 2,
+      "calc(100% - var(--csa-foundation-space-8))": 1,
+      "var(--csa-foundation-size-1000)": 1,
+      "var(--csa-foundation-size-980)": 1,
+      "var(--csa-foundation-size-125)": 1,
+      "var(--csa-foundation-size-85)": 1,
+      "none": 2,
+      "var(--csa-foundation-size-670)": 1,
+      "var(--csa-foundation-size-510)": 1,
+      "calc(100% - var(--csa-foundation-size-120))": 1,
+      "var(--csa-foundation-size-640)": 2,
+      "var(--csa-foundation-size-360)": 1,
+      "calc(100% - var(--csa-foundation-size-90))": 1,
+      "calc(100% - var(--csa-foundation-space-32))": 1,
+      "min(var(--csa-foundation-size-360), calc(100vw - var(--csa-foundation-space-24)))": 1,
+      "calc(100% - var(--toolbar-inset) - var(--toolbar-inset))": 1
+    },
+    "container": {
+      "project-dashboard / inline-size": 1
+    },
+    "align-self": {
+      "start": 3,
+      "center": 1,
+      "flex-start": 1
+    },
+    "padding-bottom": {
+      "var(--csa-foundation-space-24)": 1,
+      "var(--csa-foundation-space-2)": 1,
+      "var(--csa-foundation-space-12)": 1,
+      "var(--csa-foundation-space-16)": 1,
+      "var(--csa-foundation-space-50)": 1,
+      "var(--csa-foundation-space-32)": 1
+    },
+    "font-optical-sizing": {
+      "auto": 2
+    },
+    "right": {
+      "0": 12,
+      "var(--csa-foundation-space-12)": 3,
+      "var(--csa-foundation-space-2)": 2,
+      "calc(-1 * var(--csa-foundation-space-2))": 1,
+      "var(--csa-foundation-space-4)": 2,
+      "var(--csa-foundation-space-10)": 4,
+      "var(--csa-foundation-space-16)": 2,
+      "var(--csa-foundation-space-38)": 1,
+      "var(--csa-foundation-space-20)": 1,
+      "auto": 1,
+      "var(--csa-foundation-space-8)": 5
+    },
+    "animation": {
+      "greeting-arrive var(--csa-foundation-motion-duration-450) var(--csa-foundation-motion-easing-arrive) both": 1,
+      "card-arrive var(--csa-foundation-motion-duration-520) var(--csa-foundation-motion-easing-arrive) both": 1,
+      "output-spin var(--csa-foundation-motion-duration-800) var(--csa-foundation-motion-easing-linear) infinite": 1,
+      "rail-panel-reveal var(--csa-foundation-motion-duration-160) ease-out": 1,
+      "none": 2,
+      "none !important": 1
+    },
+    "animation-delay": {
+      "calc(var(--csa-foundation-motion-duration-420) + var(--reveal-order, 0) * var(--csa-foundation-motion-duration-45))": 1
+    },
+    "padding-right": {
+      "0": 4,
+      "var(--csa-foundation-space-40)": 2,
+      "var(--csa-foundation-space-4)": 1,
+      "var(--csa-foundation-space-0)": 1,
+      "var(--csa-foundation-space-50)": 1,
+      "var(--csa-foundation-space-10)": 1,
+      "var(--csa-foundation-space-8)": 2,
+      "var(--csa-foundation-space-30)": 2,
+      "var(--csa-foundation-space-14)": 1,
+      "var(--csa-foundation-space-28)": 1,
+      "var(--csa-foundation-space-36)": 1
+    },
+    "-webkit-box-orient": {
+      "vertical": 4
+    },
+    "-webkit-line-clamp": {
+      "1": 1,
+      "2": 4
+    },
+    "text-decoration": {
+      "underline": 5
+    },
+    "text-underline-offset": {
+      "var(--csa-foundation-space-3)": 7
+    },
+    "flex-wrap": {
+      "wrap": 18,
+      "nowrap": 2
+    },
+    "max-height": {
+      "calc(var(--csa-foundation-layout-ratio-40) * 1svh)": 1,
+      "none": 6,
+      "min(var(--csa-foundation-size-360), 50svh)": 1,
+      "min(var(--csa-foundation-size-320), 50svh)": 1,
+      "calc(100svh - var(--csa-foundation-space-32))": 2,
+      "var(--csa-foundation-size-120)": 1,
+      "calc(100svh - var(--csa-foundation-space-48))": 2,
+      "calc(var(--csa-foundation-layout-ratio-24) * 1svh)": 1,
+      "calc(var(--csa-foundation-layout-ratio-30) * 1svh)": 3,
+      "min(var(--csa-foundation-size-420), calc(var(--csa-foundation-layout-ratio-65) * 1svh))": 1,
+      "var(--csa-foundation-size-300)": 1,
+      "var(--csa-foundation-size-180)": 2,
+      "calc(var(--csa-foundation-layout-ratio-42) * 1vh)": 1,
+      "min(calc(var(--csa-foundation-layout-ratio-44) * 1svh), var(--csa-foundation-size-400))": 1,
+      "var(--csa-foundation-size-190)": 1,
+      "var(--csa-foundation-size-280)": 1,
+      "calc(var(--csa-foundation-layout-ratio-60) * 1vh)": 1,
+      "calc(100svh - var(--csa-foundation-space-100))": 1,
+      "calc(100dvh - var(--csa-foundation-space-24))": 1,
+      "calc(100dvh - var(--csa-foundation-space-98))": 2,
+      "calc(100svh - var(--csa-foundation-space-24))": 1,
+      "var(--csa-foundation-size-144)": 1,
+      "calc(100dvh - var(--csa-foundation-space-32))": 1,
+      "calc(var(--csa-foundation-layout-ratio-40) * 1dvh)": 1,
+      "calc(100svh - var(--csa-foundation-size-220) - var(--csa-foundation-space-30))": 1
+    },
+    "overscroll-behavior-x": {
+      "contain": 2
+    },
+    "scrollbar-width": {
+      "none": 3,
+      "thin": 1
+    },
+    "overscroll-behavior": {
+      "contain": 7
+    },
+    "overflow-wrap": {
+      "anywhere": 17
+    },
+    "resize": {
+      "none": 3,
+      "vertical": 4
+    },
+    "grid-template-rows": {
+      "max-content minmax(var(--csa-foundation-size-220), 1fr)": 1,
+      "auto": 1
+    },
+    "padding-block": {
+      "var(--csa-foundation-space-24)": 2,
+      "var(--csa-foundation-space-40)": 1,
+      "var(--csa-foundation-space-13)": 1
+    },
+    "overscroll-behavior-y": {
+      "contain": 5
+    },
+    "border-left": {
+      "var(--csa-foundation-border-width-1) solid var(--csa-component-button-border)": 1,
+      "var(--csa-foundation-border-width-3) solid var(--line)": 1
+    },
+    "align-content": {
+      "start": 3
+    },
+    "list-style": {
+      "none": 6
+    },
+    "border-style": {
+      "solid": 1
+    },
+    "border-width": {
+      "var(--csa-component-variant-card-selected-border-width)": 1
+    },
+    "inset": {
+      "0": 5,
+      "calc(-1 * var(--csa-foundation-space-1))": 1,
+      "var(--csa-foundation-space-1)": 1
+    },
+    "fill": {
+      "none": 1
+    },
+    "stroke": {
+      "var(--line)": 1,
+      "var(--color-button-primary)": 1
+    },
+    "stroke-width": {
+      "var(--csa-component-variant-card-border-width)": 1,
+      "var(--csa-component-variant-card-selected-border-width)": 1
+    },
+    "stroke-dasharray": {
+      "var(--csa-foundation-space-4) var(--csa-foundation-space-4)": 1
+    },
+    "user-select": {
+      "none": 2
+    },
+    "mask-image": {
+      "linear-gradient(to right, black calc(100% - var(--csa-foundation-space-20)), transparent)": 1,
+      "linear-gradient(to right, transparent, black var(--csa-foundation-space-20))": 1,
+      "linear-gradient(to right, transparent, black var(--csa-foundation-space-20), black calc(100% - var(--csa-foundation-space-20)), transparent)": 1
+    },
+    "border-top-color": {
+      "var(--line)": 1,
+      "var(--csa-component-button-primary-background)": 1
+    },
+    "backdrop-filter": {
+      "blur(var(--csa-foundation-space-3))": 1,
+      "blur(var(--csa-foundation-space-2))": 3,
+      "blur(var(--csa-foundation-space-1))": 1
+    },
+    "border-block": {
+      "var(--csa-foundation-border-width-1) solid var(--line)": 1
+    },
+    "border-right": {
+      "0": 1,
+      "var(--csa-foundation-border-width-1) solid var(--line)": 1
+    },
+    "padding-left": {
+      "0": 1,
+      "var(--csa-foundation-space-15)": 1,
+      "calc(var(--sidebar-left) + var(--workspace-sidebar-width) + var(--csa-foundation-space-20))": 1,
+      "var(--csa-foundation-space-72)": 1
+    },
+    "background-color": {
+      "transparent": 1,
+      "var(--csa-component-checkbox-selected-background)": 1
+    },
+    "appearance": {
+      "none": 1
+    },
+    "-webkit-appearance": {
+      "none": 1
+    },
+    "accent-color": {
+      "var(--color-button-primary)": 1
+    },
+    "background-image": {
+      "url(\"./assets/material-check.svg\")": 2,
+      "url('./assets/search-reference.png')": 1
+    },
+    "background-position": {
+      "center": 2,
+      "calc(-1 * var(--csa-foundation-space-11)) calc(-1 * var(--csa-foundation-space-127))": 1,
+      "calc(-1 * var(--csa-foundation-space-23)) calc(-1 * var(--csa-foundation-space-127))": 1,
+      "calc(-1 * var(--csa-foundation-space-31)) calc(-1 * var(--csa-foundation-space-137))": 1
+    },
+    "background-repeat": {
+      "no-repeat": 3
+    },
+    "background-size": {
+      "var(--csa-foundation-space-16) var(--csa-foundation-space-16)": 2,
+      "var(--csa-foundation-size-639) var(--csa-foundation-size-750)": 1
+    },
+    "padding-inline": {
+      "var(--csa-foundation-space-5)": 1,
+      "var(--csa-foundation-space-12)": 1,
+      "var(--csa-foundation-space-8)": 1
+    },
+    "border-bottom-color": {
+      "var(--line)": 1
+    },
+    "text-decoration-thickness": {
+      "var(--csa-foundation-space-1)": 1
+    },
+    "grid-column": {
+      "1": 2,
+      "2": 2,
+      "1 / -1": 2
+    },
+    "justify-self": {
+      "start": 1
+    },
+    "grid-row": {
+      "1": 2,
+      "2": 2
+    },
+    "flex-basis": {
+      "100%": 1
+    },
+    "scroll-behavior": {
+      "auto !important": 1
+    },
+    "scrollbar-gutter": {
+      "stable": 2
+    },
+    "border-collapse": {
+      "separate": 1
+    },
+    "border-spacing": {
+      "0": 1
+    },
+    "table-layout": {
+      "fixed": 1
+    },
+    "vertical-align": {
+      "middle": 1
+    }
   },
-  "notes": [
-    "Light theme only.",
-    "Retains existing exceptions; this is an extraction, not a palette normalization.",
-    "Media and container queries remain literal CSS and are checked against breakpoint tokens.",
-    "FILL 1 is the project default for Material Symbols."
-  ]
+  "colors": [
+    {
+      "name": "foundation.color.neutral.0",
+      "value": "#ffffff",
+      "description": "Implemented palette value."
+    },
+    {
+      "name": "foundation.color.neutral.100",
+      "value": "#f5f5f5",
+      "description": "Implemented palette value."
+    },
+    {
+      "name": "foundation.color.neutral.200",
+      "value": "#e5e5e5",
+      "description": "Implemented palette value."
+    },
+    {
+      "name": "foundation.color.neutral.400",
+      "value": "#a3a3a3",
+      "description": "Implemented palette value."
+    },
+    {
+      "name": "foundation.color.neutral.500",
+      "value": "#737373",
+      "description": "Secondary readable text, distinct from inactive-control gray."
+    },
+    {
+      "name": "foundation.color.neutral.700",
+      "value": "#404040",
+      "description": "Implemented palette value."
+    },
+    {
+      "name": "foundation.color.blue.500",
+      "value": "#3b82f6",
+      "description": "Implemented palette value."
+    },
+    {
+      "name": "foundation.color.blue.600",
+      "value": "#2563eb",
+      "description": "Implemented palette value."
+    },
+    {
+      "name": "foundation.color.rose.100",
+      "value": "#ffe4e6",
+      "description": "Implemented palette value."
+    },
+    {
+      "name": "foundation.color.indigo.50",
+      "value": "#eef2ff",
+      "description": "Implemented palette value."
+    },
+    {
+      "name": "foundation.color.orange.100",
+      "value": "#ffedd5",
+      "description": "Implemented palette value."
+    },
+    {
+      "name": "foundation.color.green.200",
+      "value": "#bbf7d0",
+      "description": "Implemented palette value."
+    },
+    {
+      "name": "foundation.color.red.700",
+      "value": "#b91c1c",
+      "description": "Implemented palette value."
+    },
+    {
+      "name": "foundation.color.pink.100",
+      "value": "#fce7f3",
+      "description": "Tailwind classic pink-100; approved avatar palette."
+    },
+    {
+      "name": "foundation.color.pink.700",
+      "value": "#be185d",
+      "description": "Tailwind classic pink-700; approved avatar palette."
+    },
+    {
+      "name": "foundation.color.overlay.loading",
+      "value": "#ffffffe6",
+      "description": ""
+    },
+    {
+      "name": "foundation.color.overlay.canvas-fade",
+      "value": "oklch(98.6% 0.002 67.8 / 0.9019607843137255)",
+      "description": "Taupe 50 canvas fade, preserving its existing opacity."
+    },
+    {
+      "name": "foundation.color.overlay.scrim",
+      "value": "#25355029",
+      "description": "Modal backdrop tint; independent of elevation shadows."
+    },
+    {
+      "name": "foundation.color.shadow.dropdown",
+      "value": "#40404014",
+      "description": "Subtle neutral shadow tint for open dropdown menus."
+    },
+    {
+      "name": "foundation.color.shadow.dropdown-mobile",
+      "value": "#40404029",
+      "description": "Stronger dropdown elevation on small screens, where white menus overlap white panels."
+    },
+    {
+      "name": "foundation.color.taupe.50",
+      "value": "oklch(98.6% 0.002 67.8)",
+      "description": "Tailwind taupe-50, preserved in its original OKLCH color space. Approximate sRGB hex: #FBFAF9."
+    }
+  ],
+  "summary": {
+    "tokens": 405,
+    "foundationColors": 21,
+    "canvas": "foundation.color.taupe.50"
+  }
 }

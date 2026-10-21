@@ -31,6 +31,11 @@ export function resolveToken(path, tokens, trail = []) {
 }
 function dimension(value) { return `${value.value}${value.unit}`; }
 function color(value) {
+  if (value.colorSpace === 'oklch') {
+    const [lightness, chroma, hue] = value.components;
+    const alpha = value.alpha !== undefined && value.alpha < 1 ? ` / ${value.alpha}` : '';
+    return `oklch(${Number((lightness * 100).toFixed(6))}% ${chroma} ${hue}${alpha})`;
+  }
   const bytes = value.components.map(c => Math.round(c * 255));
   if (value.alpha !== undefined && value.alpha < 1) bytes.push(Math.round(value.alpha * 255));
   return '#' + bytes.map(c => c.toString(16).padStart(2, '0')).join('');
@@ -53,7 +58,10 @@ export function cssValue(type, value, aliases = true) {
 }
 function validate(token, value) {
   const validDimension = d => d && Number.isFinite(d.value) && ['px','rem'].includes(d.unit);
-  const validColor = c => c && c.colorSpace === 'srgb' && c.components?.length === 3 && c.components.every(v=>Number.isFinite(v)&&v>=0&&v<=1) && (c.alpha===undefined || (c.alpha>=0&&c.alpha<=1));
+  const validColor = c => c && c.components?.length === 3 && c.components.every(Number.isFinite) && (c.alpha===undefined || (c.alpha>=0&&c.alpha<=1)) && (
+    c.colorSpace === 'srgb' ? c.components.every(v=>v>=0&&v<=1) :
+    c.colorSpace === 'oklch' && c.components[0]>=0 && c.components[0]<=1 && c.components[1]>=0 && c.components[2]>=0 && c.components[2]<=360
+  );
   const type = token.$type;
   let valid = false;
   if(type==='color') valid=validColor(value);

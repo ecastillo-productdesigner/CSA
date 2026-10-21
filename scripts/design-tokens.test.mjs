@@ -26,6 +26,16 @@ test('sRGB alpha colors preserve observed eight digit hex values',()=>{
   const result=compileTokens({shadow:color([77/255,93/255,121/255],8/255)});
   assert.equal(result.flat[0].value,'#4d5d7908');
 });
+test('OKLCH colors preserve the exact palette value, aliases and opacity',()=>{
+  const source={base:{$type:'color',$value:{colorSpace:'oklch',components:[0.986,0.002,67.8],alpha:1}},canvas:{$type:'color',$value:'{base}'},fade:{$type:'color',$value:{colorSpace:'oklch',components:[0.986,0.002,67.8],alpha:0.9}}};
+  const result=compileTokens(source);
+  assert.equal(result.flat.find(t=>t.name==='canvas').value,'oklch(98.6% 0.002 67.8)');
+  assert.equal(result.flat.find(t=>t.name==='fade').value,'oklch(98.6% 0.002 67.8 / 0.9)');
+  assert.match(result.css,/--csa-canvas: var\(--csa-base\)/);
+  for (const components of [[1.1,0.002,67.8],[0.986,-0.002,67.8],[0.986,0.002,361]]) {
+    assert.throws(()=>compileTokens({bad:{$type:'color',$value:{colorSpace:'oklch',components}}}),/Invalid color value/);
+  }
+});
 test('composite typography and typography aliases expand to CSS properties',()=>{
   const result=compileTokens({base:{$type:'typography',$value:{fontFamily:['Inter','sans-serif'],fontSize:{value:16,unit:'px'},fontWeight:700,letterSpacing:{value:0,unit:'px'},lineHeight:1.25}},button:{$type:'typography',$value:'{base}'}});
   assert.match(result.css,/--csa-base-line-height: 1.25/);

@@ -74,7 +74,7 @@ export function createOutputSettings({ onSave, onDelete, onSavePreset, onDeleteP
   function updateSaveState() {
     const settingsChanged = voice.value !== initialSettings.voice || direction.value !== initialSettings.editorialDirection || wordCount.value !== initialSettings.targetWordCount;
     const nameChanged = name.value.trim() !== initialSettings.name;
-    submit.textContent = settingsChanged && !active?.preset ? 'Recreate variant' : 'Save changes';
+    submit.textContent = settingsChanged && !active?.preset ? 'Recreate Variant' : 'Save Changes';
     submit.disabled = !active || !(settingsChanged || nameChanged);
   }
   name.addEventListener('input', updateSaveState);

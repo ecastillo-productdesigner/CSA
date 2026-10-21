@@ -59,7 +59,7 @@ form.addEventListener('submit', async (event) => {
     showError('Couldn’t open the workspace. Refresh the page and try again.');
   } finally {
     submit.disabled = false;
-    submit.textContent = 'Open workspace';
+    submit.textContent = 'Open Workspace';
   }
 });
 

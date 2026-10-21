@@ -2,7 +2,7 @@ import { updatePresetPreferences } from './preset-settings.js?v=20261020-preset-
 import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js';
 import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261020-ds-centralized';
 import { createIcon as icon } from './icons.js?v=20261020-ds-centralized';
-import { parseSourceLinks, formatSourceLinks } from './source-links.js';
+import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js';
 import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261020-ds-centralized';
 import { createProfile } from './profile.js?v=20261020-ds-centralized';
 import { createSearchExperience } from './search.js?v=20261020-ds-centralized';
@@ -10,11 +10,11 @@ import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=202610
 import { createMaterialEditor } from './editor.js?v=20261020-ds-centralized';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261020-ds-centralized';
 import { removeProjectContent } from './project-deletion.js?v=20261020-ds-centralized';
-import { createContentPreview, formatContentPreview } from './content-preview.js?v=20261020-ds-centralized';
+import { createContentPreview } from './content-preview.js?v=20261020-ds-centralized';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261020-preset-settings';
 import { createRailNavigation } from './navigation.js?v=20261020-ds-centralized';
 import { createProjectSources } from './sources.js?v=20261020-ds-centralized';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261020-preset-settings';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261020-preset-settings';
 import { createEditorTabs } from './editor-tabs.js?v=20261020-preset-settings';
 
 const $ = (selector) => document.querySelector(selector);
@@ -71,13 +71,13 @@ let sourceTargetProjectId = null;
 let materialMode = 'upload';
 let selectedFiles = [];
 let addingToProject = false;
-let uploadContext = 'material';
 let materialBusy = false;
 let toastTimer;
 let toastAction = null;
 let sourcePanelOutputId = null;
 let dashboard = null;
 const outputTimers = new Map();
+const outputViews = new Map();
 const toolDropdowns = createToolDropdowns({ notify });
 const contentPreview = createContentPreview({
   onChange(text) {
@@ -100,7 +100,6 @@ const projectSourcesPanel = createProjectSources({
     const project = projects.find(entry => entry.id === projectId);
     if (project) { project.updatedAt = Date.now(); saveProjects(); }
   },
-  onAddSource(projectId) { richEditor.flush(); railNavigation.closeTransient(); openProjectDialog(true, projectId); },
 });
 const railNavigation = createRailNavigation({
   onSourcesOpen() { projectSourcesPanel.render(projects.find(project => project.id === activeProjectId && project.kind === 'draft') || null); },
@@ -140,7 +139,9 @@ const richEditor = createMaterialEditor({
 
 function renderOutputs(project) {
   $('#show-sources').hidden = project?.kind !== 'draft';
-  renderProjectOutputs(project);
+  const view = variantPanelState(project, outputViews.get(project?.id)).view;
+  outputViews.set(project?.id, view);
+  renderProjectOutputs(project, view);
   editorTabs.render(project);
   const selectedOutput = projectOutputs(project).find(output => output.id === project?.selectedOutputId && (outputIsReady(output) || output.needsRegeneration));
   richEditor.setRevisionBusy(Boolean(project?.outputProcessing?.kind === 'revision' && project.outputProcessing.ids.includes(selectedOutput?.id)));
@@ -149,6 +150,27 @@ function renderOutputs(project) {
   labels.hidden = !labels.childElementCount;
   syncSourceBadges();
 }
+
+function selectOutputView(view) {
+  const project = projects.find(entry => entry.id === activeProjectId);
+  if (!project || !['pending', 'created'].includes(view)) return;
+  outputViews.set(project.id, view);
+  renderOutputs(project);
+  $('#output-list').scrollTop = 0;
+}
+$('.output-status-tabs').addEventListener('click', event => {
+  const tab = event.target.closest('[data-output-view]');
+  if (tab) selectOutputView(tab.dataset.outputView);
+});
+$('.output-status-tabs').addEventListener('keydown', event => {
+  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+  const tab = event.target.closest('[data-output-view]');
+  if (!tab) return;
+  event.preventDefault();
+  const view = event.key === 'Home' ? 'pending' : event.key === 'End' ? 'created' : tab.dataset.outputView === 'pending' ? 'created' : 'pending';
+  selectOutputView(view);
+  $(`[data-output-view="${view}"]`).focus({ preventScroll: true });
+});
 
 function renderProjectSources(project) {
   const variantId = sourcePanelOutputId && (!project?.viewOriginalDraft && project?.selectedOutputId || sourcePanelOutputId);
@@ -181,8 +203,10 @@ function removeProjectSource(projectId, source) {
     return;
   }
   renderProjectSources(project);
+  if ($('#composer').classList.contains('has-link-cards')) searchExperience.show(project, { embedded: true });
+  updateComposerActions();
   const focus = [...$('#editor-source-list').querySelectorAll('.editor-source-more')];
-  (focus[Math.min(index, focus.length - 1)] || $('#editor-add-source-button')).focus({ preventScroll: true });
+  (focus[Math.min(index, focus.length - 1)] || ($('#editor-source-list .editor-source-open') || $('#show-sources'))).focus({ preventScroll: true });
   notify('Source deleted.', () => {
     if (project.deletedAt || !projects.includes(project)) return;
     richEditor.flush();
@@ -202,7 +226,11 @@ function removeProjectSource(projectId, source) {
       notify('Could not restore this source. Please try again.');
       return;
     }
-    if (activeProjectId === project.id) renderProjectSources(project);
+    if (activeProjectId === project.id) {
+      renderProjectSources(project);
+      if ($('#composer').classList.contains('has-link-cards')) searchExperience.show(project, { embedded: true });
+      updateComposerActions();
+    }
     notify('Source restored.');
   });
 }
@@ -253,6 +281,7 @@ function openEditorTab(outputId) {
   }
   const output = projectOutputs(project).find(output => output.id === outputId && (outputIsReady(output) || output.needsRegeneration));
   if (!project || !output) return;
+  outputViews.set(project.id, outputIsReady(output) ? 'created' : 'pending');
   project.selectedOutputIds = outputIsReady(output) ? [outputId] : [...new Set([...selectedPendingOutputs(project).map(output => output.id), outputId])];
   project.selectedOutputId = outputId;
   project.viewOriginalDraft = false;
@@ -331,6 +360,7 @@ function createProject(sources, options = {}) {
     ...(options.document ? { document: options.document } : {}),
     ...(options.awaitingOutput ? { awaitingOutput: true } : {}),
     ...(options.contentPreview ? { contentPreview: options.contentPreview } : {}),
+    ...(options.linkCards ? { linkCards: true } : {}),
     ...(typeof options.editorialDirection === 'string' ? { editorialDirection: options.editorialDirection } : {}),
     targetWordCount: normalizeWordCount(options.targetWordCount),
     ...(options.toolPreferences ? { toolPreferences: options.toolPreferences } : {}),
@@ -385,7 +415,7 @@ function closeComposer() {
   try { sessionStorage.removeItem('csa.editor.active.v1'); } catch { /* Navigation still works without storage. */ }
   if ($('#new-project-dialog').open) $('#new-project-dialog').close();
   $('#composer').hidden = true;
-  $('#composer').classList.remove('has-editor', 'has-output');
+  $('#composer').classList.remove('has-editor', 'has-output', 'has-link-cards');
   $('#output-placeholder').hidden = true;
   $('.create-variant').disabled = true;
   $('#composer-target-word-count').value = 'short';
@@ -404,13 +434,6 @@ function openProjectDialog(reset = true, sourceProjectId = null) {
   sourceTargetProjectId = sourceProjectId;
   $('#new-project-dialog-title').textContent = sourceProjectId ? 'Add source' : 'New Project';
   $('.new-project-close').setAttribute('aria-label', sourceProjectId ? 'Close add source modal' : 'Close new project modal');
-  $('#new-project-use-material').textContent = sourceProjectId ? 'Add source' : 'Start creating';
-  uploadContext = 'starter';
-  materialMode = 'upload';
-  selectedFiles = [];
-  $('#new-project-file-input').value = '';
-  clearError();
-  renderFiles();
   if (reset) $('#new-project-query').value = '';
   if (!$('#new-project-dialog').open) $('#new-project-dialog').showModal();
   updateStarterInput();
@@ -440,12 +463,12 @@ function appendProjectSources(sources) {
   notify(additions.length ? `${additions.length} ${additions.length === 1 ? 'source' : 'sources'} added.` : 'These sources are already in your project.');
 }
 
-function showSourceAdditionResults(query) {
+function showSourceAdditionResults(query, sources = [{ type: 'search', title: query }]) {
   closeComposer();
   railNavigation.closeTransient();
   for (const id of ['home', 'workspace', 'project-start']) $(`#${id}`).hidden = true;
   document.body.classList.add('showing-results');
-  searchExperience.show({ id: `add-source-${crypto.randomUUID()}`, sources: [{ type: 'search', title: query }] }, { addingSources: true });
+  searchExperience.show({ id: `add-source-${crypto.randomUUID()}`, sources, ...(sources[0]?.type === 'link' ? { kind: 'links' } : {}) }, { addingSources: true });
   document.title = `Add source — ${query} — CSA`;
   $('#main').focus({ preventScroll: true });
   window.scrollTo({ top: 0 });
@@ -455,6 +478,7 @@ function showProject(id) {
   sourceTargetProjectId = null;
   const project = projects.find((entry) => entry.id === id);
   if (!project || project.deletedAt) return;
+  if (project.kind === 'links') { project.kind = 'draft'; project.linkCards = true; project.awaitingOutput = true; saveProjects(); }
   if (project.kind === 'draft') { showEditorProject(project); return; }
   closeComposer();
   railNavigation.closeTransient();
@@ -501,7 +525,7 @@ function showProject(id) {
     info.append(element('small', '', labels[source.type] + detail));
     if (source.text) info.append(element('p', '', source.text));
     if (source.attachmentId) {
-      const download = element('button', 'text-button document-download', 'Download document');
+      const download = element('button', 'text-button document-download', 'Download Document');
       download.type = 'button';
       download.setAttribute('aria-label', `Download ${source.title}`);
       download.addEventListener('click', () => downloadSource(source));
@@ -517,6 +541,12 @@ function showProject(id) {
 
 function renderSourceStory(project) {
   const latestOutput = project.viewOriginalDraft ? null : projectOutputs(project).filter(outputIsReady).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))[0];
+  if (project.linkCards && !latestOutput) {
+    contentPreview.hide();
+    $('#composer').classList.add('has-link-cards');
+    searchExperience.show(project, { embedded: true });
+    return;
+  }
   if (project.contentPreview && !latestOutput) {
     contentPreview.render(project.contentPreview);
     $('#output-placeholder').scrollTop = 0;
@@ -574,7 +604,7 @@ function showEditorProject(project) {
     $('#composer').classList.add('has-output');
     $('#composer-heading').textContent = 'Story workspace';
     renderSourceStory(project);
-    $('#output-placeholder').hidden = false;
+    $('#output-placeholder').hidden = Boolean(project.linkCards && !selectedOutput);
     for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = project.toolPreferences?.[key] || '';
     $('#main').focus({ preventScroll: true });
   } else {
@@ -583,7 +613,7 @@ function showEditorProject(project) {
     $('#composer-heading').textContent = 'Story editor';
     richEditor.open(selectedOutput ? { ...project, ...selectedOutput, id: project.id, toolPreferences: project.toolPreferences } : project);
   }
-  $('#composer-target-word-count').value = normalizeWordCount(project.targetWordCount);
+  $('#composer-target-word-count').value = 'short';
   toolDropdowns.refresh();
   updateComposerActions();
   renderOutputs(project);
@@ -610,7 +640,8 @@ function closeProfile() {
 
 function updateComposerActions() {
   $('#composer-target-word-count').closest('.variant-word-count').hidden = !$('#composer-audience').value;
-  const hasContent = !$('#material-editor').hidden ? richEditor.hasContent() : !$('#output-placeholder').hidden && ($('#content-preview').hidden || contentPreview.hasContent());
+  const project = projects.find(project => project.id === activeProjectId);
+  const hasContent = $('#composer').classList.contains('has-link-cards') ? project?.sources.some(source => source.selected !== false) : !$('#material-editor').hidden ? richEditor.hasContent() : !$('#output-placeholder').hidden && ($('#content-preview').hidden || contentPreview.hasContent());
   const processing = Boolean(projects.find(project => project.id === activeProjectId)?.outputProcessing);
   const canConfigure = hasContent && !processing;
   let changed = false;
@@ -618,12 +649,13 @@ function updateComposerActions() {
     const select = $(`#composer-${key}`);
     if (select.disabled !== !canConfigure) changed = true;
     select.disabled = !canConfigure;
-    select.title = canConfigure ? '' : processing ? 'Creating variant…' : 'Add content first';
+    select.title = canConfigure ? '' : processing ? 'Creating content…' : 'Add content first';
   }
   if (changed) toolDropdowns.refresh();
-  const enabled = hasContent && !processing;
+  const hasFormat = Boolean($('#composer-format').value);
+  const enabled = hasContent && hasFormat && !processing;
   $('.create-variant').disabled = !enabled;
-  $('.create-variant').title = processing ? 'Creating variant…' : enabled ? 'Create variant' : 'Add content first';
+  $('.create-variant').title = processing ? 'Creating content…' : !hasContent ? 'Select a source first' : !hasFormat ? 'Select a format first' : 'Add Content';
 }
 
 function ensureComposerProject(allowEmpty = false) {
@@ -643,10 +675,10 @@ function ensureComposerProject(allowEmpty = false) {
 function setNewVariantCollapsed(collapsed) {
   $('#composer-variant-form').hidden = collapsed;
   $('#toggle-new-variant').setAttribute('aria-expanded', String(!collapsed));
-  const label = `${collapsed ? 'Expand' : 'Collapse'} New Variant`;
+  const label = `${collapsed ? 'Expand' : 'Collapse'} New Content`;
   $('#toggle-new-variant').setAttribute('aria-label', label);
   $('#toggle-new-variant').title = label;
-  $('#toggle-new-variant .material-symbols-outlined').textContent = collapsed ? 'keyboard_arrow_down' : 'keyboard_arrow_up';
+  $('#toggle-new-variant [data-collapse-chevron]').textContent = collapsed ? 'keyboard_arrow_down' : 'keyboard_arrow_up';
   $('.composer-tools').dataset.collapsed = String(collapsed);
   if (collapsed) { toolDropdowns.close(); }
 }
@@ -666,8 +698,9 @@ $('.create-variant').addEventListener('click', () => {
   });
   richEditor.flush();
   const project = projects.find(entry => entry.id === activeProjectId);
-  if (!project || project.outputProcessing || !selections.length) return;
+  if (!project || project.outputProcessing || !$('#composer-format').value) return;
   project.editorialDirection = '';
+  setProjectWordCount(project, $('#composer-target-word-count').value);
   const output = sampleVariant(project, selections);
   project.lastPendingOutputId = output.id;
   project.selectedOutputIds = [...selectedPendingOutputs(project).map(entry => entry.id), output.id];
@@ -675,7 +708,7 @@ $('.create-variant').addEventListener('click', () => {
   project.viewOriginalDraft = true;
   delete project.variantPreset;
   project.outputs = [output, ...projectOutputs(project)];
-  project.outputProcessing = { ids: [output.id], openOutputId: output.id, readyAt: Date.now() + 4000 };
+  outputViews.set(project.id, 'pending');
   project.newVariantCollapsed = true;
   setNewVariantCollapsed(true);
   project.toolPreferences = { format: '', audience: '', voice: '' };
@@ -687,7 +720,7 @@ $('.create-variant').addEventListener('click', () => {
   showEditorProject(project);
   if (window.matchMedia(breakpointQuery()).matches) railNavigation.open('variants');
   [...$('#output-list').querySelectorAll('[data-output-id]')].find(button => button.dataset.outputId === output.id)?.focus({ preventScroll: true });
-  if (saved) notify('Creating variant…');
+  if (saved) notify('Content added to To Create.');
 });
 
 $('#output-list').addEventListener('click', event => {
@@ -695,13 +728,18 @@ $('#output-list').addEventListener('click', event => {
   if (!project) return;
   const sources = event.target.closest('[data-variant-sources]');
   if (sources) { openVariantSources(sources); return; }
-  const card = event.target.closest('[data-output-id]');
+  const selection = event.target.closest('[data-select-output]');
+  const card = selection || event.target.closest('[data-output-id]');
   if (!card) return;
-  const output = projectOutputs(project).find(entry => entry.id === card.dataset.outputId);
+  const output = projectOutputs(project).find(entry => entry.id === (selection ? card.dataset.selectOutput : card.dataset.outputId));
   if (!output || project.outputProcessing) return;
   if (!outputIsReady(output)) {
     richEditor.flush();
-    startVariantProcessing(project, output);
+    const ids = new Set(selectedPendingOutputs(project).map(entry => entry.id));
+    if (ids.has(output.id)) ids.delete(output.id); else ids.add(output.id);
+    project.selectedOutputIds = [...ids];
+    saveProjects();
+    renderOutputs(project);
     return;
   }
   railNavigation.closeTransient();
@@ -718,7 +756,7 @@ function openVariantSources(button) {
     railNavigation.open('sources');
     projectSourcesPanel.render(project, { variant: output });
     syncSourceBadges();
-    $('#editor-add-source-button').focus({ preventScroll: true });
+    ($('#editor-source-list .editor-source-open') || $('#show-sources')).focus({ preventScroll: true });
   }
 }
 $('#editor-variant-labels').addEventListener('click', event => {
@@ -742,6 +780,7 @@ function finishOutputProcessing(project, renderWhenReady = true) {
     }
   }
   const latestCreated = projectOutputs(project).find(output => output.id === job.openOutputId && outputIsReady(output)) || projectOutputs(project).filter(output => ids.has(output.id) && outputIsReady(output)).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))[0];
+  if (latestCreated) outputViews.set(project.id, 'created');
   if (latestCreated) { project.selectedOutputId = latestCreated.id; project.viewOriginalDraft = false; }
   delete project.selectedPendingOutputIds;
   delete project.outputProcessing;
@@ -762,14 +801,18 @@ function resumeOutputProcessing(project, renderWhenReady = true) {
   if (!outputTimers.has(project.id)) outputTimers.set(project.id, setTimeout(() => finishOutputProcessing(project), job.readyAt - Date.now()));
 }
 
-function startVariantProcessing(project, output) {
-  if (project.outputProcessing) return;
-  project.outputProcessing = { ids: [output.id], openOutputId: output.id, readyAt: Date.now() + 4000 };
+$('#create-output').addEventListener('click', () => {
+  const project = projects.find(entry => entry.id === activeProjectId);
+  if (!project || project.outputProcessing) return;
+  const outputs = selectedPendingOutputs(project);
+  if (!outputs.length) return;
+  richEditor.flush();
+  project.outputProcessing = { ids: outputs.map(output => output.id), openOutputId: outputs[0].id, readyAt: Date.now() + 4000 };
   saveProjects();
   renderOutputs(project);
   updateComposerActions();
   resumeOutputProcessing(project);
-}
+});
 
 $('#composer-target-word-count').addEventListener('change', () => {
   const project = ensureComposerProject();
@@ -804,26 +847,18 @@ function submitSource(input) {
   if (!input) return;
   const urls = parseSourceLinks(input);
   if (sourceTargetProjectId) {
-    if (urls) appendProjectSources(urls.map(url => ({ type: 'link', title: url, url })));
+    if (urls) {
+      const target = projects.find(project => project.id === sourceTargetProjectId);
+      if (target) { target.linkCards = true; target.viewOriginalDraft = true; }
+      appendProjectSources(sourceLinkArticles(urls).map(article => ({ type: 'link', title: article.title, url: article.url })));
+    }
     else showSourceAdditionResults(input);
     return;
   }
   if (urls) {
-    const sources = urls.map(url => ({ type: 'link', title: url, url }));
-    const sample = sampleVariant({ sources }, []);
-    populateOutputContent(sample);
-    const preview = {
-      title: sample.title,
-      publishedDate: null,
-      source: [...new Set(urls.map(url => new URL(url).hostname.replace(/^www\./, '')))].join(', '),
-      paragraphs: sample.draftText.split(/\n\s*\n/).map(value => value.trim()).filter(Boolean),
-      photoCaptions: [], headings: [],
-    };
-    preview.text = formatContentPreview(preview);
-    sources[0].title = sample.title;
-    sources[0].text = preview.text;
-    createProject(sources, { title: sample.title, kind: 'draft', awaitingOutput: true, contentPreview: preview });
-    notify('Demo Content Preview ready. Your link is saved in Sources.');
+    const sources = sourceLinkArticles(urls).map(article => ({ type: 'link', title: article.title, url: article.url, selected: true }));
+    createProject(sources, { kind: 'draft', awaitingOutput: true, linkCards: true });
+    if (!window.matchMedia(breakpointQuery()).matches) railNavigation.open('sources');
   } else startSearch(input);
 }
 
@@ -835,8 +870,6 @@ function updateStarterInput() {
     field.value = formatted;
     field.setSelectionRange(Math.max(0, caret), Math.max(0, caret));
   }
-  field.style.height = 'auto';
-  field.style.height = `${Math.max(tokenNumber('foundation.space.24'), Math.min(tokenNumber('foundation.size.144'), field.scrollHeight))}px`;
   $('#new-project-submit').disabled = !field.value.trim();
 }
 $('#new-project-query').addEventListener('input', updateStarterInput);
@@ -885,7 +918,6 @@ function setMaterialMode(mode) {
 
 function openMaterial(mode, append = false) {
   addingToProject = append;
-  uploadContext = 'material';
   selectedFiles = [];
   $('#file-input').value = '';
   $('#material-text').value = '';
@@ -893,7 +925,7 @@ function openMaterial(mode, append = false) {
   $('#material-title').textContent = append ? 'Add your material' : 'Start with your material';
   $('#material-cancel').textContent = 'Cancel';
   $('#file-status').textContent = '';
-  $('#use-material').textContent = append ? 'Add to project' : 'Start creating';
+  $('#use-material').textContent = append ? 'Add to Project' : 'Start Creating';
   setMaterialMode(mode);
   closeProfile();
   $('#material-dialog').showModal();
@@ -914,12 +946,11 @@ for (const button of document.querySelectorAll('[data-tab]')) {
 }
 
 function uploadElement(id) {
-  return $(`#${uploadContext === 'starter' ? 'new-project-' : ''}${id}`);
+  return $(`#${id}`);
 }
 
 function updateMaterialButton() {
   uploadElement('use-material').disabled = materialBusy || (materialMode === 'upload' ? selectedFiles.length === 0 : !$('#material-text').value.trim());
-  if (uploadContext === 'starter') $('#new-project-upload-selection').hidden = selectedFiles.length === 0;
 }
 
 function clearError() {
@@ -956,9 +987,8 @@ function renderFiles() {
   updateMaterialButton();
 }
 
-function selectFiles(files, context) {
+function selectFiles(files) {
   if (materialBusy) return;
-  uploadContext = context;
   clearError();
   const rejected = [];
   for (const file of files) {
@@ -974,30 +1004,29 @@ function selectFiles(files, context) {
   renderFiles();
 }
 
-for (const [context, prefix] of [['material', ''], ['starter', 'new-project-']]) {
-  const input = $(`#${prefix}file-input`);
-  const zone = $(`#${prefix}drop-zone`);
+{
+  const input = $('#file-input');
+  const zone = $('#drop-zone');
   input.addEventListener('change', event => {
-    selectFiles(event.target.files, context);
+    selectFiles(event.target.files);
     event.target.value = '';
   });
   zone.addEventListener('dragover', event => { event.preventDefault(); zone.classList.add('dragging'); });
   zone.addEventListener('dragleave', () => zone.classList.remove('dragging'));
   zone.addEventListener('drop', event => {
     event.preventDefault(); zone.classList.remove('dragging');
-    selectFiles(event.dataTransfer.files, context);
+    selectFiles(event.dataTransfer.files);
   });
 }
 $('#material-text').addEventListener('input', () => { clearError(); updateMaterialButton(); });
 
 async function useMaterial() {
   if (materialBusy) return;
-  const fromStarter = uploadContext === 'starter';
-  const dialog = $(fromStarter ? '#new-project-dialog' : '#material-dialog');
+  const dialog = $('#material-dialog');
   const button = uploadElement('use-material');
   const label = button.textContent;
   materialBusy = true;
-  button.textContent = materialMode === 'upload' ? 'Saving documents…' : 'Saving…';
+  button.textContent = materialMode === 'upload' ? 'Saving Documents…' : 'Saving…';
   dialog.setAttribute('aria-busy', 'true');
   for (const control of dialog.querySelectorAll('button, input, textarea')) control.disabled = true;
   clearError();
@@ -1013,18 +1042,11 @@ async function useMaterial() {
     }
     dialog.close();
     if (sourceTargetProjectId) { appendProjectSources(sources); return; }
-    const existing = !fromStarter && addingToProject && projects.find((project) => project.id === activeProjectId);
+    const existing = addingToProject && projects.find((project) => project.id === activeProjectId);
     if (existing) {
       existing.sources.push(...sources);
       saveProjects();
       showProject(existing.id);
-    } else if (fromStarter) {
-      const text = sources.filter(source => source.text).map(source => source.text.trim()).join('\n\n');
-      createProject(sources, {
-        title: titleFrom(sources[0].title.replace(/\.[^.]+$/, '')),
-        kind: 'draft', draftText: text, document: { ops: text.split(/\n\s*\n/).filter(paragraph => paragraph.trim()).map(paragraph => ({ insert: `${paragraph}\n` })) },
-      });
-      railNavigation.open('sources');
     } else {
       createProject(sources);
     }
@@ -1035,14 +1057,12 @@ async function useMaterial() {
     button.textContent = label;
     dialog.removeAttribute('aria-busy');
     for (const control of dialog.querySelectorAll('button, input, textarea')) control.disabled = false;
-    if (fromStarter) $('#new-project-submit').disabled = !$('#new-project-query').value.trim();
     updateMaterialButton();
   }
 }
 $('#use-material').addEventListener('click', useMaterial);
-$('#new-project-use-material').addEventListener('click', useMaterial);
 
-for (const id of ['material-dialog', 'new-project-dialog']) $(`#${id}`).addEventListener('cancel', event => { if (materialBusy) event.preventDefault(); });
+$('#material-dialog').addEventListener('cancel', event => { if (materialBusy) event.preventDefault(); });
 
 for (const id of ['material-dialog', 'new-project-dialog']) $(`#${id}`).addEventListener('cancel', event => {
   if (sourceTargetProjectId && !materialBusy) { event.preventDefault(); returnFromSourceAddition(); }
@@ -1076,13 +1096,20 @@ const searchExperience = createSearchExperience({
     if (project) {
       project.selectedArticleIds = selection;
       if (Array.isArray(addedArticleIds)) project.addedArticleIds = addedArticleIds;
+      if (project.linkCards) {
+        project.sources.filter(source => source.type === 'link').forEach((source, index) => { source.selected = selection.includes(`link-${index + 1}`); });
+        updateComposerActions();
+        if ($('#show-sources').getAttribute('aria-expanded') === 'true') renderProjectSources(project);
+      }
       saveProjects();
     }
   },
   onDraft({ query, articles, editorialDirection }) {
-    const sources = articles.map((article) => ({ type: 'text', title: article.title, text: `Fictional sample article · ${article.source} · ${article.date}\n\n${article.paragraphs.join('\n\n')}` }));
+    const sources = articles.map((article) => article.url
+      ? { type: 'link', title: article.title, url: article.url }
+      : { type: 'text', title: article.title, text: `Fictional sample article · ${article.source} · ${article.date}\n\n${article.paragraphs.join('\n\n')}` });
     if (sourceTargetProjectId) { appendProjectSources(sources); return; }
-    createProject(sources, { title: titleFrom(query), kind: 'draft', awaitingOutput: true, editorialDirection });
+    createProject(sources, { title: articles[0]?.url ? articles[0].title : titleFrom(query), kind: 'draft', awaitingOutput: true, editorialDirection });
   },
 });
 

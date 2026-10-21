@@ -51,7 +51,7 @@ COMPONENT CONTRACTS
     blue-200 text with no fill or border.
   All three action tiers: 46 px height, Inter 16 / 20, 16 px radius.
     Primary labels use weight 700; secondary and tertiary use 600.
-    Radius primitives: 2, 4, 8, 10, 16, 20, and 999 px.
+    Radius primitives: 4, 8, 16, and 999 px.
     Components reference these primitives through aliases.
   Primary and secondary footer actions share their tier measurements.
     Optional markers use #a3a3a3 at weight 400.
@@ -80,12 +80,12 @@ COMPONENT CONTRACTS
   Source checkbox: 24 px, outside photo area at top left.
   Icons: Material Symbols Outlined font with FILL 1 throughout.
     Keep custom SVG geometry where already supplied.
-  Editor toolbar: 10 px radius, 2 px top/bottom padding, document-aligned;
+  Editor toolbar: 8 px radius, 2 px top/bottom padding, document-aligned;
     horizontally scrollable
     on small screens. The text-style menu reuses the shared dropdown.
   Title-to-toolbar and toolbar-to-body gaps: foundation.space.20 (20 px).
   New/Edit variant dropdown labels: Inter 14 / 20, weight 600.
-  Open dropdown, profile, and project menus: 10 px corner radius,
+  Open dropdown, profile, and project menus: 8 px corner radius,
     including the mobile profile menu.
   Profile and project name labels: Inter 14 px, weight 600.
   New Variant panel: 24 px above the heading, 24 px from heading to
@@ -94,7 +94,7 @@ COMPONENT CONTRACTS
   Editorial Direction fields start at two rows, with padding and
     borders added to the current line height. They remain resizable.
   Navigation: hover and active surfaces use neutral gray #f5f5f5,
-    with dark gray #404040 labels and icons. Variant hearts retain pink without a persistent circle.
+    with dark gray #404040 labels and icons. Variant hearts use neutral-700 without a persistent circle.
   Profile menu: neutral gray #f5f5f5 hover and focus surface.
     Settings combines name and photo; both save together or cancel together.
     A 14 px filled edit icon in a 32 px circle overlaps the photo
@@ -107,7 +107,7 @@ COMPONENT CONTRACTS
 VARIANT STATUS SEGMENTS
   To Create / Created separate pending and ready variants.
   Prefix nonzero counts: "2 to Create", "4 Created"; omit zero counts.
-  Inter 14 / 20, weight 600. Radius matches component.dropdown.radius (10 px).
+  Inter 14 / 20, weight 600. Radius matches component.dropdown.radius (8 px).
   Selected: button primary background and inverse label. Unselected:
     default surface, primary text, button border (#e5e5e5). No checkmark.
   Empty, unselected To Create and Created use disabled-label gray (#a3a3a3).
@@ -139,7 +139,7 @@ REQUEST REVISION
 PASSWORD CARD
   Centered CSA mark and Sign in to continue heading in Inter 20 / 30, weight 600.
   Card maximum width 600 px, content maximum width 400 px.
-  Desktop padding 32 px, mobile padding 24 px; corners 20 / 16 px.
+  Desktop padding 32 px, mobile padding 24 px; corners 16 px.
   Password field, blue information panel, divided product footer, and
     Open workspace action last. Existing demo password behavior is retained.
   Information describes demo access. Footer ends with Powered by Prototype.
@@ -163,7 +163,7 @@ HOMEPAGE LAYOUTS
     view_module / menu, 16 px glyphs in 36 px buttons; 76 × 40 px control.
   Buttons and 2 px padding use component aliases to existing spacing tokens.
   White container, buttons, and light-gray selected surface use the
-    navigation panel radius (10 px), with dark icons. Grid is filled when selected and outlined
+    navigation panel radius (8 px), with dark icons. Grid is filled when selected and outlined
     when unselected; all other symbols keep the shared filled style.
   Choice is saved locally and supports arrow keys, Home, and End.
   Toolbar height stays fixed across layouts; selection slides and content
@@ -251,19 +251,17 @@ SAVED PRESETS / FAVORITES
     feedback with Good or Could be better preselected.
 
 AVATAR PALETTE
-  foundation.color.pink.100: #FCE7F3 (Tailwind classic pink-100)
-  foundation.color.pink.700: #BE185D (Tailwind classic pink-700)
   component.avatar.background and foreground alias these colors.
 
 COLOR CONSOLIDATION / EFFECTS
   Eight near-identical gray values now share existing white, neutral,
-    and selected-surface tokens. Avatar pinks remain unchanged.
+    and selected-surface tokens. Avatar colors use neutral-700 and white.
   Open dropdown menus use one shared neutral shadow at 8% opacity;
     0px horizontal offset, 4px vertical offset, 12px blur, no spread.
   Loading overlays share white at 90%; canvas fades share the approved Orange 50 at 50% over white tint.
   The collapsed project navigation rail uses the official Google
     chevron_forward path inside a 40 px white circle with a gray border.
-  Variant status tabs share the dropdown radius token (10 px), including
+  Variant status tabs share the dropdown radius token (8 px), including
     the outside corners of the first and last segments.
 
 SHARED COLOR UPDATES — 2026-10-20
@@ -275,7 +273,7 @@ SHARED COLOR UPDATES — 2026-10-20
     use the default white surface.
   Saved preset, variant edit, saved-filter, source-preview, upload drag,
     and search-preview interaction surfaces now share neutral-100.
-  Saved hearts use pink-700. Delete variant hover/focus shares the
+  Saved hearts use neutral-700. Delete variant hover/focus shares the
     Sources icon neutral-100 background and retains its red icon.
 
 FLAT SURFACES
@@ -338,3 +336,48 @@ The left Sources panel stays open during editing and variant switching until exp
 
 Canvas update — 2026-10-21
 The page canvas uses foundation.color.canvas.orange-50-half: Tailwind orange-50 (#FFF7ED) at 50% opacity over white (#FFFFFF). Its resolved opaque color is #FFFBF6, preventing overlapping surfaces from increasing the tint. The canvas fade shares that resolved color. The semantic canvas alias drives the page, editor tabs and browser theme. The token builder retains OKLCH support for compatible token imports.
+
+Source-link starter — 2026-10-21
+New Project uses the plain “Paste a source link” field, without a search icon, upload block, or “or” divider. The field displays five source-link lines (120px at 24px line height), with scrolling for additional links. Continuing with links replaces only the center Content Preview with selectable article cards, one per pasted URL. The Sources and New Content / Variants panels remain part of the workspace. There is no separate search page, Draft button, or Editorial Direction field for this flow. Cards preserve the submitted URLs and show their hostname and a title derived from the path; unavailable publication dates remain explicit. This prototype does not fetch live article metadata. The middle cards control which links are selected for generation; the left Sources list has preview and source actions without checkboxes. Existing Content Preview records remain supported.
+
+Add Content requires a selected source or content, a selected Format, and no generation in progress. None Selected disables the primary action using the shared disabled style; fixed Audience and Voice values do not satisfy the format requirement.
+
+Content queue restored — 2026-10-21
+New Variant is renamed New Content, and Create variant is renamed Add Content. Add Content queues a configuration in To Create. The Variants panel again has To Create / Created segments with counts, keyboard navigation, and a Create selected variants action. Generation moves completed items to Created and opens the newest result.
+
+While generating, the Creating… label has a Blue 600 band over a pale Blue 200 base. Reduced-motion preferences show static Blue 600 text.
+Pasted source links are checked automatically on import; users can uncheck individual cards. Their choices persist across reloads, and Add Content still requires a format.
+The source-card canvas starts with “Ready to Create Content” in the compact regular-weight status-text style above the cards.
+
+Editor toolbar — 2026-10-21
+The visible controls are Bold, Italic, Underline, H2, H3, bulleted list, numbered list, link (link_2), Undo, and Redo. H2/H3 toggle paragraph headings and expose their pressed state. The old text-style dropdown and strikethrough control are removed from the visible toolbar; saved document formatting remains supported. The design-system specimen matches the toolbar and retains horizontal scrolling on small screens.
+
+Profile initials now use Tailwind neutral-700 (#404040) backgrounds with white (#FFFFFF) letters. Pink-100 and pink-700 are removed from the token source, lookup, and generated exports. Any retained favorite-color aliases use neutral-700.
+
+Draft and Sent labels use capital initials and match the settings-chip font size (12px). DS selection-field examples use the shared filled keyboard_arrow_down symbol, with an inset matching the product controls, instead of the browser-native select arrow.
+
+Typography specimens use the friendly names Display — serif, Page title, Body text, and Supporting text. Their font sizes, line heights, weights, and canonical token references are preserved.
+
+Typography reference expanded to include homepage card titles (desktop 18/25/700, mobile 16/22/700), responsive display/page titles, panel/dialog headings, source/variant/article titles, H2/H3, metadata, field values, navigation, chips, badges, and button labels. Source usage segments are removed; the Sources panel now shows one list, preserving historical source previews.
+
+Sources has no Add new source button. Focus after source actions moves to a source preview button or the Sources navigation trigger.
+
+The whole New Content heading is an accessible button for collapsing/expanding the form. The mobile close control remains separate.
+
+Destructive confirmation standard — 2026-10-21
+Cancel is secondary (white, Blue 600 label/outline); Delete is filled Tailwind Red 700 (#B91C1C), white label, and Red 800 (#991B1B) on hover/press. Both use shared 46px height, 16px radius, 16px/20px semibold labels, and 24px inline padding. Disabled Delete is neutral. The homepage delete confirmation and DS specimen use these shared classes; behavior and focus handling are unchanged.
+
+Radius simplification — 2026-10-21
+Status badges and the DS spacing bars use 4px corners. The 2px radius primitive and its DS swatch are removed from source and generated exports. Spacing values retain their separate scale.
+
+Radius consolidation — 2026-10-21
+All former 10px corners now use 8px, including fields, dropdown/navigation menus, toolbar, workspace panels, source cards, editor tabs and supporting surfaces. The 10px radius primitive and DS swatch are removed. The scale is 4, 8, 16, and 999px.
+
+Dialog/card radius consolidation — 2026-10-21
+All former 20px corners now use 16px. Dialogs, desktop project cards, search fields, and related surfaces share the existing 16px token. The 20px radius primitive and DS example are removed; remaining radii are 4, 8, 16, and 999px.
+
+Quote formatting — 2026-10-21
+The editor and DS toolbar include the filled format_quote symbol beside H2/H3. Block quote toggles the selected paragraphs, clears incompatible heading/list formatting, reflects its active state, and supports Undo/Redo and saved document restoration.
+
+2026-10-21: Action labels use Title Case. The generation panel is Contents; its action counts Content/Contents. Target Word Count offers only Standard Format (500–800 words) for newly queued content; historical length settings remain readable. Editor sheets and preview frames retain a continuous gray top border beneath their tabs.
+Empty content panels use “No content created yet.” in To Create and “No created content yet.” in Created.

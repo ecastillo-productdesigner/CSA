@@ -285,22 +285,47 @@ export function sampleVariant(project, selections) {
   };
 }
 
-export function variantPanelState(project) {
-  return { outputs: projectOutputs(project) };
+export function variantPanelState(project, requestedView) {
+  const outputs = projectOutputs(project);
+  const pending = outputs.filter(output => !outputIsReady(output));
+  const created = outputs.filter(outputIsReady);
+  const activeCreated = !project?.viewOriginalDraft && created.some(output => output.id === project?.selectedOutputId);
+  const view = ['pending', 'created'].includes(requestedView) ? requestedView : activeCreated || (!pending.length && created.length) ? 'created' : 'pending';
+  return {
+    view,
+    outputs: view === 'pending' ? pending : created,
+    pendingLabel: pending.length ? `${pending.length} To Create` : 'To Create',
+    createdLabel: created.length ? `${created.length} Created` : 'Created',
+  };
 }
 
-export function renderOutputs(project) {
-  const state = variantPanelState(project);
+export function renderOutputs(project, requestedView) {
+  const state = variantPanelState(project, requestedView);
+  for (const tab of document.querySelectorAll('[data-output-view]')) {
+    const selected = tab.dataset.outputView === state.view;
+    tab.textContent = tab.dataset.outputView === 'pending' ? state.pendingLabel : state.createdLabel;
+    tab.dataset.empty = String(tab.dataset.outputView === 'pending' ? state.pendingLabel === 'To Create' : state.createdLabel === 'Created');
+    tab.setAttribute('aria-selected', String(selected));
+    tab.tabIndex = selected ? 0 : -1;
+  }
+  document.querySelector('#output-status-content').setAttribute('aria-labelledby', `output-${state.view}-tab`);
+  document.querySelector('.outputs-footer').hidden = state.view !== 'pending';
   const processing = Boolean(project?.outputProcessing);
+  const selectedPending = selectedPendingOutputs(project);
   const selectedIds = new Set(selectedOutputs(project).map(output => output.id));
   const list = document.querySelector('#output-list');
   document.querySelector('.composer-outputs').setAttribute('aria-busy', String(processing));
-  document.querySelector('#output-processing-status').textContent = processing ? 'Creating your variant. This takes about four seconds.' : '';
+  const create = document.querySelector('#create-output');
+  create.disabled = processing || !selectedPending.length;
+  create.title = processing ? 'Preparing selected variants' : selectedPending.length ? `Create ${selectedPending.length} selected variant${selectedPending.length === 1 ? '' : 's'}` : 'Select at least one pending variant';
+  document.querySelector('#create-output-label').textContent = processing ? 'Processing…' : `Create ${selectedPending.length} Content${selectedPending.length === 1 ? '' : 's'}`;
+  document.querySelector('#output-processing-spinner').hidden = !processing;
+  document.querySelector('#output-processing-status').textContent = project?.outputProcessing?.kind === 'revision' ? 'Revising your variant. This takes about four seconds.' : processing ? 'Processing your selected variants. This takes about four seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
   const empty = document.querySelector('#outputs-empty');
   empty.hidden = state.outputs.length > 0;
-  empty.querySelector('p').textContent = 'Variants will appear here once they are created.';
+  empty.querySelector('p').textContent = state.view === 'pending' ? 'No content created yet.' : 'No created content yet.';
   list.hidden = state.outputs.length === 0;
-  list.setAttribute('aria-label', 'Variants');
+  list.setAttribute('aria-label', state.view === 'pending' ? 'Contents to Create' : 'Created Contents');
   list.replaceChildren(...state.outputs.map(output => {
     const item = document.createElement('li');
     const card = document.createElement('article');
@@ -332,9 +357,9 @@ export function renderOutputs(project) {
     open.className = 'output-open';
     open.dataset.outputId = output.id;
     open.disabled = revising || (!ready && processing);
-    open.setAttribute('aria-label', `${!ready ? 'Create variant' : 'Open variant'}: ${output.title}`);
+    open.setAttribute('aria-label', `${!ready ? 'Select variant' : 'Open variant'}: ${output.title}`);
     if (active) open.setAttribute('aria-current', 'true');
-    open.title = !ready ? 'Create this variant' : active ? 'This variant is open in the editor' : 'Open this variant in the editor';
+    open.title = !ready ? 'Select this variant to create' : active ? 'This variant is open in the editor' : 'Open this variant in the editor';
     const top = document.createElement('span');
     top.className = 'output-card-top';
     const badges = document.createElement('span');
@@ -366,6 +391,21 @@ export function renderOutputs(project) {
     heading.title = output.title;
     open.append(top, heading);
     card.append(open);
+    if (!ready) {
+      const selection = document.createElement('button');
+      selection.type = 'button';
+      selection.className = 'output-selection-button';
+      selection.dataset.selectOutput = output.id;
+      selection.disabled = processing;
+      selection.setAttribute('role', 'checkbox');
+      selection.setAttribute('aria-label', `${selected ? 'Deselect' : 'Select'} variant: ${output.title}`);
+      selection.setAttribute('aria-checked', String(selected));
+      const indicator = document.createElement('span');
+      indicator.className = 'output-selection-indicator';
+      indicator.setAttribute('aria-hidden', 'true');
+      selection.append(indicator);
+      card.append(selection);
+    }
     badges.inert = revising;
     card.append(badges);
     if (revising) {
@@ -375,7 +415,10 @@ export function renderOutputs(project) {
       const spinner = document.createElement('span');
       spinner.className = 'output-processing-spinner revision-spinner';
       spinner.setAttribute('aria-hidden', 'true');
-      overlay.append(spinner, document.createTextNode('Creating…'));
+      const label = document.createElement('span');
+      label.className = 'output-creating-label';
+      label.textContent = 'Creating…';
+      overlay.append(spinner, label);
       card.append(overlay);
     }
     item.append(card);

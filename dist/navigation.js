@@ -105,7 +105,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
       if (!['ArrowRight', 'ArrowDown'].includes(event.key)) return;
       event.preventDefault();
       open(name);
-      const focusSelector = name === 'sources' ? '#editor-add-source-button:not(:disabled), .editor-source-checkbox' : name === 'newVariant' ? '.tool-dropdown-trigger' : name === 'variants' ? '.output-open:not(:disabled)' : '.profile-navigation';
+      const focusSelector = name === 'sources' ? '.editor-source-open' : name === 'newVariant' ? '.tool-dropdown-trigger' : name === 'variants' ? '.output-open:not(:disabled)' : '.profile-navigation';
       (panel.querySelector(focusSelector) || panel.querySelector('[data-close-navigation]'))?.focus();
     });
   }

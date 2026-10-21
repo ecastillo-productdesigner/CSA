@@ -37,3 +37,19 @@ export function formatSourceLinks(input) {
   if (!parts || parts.length < 2) return input;
   return parts.join('\n') + (input.match(/\n+$/)?.[0] || '');
 }
+
+// Cards reflect the submitted links; no article metadata is fetched in this demo.
+export function sourceLinkArticles(urls) {
+  return urls.map((value, index) => {
+    const url = new URL(value);
+    const source = url.hostname.replace(/^www\./, '');
+    const slug = url.pathname.split('/').filter(Boolean).pop() || '';
+    let title = slug;
+    try { title = decodeURIComponent(slug); } catch { /* Keep malformed escapes as submitted. */ }
+    title = title.replace(/\.(?:html?|aspx?|php)$/i, '').replace(/[-_]+/g, ' ').trim();
+    return {
+      id: `link-${index + 1}`, url: url.href, title: title || source,
+      source, date: null, excerpt: url.href, paragraphs: [],
+    };
+  });
+}

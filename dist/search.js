@@ -1,4 +1,5 @@
 import { createIcon } from './icons.js?v=20261020-ds-centralized';
+import { sourceLinkArticles } from './source-links.js';
 // Sample content for the results-screen prototype. No live news requests are made.
 function sampleArticles(query) {
   const isKelly = /^kelly\s+clarkson$/i.test(query.trim());
@@ -44,11 +45,14 @@ function node(tag, className, text) {
 }
 
 function dateLabel(value) {
+  if (!value) return 'Not available';
   return new Date(`${value}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 }
 
 export function createSearchExperience({ onSearch, onSelectionChange, onDirectionChange, onDraft }) {
   const $ = (selector) => document.querySelector(selector);
+  const results = $('#search-results');
+  const resultsHome = results.parentElement;
   let state = null;
   let previewArticle = null;
   const additionTimers = new Map();
@@ -64,13 +68,14 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     const selected = state.selected.has(article.id);
     const ready = state.readyArticleIds.has(article.id);
     const inspect = container.closest('.result-card').querySelector('.result-inspect-button');
-    inspect.disabled = !ready;
-    inspect.hidden = !ready;
-    inspect.previousElementSibling.hidden = !ready;
+    const canInspect = ready && !article.url;
+    inspect.disabled = !canInspect;
+    inspect.hidden = !canInspect;
+    inspect.previousElementSibling.hidden = !canInspect;
     inspect.title = ready ? 'Inspect article' : selected ? 'Adding to CSA' : 'Select this story to inspect';
     container.hidden = !selected;
     container.classList.toggle('is-loading', selected && !ready);
-    if (ready) container.append(node('span', 'visually-hidden', 'Added to CSA. Inspect article is ready.'));
+    if (ready) container.append(node('span', 'visually-hidden', article.url ? 'Link selected.' : 'Added to CSA. Inspect article is ready.'));
     else if (selected) {
       const adding = node('span', 'result-adding');
       const spinner = node('span', 'output-processing-spinner');
@@ -102,7 +107,8 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       additionTimers.delete(id);
     } else {
       state.selected.add(id);
-      startAddition(id);
+      if (state.linkResults) state.readyArticleIds.add(id);
+      else startAddition(id);
     }
     onSelectionChange(state.projectId, [...state.selected], [...state.readyArticleIds]);
     render();
@@ -116,7 +122,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     document.querySelector('.article-preview-badge').textContent = 'Fictional article preview';
     $('#article-preview-notice').hidden = false;
     $('#article-preview-meta').hidden = false;
-    $('#article-preview-back').textContent = 'Back to results';
+    $('#article-preview-back').textContent = 'Back to Results';
     $('#article-preview-title').textContent = article.title;
     $('#article-preview-meta').textContent = `${article.source} · ${dateLabel(article.date)}`;
     $('#article-preview-body').replaceChildren(...article.paragraphs.map(paragraph => node('p', '', paragraph)));
@@ -142,7 +148,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     return state.articles.filter((article) =>
       (state.source === 'all' || article.source === state.source) &&
       (!state.after || article.date >= state.after)
-    ).sort((a, b) => state.sort === 'relevance' ? relevance(b) - relevance(a) : state.sort === 'newest' ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date));
+    ).sort((a, b) => state.sort === 'relevance' ? relevance(b) - relevance(a) : state.sort === 'newest' ? (b.date || '').localeCompare(a.date || '') : (a.date || '').localeCompare(b.date || ''));
   }
 
   function chosenArticles() {
@@ -153,7 +159,9 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     if (!state) return;
     const filtered = filteredArticles();
     const visible = filtered.slice(0, state.visibleCount);
-    $('#results-count').textContent = `${filtered.length.toLocaleString()} ${filtered.length === 1 ? 'story' : 'stories'} found`;
+    $('#results-count').textContent = state.linkResults
+      ? `${filtered.length.toLocaleString()} ${filtered.length === 1 ? 'link' : 'links'}`
+      : `${filtered.length.toLocaleString()} ${filtered.length === 1 ? 'story' : 'stories'} found`;
     const list = $('#result-list');
     list.replaceChildren(...visible.map((article) => {
       const item = node('li', 'result-item');
@@ -194,12 +202,18 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
         node('span', 'result-snippet', article.excerpt),
       );
       card.append(selection, indicator, thumbnail, copy);
-      const previewButton = node('button', 'icon-button result-preview-button');
-      previewButton.type = 'button';
-      previewButton.disabled = true;
+      const previewButton = node(article.url ? 'a' : 'button', 'icon-button result-preview-button');
+      if (article.url) {
+        previewButton.href = article.url;
+        previewButton.target = '_blank';
+        previewButton.rel = 'noopener noreferrer';
+      } else {
+        previewButton.type = 'button';
+        previewButton.disabled = true;
+      }
       previewButton.dataset.previewArticleId = article.id;
-      previewButton.setAttribute('aria-label', `Preview story ${article.id.split('-').pop()}: ${article.title}`);
-      previewButton.title = 'Article preview';
+      previewButton.setAttribute('aria-label', `${article.url ? 'Open source' : 'Preview story'} ${article.id.split('-').pop()}: ${article.title}${article.url ? ' (opens in a new tab)' : ''}`);
+      previewButton.title = article.url ? 'Open source in a new tab' : 'Article preview';
       const svg = createIcon('open_in_new');
       previewButton.append(svg);
       item.append(card, previewButton);
@@ -213,9 +227,9 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       return item;
     }));
     $('#results-empty').hidden = filtered.length > 0;
-    $('#load-more').hidden = filtered.length === 0;
+    $('#load-more').hidden = state.linkResults || filtered.length === 0;
     $('#load-more').disabled = visible.length >= filtered.length;
-    $('#load-more').textContent = visible.length >= filtered.length ? 'All results shown' : 'Load more';
+    $('#load-more').textContent = visible.length >= filtered.length ? 'All Results Shown' : 'Load More';
     const chosen = chosenArticles();
     $('#create-draft').disabled = chosen.length === 0;
     $('#create-draft').title = chosen.length ? `${state.addingSources ? 'Add' : 'Draft from'} ${chosen.length} selected ${chosen.length === 1 ? 'story' : 'stories'}` : `Select at least one story to ${state.addingSources ? 'add a source' : 'create a draft'}`;
@@ -267,20 +281,30 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
   });
 
   return {
-    show(project, { addingSources = false } = {}) {
+    show(project, { addingSources = false, embedded = false } = {}) {
       clearAdditionTimers();
-      const query = project.sources[0].title;
-      const articles = sampleArticles(query);
-      const savedSelection = Array.isArray(project.selectedArticleIds) ? project.selectedArticleIds : [];
+      const linkResults = embedded || project.kind === 'links';
+      const linkSources = project.sources.filter(source => source.type === 'link');
+      const query = linkResults ? linkSources.map(source => source.url).join(' ') : project.sources[0].title;
+      const articles = linkResults ? sourceLinkArticles(linkSources.map(source => source.url)) : sampleArticles(query);
+      const savedSelection = embedded ? linkSources.flatMap((source, index) => source.selected !== false ? [`link-${index + 1}`] : []) : Array.isArray(project.selectedArticleIds) ? project.selectedArticleIds : [];
       const selected = new Set(savedSelection.filter(id => articles.some(article => article.id === id)));
       const savedAdded = Array.isArray(project.addedArticleIds) ? project.addedArticleIds : savedSelection;
-      const readyArticleIds = new Set(savedAdded.filter(id => articles.some(article => article.id === id)));
-      state = { projectId: project.id, addingSources, query, articles, editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '', sort: 'newest', source: 'all', after: '', visibleCount: 4, selected, readyArticleIds };
-      $('#create-draft').textContent = addingSources ? 'Add sources' : 'Draft';
-      $('.results-direction').hidden = addingSources;
-      $('#results-help').textContent = addingSources ? 'Select at least one article to add it to your project.' : 'Select at least one article to enable Draft.';
+      const readyArticleIds = new Set((linkResults ? savedSelection : savedAdded).filter(id => articles.some(article => article.id === id)));
+      state = { projectId: project.id, addingSources, linkResults, query, articles, editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '', sort: 'newest', source: 'all', after: '', visibleCount: linkResults ? articles.length : 4, selected, readyArticleIds };
+      $('#create-draft').textContent = addingSources ? 'Add Sources' : 'Draft';
+      $('.results-direction').hidden = addingSources || embedded;
+      $('.results-actions').hidden = embedded;
+      $('.results-search-form').hidden = embedded;
+      $('.results-toolbar').hidden = embedded;
+      (embedded ? $('#editor-canvas-content') : resultsHome).append(results);
+      results.classList.toggle('link-cards-panel', embedded);
+      $('#results-help').textContent = embedded ? 'Select sources and choose a format to enable Add Content.' : addingSources ? 'Select at least one article to add it to your project.' : 'Select at least one article to enable Draft.';
       $('#search-results').hidden = false;
-      $('#results-heading').textContent = `Search results for ${query}`;
+      $('#results-heading').textContent = embedded ? 'Ready to Create Content' : linkResults ? 'Choose sources from your links' : `Search results for ${query}`;
+      $('#results-heading').classList.toggle('visually-hidden', !embedded);
+      $('.results-sort').hidden = linkResults;
+      $('#results-toggle-filters').hidden = linkResults;
       $('#results-query').value = query;
       $('#results-editorial-direction').value = state.editorialDirection;
       $('#results-search-button').disabled = false;
@@ -294,7 +318,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       $('#results-filter-panel').hidden = true;
       $('#results-toggle-filters').setAttribute('aria-expanded', 'false');
       render();
-      for (const id of selected) startAddition(id);
+      if (!linkResults) for (const id of selected) startAddition(id);
     },
     hide() { clearAdditionTimers(); if (preview.open) preview.close(); previewArticle = null; state = null; $('#search-results').hidden = true; },
   };

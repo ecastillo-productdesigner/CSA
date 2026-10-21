@@ -1,29 +1,36 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { variantPanelState } from '../dist/outputs.js';
+import { variantPanelState, selectedPendingOutputs } from '../dist/outputs.js';
 
 const pending = { id: 'pending', title: 'Pending', status: 'pending' };
 const ready = { id: 'ready', title: 'Created', status: 'ready' };
 
-test('one list retains created, processing, legacy, and regeneration records', () => {
+test('To Create keeps pending and regeneration records while Created includes ready and legacy drafts', () => {
   const legacy = { id: 'legacy', title: 'Legacy', draftText: 'Existing content' };
   const recreate = { id: 'recreate', title: 'Recreate', status: 'pending', needsRegeneration: true, draftText: 'Previous content' };
   const project = { outputs: [pending, ready, legacy, recreate, null] };
-  assert.deepEqual(variantPanelState(project).outputs.map(output => output.id), ['pending', 'ready', 'legacy', 'recreate']);
+  assert.deepEqual(variantPanelState(project, 'pending').outputs.map(output => output.id), ['pending', 'recreate']);
+  assert.deepEqual(variantPanelState(project, 'created').outputs.map(output => output.id), ['ready', 'legacy']);
+  assert.equal(variantPanelState(project).pendingLabel, '2 To Create');
+  assert.equal(variantPanelState(project).createdLabel, '2 Created');
 });
 
-test('an empty project has one empty variant list', () => {
-  assert.deepEqual(variantPanelState(null), { outputs: [] });
+test('empty segments omit zero counts and default to To Create', () => {
+  assert.deepEqual(variantPanelState(null), { view: 'pending', outputs: [], pendingLabel: 'To Create', createdLabel: 'Created' });
 });
 
-test('active editor and previous segment preferences cannot hide other variants', () => {
+test('explicit segment selection overrides the open editor while default follows a created draft', () => {
   const project = { outputs: [pending, ready], selectedOutputId: 'ready' };
-  assert.deepEqual(variantPanelState(project, 'pending').outputs, [pending, ready]);
-  assert.deepEqual(variantPanelState({ ...project, viewOriginalDraft: true }, 'created').outputs, [pending, ready]);
+  assert.equal(variantPanelState(project).view, 'created');
+  assert.deepEqual(variantPanelState(project, 'pending').outputs, [pending]);
+  assert.deepEqual(variantPanelState({ ...project, viewOriginalDraft: true }, 'created').outputs, [ready]);
 });
 
-test('completed generation stays in the same list and position without duplication', () => {
-  const project = { outputs: [{ ...pending }, ready] };
+test('completing a batch moves only those records to Created without duplication', () => {
+  const project = { outputs: [{ ...pending }, ready], selectedOutputIds: ['pending', 'ready'] };
+  assert.deepEqual(selectedPendingOutputs(project).map(output => output.id), ['pending']);
   project.outputs[0].status = 'ready';
-  assert.deepEqual(variantPanelState(project).outputs.map(output => output.id), ['pending', 'ready']);
+  assert.deepEqual(variantPanelState(project, 'pending').outputs, []);
+  assert.deepEqual(variantPanelState(project, 'created').outputs.map(output => output.id), ['pending', 'ready']);
+  assert.deepEqual(selectedPendingOutputs(project), []);
 });

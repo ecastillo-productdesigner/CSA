@@ -130,6 +130,8 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     const value = quill.getFormat(selection.index, selection.length);
     for (const button of $('#editor-toolbar').querySelectorAll('[data-format]')) button.setAttribute('aria-pressed', String(value[button.dataset.format] === true));
     for (const button of $('#editor-toolbar').querySelectorAll('[data-list]')) button.setAttribute('aria-pressed', String(value.list === button.dataset.list));
+    for (const button of $('#editor-toolbar').querySelectorAll('[data-header]')) button.setAttribute('aria-pressed', String(value.header === Number(button.dataset.header)));
+    $('[data-editor-action="link"]').setAttribute('aria-pressed', String(Boolean(value.link)));
     $('[data-editor-action="highlight"]').setAttribute('aria-pressed', String(Boolean(value.background)));
     $('#editor-block').value = value.blockquote ? 'quote' : String(value.header || '');
     $('#editor-align').value = typeof value.align === 'string' ? value.align : '';
@@ -149,6 +151,24 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   $('#editor-toolbar').addEventListener('click', event => {
     const button = event.target.closest('button');
     if (!button || !quill) return;
+    if (button.dataset.header) {
+      const level = Number(button.dataset.header);
+      restoreSelection();
+      quill.history.cutoff();
+      quill.formatLine(selection.index, selection.length, { header: quill.getFormat(selection.index, selection.length).header === level ? false : level, blockquote: false }, 'user');
+      quill.history.cutoff();
+      updateToolbar();
+      return;
+    }
+    if (button.dataset.format === 'blockquote') {
+      const active = Boolean(quill.getFormat(selection.index, selection.length).blockquote);
+      restoreSelection();
+      quill.history.cutoff();
+      quill.formatLine(selection.index, selection.length, { blockquote: !active, header: false, list: false }, 'user');
+      quill.history.cutoff();
+      updateToolbar();
+      return;
+    }
     if (button.dataset.format) { format(button.dataset.format, !quill.getFormat(selection.index, selection.length)[button.dataset.format]); return; }
     if (button.dataset.list) { format('list', quill.getFormat(selection.index, selection.length).list === button.dataset.list ? false : button.dataset.list); return; }
     switch (button.dataset.editorAction) {

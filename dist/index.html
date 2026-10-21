@@ -8,7 +8,7 @@
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,alt_route,archive,arrow_forward,arrow_upward,auto_awesome,build,check,chevron_forward,close,contract_edit,delete,description,draw,edit,edit_note,favorite,filter_list,folder_open,format_bold,format_clear,format_color_text,format_indent_decrease,format_indent_increase,format_italic,format_list_bulleted,format_list_numbered,format_strikethrough,format_underlined,history,ink_highlighter,keyboard_arrow_down,keyboard_arrow_up,link,menu,more_horiz,open_in_new,photo_camera,redo,restore_from_trash,right_panel_open,search,send,thumb_down,thumb_up,tune,turn_slight_left,undo,upload,upload_file,view_module,visibility&amp;display=block">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,alt_route,archive,arrow_forward,arrow_upward,auto_awesome,build,check,chevron_forward,close,contract_edit,delete,description,draw,edit,edit_note,favorite,filter_list,folder_open,format_bold,format_clear,format_color_text,format_h2,format_h3,format_indent_decrease,format_indent_increase,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_strikethrough,format_underlined,history,ink_highlighter,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,redo,restore_from_trash,right_panel_open,search,send,thumb_down,thumb_up,tune,turn_slight_left,undo,upload,upload_file,view_module,visibility&amp;display=block">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
     <link rel="stylesheet" href="./design-system/tokens.css?v=20261020-preset-settings">
     <link rel="stylesheet" href="./styles.css?v=20261020-preset-settings">
@@ -31,7 +31,7 @@
             <p>Use the demo password to continue. Contact your CSA administrator if you need access.</p>
           </aside>
           <footer class="demo-access-footer">McClatchy Content Scaling Agent<br>Powered by Prototype</footer>
-          <button class="demo-access-submit" id="demo-access-submit" type="submit">Open workspace</button>
+          <button class="demo-access-submit" id="demo-access-submit" type="submit">Open Workspace</button>
         </form>
         <noscript><p class="form-error">Enable JavaScript to open this demo.</p></noscript>
       </div>
@@ -48,21 +48,20 @@
         <button class="icon-button drawer-toggle" id="toggle-navigation-drawer" type="button" aria-label="Close navigation drawer" aria-expanded="false" aria-controls="navigation-drawer"><span class="material-symbols-outlined" aria-hidden="true">right_panel_open</span></button>
       </div>
       <nav class="navigation" id="workspace-navigation" aria-label="Workspace">
-        <button class="icon-button nav-button mobile-workspace-trigger" id="show-new-variant" type="button" aria-label="New Variant" title="New Variant" aria-controls="composer-tools" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">alt_route</span></button>
-        <button class="icon-button nav-button mobile-workspace-trigger" id="show-variants" type="button" aria-label="Variants" title="Variants" aria-controls="composer-outputs" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">turn_slight_left</span></button>
+        <button class="icon-button nav-button mobile-workspace-trigger" id="show-new-variant" type="button" aria-label="New Content" title="New Content" aria-controls="composer-tools" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">alt_route</span></button>
+        <button class="icon-button nav-button mobile-workspace-trigger" id="show-variants" type="button" aria-label="Contents" title="Contents" aria-controls="composer-outputs" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">turn_slight_left</span></button>
         <button class="icon-button nav-button" id="show-sources" type="button" aria-label="Sources" aria-describedby="sources-tooltip" hidden aria-controls="editor-sources" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">folder_open</span><span class="nav-label">Sources</span></button>
-        <button class="icon-button nav-button" id="new-project" type="button" aria-label="New project" aria-describedby="new-project-tooltip"><span class="material-symbols-outlined" aria-hidden="true">add_circle</span><span class="nav-label">New project</span></button>
+        <button class="icon-button nav-button" id="new-project" type="button" aria-label="New Project" aria-describedby="new-project-tooltip"><span class="material-symbols-outlined" aria-hidden="true">add_circle</span><span class="nav-label">New Project</span></button>
     <section class="recents-panel sources-panel" id="editor-sources" role="region" aria-label="Sources" hidden>
       <div class="mobile-panel-heading"><h2>Sources</h2><button class="icon-button" type="button" data-close-navigation="sources" aria-label="Close Sources panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
       <div class="sources-panel-content">
-        <button class="secondary-button secondary-button--outlined editor-add-source-button" id="editor-add-source-button" type="button">Add new source</button>
         <p class="editor-source-selection-status" id="editor-source-selection-status" role="status"></p>
         <ul id="editor-source-list"></ul>
       </div>
     </section>
       </nav>
       <div class="profile-menu" id="profile-menu" role="menu" aria-label="Profile options" hidden>
-        <button class="profile-navigation profile-logout" id="profile-logout" type="button" role="menuitem">Log out</button>
+        <button class="profile-navigation profile-logout" id="profile-logout" type="button" role="menuitem">Log Out</button>
       </div>
       <button class="profile-button" id="show-profile" type="button" aria-label="Profile options for athena@example.com" aria-describedby="account-tooltip profile-email" aria-haspopup="menu" aria-controls="profile-menu" aria-expanded="false">
         <span class="profile-avatar" aria-hidden="true">A</span><span class="nav-label profile-details"><span class="profile-email" id="profile-email">athena@example.com</span></span>
@@ -76,18 +75,18 @@
         </header>
         <div class="dashboard-layout-tools">
           <div class="dashboard-layout-switch" id="dashboard-layout-switch" role="group" aria-label="Project layout">
-            <button type="button" data-dashboard-layout="grid" aria-label="Grid view" title="Grid view" aria-pressed="true" aria-controls="dashboard-grid"><span class="material-symbols-outlined" aria-hidden="true">view_module</span></button>
-            <button type="button" data-dashboard-layout="list" aria-label="List view" title="List view" aria-pressed="false" aria-controls="dashboard-grid"><span class="material-symbols-outlined" aria-hidden="true">menu</span></button>
+            <button type="button" data-dashboard-layout="grid" aria-label="Grid View" title="Grid View" aria-pressed="true" aria-controls="dashboard-grid"><span class="material-symbols-outlined" aria-hidden="true">view_module</span></button>
+            <button type="button" data-dashboard-layout="list" aria-label="List View" title="List View" aria-pressed="false" aria-controls="dashboard-grid"><span class="material-symbols-outlined" aria-hidden="true">menu</span></button>
           </div>
         </div>
         <div class="dashboard-grid" id="dashboard-grid"></div>
-        <button class="tertiary-button load-more" id="dashboard-load-more" type="button" aria-controls="dashboard-grid" hidden>Load more</button>
+        <button class="tertiary-button load-more" id="dashboard-load-more" type="button" aria-controls="dashboard-grid" hidden>Load More</button>
         <p class="visually-hidden" id="dashboard-load-status" role="status" aria-live="polite"></p>
       </section>
       <div class="dashboard-bottom-fade" aria-hidden="true"></div>
 
       <section class="composer" id="composer" aria-labelledby="composer-heading" hidden>
-        <h1 class="visually-hidden" id="composer-heading">New project</h1>
+        <h1 class="visually-hidden" id="composer-heading">New Project</h1>
         <div class="composer-canvas" role="region" aria-label="Project canvas">
           <div class="editor-variant-tabs" id="editor-variant-tabs" role="tablist" aria-label="Story variants" hidden></div>
           <div class="editor-canvas-content" id="editor-canvas-content">
@@ -104,24 +103,26 @@
               <div class="editor-navigation">
               </div>
               <div class="editor-document-actions" hidden>
-                <button class="editor-nav-button" id="editor-find-button" type="button" aria-label="Find and replace" aria-expanded="false" aria-controls="editor-find"><span class="material-symbols-outlined" aria-hidden="true">search</span></button>
-                <details class="editor-download" id="editor-download"><summary>Download <span class="material-symbols-outlined" aria-hidden="true">keyboard_arrow_down</span></summary><div><button type="button" data-export="html">Formatted document (.html)</button><button type="button" data-export="text">Plain text (.txt)</button><button type="button" id="editor-copy">Copy text</button><button type="button" id="editor-print">Print / Save as PDF</button></div></details>
+                <button class="editor-nav-button" id="editor-find-button" type="button" aria-label="Find and Replace" aria-expanded="false" aria-controls="editor-find"><span class="material-symbols-outlined" aria-hidden="true">search</span></button>
+                <details class="editor-download" id="editor-download"><summary>Download <span class="material-symbols-outlined" aria-hidden="true">keyboard_arrow_down</span></summary><div><button type="button" data-export="html">Formatted Document (.html)</button><button type="button" data-export="text">Plain Text (.txt)</button><button type="button" id="editor-copy">Copy Text</button><button type="button" id="editor-print">Print / Save as PDF</button></div></details>
               </div>
 
             </div>
             <div class="editor-context-panel editor-find-panel" id="editor-find" hidden>
-              <div class="editor-panel-heading"><h2>Find and replace</h2><button class="text-button" type="button" data-editor-close="find">Close</button></div>
+              <div class="editor-panel-heading"><h2>Find and Replace</h2><button class="text-button" type="button" data-editor-close="find">Close</button></div>
               <div class="editor-find-fields"><label for="editor-find-text">Find<input id="editor-find-text" type="text" placeholder="Find in your story"></label><label for="editor-replace-text">Replace with<input id="editor-replace-text" type="text" placeholder="Replacement text"></label></div>
-              <div class="editor-find-actions"><span id="editor-find-count" role="status">Enter text to find</span><button class="secondary-button" id="editor-find-next" type="button">Next</button><button class="secondary-button" id="editor-replace-one" type="button">Replace</button><button class="secondary-button" id="editor-replace-all" type="button">Replace all</button></div>
+              <div class="editor-find-actions"><span id="editor-find-count" role="status">Enter text to find</span><button class="secondary-button" id="editor-find-next" type="button">Next</button><button class="secondary-button" id="editor-replace-one" type="button">Replace</button><button class="secondary-button" id="editor-replace-all" type="button">Replace All</button></div>
             </div>
             <div class="editor-sheet">
               <header class="editor-document-header"><div class="editor-document-status"><span class="editor-draft-badge editor-tab-draft"><span class="material-symbols-outlined" aria-hidden="true">draw</span>Draft</span></div><div class="editor-variant-labels" id="editor-variant-labels" role="group" aria-label="Variant settings" hidden></div><label class="visually-hidden" for="editor-title">Story title</label><textarea id="editor-title" rows="1" maxlength="180" placeholder="Untitled story"></textarea></header>
               <div class="editor-toolbar" id="editor-toolbar" role="toolbar" aria-label="Text formatting">
-                <div class="editor-toolbar-group"><button type="button" data-editor-action="undo" aria-label="Undo" title="Undo (⌘/Ctrl+Z)"><span class="material-symbols-outlined" aria-hidden="true">undo</span></button><button type="button" data-editor-action="redo" aria-label="Redo" title="Redo (⌘/Ctrl+Shift+Z)"><span class="material-symbols-outlined" aria-hidden="true">redo</span></button></div>
-                <div class="editor-toolbar-group"><div class="editor-style-field" data-label="Text style" data-placeholder="Normal text"><select id="editor-block" aria-label="Text style" hidden><option value="">Normal text</option><option value="1">Heading 1</option><option value="2">Heading 2</option><option value="3">Heading 3</option><option value="quote">Quote</option></select></div></div>
-                <div class="editor-toolbar-group"><button type="button" data-format="bold" aria-label="Bold" aria-pressed="false" title="Bold (⌘/Ctrl+B)"><span class="material-symbols-outlined" aria-hidden="true">format_bold</span></button><button type="button" data-format="italic" aria-label="Italic" aria-pressed="false" title="Italic (⌘/Ctrl+I)"><span class="material-symbols-outlined" aria-hidden="true">format_italic</span></button><button type="button" data-format="underline" aria-label="Underline" aria-pressed="false" title="Underline (⌘/Ctrl+U)"><span class="material-symbols-outlined" aria-hidden="true">format_underlined</span></button><button type="button" data-format="strike" aria-label="Strikethrough" aria-pressed="false"><span class="material-symbols-outlined" aria-hidden="true">format_strikethrough</span></button></div>
-                <div class="editor-toolbar-group" hidden><button type="button" data-editor-action="link" aria-label="Add or edit link" title="Add link (⌘/Ctrl+K)"><span class="material-symbols-outlined" aria-hidden="true">link</span></button><label class="editor-color-control" title="Text color"><span class="material-symbols-outlined" aria-hidden="true">format_color_text</span><input id="editor-color" type="color" value="#26344a" aria-label="Text color"></label><button type="button" data-editor-action="highlight" aria-label="Highlight text" aria-pressed="false" title="Highlight text"><span class="material-symbols-outlined" aria-hidden="true">ink_highlighter</span></button><button type="button" data-editor-action="clear" aria-label="Clear formatting" title="Clear formatting"><span class="material-symbols-outlined" aria-hidden="true">format_clear</span></button></div>
-                <div class="editor-toolbar-group" hidden><button type="button" data-list="bullet" aria-label="Bulleted list" aria-pressed="false" title="Bulleted list"><span class="material-symbols-outlined" aria-hidden="true">format_list_bulleted</span></button><button type="button" data-list="ordered" aria-label="Numbered list" aria-pressed="false" title="Numbered list"><span class="material-symbols-outlined" aria-hidden="true">format_list_numbered</span></button><button type="button" data-editor-action="outdent" aria-label="Decrease indent" title="Decrease indent"><span class="material-symbols-outlined" aria-hidden="true">format_indent_decrease</span></button><button type="button" data-editor-action="indent" aria-label="Increase indent" title="Increase indent"><span class="material-symbols-outlined" aria-hidden="true">format_indent_increase</span></button><select id="editor-align" aria-label="Text alignment"><option value="">Align left</option><option value="center">Center</option><option value="right">Align right</option><option value="justify">Justify</option></select></div>
+                <div class="editor-toolbar-group"><button type="button" data-format="bold" aria-pressed="false" aria-label="Bold" title="Bold"><span class="material-symbols-outlined" aria-hidden="true">format_bold</span></button><button type="button" data-format="italic" aria-pressed="false" aria-label="Italic" title="Italic"><span class="material-symbols-outlined" aria-hidden="true">format_italic</span></button><button type="button" data-format="underline" aria-pressed="false" aria-label="Underline" title="Underline"><span class="material-symbols-outlined" aria-hidden="true">format_underlined</span></button></div>
+                <div class="editor-toolbar-group"><button type="button" data-header="2" aria-pressed="false" aria-label="Heading 2" title="Heading 2"><span class="material-symbols-outlined" aria-hidden="true">format_h2</span></button><button type="button" data-header="3" aria-pressed="false" aria-label="Heading 3" title="Heading 3"><span class="material-symbols-outlined" aria-hidden="true">format_h3</span></button><button type="button" data-format="blockquote" aria-pressed="false" aria-label="Block Quote" title="Block Quote"><span class="material-symbols-outlined" aria-hidden="true">format_quote</span></button></div>
+                <div class="editor-toolbar-group"><button type="button" data-list="bullet" aria-pressed="false" aria-label="Bulleted List" title="Bulleted List"><span class="material-symbols-outlined" aria-hidden="true">format_list_bulleted</span></button><button type="button" data-list="ordered" aria-pressed="false" aria-label="Numbered List" title="Numbered List"><span class="material-symbols-outlined" aria-hidden="true">format_list_numbered</span></button></div>
+                <div class="editor-toolbar-group"><button type="button" data-editor-action="link" aria-pressed="false" aria-haspopup="dialog" aria-controls="editor-link-dialog" aria-label="Add or Edit Link" title="Add or Edit Link"><span class="material-symbols-outlined" aria-hidden="true">link_2</span></button></div>
+                <div class="editor-toolbar-group"><button type="button" data-editor-action="undo" aria-label="Undo" title="Undo"><span class="material-symbols-outlined" aria-hidden="true">undo</span></button><button type="button" data-editor-action="redo" aria-label="Redo" title="Redo"><span class="material-symbols-outlined" aria-hidden="true">redo</span></button></div>
+                <div hidden><select id="editor-block" aria-label="Text style" hidden><option value="">Normal text</option><option value="1">Heading 1</option><option value="2">Heading 2</option><option value="3">Heading 3</option><option value="quote">Quote</option></select></div>
+                <div class="editor-toolbar-group" hidden><label class="editor-color-control" title="Text color"><span class="material-symbols-outlined" aria-hidden="true">format_color_text</span><input id="editor-color" type="color" value="#26344a" aria-label="Text color"></label><button type="button" data-editor-action="highlight" aria-label="Highlight Text" aria-pressed="false" title="Highlight Text"><span class="material-symbols-outlined" aria-hidden="true">ink_highlighter</span></button><button type="button" data-editor-action="clear" aria-label="Clear Formatting" title="Clear Formatting"><span class="material-symbols-outlined" aria-hidden="true">format_clear</span></button></div><div class="editor-toolbar-group" hidden><button type="button" data-editor-action="outdent" aria-label="Decrease Indent" title="Decrease Indent"><span class="material-symbols-outlined" aria-hidden="true">format_indent_decrease</span></button><button type="button" data-editor-action="indent" aria-label="Increase Indent" title="Increase Indent"><span class="material-symbols-outlined" aria-hidden="true">format_indent_increase</span></button><select id="editor-align" aria-label="Text alignment"><option value="">Align left</option><option value="center">Center</option><option value="right">Align right</option><option value="justify">Justify</option></select></div>
               </div>
               <div id="rich-text-editor"></div>
               <div class="editor-publish-actions"><button class="editor-wordpress-button" id="editor-wordpress" type="button">Send to WordPress</button></div>
@@ -130,9 +131,9 @@
           </section>
           </div>
         </div>
-        <aside class="composer-rail" aria-label="Project tools and variants">
+        <aside class="composer-rail" aria-label="Project tools and contents">
           <section class="composer-panel composer-tools" id="composer-tools" aria-labelledby="composer-tools-heading">
-            <div class="composer-tools-header"><h2 id="composer-tools-heading" tabindex="-1"><span class="material-symbols-outlined" aria-hidden="true">alt_route</span><span>New Variant</span></h2><div class="composer-tools-actions"><button class="icon-button mobile-panel-close" type="button" data-close-navigation="newVariant" aria-label="Close New Variant panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button><button class="icon-button tool-collapse-button" id="toggle-new-variant" type="button" aria-label="Collapse New Variant" aria-expanded="true" aria-controls="composer-variant-form" title="Collapse New Variant"><span class="material-symbols-outlined" aria-hidden="true">keyboard_arrow_up</span></button></div></div>
+            <div class="composer-tools-header"><h2 id="composer-tools-heading" tabindex="-1"><button class="composer-tools-toggle" id="toggle-new-variant" type="button" aria-label="Collapse New Content" aria-expanded="true" aria-controls="composer-variant-form"><span class="material-symbols-outlined" aria-hidden="true">alt_route</span><span>New Content</span><span class="material-symbols-outlined" data-collapse-chevron aria-hidden="true">keyboard_arrow_up</span></button></h2><button class="icon-button mobile-panel-close" type="button" data-close-navigation="newVariant" aria-label="Close New Content panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
             <div id="composer-variant-form">
             <div class="composer-fields">
               <div class="composer-field" data-label="Format">
@@ -147,19 +148,24 @@
             </div>
             <div class="variant-word-count" hidden>
               <label for="composer-target-word-count-trigger">Target Word Count</label>
-              <div class="word-count-field" data-label="Target Word Count"><select id="composer-target-word-count" aria-label="Target Word Count" hidden><option value="short">500–800 (Short)</option><option value="medium">800–1200 (Medium)</option><option value="long">1200–1500 (Long)</option></select></div>
+              <div class="word-count-field" data-label="Target Word Count"><select id="composer-target-word-count" aria-label="Target Word Count" hidden><option value="short">Standard Format</option></select></div>
             </div>
             <div class="composer-actions">
-              <button class="create-variant" type="button" disabled title="Create variant">Create variant</button>
+              <button class="create-variant" type="button" disabled title="Add Content">Add Content</button>
             </div>
             </div>
           </section>
           <section class="composer-panel composer-outputs" id="composer-outputs" aria-labelledby="composer-outputs-heading">
-            <div class="composer-outputs-header"><h2 id="composer-outputs-heading" tabindex="-1"><span class="material-symbols-outlined" aria-hidden="true">turn_slight_left</span><span>Variants</span></h2><button class="icon-button mobile-panel-close" type="button" data-close-navigation="variants" aria-label="Close Variants panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+            <div class="composer-outputs-header"><h2 id="composer-outputs-heading" tabindex="-1"><span class="material-symbols-outlined" aria-hidden="true">turn_slight_left</span><span>Contents</span></h2><button class="icon-button mobile-panel-close" type="button" data-close-navigation="variants" aria-label="Close Contents Panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
             </div>
-            <div class="output-status-content" id="output-status-content">
-            <div class="composer-empty" id="outputs-empty" role="status"><p>Variants will appear here once<br>they are created</p></div>
-            <ul class="output-list" id="output-list" aria-label="Variants" hidden></ul>
+            <div class="output-status-tabs" role="tablist" aria-label="Content status">
+              <button id="output-pending-tab" type="button" role="tab" aria-selected="true" aria-controls="output-status-content" data-output-view="pending">To Create</button>
+              <button id="output-created-tab" type="button" role="tab" aria-selected="false" aria-controls="output-status-content" tabindex="-1" data-output-view="created">Created</button>
+            </div>
+            <div class="output-status-content" id="output-status-content" role="tabpanel" aria-labelledby="output-pending-tab">
+            <div class="composer-empty" id="outputs-empty" role="status"><p>No content created yet.</p></div>
+            <ul class="output-list" id="output-list" aria-label="Contents" hidden></ul>
+            <div class="outputs-footer"><button class="create-output" id="create-output" type="button" disabled><span class="output-processing-spinner" id="output-processing-spinner" aria-hidden="true" hidden></span><span id="create-output-label">Create 0 Contents</span></button></div>
             <p class="visually-hidden" id="output-processing-status" role="status" aria-live="polite"></p>
             </div>
           </section>
@@ -176,8 +182,8 @@
         </form>
         <p class="divider">Or</p>
         <div class="material-options">
-          <button class="material-card" type="button" data-material="upload" aria-label="Start from your own material: choose files"><span>Start from your<br>own material</span></button>
-          <button class="material-card" type="button" data-material="paste" aria-label="Start from your own material: paste text"><span>Start from your<br>own material</span></button>
+          <button class="material-card" type="button" data-material="upload" aria-label="Start from your own material: choose files"><span>Start from Your<br>Own Material</span></button>
+          <button class="material-card" type="button" data-material="paste" aria-label="Start from your own material: paste text"><span>Start from Your<br>Own Material</span></button>
         </div>
       </section>
 
@@ -186,7 +192,7 @@
         <form class="search-form results-search-form" id="results-search-form" role="search">
           <label class="visually-hidden" for="results-query">Search articles</label>
           <input id="results-query" type="text" placeholder="Search or paste URLs to start" autocomplete="off" maxlength="4000" required>
-          <button class="submit-button" id="results-search-button" type="submit" aria-label="Search again"><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></button>
+          <button class="submit-button" id="results-search-button" type="submit" aria-label="Search Again"><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></button>
         </form>
         <div class="results-toolbar">
           <div class="results-sort results-sort-field" data-label="Sort articles"><span>Sort by:</span><select class="visually-hidden" id="results-sort" aria-label="Sort articles" aria-hidden="true" tabindex="-1"><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="relevance">Relevance</option></select></div>
@@ -195,12 +201,12 @@
         <div class="results-filter-panel" id="results-filter-panel" hidden>
           <label>Source<select id="results-source"><option value="all">All sources</option></select></label>
           <label>Published on or after<input id="results-after" type="date"></label>
-          <button class="text-button" id="results-reset-filters" type="button">Reset filters</button>
+          <button class="text-button" id="results-reset-filters" type="button">Reset Filters</button>
         </div>
         <p class="visually-hidden" id="results-help">Select at least one article to enable Draft.</p>
         <ul class="result-list" id="result-list" aria-describedby="results-help"></ul>
         <p class="results-empty" id="results-empty" role="status" hidden>No articles match these filters. Try another source or date.</p>
-        <button class="tertiary-button load-more" id="load-more" type="button">Load more</button>
+        <button class="tertiary-button load-more" id="load-more" type="button">Load More</button>
         <div class="results-direction">
           <label for="results-editorial-direction">Editorial Direction <span>(optional)</span></label>
           <textarea id="results-editorial-direction" rows="2" maxlength="8000" placeholder="Example: “Focus on the economy” or “Use a conversational tone.”"></textarea>
@@ -220,7 +226,7 @@
           <textarea id="draft-text" rows="12" spellcheck="true"></textarea>
           <p class="material-hint">Editable starter assembled from sample article excerpts. Changes are saved on this device.</p>
         </div>
-        <div class="sources-heading"><h2>Your material</h2><button class="text-button" id="add-material" type="button">+ Add material</button></div>
+        <div class="sources-heading"><h2>Your material</h2><button class="text-button" id="add-material" type="button">+ Add Material</button></div>
         <ul class="source-list" id="source-list"></ul>
         <p class="workspace-note">Your project is saved on this device. Search entries and links are collected here for now; content processing is coming next.</p>
       </section>
@@ -234,21 +240,17 @@
       <p class="delete-project-name" id="delete-project-name"></p>
       <p class="delete-project-warning" id="delete-project-warning">This will permanently delete this project, its sources, and all outputs. This action cannot be undone.</p>
       <p class="form-error" id="delete-project-error" role="alert" hidden></p>
-      <div class="dialog-footer"><button class="secondary-button" id="delete-project-cancel" type="button" autofocus>Cancel</button><button class="danger-button neutral-danger-button" id="delete-project-confirm" type="button"><span>Delete</span></button></div>
+      <div class="dialog-footer confirmation-actions"><button class="secondary-button" id="delete-project-cancel" type="button" autofocus>Cancel</button><button class="danger-button" id="delete-project-confirm" type="button"><span>Delete</span></button></div>
     </dialog>
 
     <dialog class="new-project-dialog" id="new-project-dialog" aria-labelledby="new-project-dialog-title">
       <h2 id="new-project-dialog-title">New Project</h2>
       <button class="icon-button new-project-close" type="button" data-close="new-project-dialog" aria-label="Close new project modal"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
       <form class="new-project-search" id="new-project-search-form" role="search">
-        <label class="visually-hidden" for="new-project-query">Import from URL</label>
-        <div class="new-project-input"><span class="material-symbols-outlined" aria-hidden="true">search</span><textarea id="new-project-query" rows="1" wrap="off" placeholder="Import from URL" autocomplete="off" maxlength="4000" required></textarea></div>
+        <label class="visually-hidden" for="new-project-query">Paste a source link</label>
+        <div class="new-project-input"><textarea id="new-project-query" rows="5" wrap="off" placeholder="Paste a source link" autocomplete="off" maxlength="4000" required></textarea></div>
         <button class="new-project-continue" id="new-project-submit" type="submit" disabled>Continue</button>
       </form>
-      <div class="new-project-divider"><span>or</span></div>
-      <label class="new-project-material new-project-upload" id="new-project-drop-zone" for="new-project-file-input"><span class="new-project-material-icon"><span class="material-symbols-outlined" aria-hidden="true">upload_file</span></span><span><strong>Upload documents</strong><small><span class="new-project-upload-desktop">Drop files here or <span class="browse-label">browse files</span></span><span class="new-project-upload-mobile">Choose files to upload</span></small></span><input class="visually-hidden" id="new-project-file-input" type="file" aria-label="Upload documents" multiple accept=".pdf,.docx,.pptx,.txt,.md"></label>
-      <div id="new-project-upload-selection" hidden><ul class="selected-files" id="new-project-selected-files"></ul><p class="file-status" id="new-project-file-status" role="status" aria-live="polite"></p><button class="new-project-continue" id="new-project-use-material" type="button" disabled>Start creating</button><p class="material-hint">Documents stay in this browser. Download the originals from Sources in your project.</p></div>
-      <p class="form-error" id="new-project-material-error" role="alert" hidden></p>
     </dialog>
 
     <dialog class="article-preview-dialog" id="article-preview-dialog" aria-labelledby="article-preview-title" aria-describedby="article-preview-notice">
@@ -256,17 +258,17 @@
       <h2 id="article-preview-title"></h2><p class="article-preview-meta" id="article-preview-meta"></p>
       <p class="article-preview-notice" id="article-preview-notice">Made-up content for the CSA demo.</p>
       <div class="article-preview-body" id="article-preview-body" tabindex="0" role="region" aria-label="Article text"></div>
-      <div class="dialog-footer"><button class="secondary-button" id="article-preview-back" type="button" data-close="article-preview-dialog">Back to results</button></div>
+      <div class="dialog-footer"><button class="secondary-button" id="article-preview-back" type="button" data-close="article-preview-dialog">Back to Results</button></div>
     </dialog>
 
 
-    <dialog class="editor-link-dialog" id="editor-link-dialog" aria-labelledby="editor-link-heading"><form id="editor-link-form"><div class="editor-panel-heading"><h2 id="editor-link-heading">Add a link</h2><button class="icon-button" type="button" data-close="editor-link-dialog" aria-label="Close link dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div><label for="editor-link-text">Link text<input id="editor-link-text" type="text" placeholder="Text to display" maxlength="2000"></label><label for="editor-link-url">URL<input id="editor-link-url" type="text" placeholder="https://" required></label><p class="form-error" id="editor-link-error" role="alert" hidden></p><div class="dialog-footer"><button class="secondary-button" id="editor-remove-link" type="button">Remove link</button><button class="primary-button" type="submit">Apply link</button></div></form></dialog>
+    <dialog class="editor-link-dialog" id="editor-link-dialog" aria-labelledby="editor-link-heading"><form id="editor-link-form"><div class="editor-panel-heading"><h2 id="editor-link-heading">Add a link</h2><button class="icon-button" type="button" data-close="editor-link-dialog" aria-label="Close link dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div><label for="editor-link-text">Link text<input id="editor-link-text" type="text" placeholder="Text to display" maxlength="2000"></label><label for="editor-link-url">URL<input id="editor-link-url" type="text" placeholder="https://" required></label><p class="form-error" id="editor-link-error" role="alert" hidden></p><div class="dialog-footer"><button class="secondary-button" id="editor-remove-link" type="button">Remove Link</button><button class="primary-button" type="submit">Apply Link</button></div></form></dialog>
 
     <dialog class="material-dialog" id="material-dialog" aria-labelledby="material-title">
       <div class="panel-heading"><div><p class="eyebrow">A PLACE TO BEGIN</p><h2 id="material-title">Start with your material</h2></div><button class="icon-button" type="button" data-close="material-dialog" aria-label="Close material dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
       <div class="material-tabs" id="material-tabs" role="tablist" aria-label="Material type">
-        <button id="upload-tab" type="button" role="tab" aria-selected="true" aria-controls="upload-panel" data-tab="upload">Choose files</button>
-        <button id="paste-tab" type="button" role="tab" aria-selected="false" aria-controls="paste-panel" tabindex="-1" data-tab="paste">Paste text</button>
+        <button id="upload-tab" type="button" role="tab" aria-selected="true" aria-controls="upload-panel" data-tab="upload">Choose Files</button>
+        <button id="paste-tab" type="button" role="tab" aria-selected="false" aria-controls="paste-panel" tabindex="-1" data-tab="paste">Paste Text</button>
       </div>
       <div id="upload-panel" role="tabpanel" aria-labelledby="upload-tab">
         <label class="drop-zone" id="drop-zone" for="file-input"><span class="material-symbols-outlined" aria-hidden="true">upload</span><strong>Drop your files here</strong><span>or <span class="browse-label">browse files</span></span><small>PDF, DOCX, PPTX, TXT or MD · Up to 10 MB each · 20 files max</small><input class="visually-hidden" id="file-input" type="file" aria-label="Upload documents" multiple accept=".pdf,.docx,.pptx,.txt,.md"></label>
@@ -279,7 +281,7 @@
         <textarea id="material-text" rows="7" maxlength="100000" placeholder="Paste notes, an article, or an idea…"></textarea>
       </div>
       <p class="form-error" id="material-error" role="alert" hidden></p>
-      <div class="dialog-footer"><button class="secondary-button" id="material-cancel" type="button" data-close="material-dialog">Cancel</button><button class="primary-button" id="use-material" type="button" disabled>Start creating</button></div>
+      <div class="dialog-footer"><button class="secondary-button" id="material-cancel" type="button" data-close="material-dialog">Cancel</button><button class="primary-button" id="use-material" type="button" disabled>Start Creating</button></div>
     </dialog>
     <div class="toast" id="toast" role="status" hidden><span id="toast-message"></span><button id="toast-undo" type="button" hidden>Undo</button></div>
     </div>

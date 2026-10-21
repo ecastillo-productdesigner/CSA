@@ -23,34 +23,14 @@ function sourceUrl(value) {
   } catch { return null; }
 }
 
-export function createProjectSources({ onSelectionChange, onDownloadSource, onAddSource, onRemoveSource, onVariantContextChange = () => {} }) {
+export function createProjectSources({ onSelectionChange, onDownloadSource, onRemoveSource, onVariantContextChange = () => {} }) {
   const list = document.querySelector('#editor-source-list');
   const status = document.querySelector('#editor-source-selection-status');
-  const add = document.querySelector('#editor-add-source-button');
-  const tabs = document.createElement('div');
-  tabs.className = 'segmented-control source-status-tabs';
-  tabs.setAttribute('role', 'tablist');
-  tabs.setAttribute('aria-label', 'Source usage');
-  tabs.hidden = true;
-  const sourceTabs = ['used', 'unused'].map(view => {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.id = `editor-source-${view}-tab`;
-    button.dataset.sourceView = view;
-    button.setAttribute('role', 'tab');
-    button.setAttribute('aria-label', view === 'used' ? 'Used' : 'Not Used');
-    button.setAttribute('aria-controls', 'editor-source-status-content');
-    button.textContent = view === 'used' ? 'Used' : 'Not Used';
-    tabs.append(button);
-    return button;
-  });
-  status.before(tabs);
   const sourcePanel = document.createElement('div');
   sourcePanel.id = 'editor-source-status-content';
   sourcePanel.className = 'source-status-content';
   list.before(sourcePanel);
   sourcePanel.append(list);
-  let sourceView = 'used';
   let sourceRows = [];
   let emptyRow = null;
   const titleTooltip = document.createElement('div');
@@ -85,52 +65,16 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
   function applySourceView() {
     closeMenu();
     hideTitleTooltip();
-    const grouped = Boolean(sourceVariant);
-    tabs.hidden = !grouped;
-    if (grouped) {
-      sourcePanel.setAttribute('role', 'tabpanel');
-      sourcePanel.setAttribute('aria-labelledby', `editor-source-${sourceView}-tab`);
-    } else {
-      sourcePanel.removeAttribute('role');
-      sourcePanel.removeAttribute('aria-labelledby');
-    }
-    for (const tab of sourceTabs) {
-      const selected = tab.dataset.sourceView === sourceView;
-      tab.setAttribute('aria-selected', String(selected));
-      tab.tabIndex = selected ? 0 : -1;
-    }
-    let shown = 0;
-    for (const { source, row } of sourceRows) {
-      row.hidden = grouped && usedSources.has(source) !== (sourceView === 'used');
-      if (!row.hidden) shown++;
-    }
-    emptyRow.hidden = shown > 0;
-    emptyRow.textContent = grouped
-      ? sourceView === 'used' ? 'No sources were used in this variant.' : 'All available sources were used in this variant.'
-      : project ? 'No sources yet. Add a new source to this project.' : 'Open a project to view its sources.';
-    list.setAttribute('aria-label', grouped ? sourceView === 'used' ? 'Used in this variant' : 'Not used in this variant' : 'Sources');
+    emptyRow.hidden = sourceRows.length > 0;
+    emptyRow.textContent = project ? 'No sources yet. Add a new source to this project.' : 'Open a project to view its sources.';
+    list.setAttribute('aria-label', 'Sources');
     updateSelectionStatus();
   }
-
-  for (const tab of sourceTabs) tab.addEventListener('click', () => {
-    sourceView = tab.dataset.sourceView;
-    applySourceView();
-    list.scrollTop = 0;
-  });
-  tabs.addEventListener('keydown', event => {
-    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-    event.preventDefault();
-    sourceView = event.key === 'Home' ? 'used' : event.key === 'End' ? 'unused' : sourceView === 'used' ? 'unused' : 'used';
-    applySourceView();
-    list.scrollTop = 0;
-    sourceTabs.find(tab => tab.dataset.sourceView === sourceView).focus();
-  });
   document.addEventListener('scroll', hideTitleTooltip, true);
   window.addEventListener('resize', hideTitleTooltip);
   let visibleSources = [];
   let selectedSources = new Set();
   let sourceVariant = null;
-  let usedSources = new Set();
   let project = null;
   let menuTarget = null;
   const menu = document.createElement('div');
@@ -213,7 +157,7 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
     document.querySelector('#article-preview-body').replaceChildren(...paragraphs.map(value => {
       const paragraph = document.createElement('p'); paragraph.textContent = value; return paragraph;
     }));
-    document.querySelector('#article-preview-back').textContent = 'Back to sources';
+    document.querySelector('#article-preview-back').textContent = 'Back to Sources';
     previewDialog.showModal();
     document.querySelector('#article-preview-body').scrollTop = 0;
   }
@@ -225,30 +169,18 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
     status.textContent = !sourceVariant && sources.length ? `${selectedSources.size} of ${sources.length} selected for new variants` : '';
   }
 
-  add.addEventListener('click', () => { if (project) onAddSource(project.id); });
 
 
   function render(next, { variant = null } = {}) {
     closeMenu();
     hideTitleTooltip();
-    if (project?.id !== next?.id || sourceVariant?.id !== variant?.id) sourceView = 'used';
     project = next;
     sourceVariant = variant;
     onVariantContextChange(variant?.id || null);
     const allSources = project?.sources || [];
     const selection = sourceSelectionFor(project, variant);
     visibleSources = selection.sources;
-    usedSources = variant ? selection.selectedSources : new Set();
-    let selectionChanged = false;
-    if (variant) {
-      for (const source of allSources) {
-        const included = usedSources.has(source);
-        if ((source.selected !== false) !== included) selectionChanged = true;
-        source.selected = included;
-      }
-    }
     selectedSources = new Set(allSources.filter(source => source.selected !== false));
-    add.disabled = !project;
     list.replaceChildren();
     updateSelectionStatus();
     const sources = visibleSources;
@@ -259,21 +191,7 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
     list.append(emptyRow);
     for (const source of sources) {
       const row = document.createElement('li');
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.className = 'editor-source-checkbox';
-      checkbox.checked = selectedSources.has(source);
       const available = allSources.includes(source);
-      if (!available) checkbox.checked = true;
-      checkbox.disabled = !available;
-      checkbox.setAttribute('aria-label', `Include source in new variants: ${source.title}`);
-      checkbox.title = 'Include in new variants';
-      checkbox.addEventListener('change', () => {
-        if (checkbox.checked) selectedSources.add(source); else selectedSources.delete(source);
-        source.selected = checkbox.checked;
-        updateSelectionStatus();
-        onSelectionChange(project.id);
-      });
       const content = document.createElement('div');
       content.className = 'editor-source-content';
       const open = document.createElement('button');
@@ -297,12 +215,12 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
         const download = document.createElement('button');
         download.type = 'button';
         download.className = 'text-button document-download';
-        download.textContent = 'Download document';
+        download.textContent = 'Download Document';
         download.setAttribute('aria-label', `Download ${source.title}`);
         download.addEventListener('click', () => onDownloadSource(source));
         content.append(download);
       }
-      row.append(checkbox, content);
+      row.append(content);
       const more = document.createElement('button');
       more.type = 'button';
       more.className = 'icon-button editor-source-more';
@@ -318,7 +236,6 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
       sourceRows.push({ source, row });
     }
     applySourceView();
-    if (selectionChanged) onSelectionChange(project.id);
   }
   return { render };
 }

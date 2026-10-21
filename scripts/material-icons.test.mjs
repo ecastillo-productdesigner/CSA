@@ -6,11 +6,11 @@ import { iconAliases } from '../dist/icons.js';
 test('every interface symbol is included in the Google Fonts subset for both entry pages', async () => {
   const pages = await Promise.all(['../dist/index.html', '../dist/design-system/index.html'].map(path => readFile(new URL(path, import.meta.url), 'utf8')));
   const required = new Set(Object.values(iconAliases));
-  for (const html of pages) for (const match of html.matchAll(/class="material-symbols-outlined[^\"]*"[^>]*>([a-z_]+)</g)) required.add(match[1]);
+  for (const html of pages) for (const match of html.matchAll(/class="material-symbols-outlined[^\"]*"[^>]*>([a-z0-9_]+)</g)) required.add(match[1]);
   for (const name of await readdir(new URL('../dist/', import.meta.url))) {
     if (!name.endsWith('.js')) continue;
     const js = await readFile(new URL('../dist/' + name, import.meta.url), 'utf8');
-    for (const match of js.matchAll(/createIcon\('([a-z_]+)'/g)) required.add(iconAliases[match[1]] || match[1]);
+    for (const match of js.matchAll(/createIcon\('([a-z0-9_]+)'/g)) required.add(iconAliases[match[1]] || match[1]);
   }
   for (const html of pages) {
     const subset = new Set(html.match(/icon_names=([^&"]+)/)[1].split(','));
@@ -24,5 +24,5 @@ test('Quill cannot overwrite the shared Material Symbols toolbar with its own ic
   const editor = await readFile(new URL('../dist/editor.js', import.meta.url), 'utf8');
   assert.doesNotMatch(editor, /Quill\.import\('ui\/icons'\)/);
   const html = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8');
-  for (const name of ['format_bold', 'format_italic', 'format_underlined', 'format_strikethrough']) assert.ok(html.includes('>' + name + '</span>'));
+  for (const name of ['format_bold', 'format_italic', 'format_underlined', 'format_h2', 'format_h3', 'format_quote', 'format_list_bulleted', 'format_list_numbered', 'link_2', 'undo', 'redo']) assert.ok(html.includes('>' + name + '</span>'));
 });

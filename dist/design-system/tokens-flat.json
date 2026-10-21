@@ -244,6 +244,28 @@
       }
     },
     {
+      "name": "foundation.color.orange.50",
+      "designName": "foundation/color/orange/50",
+      "cssVariable": "--csa-foundation-color-orange-50",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#fff7ed",
+      "reference": "",
+      "description": "Tailwind classic orange-50, the base color for the approved page canvas.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          0.9686274509803922,
+          0.9294117647058824
+        ],
+        "alpha": 1,
+        "hex": "#fff7ed"
+      }
+    },
+    {
       "name": "foundation.color.orange.100",
       "designName": "foundation/color/orange/100",
       "cssVariable": "--csa-foundation-color-orange-100",
@@ -381,16 +403,16 @@
       "type": "color",
       "layer": "foundation",
       "category": "color",
-      "value": "oklch(98.6% 0.002 67.8 / 0.9019607843137255)",
+      "value": "#fffbf6e6",
       "reference": "",
-      "description": "Taupe 50 canvas fade, preserving its existing opacity.",
+      "description": "Fade matching the Orange 50 at 50% over white canvas, preserving the existing fade opacity.",
       "status": "observed",
       "color": {
-        "colorSpace": "oklch",
+        "colorSpace": "srgb",
         "components": [
-          0.986,
-          0.002,
-          67.8
+          1,
+          0.984313725490196,
+          0.9647058823529412
         ],
         "alpha": 0.9019607843137255
       }
@@ -459,24 +481,25 @@
       }
     },
     {
-      "name": "foundation.color.taupe.50",
-      "designName": "foundation/color/taupe/50",
-      "cssVariable": "--csa-foundation-color-taupe-50",
+      "name": "foundation.color.canvas.orange-50-half",
+      "designName": "foundation/color/canvas/orange-50-half",
+      "cssVariable": "--csa-foundation-color-canvas-orange-50-half",
       "type": "color",
       "layer": "foundation",
       "category": "color",
-      "value": "oklch(98.6% 0.002 67.8)",
+      "value": "#fffbf6",
       "reference": "",
-      "description": "Tailwind taupe-50, preserved in its original OKLCH color space. Approximate sRGB hex: #FBFAF9.",
+      "description": "Tailwind orange-50 at 50% opacity over white, composited to an opaque canvas so overlapping surfaces do not compound the tint.",
       "status": "approved-update",
       "color": {
-        "colorSpace": "oklch",
+        "colorSpace": "srgb",
         "components": [
-          0.986,
-          0.002,
-          67.8
+          1,
+          0.984313725490196,
+          0.9647058823529412
         ],
-        "alpha": 1
+        "alpha": 1,
+        "hex": "#fffbf6"
       }
     },
     {
@@ -3582,18 +3605,19 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "oklch(98.6% 0.002 67.8)",
-      "reference": "foundation.color.taupe.50",
-      "description": "Tailwind taupe-50 page background behind workspace surfaces.",
+      "value": "#fffbf6",
+      "reference": "foundation.color.canvas.orange-50-half",
+      "description": "Page background: Tailwind orange-50 at 50% opacity over white, resolved to #FFFBF6.",
       "status": "observed",
       "color": {
-        "colorSpace": "oklch",
+        "colorSpace": "srgb",
         "components": [
-          0.986,
-          0.002,
-          67.8
+          1,
+          0.984313725490196,
+          0.9647058823529412
         ],
-        "alpha": 1
+        "alpha": 1,
+        "hex": "#fffbf6"
       }
     },
     {
@@ -4020,16 +4044,16 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "oklch(98.6% 0.002 67.8 / 0.9019607843137255)",
+      "value": "#fffbf6e6",
       "reference": "foundation.color.overlay.canvas-fade",
       "description": "Canvas-colored navigation and page fade.",
       "status": "observed",
       "color": {
-        "colorSpace": "oklch",
+        "colorSpace": "srgb",
         "components": [
-          0.986,
-          0.002,
-          67.8
+          1,
+          0.984313725490196,
+          0.9647058823529412
         ],
         "alpha": 0.9019607843137255
       }

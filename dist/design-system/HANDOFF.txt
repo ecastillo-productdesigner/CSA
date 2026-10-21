@@ -240,7 +240,7 @@ COLOR CONSOLIDATION / EFFECTS
     and selected-surface tokens. Avatar pinks remain unchanged.
   Open dropdown menus use one shared neutral shadow at 8% opacity;
     0px horizontal offset, 4px vertical offset, 12px blur, no spread.
-  Loading overlays share white at 90%; canvas fades share the Tailwind taupe-50 tint.
+  Loading overlays share white at 90%; canvas fades share the approved Orange 50 at 50% over white tint.
   The collapsed project navigation rail uses the official Google
     chevron_forward path inside a 40 px white circle with a gray border.
   Variant status tabs share the dropdown radius token (10 px), including
@@ -317,4 +317,4 @@ Version-2.0 composer: Format options are Celebrity Relationship Timeline, Listic
 The left Sources panel stays open during editing and variant switching until explicitly closed. The navigation folder opens all project sources. A variant’s source-count badge opens Used / Not Used segments, styled with primary blue and white for the selected segment and Neutral 400 for inactive text. Each segment filters the variant’s recorded source snapshots; unused sources start unchecked. Variant-source views omit count summaries and per-row usage labels. Source titles display at most 70 characters and two lines with an ellipsis; hover or keyboard focus reveals the full title.
 
 Canvas update — 2026-10-21
-The page canvas uses foundation.color.taupe.50: oklch(98.6% 0.002 67.8), approximately #FBFAF9 in sRGB. The canvas-fade overlay shares this base color. The token builder preserves OKLCH values in CSS, flat JSON, CSV and export styles.
+The page canvas uses foundation.color.canvas.orange-50-half: Tailwind orange-50 (#FFF7ED) at 50% opacity over white (#FFFFFF). Its resolved opaque color is #FFFBF6, preventing overlapping surfaces from increasing the tint. The canvas fade shares that resolved color. The semantic canvas alias drives the page, editor tabs and browser theme. The token builder retains OKLCH support for compatible token imports.

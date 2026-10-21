@@ -64,7 +64,7 @@
       "currentColor": 1,
       "var(--csa-foundation-color-neutral-200)": 2,
       "var(--csa-semantic-color-surface-hover)": 5,
-      "var(--csa-foundation-color-taupe-50)": 1,
+      "var(--csa-semantic-color-background-canvas)": 1,
       "var(--content-preview-background)": 2,
       "var(--color-indigo-50)": 3,
       "var(--color-orange-100)": 3,
@@ -1308,6 +1308,11 @@
       "description": "Implemented palette value."
     },
     {
+      "name": "foundation.color.orange.50",
+      "value": "#fff7ed",
+      "description": "Tailwind classic orange-50, the base color for the approved page canvas."
+    },
+    {
       "name": "foundation.color.orange.100",
       "value": "#ffedd5",
       "description": "Implemented palette value."
@@ -1339,8 +1344,8 @@
     },
     {
       "name": "foundation.color.overlay.canvas-fade",
-      "value": "oklch(98.6% 0.002 67.8 / 0.9019607843137255)",
-      "description": "Taupe 50 canvas fade, preserving its existing opacity."
+      "value": "#fffbf6e6",
+      "description": "Fade matching the Orange 50 at 50% over white canvas, preserving the existing fade opacity."
     },
     {
       "name": "foundation.color.overlay.scrim",
@@ -1358,14 +1363,14 @@
       "description": "Stronger dropdown elevation on small screens, where white menus overlap white panels."
     },
     {
-      "name": "foundation.color.taupe.50",
-      "value": "oklch(98.6% 0.002 67.8)",
-      "description": "Tailwind taupe-50, preserved in its original OKLCH color space. Approximate sRGB hex: #FBFAF9."
+      "name": "foundation.color.canvas.orange-50-half",
+      "value": "#fffbf6",
+      "description": "Tailwind orange-50 at 50% opacity over white, composited to an opaque canvas so overlapping surfaces do not compound the tint."
     }
   ],
   "summary": {
-    "tokens": 405,
-    "foundationColors": 21,
-    "canvas": "foundation.color.taupe.50"
+    "tokens": 406,
+    "foundationColors": 22,
+    "canvas": "foundation.color.canvas.orange-50-half"
   }
 }

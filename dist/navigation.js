@@ -21,6 +21,8 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
   ];
   let drawerOpen = false;
   let active = null;
+  const sourcesHome = document.createComment('Sources panel home');
+  panels.sources.panel.before(sourcesHome);
 
   function hideTooltips() { for (const { tooltip } of tooltips) tooltip.hidden = true; }
   function showTooltip(trigger, tooltip) {
@@ -44,7 +46,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
     if (mobileOnly) delete panel.dataset.mobileOpen;
     else panel.hidden = true;
     trigger.setAttribute('aria-expanded', 'false');
-    if (name === 'sources') onSourcesClose?.();
+    if (name === 'sources') { sourcesHome.after(panel); onSourcesClose?.(); }
     if (active === name) active = null;
     if (restoreFocus) trigger.focus({ preventScroll: true });
   }
@@ -74,6 +76,8 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
     if (name === 'newVariant') onNewVariantOpen?.();
     if (panels[name].mobileOnly) panels[name].panel.dataset.mobileOpen = 'true';
     else panels[name].panel.hidden = false;
+    // Keep the mobile Sources panel above the backdrop without lifting its navigation bar.
+    if (name === 'sources' && mobileTopBar()) document.querySelector('#workspace-app').append(panels.sources.panel);
     panels[name].trigger.setAttribute('aria-expanded', 'true');
     active = name;
   }

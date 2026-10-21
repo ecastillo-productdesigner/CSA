@@ -439,27 +439,6 @@
       }
     },
     {
-      "name": "foundation.color.overlay.scrim-mobile",
-      "designName": "foundation/color/overlay/scrim-mobile",
-      "cssVariable": "--csa-foundation-color-overlay-scrim-mobile",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#25355052",
-      "reference": "",
-      "description": "Mobile dialog and workspace-panel backdrop, with stronger dimming for overlapping surfaces.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1450980392156863,
-          0.20784313725490197,
-          0.3137254901960784
-        ],
-        "alpha": 0.32
-      }
-    },
-    {
       "name": "foundation.color.shadow.dropdown",
       "designName": "foundation/color/shadow/dropdown",
       "cssVariable": "--csa-foundation-color-shadow-dropdown",
@@ -4076,27 +4055,6 @@
           0.3137254901960784
         ],
         "alpha": 0.16
-      }
-    },
-    {
-      "name": "semantic.color.overlay.scrim-mobile",
-      "designName": "semantic/color/overlay/scrim-mobile",
-      "cssVariable": "--csa-semantic-color-overlay-scrim-mobile",
-      "type": "color",
-      "layer": "semantic",
-      "category": "color",
-      "value": "#25355052",
-      "reference": "foundation.color.overlay.scrim-mobile",
-      "description": "Background dimming behind mobile dialogs and open workspace panels.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1450980392156863,
-          0.20784313725490197,
-          0.3137254901960784
-        ],
-        "alpha": 0.32
       }
     },
     {

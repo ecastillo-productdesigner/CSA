@@ -818,9 +818,10 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
 }
 
 @media (max-width: 768px) {
-  :root { --csa-semantic-shadow-dropdown: var(--csa-semantic-shadow-dropdown-mobile); --csa-semantic-color-overlay-scrim: var(--csa-semantic-color-overlay-scrim-mobile); }
+  :root { --csa-semantic-shadow-dropdown: var(--csa-semantic-shadow-dropdown-mobile); }
+  dialog::backdrop { background: var(--csa-semantic-color-overlay-scrim); backdrop-filter: blur(var(--csa-foundation-space-2)); }
   /* Native dialogs supply their own backdrop; mobile workspace panels share one. */
-  body.showing-composer:has(#workspace-app:not([hidden])):has(.composer-panel[data-mobile-open="true"], #editor-sources:not([hidden])):not(:has(dialog[open]))::after { content: ""; position: fixed; inset: 0; z-index: var(--csa-foundation-layer-12); background: var(--csa-semantic-color-overlay-scrim); }
+  body.showing-composer:has(#workspace-app:not([hidden])):has(.composer-panel[data-mobile-open="true"], #editor-sources:not([hidden])):not(:has(dialog[open]))::after { content: ""; position: fixed; inset: 0; z-index: var(--csa-foundation-layer-20); background: var(--csa-semantic-color-overlay-scrim); backdrop-filter: blur(var(--csa-foundation-space-2)); }
   body:is(:has(#home:not([hidden])), .showing-results, .showing-composer) .sidebar { z-index: var(--csa-foundation-layer-20); top: var(--csa-foundation-space-10); right: var(--csa-foundation-space-10); bottom: auto; left: var(--csa-foundation-space-10); display: flex; flex-direction: row; align-items: center; justify-content: space-between; width: auto; height: var(--csa-foundation-space-64); padding: var(--csa-foundation-space-8) var(--csa-foundation-space-12); cursor: default; transition: none; box-shadow: none; }
   body:is(:has(#home:not([hidden])), .showing-results, .showing-composer) .sidebar-header { width: auto; height: 100%; border: 0; }
   body:is(:has(#home:not([hidden])), .showing-results, .showing-composer) .brand { width: var(--csa-foundation-size-54); height: var(--csa-foundation-space-44); border-radius: var(--csa-foundation-radius-8); }
@@ -918,7 +919,10 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
   body.showing-composer .composer { display: block; min-height: 0; }
   body.showing-composer .composer-canvas { display: block; --editor-frame-inset: 0; }
   body.showing-composer .composer-rail { display: block; height: 0; min-height: 0; padding: 0; }
-  body.showing-composer .composer-panel { display: none; position: fixed; z-index: var(--csa-foundation-layer-18); top: var(--csa-foundation-space-82); right: var(--csa-foundation-space-10); left: var(--csa-foundation-space-10); width: auto; max-height: calc(100dvh - var(--csa-foundation-space-98)); margin: 0; padding: var(--csa-foundation-space-20) var(--csa-foundation-space-16); overflow-y: auto; overscroll-behavior: contain; border-radius: var(--csa-foundation-radius-10); box-shadow: none; }
+  body.showing-composer .composer-panel { display: none; position: fixed; z-index: var(--csa-foundation-layer-30); top: var(--csa-foundation-space-82); right: var(--csa-foundation-space-10); left: var(--csa-foundation-space-10); width: auto; max-height: calc(100dvh - var(--csa-foundation-space-98)); margin: 0; padding: var(--csa-foundation-space-20) var(--csa-foundation-space-16); overflow-y: auto; overscroll-behavior: contain; border-radius: var(--csa-foundation-radius-10); box-shadow: none; }
+  body.showing-composer #workspace-app > .sources-panel .sources-panel-content { padding: 0 var(--csa-foundation-space-10) var(--csa-foundation-space-10); }
+  body.showing-composer #workspace-app > .sources-panel .editor-source-selection-status { font-size: var(--csa-foundation-font-size-11); margin-bottom: var(--csa-foundation-space-0); }
+  body.showing-composer #workspace-app > .sources-panel #editor-source-list { max-height: none; }
   body.showing-composer .composer-tools { padding-block: var(--csa-foundation-space-24); }
   body.showing-composer .composer-tools[data-mobile-open="true"] { display: block; }
   body.showing-composer .composer-outputs { padding: var(--csa-foundation-space-24) var(--csa-foundation-space-20); }
@@ -936,7 +940,7 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
   body.showing-composer .composer-direction textarea { font-size: var(--csa-foundation-font-size-16); }
   body.showing-composer :is(.output-status-tabs, .segmented-control) button { min-height: var(--csa-foundation-space-44); }
   body.showing-composer .composer-outputs .output-list { flex: 1; overflow-y: auto; }
-  body.showing-composer .sidebar .sources-panel { position: fixed; z-index: var(--csa-foundation-layer-18); top: var(--csa-foundation-space-82); right: var(--csa-foundation-space-10); bottom: auto; left: var(--csa-foundation-space-10); width: auto; max-height: calc(100dvh - var(--csa-foundation-space-98)); margin: 0; padding: var(--csa-foundation-space-12) var(--csa-foundation-space-6); overflow-y: auto; overscroll-behavior: contain; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-10); background: var(--csa-foundation-color-neutral-0); box-shadow: none; }
+  body.showing-composer .sources-panel { position: fixed; z-index: var(--csa-foundation-layer-30); top: var(--csa-foundation-space-82); right: var(--csa-foundation-space-10); bottom: auto; left: var(--csa-foundation-space-10); width: auto; max-height: calc(100dvh - var(--csa-foundation-space-98)); margin: 0; padding: var(--csa-foundation-space-12) var(--csa-foundation-space-6); overflow-y: auto; overscroll-behavior: contain; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-10); background: var(--csa-foundation-color-neutral-0); box-shadow: none; animation: none; }
   body.showing-composer .mobile-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--csa-foundation-space-12); padding: 0 var(--csa-foundation-space-10) var(--csa-foundation-space-10); }
   body.showing-composer .mobile-panel-heading h2 { margin: 0; font-size: var(--csa-foundation-font-size-18); line-height: var(--csa-foundation-line-height-24); }
   body.showing-composer .sidebar #editor-source-list { max-height: none; }

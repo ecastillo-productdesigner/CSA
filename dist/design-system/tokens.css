@@ -20,7 +20,6 @@
   --csa-foundation-color-overlay-loading: #ffffffe6;
   --csa-foundation-color-overlay-canvas-fade: #fbf6f4e6;
   --csa-foundation-color-overlay-scrim: #25355029;
-  --csa-foundation-color-overlay-scrim-mobile: #25355052;
   --csa-foundation-color-shadow-dropdown: #40404014;
   --csa-foundation-color-shadow-dropdown-mobile: #40404029;
   --csa-foundation-space-0: 0px;
@@ -303,7 +302,6 @@
   --csa-semantic-color-overlay-loading: var(--csa-foundation-color-overlay-loading);
   --csa-semantic-color-overlay-canvas-fade: var(--csa-foundation-color-overlay-canvas-fade);
   --csa-semantic-color-overlay-scrim: var(--csa-foundation-color-overlay-scrim);
-  --csa-semantic-color-overlay-scrim-mobile: var(--csa-foundation-color-overlay-scrim-mobile);
   --csa-semantic-typography-greeting-desktop-font-family: var(--csa-foundation-font-family-editorial);
   --csa-semantic-typography-greeting-desktop-font-size: var(--csa-foundation-font-size-32);
   --csa-semantic-typography-greeting-desktop-font-weight: var(--csa-foundation-font-weight-700);

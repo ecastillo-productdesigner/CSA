@@ -157,7 +157,7 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onRe
     document.querySelector('#article-preview-body').replaceChildren(...paragraphs.map(value => {
       const paragraph = document.createElement('p'); paragraph.textContent = value; return paragraph;
     }));
-    document.querySelector('#article-preview-back').textContent = 'Back to Sources';
+    document.querySelector('#article-preview-back').textContent = 'Close';
     previewDialog.showModal();
     document.querySelector('#article-preview-body').scrollTop = 0;
   }

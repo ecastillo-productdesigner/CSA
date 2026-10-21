@@ -1205,3 +1205,11 @@ body #home[data-layout="list"] .new-project-tile .material-symbols-outlined { wi
 .danger-button:not(:disabled):is(:hover, :active) { background: var(--csa-component-button-destructive-hover); border-color: var(--csa-component-button-destructive-hover); }
 .danger-button:disabled { border-color: var(--csa-component-button-destructive-disabled-background); }
 .confirmation-actions .secondary-button { padding: var(--csa-foundation-space-12) var(--csa-foundation-space-24); }
+
+/* Pasted-link cards keep preview and external navigation side by side. */
+.result-actions { position: absolute; top: var(--csa-foundation-space-8); right: var(--csa-foundation-space-8); z-index: var(--csa-foundation-layer-2); display: flex; align-items: center; gap: var(--csa-foundation-space-4); }
+.result-actions .result-preview-button { position: static; }
+.link-cards-panel .result-copy { padding-right: calc(var(--csa-component-icon-button-minimum-target) * 2 + var(--csa-foundation-space-12)); }
+@media (max-width: token(foundation.breakpoint.mobile)) {
+  .link-cards-panel .result-copy { padding-top: var(--csa-component-icon-button-minimum-target); padding-right: 0; }
+}

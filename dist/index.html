@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
     <meta name="theme-color" content="#fffbf6">
-    <meta name="description" content="Your next idea starts here. Bring a link, a search, or your own material into a CSA workspace.">
+    <meta name="description" content="Your next idea starts here. Paste source links to create a CSA workspace.">
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,alt_route,archive,arrow_forward,arrow_upward,auto_awesome,build,check,chevron_forward,close,contract_edit,delete,description,draw,edit,edit_note,favorite,filter_list,folder_open,format_bold,format_clear,format_color_text,format_h2,format_h3,format_indent_decrease,format_indent_increase,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_strikethrough,format_underlined,history,ink_highlighter,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,redo,restore_from_trash,right_panel_open,search,send,thumb_down,thumb_up,tune,turn_slight_left,undo,upload,upload_file,view_module,visibility&amp;display=block">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
-    <link rel="stylesheet" href="./design-system/tokens.css?v=20261020-preset-settings">
-    <link rel="stylesheet" href="./styles.css?v=20261020-preset-settings">
-    <script src="./demo-access.js?v=20261020-preset-settings" type="module"></script>
+    <link rel="stylesheet" href="./design-system/tokens.css?v=20261021-link-previews">
+    <link rel="stylesheet" href="./styles.css?v=20261021-link-previews">
+    <script src="./demo-access.js?v=20261021-link-previews" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -246,9 +246,10 @@
     <dialog class="new-project-dialog" id="new-project-dialog" aria-labelledby="new-project-dialog-title">
       <h2 id="new-project-dialog-title">New Project</h2>
       <button class="icon-button new-project-close" type="button" data-close="new-project-dialog" aria-label="Close new project modal"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
-      <form class="new-project-search" id="new-project-search-form" role="search">
+      <form class="new-project-search" id="new-project-search-form">
         <label class="visually-hidden" for="new-project-query">Paste a source link</label>
-        <div class="new-project-input"><textarea id="new-project-query" rows="5" wrap="off" placeholder="Paste a source link" autocomplete="off" maxlength="4000" required></textarea></div>
+        <div class="new-project-input"><textarea id="new-project-query" aria-describedby="new-project-link-error" rows="5" wrap="off" placeholder="Paste a source link" autocomplete="off" maxlength="4000" required></textarea></div>
+        <p class="form-error" id="new-project-link-error" role="status" hidden>Paste a valid website link to continue.</p>
         <button class="new-project-continue" id="new-project-submit" type="submit" disabled>Continue</button>
       </form>
     </dialog>
@@ -258,7 +259,7 @@
       <h2 id="article-preview-title"></h2><p class="article-preview-meta" id="article-preview-meta"></p>
       <p class="article-preview-notice" id="article-preview-notice">Made-up content for the CSA demo.</p>
       <div class="article-preview-body" id="article-preview-body" tabindex="0" role="region" aria-label="Article text"></div>
-      <div class="dialog-footer"><button class="secondary-button" id="article-preview-back" type="button" data-close="article-preview-dialog">Back to Results</button></div>
+      <div class="dialog-footer"><button class="secondary-button" id="article-preview-back" type="button" data-close="article-preview-dialog">Close</button></div>
     </dialog>
 
 

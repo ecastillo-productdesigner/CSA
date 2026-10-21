@@ -67,12 +67,14 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     container.replaceChildren();
     const selected = state.selected.has(article.id);
     const ready = state.readyArticleIds.has(article.id);
-    const inspect = container.closest('.result-card').querySelector('.result-inspect-button');
-    const canInspect = ready && !article.url;
+    const item = container.closest('.result-item');
+    const inspect = item.querySelector('.result-inspect-button');
+    const canInspect = Boolean(article.url) || ready;
     inspect.disabled = !canInspect;
     inspect.hidden = !canInspect;
-    inspect.previousElementSibling.hidden = !canInspect;
-    inspect.title = ready ? 'Inspect article' : selected ? 'Adding to CSA' : 'Select this story to inspect';
+    const separator = item.querySelector('.result-inspect-separator');
+    if (separator) separator.hidden = !canInspect;
+    inspect.title = canInspect ? 'Preview Article' : selected ? 'Adding to CSA' : 'Select this story to inspect';
     container.hidden = !selected;
     container.classList.toggle('is-loading', selected && !ready);
     if (ready) container.append(node('span', 'visually-hidden', article.url ? 'Link selected.' : 'Added to CSA. Inspect article is ready.'));
@@ -117,15 +119,18 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
 
   function openPreview(id) {
     const article = state?.articles.find(article => article.id === id);
-    if (!article || !state.readyArticleIds.has(id)) return;
+    if (!article || (!article.url && !state.readyArticleIds.has(id))) return;
     previewArticle = { ...article, projectId: state.projectId };
     document.querySelector('.article-preview-badge').textContent = 'Fictional article preview';
     $('#article-preview-notice').hidden = false;
     $('#article-preview-meta').hidden = false;
-    $('#article-preview-back').textContent = 'Back to Results';
+    $('#article-preview-back').textContent = 'Close';
     $('#article-preview-title').textContent = article.title;
     $('#article-preview-meta').textContent = `${article.source} · ${dateLabel(article.date)}`;
-    $('#article-preview-body').replaceChildren(...article.paragraphs.map(paragraph => node('p', '', paragraph)));
+    // Link cards have no fetched article text. Keep the requested demo preview
+    // explicitly fictional without saving sample copy into the source.
+    const paragraphs = article.paragraphs.length ? article.paragraphs : sampleArticles(article.title)[0].paragraphs;
+    $('#article-preview-body').replaceChildren(...paragraphs.map(paragraph => node('p', '', paragraph)));
     preview.showModal();
     $('#article-preview-body').scrollTop = 0;
   }
@@ -185,14 +190,14 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       const inspect = node('button', 'result-inspect-button');
       inspect.type = 'button';
       inspect.dataset.inspectArticleId = article.id;
-      inspect.setAttribute('aria-label', `Inspect story ${article.id.split('-').pop()}: ${article.title}`);
+      inspect.setAttribute('aria-label', `Preview Article: ${article.title}`);
       inspect.setAttribute('aria-haspopup', 'dialog');
       inspect.setAttribute('aria-controls', 'article-preview-dialog');
       const eye = createIcon('visibility');
       inspect.append(eye);
-      const separator = node('span', '', '|');
+      const separator = node('span', 'result-inspect-separator', '|');
       separator.setAttribute('aria-hidden', 'true');
-      publication.append(separator, inspect);
+      if (!article.url) publication.append(separator, inspect);
       const date = node('span', 'result-date');
       date.append(node('span', 'result-date-label', 'Published date: '), document.createTextNode(dateLabel(article.date)), node('span', 'result-date-separator', ' |'));
       meta.append(date, publication);
@@ -216,7 +221,13 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       previewButton.title = article.url ? 'Open source in a new tab' : 'Article preview';
       const svg = createIcon('open_in_new');
       previewButton.append(svg);
-      item.append(card, previewButton);
+      if (article.url) {
+        const actions = node('div', 'result-actions');
+        actions.setAttribute('role', 'group');
+        actions.setAttribute('aria-label', 'Source actions');
+        actions.append(inspect, previewButton);
+        item.append(card, actions);
+      } else item.append(card, previewButton);
       const addition = node('div', 'result-addition');
       addition.dataset.additionArticleId = article.id;
       addition.setAttribute('role', 'status');

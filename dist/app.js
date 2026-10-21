@@ -5,7 +5,7 @@ import { createIcon as icon } from './icons.js?v=20261020-ds-centralized';
 import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js';
 import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261020-ds-centralized';
 import { createProfile } from './profile.js?v=20261020-ds-centralized';
-import { createSearchExperience } from './search.js?v=20261020-ds-centralized';
+import { createSearchExperience } from './search.js?v=20261021-link-previews';
 import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=20261020-ds-centralized';
 import { createMaterialEditor } from './editor.js?v=20261020-ds-centralized';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261020-ds-centralized';
@@ -13,7 +13,7 @@ import { removeProjectContent } from './project-deletion.js?v=20261020-ds-centra
 import { createContentPreview } from './content-preview.js?v=20261020-ds-centralized';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261020-preset-settings';
 import { createRailNavigation } from './navigation.js?v=20261020-ds-centralized';
-import { createProjectSources } from './sources.js?v=20261020-ds-centralized';
+import { createProjectSources } from './sources.js?v=20261021-link-previews';
 import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261020-preset-settings';
 import { createEditorTabs } from './editor-tabs.js?v=20261020-preset-settings';
 
@@ -463,17 +463,6 @@ function appendProjectSources(sources) {
   notify(additions.length ? `${additions.length} ${additions.length === 1 ? 'source' : 'sources'} added.` : 'These sources are already in your project.');
 }
 
-function showSourceAdditionResults(query, sources = [{ type: 'search', title: query }]) {
-  closeComposer();
-  railNavigation.closeTransient();
-  for (const id of ['home', 'workspace', 'project-start']) $(`#${id}`).hidden = true;
-  document.body.classList.add('showing-results');
-  searchExperience.show({ id: `add-source-${crypto.randomUUID()}`, sources, ...(sources[0]?.type === 'link' ? { kind: 'links' } : {}) }, { addingSources: true });
-  document.title = `Add source — ${query} — CSA`;
-  $('#main').focus({ preventScroll: true });
-  window.scrollTo({ top: 0 });
-}
-
 function showProject(id) {
   sourceTargetProjectId = null;
   const project = projects.find((entry) => entry.id === id);
@@ -834,7 +823,7 @@ for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).addEven
 });
 
 $('#source-input').addEventListener('input', () => {
-  $('#start-button').disabled = !$('#source-input').value.trim();
+  $('#start-button').disabled = !parseSourceLinks($('#source-input').value);
 });
 
 $('#start-form').addEventListener('submit', (event) => {
@@ -844,22 +833,18 @@ $('#start-form').addEventListener('submit', (event) => {
 });
 
 function submitSource(input) {
-  if (!input) return;
   const urls = parseSourceLinks(input);
+  if (!urls) return false;
   if (sourceTargetProjectId) {
-    if (urls) {
-      const target = projects.find(project => project.id === sourceTargetProjectId);
-      if (target) { target.linkCards = true; target.viewOriginalDraft = true; }
-      appendProjectSources(sourceLinkArticles(urls).map(article => ({ type: 'link', title: article.title, url: article.url })));
-    }
-    else showSourceAdditionResults(input);
-    return;
+    const target = projects.find(project => project.id === sourceTargetProjectId);
+    if (target) { target.linkCards = true; target.viewOriginalDraft = true; }
+    appendProjectSources(sourceLinkArticles(urls).map(article => ({ type: 'link', title: article.title, url: article.url })));
+    return true;
   }
-  if (urls) {
-    const sources = sourceLinkArticles(urls).map(article => ({ type: 'link', title: article.title, url: article.url, selected: true }));
-    createProject(sources, { kind: 'draft', awaitingOutput: true, linkCards: true });
-    if (!window.matchMedia(breakpointQuery()).matches) railNavigation.open('sources');
-  } else startSearch(input);
+  const sources = sourceLinkArticles(urls).map(article => ({ type: 'link', title: article.title, url: article.url, selected: true }));
+  createProject(sources, { kind: 'draft', awaitingOutput: true, linkCards: true });
+  if (!window.matchMedia(breakpointQuery()).matches) railNavigation.open('sources');
+  return true;
 }
 
 function updateStarterInput() {
@@ -870,32 +855,33 @@ function updateStarterInput() {
     field.value = formatted;
     field.setSelectionRange(Math.max(0, caret), Math.max(0, caret));
   }
-  $('#new-project-submit').disabled = !field.value.trim();
+  const valid = Boolean(parseSourceLinks(field.value));
+  const invalid = Boolean(field.value.trim()) && !valid;
+  field.setCustomValidity(invalid ? 'Paste a valid website link to continue.' : '');
+  field.setAttribute('aria-invalid', String(invalid));
+  const error = $('#new-project-link-error');
+  if (error) error.hidden = !invalid;
+  $('#new-project-submit').disabled = !valid;
+  return valid;
 }
 $('#new-project-query').addEventListener('input', updateStarterInput);
 $('#new-project-query').addEventListener('keydown', event => {
   if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return;
-  if (event.metaKey || event.ctrlKey || !parseSourceLinks(event.currentTarget.value)) {
+  if (event.metaKey || event.ctrlKey) {
     event.preventDefault();
-    $('#new-project-search-form').requestSubmit();
+    if (updateStarterInput()) $('#new-project-search-form').requestSubmit();
   }
 });
 $('#new-project-search-form').addEventListener('submit', (event) => {
   event.preventDefault();
+  if (!updateStarterInput()) return;
   const input = $('#new-project-query').value.trim();
-  if (!input) return;
   $('#new-project-dialog').close();
   submitSource(input);
 });
 async function downloadSource(source) {
   try { await downloadDocument(source); }
   catch (error) { notify(error.message || 'This document could not be downloaded. Please try again.'); }
-}
-
-function startSearch(query) {
-  const existing = projects.find((project) => !project.deletedAt && !project.archivedAt && project.sources.length === 1 && project.sources[0].type === 'search' && project.sources[0].title.toLowerCase() === query.toLowerCase());
-  if (existing) showProject(existing.id);
-  else createProject([{ type: 'search', title: query }], { kind: 'search' });
 }
 
 $('.brand').addEventListener('click', () => showHome());

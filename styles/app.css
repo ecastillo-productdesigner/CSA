@@ -817,7 +817,9 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
 }
 
 @media (max-width: token(foundation.breakpoint.mobile)) {
-  :root { --csa-semantic-shadow-dropdown: var(--csa-semantic-shadow-dropdown-mobile); }
+  :root { --csa-semantic-shadow-dropdown: var(--csa-semantic-shadow-dropdown-mobile); --csa-semantic-color-overlay-scrim: var(--csa-semantic-color-overlay-scrim-mobile); }
+  /* Native dialogs supply their own backdrop; mobile workspace panels share one. */
+  body.showing-composer:has(#workspace-app:not([hidden])):has(.composer-panel[data-mobile-open="true"], #editor-sources:not([hidden])):not(:has(dialog[open]))::after { content: ""; position: fixed; inset: 0; z-index: var(--csa-foundation-layer-12); background: var(--csa-semantic-color-overlay-scrim); }
   body:is(:has(#home:not([hidden])), .showing-results, .showing-composer) .sidebar { z-index: var(--csa-foundation-layer-20); top: var(--csa-foundation-space-10); right: var(--csa-foundation-space-10); bottom: auto; left: var(--csa-foundation-space-10); display: flex; flex-direction: row; align-items: center; justify-content: space-between; width: auto; height: var(--csa-foundation-space-64); padding: var(--csa-foundation-space-8) var(--csa-foundation-space-12); cursor: default; transition: none; box-shadow: none; }
   body:is(:has(#home:not([hidden])), .showing-results, .showing-composer) .sidebar-header { width: auto; height: 100%; border: 0; }
   body:is(:has(#home:not([hidden])), .showing-results, .showing-composer) .brand { width: var(--csa-foundation-size-54); height: var(--csa-foundation-space-44); border-radius: var(--csa-foundation-radius-8); }
@@ -1186,3 +1188,7 @@ body #home[data-layout="list"] .new-project-tile .material-symbols-outlined { wi
 
 /* All checkbox indicators use the same official check SVG and glyph size. */
 .output-card[data-selected="true"] .output-selection-indicator, .result-card[data-selected="true"] .result-selection-indicator { background-image: url("./assets/material-check.svg"); background-position: center; background-repeat: no-repeat; background-size: var(--csa-foundation-space-16) var(--csa-foundation-space-16); }
+
+@media (max-width: token(foundation.breakpoint.mobile)) {
+  .ql-snow .ql-tooltip, .ql-toolbar.ql-snow .ql-picker-options { box-shadow: var(--csa-semantic-shadow-dropdown); }
+}

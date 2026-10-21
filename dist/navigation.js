@@ -112,8 +112,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
   document.addEventListener('pointerdown', event => {
     if (document.querySelector('dialog[open]')) return;
     if (active === 'profile' && floatingProfile() && !panels.profile.panel.contains(event.target) && !panels.profile.trigger.contains(event.target)) { close(); return; }
-    if (mobileTopBar() && !sidebar.contains(event.target) && !panels[active]?.panel.contains(event.target) && !event.target.closest('.output-edit-menu, .editor-flyover, [data-variant-sources], [data-workspace-dropdown]')) close();
-    else if (drawerOpen && !sidebar.contains(event.target) && !event.target.closest('[data-variant-sources]')) setDrawer(false);
+    if (active !== 'sources' && mobileTopBar() && !sidebar.contains(event.target) && !panels[active]?.panel.contains(event.target) && !event.target.closest('.output-edit-menu, .editor-flyover, [data-variant-sources], [data-workspace-dropdown]')) close();
   });
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape' || event.defaultPrevented || document.querySelector('dialog[open]')) return;
@@ -135,5 +134,5 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
   layoutObserver.observe(home, { attributes: true, attributeFilter: ['hidden'] });
   layoutObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
   syncLayout();
-  return { close, open, closeDrawer: () => setDrawer(false) };
+  return { close, open, closeTransient() { if (active !== 'sources') close(); }, closeDrawer: () => setDrawer(false) };
 }

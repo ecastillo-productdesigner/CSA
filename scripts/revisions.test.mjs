@@ -13,7 +13,7 @@ test('demo revision replaces the body while preserving the variant identity and 
   for (const key of ['id', 'title', 'name', 'nameEdited', 'isFavorite', 'createdAt', 'labels', 'selectedSourceIndexes', 'sourceSnapshots', 'metadata']) assert.deepEqual(output[key], before[key]);
   assert.deepEqual(output.revisionRequests, [{ instructions: 'Shorten the intro', requestedAt: 10, completedAt: 20, status: 'complete' }]);
   assert.equal(output.updatedAt, 20);
-  assert.equal(variantPanelState({ outputs: [output] }, 'created').createdLabel, '1 Created');
+  assert.deepEqual(variantPanelState({ outputs: [output] }).outputs, [output]);
 });
 
 test('another revision always uses different sample text and retains request history', () => {

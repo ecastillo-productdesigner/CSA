@@ -311,3 +311,7 @@ Serif-formatted article content and serif export text use the shared Newsreader,
 Variants panel heading and mobile Variants navigation use the filled Material Symbols turn_slight_left icon.
 
 New Variant and Variants headings use a 4px icon-to-text gap; heading icons remain in 20px boxes.
+
+Version-2.0 composer: Format options are Celebrity Relationship Timeline, Listicle, and Who’s Returning to the Show?, plus None Selected. Audience is fixed to General Audience and Voice is fixed to US Weekly. Create variant starts one variant directly; the variant list has no pending/created segments. Saved presets, variant editing, editorial direction, feedback, revision requests, the metadata viewer, keyword generation, and the New Project own-material starter are removed from the product interface. Existing article and preset records remain stored.
+
+The left Sources panel stays open during editing and variant switching until explicitly closed. The navigation folder opens all project sources. A variant’s source-count badge opens Used / Not Used segments, styled with primary blue and white for the selected segment and Neutral 400 for inactive text. Each segment filters the variant’s recorded source snapshots; unused sources start unchecked. Variant-source views omit count summaries and per-row usage labels. Source titles display at most 70 characters and two lines with an ellipsis; hover or keyboard focus reveals the full title.

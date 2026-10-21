@@ -125,11 +125,7 @@
               </div>
               <div id="rich-text-editor"></div>
               <div class="editor-publish-actions"><button class="editor-wordpress-button" id="editor-wordpress" type="button">Send to WordPress</button></div>
-              <footer class="editor-footer"><button class="editor-metadata-trigger" id="editor-metadata-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-metadata">Metadata<span class="material-symbols-outlined editor-flyover-chevron" aria-hidden="true">chevron_forward</span></button><span id="editor-word-count">0 words</span><span id="editor-character-count">0 characters</span><span id="editor-read-time">0 min read</span><span id="editor-save-status" role="status">Saved on this device</span><span class="editor-created" id="editor-created" hidden>Created: <time id="editor-created-time"></time></span><span class="editor-spellcheck">Spellcheck on</span><p class="editor-content-note">No new facts or information will be added. Each draft adapts your approved content while maintaining factual accuracy.</p></footer>
-            </div>
-            <div class="editor-context-panel editor-flyover" id="editor-metadata" role="dialog" aria-labelledby="editor-metadata-heading" tabindex="-1" hidden>
-              <div class="editor-panel-heading"><h2 id="editor-metadata-heading">Metadata</h2><button class="icon-button" type="button" data-editor-close="metadata" aria-label="Close metadata" title="Close metadata"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
-              <dl class="editor-seo-metadata"><div><dt>SEO title:</dt> <dd id="editor-seo-title">—</dd></div><div><dt>Meta description:</dt> <dd id="editor-meta-description">—</dd></div><div><dt>SEO keywords:</dt> <dd id="editor-seo-keywords">—</dd></div></dl>
+              <footer class="editor-footer"><span id="editor-word-count">0 words</span><span id="editor-character-count">0 characters</span><span id="editor-read-time">0 min read</span><span id="editor-save-status" role="status">Saved on this device</span><span class="editor-created" id="editor-created" hidden>Created: <time id="editor-created-time"></time></span><span class="editor-spellcheck">Spellcheck on</span><p class="editor-content-note">No new facts or information will be added. Each draft adapts your approved content while maintaining factual accuracy.</p></footer>
             </div>
           </section>
           </div>
@@ -139,44 +135,31 @@
             <div class="composer-tools-header"><h2 id="composer-tools-heading" tabindex="-1"><span class="material-symbols-outlined" aria-hidden="true">alt_route</span><span>New Variant</span></h2><div class="composer-tools-actions"><button class="icon-button mobile-panel-close" type="button" data-close-navigation="newVariant" aria-label="Close New Variant panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button><button class="icon-button tool-collapse-button" id="toggle-new-variant" type="button" aria-label="Collapse New Variant" aria-expanded="true" aria-controls="composer-variant-form" title="Collapse New Variant"><span class="material-symbols-outlined" aria-hidden="true">keyboard_arrow_up</span></button></div></div>
             <div id="composer-variant-form">
             <div class="composer-fields">
-            <div class="output-presets" id="output-presets" hidden>
-              <button class="tool-dropdown-trigger" id="output-presets-trigger" type="button" aria-haspopup="menu" aria-controls="output-presets-options" aria-expanded="false"><span>My Saved Variants</span><span class="material-symbols-outlined tool-dropdown-chevron" aria-hidden="true">keyboard_arrow_down</span></button>
-              <div class="output-presets-menu" id="output-presets-options" role="menu" aria-label="My Saved Variants" hidden></div>
-            </div>
               <div class="composer-field" data-label="Format">
-                <select id="composer-format" aria-label="Format" hidden><option value="">None Selected</option><option value="what-to-know">What to Know</option><option value="video-script">Video Script</option><option value="trend-detail-page">Trend Detail Page</option><option value="everything-to-know">Everything to Know</option><option value="what-to-know-next">What to Know Next</option><option value="listicle">Listicle</option><option value="q-and-a">Q&amp;A</option><option value="deep-dive">Deep Dive</option><option value="infographic">Infographic</option></select>
+                <select id="composer-format" aria-label="Format" hidden><option value="">None Selected</option><option value="celebrity-relationship-timeline">Celebrity Relationship Timeline</option><option value="listicle">Listicle</option><option value="whos-returning-to-the-show">Who’s Returning to the Show?</option></select>
               </div>
-              <div class="composer-field" data-label="Audience">
-                <select id="composer-audience" aria-label="Audience" hidden><option value="">None Selected</option><option value="general">General Audience</option><option value="south-carolina-comedy-live-events">South Carolina Comedy Fan &amp; Live Event Goer</option><option value="local-venue-downtown-business">Local Venue &amp; Downtown Business Stakeholder</option><option value="fitness-minded-lifestyle">Fitness-Minded Lifestyle Reader</option><option value="trend-hunter-b2c">Trend Hunter B2C (The Curious Optimizer)</option></select>
+              <div class="composer-field" data-label="Audience" data-fixed-value="general">
+                <select id="composer-audience" aria-label="Audience" hidden><option value="general" selected>General Audience</option></select>
               </div>
-              <div class="composer-field" data-label="Voice">
-                <select id="composer-voice" aria-label="Voice" hidden><option value="">None Selected</option><option value="house-standard">House Standard</option><option value="apple-news">Apple News</option><option value="centre-daily-times">Centre Daily Times</option><option value="idaho-statesman-voice-guide">Idaho Statesman Voice Guide</option><option value="msn-syndication">MSN Syndication</option><option value="national-team-voice-guide">National Team Voice Guide</option><option value="kansas-city-star-voice-guide">The Kansas City Star Voice Guide</option><option value="news-observer-voice-guide">The News &amp; Observer Voice Guide</option><option value="trend-hunter-b2c">Trend Hunter B2C</option><option value="us-weekly">Us Weekly</option><option value="womans-world">Womans World</option><option value="yahoo-news">Yahoo News</option></select>
+              <div class="composer-field" data-label="Voice" data-fixed-value="us-weekly">
+                <select id="composer-voice" aria-label="Voice" hidden><option value="us-weekly" selected>US Weekly</option></select>
               </div>
-            </div>
-            <div class="composer-direction">
-              <label for="composer-editorial-direction">Editorial Direction <span>(optional)</span></label>
-              <textarea id="composer-editorial-direction" rows="2" maxlength="8000" placeholder="Example: “Focus on the economy” or “Use a conversational tone.”"></textarea>
             </div>
             <div class="variant-word-count" hidden>
               <label for="composer-target-word-count-trigger">Target Word Count</label>
               <div class="word-count-field" data-label="Target Word Count"><select id="composer-target-word-count" aria-label="Target Word Count" hidden><option value="short">500–800 (Short)</option><option value="medium">800–1200 (Medium)</option><option value="long">1200–1500 (Long)</option></select></div>
             </div>
             <div class="composer-actions">
-              <button class="create-variant" type="button" disabled title="Choose a saved variant, format, audience, or voice to add a variant">Add Variant</button>
+              <button class="create-variant" type="button" disabled title="Create variant">Create variant</button>
             </div>
             </div>
           </section>
           <section class="composer-panel composer-outputs" id="composer-outputs" aria-labelledby="composer-outputs-heading">
             <div class="composer-outputs-header"><h2 id="composer-outputs-heading" tabindex="-1"><span class="material-symbols-outlined" aria-hidden="true">turn_slight_left</span><span>Variants</span></h2><button class="icon-button mobile-panel-close" type="button" data-close-navigation="variants" aria-label="Close Variants panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
             </div>
-            <div class="output-status-tabs" role="tablist" aria-label="Variant status">
-              <button id="output-pending-tab" type="button" role="tab" aria-selected="true" aria-controls="output-status-content" data-output-view="pending">To Create</button>
-              <button id="output-created-tab" type="button" role="tab" aria-selected="false" aria-controls="output-status-content" tabindex="-1" data-output-view="created">Created</button>
-            </div>
-            <div class="output-status-content" id="output-status-content" role="tabpanel" aria-labelledby="output-pending-tab">
+            <div class="output-status-content" id="output-status-content">
             <div class="composer-empty" id="outputs-empty" role="status"><p>Variants will appear here once<br>they are created</p></div>
             <ul class="output-list" id="output-list" aria-label="Variants" hidden></ul>
-            <div class="outputs-footer"><button class="create-output" id="create-output" type="button" disabled><span class="output-processing-spinner" id="output-processing-spinner" aria-hidden="true" hidden></span><span id="create-output-label">Create 0 Variants</span></button></div>
             <p class="visually-hidden" id="output-processing-status" role="status" aria-live="polite"></p>
             </div>
           </section>
@@ -263,7 +246,6 @@
         <button class="new-project-continue" id="new-project-submit" type="submit" disabled>Continue</button>
       </form>
       <div class="new-project-divider"><span>or</span></div>
-      <button class="new-project-material" id="new-project-material" type="button"><span class="new-project-material-icon"><span class="material-symbols-outlined" aria-hidden="true">description</span></span><span><strong>Start from your own material</strong><small>Bring your notes, an article, or a rough idea</small></span><span aria-hidden="true">›</span></button>
       <label class="new-project-material new-project-upload" id="new-project-drop-zone" for="new-project-file-input"><span class="new-project-material-icon"><span class="material-symbols-outlined" aria-hidden="true">upload_file</span></span><span><strong>Upload documents</strong><small><span class="new-project-upload-desktop">Drop files here or <span class="browse-label">browse files</span></span><span class="new-project-upload-mobile">Choose files to upload</span></small></span><input class="visually-hidden" id="new-project-file-input" type="file" aria-label="Upload documents" multiple accept=".pdf,.docx,.pptx,.txt,.md"></label>
       <div id="new-project-upload-selection" hidden><ul class="selected-files" id="new-project-selected-files"></ul><p class="file-status" id="new-project-file-status" role="status" aria-live="polite"></p><button class="new-project-continue" id="new-project-use-material" type="button" disabled>Start creating</button><p class="material-hint">Documents stay in this browser. Download the originals from Sources in your project.</p></div>
       <p class="form-error" id="new-project-material-error" role="alert" hidden></p>
@@ -277,34 +259,6 @@
       <div class="dialog-footer"><button class="secondary-button" id="article-preview-back" type="button" data-close="article-preview-dialog">Back to results</button></div>
     </dialog>
 
-    <dialog class="experience-feedback-dialog" id="experience-feedback-dialog" aria-labelledby="experience-feedback-heading">
-      <div class="panel-heading"><h2 id="experience-feedback-heading">Draft feedback</h2><button class="icon-button" type="button" data-close="experience-feedback-dialog" aria-label="Close feedback"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
-      <form id="experience-feedback-form" novalidate>
-        <div class="experience-feedback-body">
-          <fieldset class="feedback-rating-field"><legend>How would you rate this draft? <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></legend>
-            <div class="experience-feedback-options" id="experience-feedback-options">
-              <button type="button" data-experience-rating="up" aria-label="Good" aria-pressed="false"><span class="material-symbols-outlined" aria-hidden="true">thumb_up</span><span>Good</span></button>
-              <button type="button" data-experience-rating="down" aria-label="Could be better" aria-pressed="false"><span class="material-symbols-outlined" aria-hidden="true">thumb_down</span><span>Could be better</span></button>
-            </div>
-          </fieldset>
-          <div class="feedback-field-row">
-            <div class="feedback-form-field"><label id="feedback-category-label" for="feedback-category">Category <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label>
-              <div class="feedback-select-field" data-label="Category" data-placeholder="Select a category"><select id="feedback-category" name="category" required aria-labelledby="feedback-category-label" hidden>
-                <option value="">Select a category</option><option>Accuracy</option><option>Content Quality</option><option>Format</option><option>Length</option><option>Missing Data</option><option>Other</option><option>Quotes</option><option>Relevance</option><option>SPEED</option><option>Structure</option><option>Style Guide</option><option>Tone</option><option>UI / UX</option><option>Usability</option><option>Workflow</option>
-              </select></div>
-            </div>
-            <div class="feedback-form-field"><label for="feedback-severity">Severity</label>
-              <div class="feedback-select-field" data-label="Severity" data-placeholder="No severity"><select id="feedback-severity" name="severity" hidden><option value="">No severity</option><option>High</option><option>Low</option><option>Medium</option></select></div>
-            </div>
-          </div>
-          <div class="feedback-form-field"><label for="feedback-description">Describe the issue <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label><input id="feedback-description" name="description" type="text" maxlength="500" placeholder="Brief summary of the problem" aria-describedby="feedback-description-count" required><p class="feedback-character-count" id="feedback-description-count">500 characters remaining</p></div>
-          <div class="feedback-form-field"><label for="feedback-comments">Additional comments</label><textarea id="feedback-comments" name="comments" rows="3" placeholder="Any extra context or details (optional)"></textarea></div>
-          <p class="form-error" id="feedback-error" role="alert" hidden>Please choose a rating, select a category, and describe the issue.</p>
-        </div>
-        <div class="dialog-footer"><button class="secondary-button" type="button" data-close="experience-feedback-dialog">Cancel</button><button class="primary-button dialog-action-button" id="feedback-submit" type="submit" disabled>Submit Report</button></div>
-      </form>
-      <div class="experience-feedback-complete" id="experience-feedback-complete" hidden><p class="experience-feedback-thanks" id="experience-feedback-thanks" role="status">Thanks for your feedback!</p><button class="primary-button experience-feedback-done" id="experience-feedback-done" type="button" data-close="experience-feedback-dialog">Done</button></div>
-    </dialog>
 
     <dialog class="editor-link-dialog" id="editor-link-dialog" aria-labelledby="editor-link-heading"><form id="editor-link-form"><div class="editor-panel-heading"><h2 id="editor-link-heading">Add a link</h2><button class="icon-button" type="button" data-close="editor-link-dialog" aria-label="Close link dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div><label for="editor-link-text">Link text<input id="editor-link-text" type="text" placeholder="Text to display" maxlength="2000"></label><label for="editor-link-url">URL<input id="editor-link-url" type="text" placeholder="https://" required></label><p class="form-error" id="editor-link-error" role="alert" hidden></p><div class="dialog-footer"><button class="secondary-button" id="editor-remove-link" type="button">Remove link</button><button class="primary-button" type="submit">Apply link</button></div></form></dialog>
 
@@ -327,29 +281,6 @@
       <p class="form-error" id="material-error" role="alert" hidden></p>
       <div class="dialog-footer"><button class="secondary-button" id="material-cancel" type="button" data-close="material-dialog">Cancel</button><button class="primary-button" id="use-material" type="button" disabled>Start creating</button></div>
     </dialog>
-    <dialog class="revision-request-dialog" id="revision-request-dialog" aria-labelledby="revision-request-heading" aria-describedby="revision-request-title revision-request-description">
-      <form id="revision-request-form">
-        <div class="revision-request-heading"><h2 id="revision-request-heading">Request Revision</h2><button class="icon-button" type="button" data-close="revision-request-dialog" aria-label="Close revision request"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
-        <p class="revision-request-title" id="revision-request-title"></p>
-        <p class="revision-request-description" id="revision-request-description">Describe the change you'd like to this draft. You'll get a notification when the revision is ready.</p>
-        <label class="visually-hidden" for="revision-request-instructions">Revision instructions</label>
-        <textarea id="revision-request-instructions" rows="4" maxlength="8000" placeholder='e.g. “Make the tone less formal” or “Shorten the intro”' required></textarea>
-        <p class="form-error" id="revision-request-error" role="alert" hidden></p>
-        <div class="dialog-footer"><button class="secondary-button dialog-cancel-button" type="button" data-close="revision-request-dialog">Cancel</button><button class="primary-button dialog-action-button" id="revision-request-submit" type="submit" disabled>Request Revision</button></div>
-      </form>
-    </dialog>
-    <section class="output-edit-menu" id="output-edit-menu" role="dialog" aria-labelledby="output-edit-heading" tabindex="-1" hidden>
-      <form id="output-edit-form">
-        <div class="output-edit-heading"><h2 id="output-edit-heading">Edit Variant</h2><button class="icon-button" type="button" data-close-output-edit aria-label="Close variant settings"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
-        <div class="output-edit-voice-field"><div class="composer-field output-edit-voice-control" data-label="Voice"><select id="output-edit-voice" aria-label="Voice" hidden><option value="">None Selected</option><option value="house-standard">House Standard</option><option value="apple-news">Apple News</option><option value="centre-daily-times">Centre Daily Times</option><option value="idaho-statesman-voice-guide">Idaho Statesman Voice Guide</option><option value="msn-syndication">MSN Syndication</option><option value="national-team-voice-guide">National Team Voice Guide</option><option value="kansas-city-star-voice-guide">The Kansas City Star Voice Guide</option><option value="news-observer-voice-guide">The News &amp; Observer Voice Guide</option><option value="trend-hunter-b2c">Trend Hunter B2C</option><option value="us-weekly">Us Weekly</option><option value="womans-world">Womans World</option><option value="yahoo-news">Yahoo News</option></select></div></div>
-        <label for="output-edit-direction"><span>Editorial Direction <span class="field-optional">(optional)</span></span><textarea id="output-edit-direction" rows="2" maxlength="8000" placeholder="Example: “Focus on the economy” or “Use a conversational tone.”"></textarea></label>
-        <div class="variant-word-count" hidden><label for="output-edit-target-word-count-trigger">Target Word Count</label><div class="word-count-field" data-label="Target Word Count"><select id="output-edit-target-word-count" aria-label="Target Word Count" hidden><option value="short">500–800 (Short)</option><option value="medium">800–1200 (Medium)</option><option value="long">1200–1500 (Long)</option></select></div></div>
-        <label for="output-edit-name"><span>Edit Variant Name <span class="field-optional">(optional)</span></span><input id="output-edit-name" type="text" maxlength="180" autocomplete="off"></label>
-        <p class="form-error" id="output-edit-error" role="alert" hidden></p>
-        <div class="output-edit-actions"><button class="secondary-button" type="button" data-close-output-edit>Cancel</button><button class="primary-button dialog-action-button" type="submit" disabled>Save changes</button></div>
-        <div class="output-edit-delete"><button class="output-delete-button" id="output-delete-variant" type="button" aria-label="Delete variant" title="Delete variant"><span class="material-symbols-outlined" aria-hidden="true">delete</span></button></div>
-      </form>
-    </section>
     <div class="toast" id="toast" role="status" hidden><span id="toast-message"></span><button id="toast-undo" type="button" hidden>Undo</button></div>
     </div>
   </body>

@@ -61,7 +61,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     quill.root.setAttribute('aria-label', 'Story body');
     quill.root.setAttribute('aria-multiline', 'true');
     quill.root.setAttribute('spellcheck', 'true');
-    quill.on('text-change', () => { if (!loading) { updateCounts(); updateToolbar(); updateFind(); scheduleSave(); if (!$('#editor-metadata').hidden) updateMetadata(); onContentChange(); } });
+    quill.on('text-change', () => { if (!loading) { updateCounts(); updateToolbar(); updateFind(); scheduleSave(); onContentChange(); } });
     quill.on('selection-change', (range) => { if (range) { selection = range; updateToolbar(); } });
 
   }
@@ -105,7 +105,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       id: project.id, title: title.value.trim() || 'Untitled story', kind: 'draft',
       document: quill.getContents(), draftText: quill.getText().replace(/\n$/, ''),
       sources: project.sources,
-      metadata: { ...project.metadata, ...storyMetadata() },
+      metadata: { ...project.metadata },
       toolPreferences: Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, $(`#composer-${key}`).value])),
       updatedAt: Date.now(),
       ...(sentContent !== null ? { cmsSentContent: sentContent } : {}),
@@ -172,7 +172,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   });
   $('#editor-align').addEventListener('change', () => format('align', $('#editor-align').value || false));
   $('#editor-color').addEventListener('input', () => format('color', $('#editor-color').value));
-  title.addEventListener('input', () => { resizeTitle(); scheduleSave(); if (!$('#editor-metadata').hidden) updateMetadata(); });
+  title.addEventListener('input', () => { resizeTitle(); scheduleSave(); });
   let previousWidth = 0;
   new ResizeObserver(entries => {
     const width = entries[0].contentRect.width;
@@ -180,70 +180,13 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   }).observe(root);
   for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).addEventListener('change', scheduleSave);
 
-  function storyMetadata() {
-    const heading = title.value.replace(/\s+/gu, ' ').trim();
-    const text = quill?.getText().replace(/\s+/gu, ' ').trim() || '';
-    const opening = text.match(/^.*?[.!?](?:\s|$)/u)?.[0].trim() || text;
-    const description = opening.length > 180 ? `${opening.slice(0, 177).replace(/\s+\S*$/u, '')}…` : opening;
-    const stopWords = new Set('about after again also another around became become been before being behind between both could each entirely every first found from have into itself just like made more most much nearby neither none once only ordinary other over same should some story stories such than that their them then there these they this those through together under very were what when where which while with without would your'.split(' '));
-    const scores = new Map();
-    for (const [content, weight] of [[heading, 3], [text, 1]]) {
-      for (const word of content.toLowerCase().match(/[\p{L}][\p{L}’'-]*/gu) || []) {
-        const keyword = word.replace(/[’']s$/u, '');
-        if (keyword.length < 4 || stopWords.has(keyword)) continue;
-        scores.set(keyword, (scores.get(keyword) || 0) + weight);
-      }
-    }
-    return { seoTitle: heading, metaDescription: description, seoKeywords: [...scores].sort((a, b) => b[1] - a[1]).slice(0, 7).map(([word]) => word).join(', ') };
-  }
-
-  function updateMetadata() {
-    const metadata = storyMetadata();
-    $('#editor-seo-title').textContent = metadata.seoTitle || '—';
-    $('#editor-meta-description').textContent = metadata.metaDescription || '—';
-    $('#editor-seo-keywords').textContent = metadata.seoKeywords || '—';
-  }
-
   function setPanel(name, open) {
-    for (const key of ['metadata', 'find']) {
-      const active = key === name && open;
-      $(`#editor-${key}`).hidden = !active;
-      $(`#editor-${key}-button`).setAttribute('aria-expanded', String(active));
-    }
-    if (name === 'metadata' && open) updateMetadata();
-    if (['metadata'].includes(name) && open) { positionEditorFlyover(name); $('#editor-download').open = false; $(`#editor-${name}`).focus({ preventScroll: true }); }
-    if (name === 'find' && open) $('#editor-find-text').focus();
+    const active = name === 'find' && open;
+    $('#editor-find').hidden = !active;
+    $('#editor-find-button').setAttribute('aria-expanded', String(active));
+    if (active) $('#editor-find-text').focus();
   }
-  function positionEditorFlyover(name) {
-    const dropdown = $(`#editor-${name}`);
-    if (dropdown.hidden) return;
-    const trigger = $(`#editor-${name}-button`).getBoundingClientRect();
-    const width = Math.min(tokenNumber('foundation.size.620'), root.getBoundingClientRect().width, window.innerWidth - tokenNumber('foundation.space.24'));
-    dropdown.style.width = `${width}px`;
-    const above = trigger.top - tokenNumber('foundation.space.12');
-    const below = window.innerHeight - trigger.bottom - tokenNumber('foundation.space.12');
-    const openAbove = above >= Math.min(dropdown.scrollHeight, tokenNumber('foundation.size.420')) || above > below;
-    dropdown.style.maxHeight = `${Math.max(0, Math.min(tokenNumber('foundation.size.420'), (openAbove ? above : below) - tokenNumber('foundation.space.8')))}px`;
-    const top = openAbove ? trigger.top - dropdown.offsetHeight - tokenNumber('foundation.space.8') : trigger.bottom + tokenNumber('foundation.space.8');
-    dropdown.style.top = `${Math.max(tokenNumber('foundation.space.8'), Math.min(top, window.innerHeight - dropdown.offsetHeight - tokenNumber('foundation.space.8')))}px`;
-    dropdown.style.left = `${Math.max(tokenNumber('foundation.space.12'), Math.min(trigger.left, window.innerWidth - width - tokenNumber('foundation.space.12')))}px`;
-  }
-  document.addEventListener('pointerdown', event => {
-    for (const name of ['metadata']) {
-      if (!$(`#editor-${name}`).hidden && !event.target.closest(`#editor-${name}, #editor-${name}-button`)) setPanel(name, false);
-    }
-  });
-  document.addEventListener('keydown', event => {
-    if (event.key !== 'Escape' || document.querySelector('dialog[open]')) return;
-    const name = ['metadata'].find(key => !$(`#editor-${key}`).hidden);
-    if (!name) return;
-    event.preventDefault();
-    setPanel(name, false);
-    $(`#editor-${name}-button`).focus();
-  });
-  window.addEventListener('resize', () => positionEditorFlyover('metadata'));
-  window.addEventListener('scroll', () => positionEditorFlyover('metadata'), { passive: true, capture: true });
-  for (const name of ['metadata', 'find']) $(`#editor-${name}-button`).addEventListener('click', () => setPanel(name, $(`#editor-${name}`).hidden));
+  $('#editor-find-button').addEventListener('click', () => setPanel('find', $('#editor-find').hidden));
   for (const button of root.querySelectorAll('[data-editor-close]')) button.addEventListener('click', () => { setPanel(button.dataset.editorClose, false); $(`#editor-${button.dataset.editorClose}-button`).focus(); });
 
   function openLink() {

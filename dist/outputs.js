@@ -84,24 +84,7 @@ export function createOutputBadges(output, { maxLabelLength = 20, includeSourceC
   return badges;
 }
 
-export function createOutputEditButton(output, { disabled = false, inEditor = false } = {}) {
-  const edit = document.createElement('button');
-  edit.type = 'button';
-  edit.className = `icon-button output-edit-button${inEditor ? ' editor-variant-edit' : ''}`;
-  edit.dataset.editOutput = output.id;
-  edit.disabled = disabled;
-  edit.setAttribute('aria-label', `Edit variant settings: ${output.title}`);
-  edit.setAttribute('aria-haspopup', 'dialog');
-  edit.setAttribute('aria-controls', 'output-edit-menu');
-  edit.setAttribute('aria-expanded', 'false');
-  edit.title = 'Edit variant settings';
-  const editIcon = document.createElement('span');
-  editIcon.className = 'material-symbols-outlined';
-  editIcon.setAttribute('aria-hidden', 'true');
-  editIcon.textContent = 'edit';
-  edit.append(editIcon);
-  return edit;
-}
+
 
 export function selectedOutputs(project) {
   const legacyIds = [...(Array.isArray(project?.selectedPendingOutputIds) ? project.selectedPendingOutputIds : []), ...(project?.selectedOutputId ? [project.selectedOutputId] : [])];
@@ -302,52 +285,27 @@ export function sampleVariant(project, selections) {
   };
 }
 
-export function variantPanelState(project, requestedView) {
-  const outputs = projectOutputs(project);
-  const pending = outputs.filter(output => !outputIsReady(output));
-  const created = outputs.filter(outputIsReady);
-  const activeCreated = !project?.viewOriginalDraft && created.some(output => output.id === project?.selectedOutputId);
-  const view = ['pending', 'created'].includes(requestedView) ? requestedView : activeCreated || (!pending.length && created.length) ? 'created' : 'pending';
-  return {
-    view,
-    outputs: view === 'pending' ? pending : created,
-    pendingLabel: pending.length ? `${pending.length} to Create` : 'to Create',
-    createdLabel: created.length ? `${created.length} Created` : 'Created',
-  };
+export function variantPanelState(project) {
+  return { outputs: projectOutputs(project) };
 }
 
-export function renderOutputs(project, requestedView) {
-  const state = variantPanelState(project, requestedView);
-  for (const tab of document.querySelectorAll('[data-output-view]')) {
-    const selected = tab.dataset.outputView === state.view;
-    tab.textContent = tab.dataset.outputView === 'pending' ? state.pendingLabel : state.createdLabel;
-    tab.dataset.empty = String(tab.dataset.outputView === 'pending' ? state.pendingLabel === 'to Create' : state.createdLabel === 'Created');
-    tab.setAttribute('aria-selected', String(selected));
-    tab.tabIndex = selected ? 0 : -1;
-  }
-  document.querySelector('#output-status-content').setAttribute('aria-labelledby', `output-${state.view}-tab`);
-  document.querySelector('.outputs-footer').hidden = state.view !== 'pending';
+export function renderOutputs(project) {
+  const state = variantPanelState(project);
   const processing = Boolean(project?.outputProcessing);
-  const selectedPending = selectedPendingOutputs(project);
   const selectedIds = new Set(selectedOutputs(project).map(output => output.id));
   const list = document.querySelector('#output-list');
   document.querySelector('.composer-outputs').setAttribute('aria-busy', String(processing));
-  const create = document.querySelector('#create-output');
-  create.disabled = processing || !selectedPending.length;
-  create.title = processing ? 'Preparing selected variants' : selectedPending.length ? `Create ${selectedPending.length} selected variant${selectedPending.length === 1 ? '' : 's'}` : 'Select at least one pending variant';
-  document.querySelector('#create-output-label').textContent = processing ? 'Processing…' : `Create ${selectedPending.length} Variant${selectedPending.length === 1 ? '' : 's'}`;
-  document.querySelector('#output-processing-spinner').hidden = !processing;
-  document.querySelector('#output-processing-status').textContent = project?.outputProcessing?.kind === 'revision' ? 'Revising your variant. This takes about four seconds.' : processing ? 'Processing your selected variants. This takes about four seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
+  document.querySelector('#output-processing-status').textContent = processing ? 'Creating your variant. This takes about four seconds.' : '';
   const empty = document.querySelector('#outputs-empty');
   empty.hidden = state.outputs.length > 0;
-  empty.querySelector('p').textContent = state.view === 'pending' ? 'No variants to create yet.' : 'No created variants yet.';
+  empty.querySelector('p').textContent = 'Variants will appear here once they are created.';
   list.hidden = state.outputs.length === 0;
-  list.setAttribute('aria-label', state.view === 'pending' ? 'Variants to create' : 'Created variants');
+  list.setAttribute('aria-label', 'Variants');
   list.replaceChildren(...state.outputs.map(output => {
     const item = document.createElement('li');
     const card = document.createElement('article');
     const ready = outputIsReady(output);
-    const revising = project?.outputProcessing?.kind === 'revision' && project.outputProcessing.ids.includes(output.id);
+    const revising = Boolean(project?.outputProcessing?.ids.includes(output.id));
     const active = Boolean(((ready || output.needsRegeneration) && project.selectedOutputId === output.id)
       || (project.viewOriginalDraft && !ready && project.lastPendingOutputId === output.id && selectedIds.has(output.id)));
     const selected = ready ? active : selectedIds.has(output.id);
@@ -374,9 +332,9 @@ export function renderOutputs(project, requestedView) {
     open.className = 'output-open';
     open.dataset.outputId = output.id;
     open.disabled = revising || (!ready && processing);
-    open.setAttribute('aria-label', `${!ready ? 'Pending variant' : 'Open variant'}: ${output.title}`);
-    open.setAttribute('aria-pressed', String(ready ? active : selected));
-    open.title = !ready ? output.needsRegeneration ? 'Open this variant in the editor' : 'View content preview for this variant' : active ? 'This variant is open in the editor' : 'Open this variant in the editor';
+    open.setAttribute('aria-label', `${!ready ? 'Create variant' : 'Open variant'}: ${output.title}`);
+    if (active) open.setAttribute('aria-current', 'true');
+    open.title = !ready ? 'Create this variant' : active ? 'This variant is open in the editor' : 'Open this variant in the editor';
     const top = document.createElement('span');
     top.className = 'output-card-top';
     const badges = document.createElement('span');
@@ -402,41 +360,14 @@ export function renderOutputs(project, requestedView) {
       delete badges.dataset.dragging;
     });
     badges.append(...createOutputBadges(output));
-    const indicator = document.createElement('span');
-    indicator.className = 'output-selection-indicator';
-    indicator.setAttribute('aria-hidden', 'true');
-    const selection = document.createElement('button');
-    selection.type = 'button';
-    selection.className = 'output-selection-button';
-    selection.dataset.selectOutput = output.id;
-    selection.disabled = processing;
-    selection.setAttribute('aria-label', `${selected ? 'Deselect variant' : 'Select variant'}: ${output.title}`);
-    selection.setAttribute('role', 'checkbox');
-    selection.setAttribute('aria-checked', String(selected));
-    selection.append(indicator);
     const heading = document.createElement('strong');
     heading.className = 'output-card-title';
     heading.textContent = output.title;
     heading.title = output.title;
     open.append(top, heading);
-    const edit = createOutputEditButton(output, { disabled: processing });
-    const favorite = document.createElement('button');
-    favorite.type = 'button';
-    favorite.disabled = revising;
-    favorite.className = 'output-favorite-button';
-    favorite.dataset.favoriteOutput = output.id;
-    favorite.setAttribute('aria-label', `${output.isFavorite ? 'Remove preset' : 'Save preset'}: ${output.title}`);
-    favorite.setAttribute('aria-pressed', String(Boolean(output.isFavorite)));
-    favorite.title = output.isFavorite ? 'Remove from presets' : 'Save to presets';
-    const heart = document.createElement('span');
-    heart.className = 'material-symbols-outlined';
-    heart.setAttribute('aria-hidden', 'true');
-    heart.textContent = 'favorite';
-    favorite.append(heart);
     card.append(open);
-    if (!ready) card.append(selection);
     badges.inert = revising;
-    card.append(badges, edit, favorite);
+    card.append(badges);
     if (revising) {
       const overlay = document.createElement('div');
       overlay.className = 'output-revision-overlay';
@@ -444,7 +375,7 @@ export function renderOutputs(project, requestedView) {
       const spinner = document.createElement('span');
       spinner.className = 'output-processing-spinner revision-spinner';
       spinner.setAttribute('aria-hidden', 'true');
-      overlay.append(spinner, document.createTextNode('Revising…'));
+      overlay.append(spinner, document.createTextNode('Creating…'));
       card.append(overlay);
     }
     item.append(card);

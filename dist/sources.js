@@ -27,15 +27,110 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
   const list = document.querySelector('#editor-source-list');
   const status = document.querySelector('#editor-source-selection-status');
   const add = document.querySelector('#editor-add-source-button');
-  const context = document.createElement('div');
-  context.className = 'editor-source-variant-context';
-  context.hidden = true;
-  const contextText = document.createElement('span');
-  context.append(contextText);
-  add.after(context);
+  const tabs = document.createElement('div');
+  tabs.className = 'segmented-control source-status-tabs';
+  tabs.setAttribute('role', 'tablist');
+  tabs.setAttribute('aria-label', 'Source usage');
+  tabs.hidden = true;
+  const sourceTabs = ['used', 'unused'].map(view => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.id = `editor-source-${view}-tab`;
+    button.dataset.sourceView = view;
+    button.setAttribute('role', 'tab');
+    button.setAttribute('aria-label', view === 'used' ? 'Used' : 'Not Used');
+    button.setAttribute('aria-controls', 'editor-source-status-content');
+    button.textContent = view === 'used' ? 'Used' : 'Not Used';
+    tabs.append(button);
+    return button;
+  });
+  status.before(tabs);
+  const sourcePanel = document.createElement('div');
+  sourcePanel.id = 'editor-source-status-content';
+  sourcePanel.className = 'source-status-content';
+  list.before(sourcePanel);
+  sourcePanel.append(list);
+  let sourceView = 'used';
+  let sourceRows = [];
+  let emptyRow = null;
+  const titleTooltip = document.createElement('div');
+  titleTooltip.id = 'editor-source-title-tooltip';
+  titleTooltip.className = 'navigation-tooltip source-title-tooltip';
+  titleTooltip.setAttribute('role', 'tooltip');
+  titleTooltip.hidden = true;
+  document.body.append(titleTooltip);
+  let tooltipTrigger = null;
+
+  function hideTitleTooltip() {
+    titleTooltip.hidden = true;
+    tooltipTrigger?.removeAttribute('aria-describedby');
+    tooltipTrigger = null;
+  }
+
+  function showTitleTooltip(button, heading, fullTitle) {
+    if (heading.textContent === fullTitle && heading.scrollHeight <= heading.clientHeight) return;
+    hideTitleTooltip();
+    tooltipTrigger = button;
+    titleTooltip.textContent = fullTitle;
+    titleTooltip.hidden = false;
+    button.setAttribute('aria-describedby', titleTooltip.id);
+    const anchor = button.getBoundingClientRect();
+    const bounds = titleTooltip.getBoundingClientRect();
+    const inset = tokenNumber('foundation.space.12');
+    const gap = tokenNumber('foundation.space.8');
+    titleTooltip.style.left = `${Math.max(inset, Math.min(anchor.left, window.innerWidth - bounds.width - inset))}px`;
+    titleTooltip.style.top = `${Math.max(inset, anchor.bottom + gap + bounds.height <= window.innerHeight - inset ? anchor.bottom + gap : anchor.top - bounds.height - gap)}px`;
+  }
+
+  function applySourceView() {
+    closeMenu();
+    hideTitleTooltip();
+    const grouped = Boolean(sourceVariant);
+    tabs.hidden = !grouped;
+    if (grouped) {
+      sourcePanel.setAttribute('role', 'tabpanel');
+      sourcePanel.setAttribute('aria-labelledby', `editor-source-${sourceView}-tab`);
+    } else {
+      sourcePanel.removeAttribute('role');
+      sourcePanel.removeAttribute('aria-labelledby');
+    }
+    for (const tab of sourceTabs) {
+      const selected = tab.dataset.sourceView === sourceView;
+      tab.setAttribute('aria-selected', String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+    }
+    let shown = 0;
+    for (const { source, row } of sourceRows) {
+      row.hidden = grouped && usedSources.has(source) !== (sourceView === 'used');
+      if (!row.hidden) shown++;
+    }
+    emptyRow.hidden = shown > 0;
+    emptyRow.textContent = grouped
+      ? sourceView === 'used' ? 'No sources were used in this variant.' : 'All available sources were used in this variant.'
+      : project ? 'No sources yet. Add a new source to this project.' : 'Open a project to view its sources.';
+    list.setAttribute('aria-label', grouped ? sourceView === 'used' ? 'Used in this variant' : 'Not used in this variant' : 'Sources');
+    updateSelectionStatus();
+  }
+
+  for (const tab of sourceTabs) tab.addEventListener('click', () => {
+    sourceView = tab.dataset.sourceView;
+    applySourceView();
+    list.scrollTop = 0;
+  });
+  tabs.addEventListener('keydown', event => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    sourceView = event.key === 'Home' ? 'used' : event.key === 'End' ? 'unused' : sourceView === 'used' ? 'unused' : 'used';
+    applySourceView();
+    list.scrollTop = 0;
+    sourceTabs.find(tab => tab.dataset.sourceView === sourceView).focus();
+  });
+  document.addEventListener('scroll', hideTitleTooltip, true);
+  window.addEventListener('resize', hideTitleTooltip);
   let visibleSources = [];
   let selectedSources = new Set();
   let sourceVariant = null;
+  let usedSources = new Set();
   let project = null;
   let menuTarget = null;
   const menu = document.createElement('div');
@@ -126,33 +221,42 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
 
   function updateSelectionStatus() {
     const sources = visibleSources;
-    const selected = selectedSources.size;
-    status.textContent = sources.length ? `${selected} of ${sources.length} selected ${sourceVariant ? 'for this variant' : 'for new variants'}` : '';
+    status.hidden = Boolean(sourceVariant);
+    status.textContent = !sourceVariant && sources.length ? `${selectedSources.size} of ${sources.length} selected for new variants` : '';
   }
 
   add.addEventListener('click', () => { if (project) onAddSource(project.id); });
 
+
   function render(next, { variant = null } = {}) {
     closeMenu();
+    hideTitleTooltip();
+    if (project?.id !== next?.id || sourceVariant?.id !== variant?.id) sourceView = 'used';
     project = next;
     sourceVariant = variant;
-    context.hidden = !variant;
-    contextText.textContent = variant ? `${variant.sourceCount || 0} ${variant.sourceCount === 1 ? 'source' : 'sources'} used for this variant` : '';
     onVariantContextChange(variant?.id || null);
     const allSources = project?.sources || [];
     const selection = sourceSelectionFor(project, variant);
     visibleSources = selection.sources;
-    selectedSources = selection.selectedSources;
+    usedSources = variant ? selection.selectedSources : new Set();
+    let selectionChanged = false;
+    if (variant) {
+      for (const source of allSources) {
+        const included = usedSources.has(source);
+        if ((source.selected !== false) !== included) selectionChanged = true;
+        source.selected = included;
+      }
+    }
+    selectedSources = new Set(allSources.filter(source => source.selected !== false));
     add.disabled = !project;
     list.replaceChildren();
     updateSelectionStatus();
     const sources = visibleSources;
-    if (!sources.length) {
-      const empty = document.createElement('li');
-      empty.className = 'editor-sources-empty';
-      empty.textContent = project ? 'No sources yet. Add a new source to this project.' : 'Open a project to view its sources.';
-      list.append(empty);
-    }
+    sourceRows = [];
+    emptyRow = document.createElement('li');
+    emptyRow.className = 'editor-sources-empty';
+    emptyRow.setAttribute('role', 'status');
+    list.append(emptyRow);
     for (const source of sources) {
       const row = document.createElement('li');
       const checkbox = document.createElement('input');
@@ -160,18 +264,12 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
       checkbox.className = 'editor-source-checkbox';
       checkbox.checked = selectedSources.has(source);
       const available = allSources.includes(source);
-      if (!available) { checkbox.checked = true; checkbox.disabled = true; }
-      checkbox.setAttribute('aria-label', `Include source: ${source.title}`);
+      if (!available) checkbox.checked = true;
+      checkbox.disabled = !available;
+      checkbox.setAttribute('aria-label', `Include source in new variants: ${source.title}`);
+      checkbox.title = 'Include in new variants';
       checkbox.addEventListener('change', () => {
         if (checkbox.checked) selectedSources.add(source); else selectedSources.delete(source);
-        if (sourceVariant) {
-          const index = allSources.indexOf(source);
-          allSources.forEach(entry => { entry.selected = selectedSources.has(entry); });
-          onSelectionChange(project.id);
-          render(project);
-          list.querySelectorAll('.editor-source-checkbox')[index]?.focus({ preventScroll: true });
-          return;
-        }
         source.selected = checkbox.checked;
         updateSelectionStatus();
         onSelectionChange(project.id);
@@ -186,7 +284,13 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
       open.setAttribute('aria-controls', 'article-preview-dialog');
       open.addEventListener('click', () => openPreview(source, open));
       const heading = document.createElement('strong');
-      heading.textContent = source.title;
+      const titleCharacters = Array.from(source.title);
+      heading.textContent = titleCharacters.length > 70 ? `${titleCharacters.slice(0, 69).join('').trimEnd()}…` : source.title;
+      for (const eventName of ['mouseenter', 'focus']) open.addEventListener(eventName, () => showTitleTooltip(open, heading, source.title));
+      for (const eventName of ['mouseleave', 'blur', 'click']) open.addEventListener(eventName, hideTitleTooltip);
+      open.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !titleTooltip.hidden) { event.preventDefault(); event.stopPropagation(); hideTitleTooltip(); }
+      });
       open.append(heading);
       content.append(open);
       if (source.attachmentId) {
@@ -211,7 +315,10 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onAd
       more.addEventListener('keydown', event => { if (['ArrowDown', 'ArrowUp'].includes(event.key)) { event.preventDefault(); openMenu(source, more); } });
       if (available) row.append(more);
       list.append(row);
+      sourceRows.push({ source, row });
     }
+    applySourceView();
+    if (selectionChanged) onSelectionChange(project.id);
   }
   return { render };
 }

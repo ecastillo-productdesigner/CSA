@@ -134,6 +134,50 @@
       }
     },
     {
+      "name": "foundation.color.blue.50",
+      "designName": "foundation/color/blue/50",
+      "cssVariable": "--csa-foundation-color-blue-50",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#eff6ff",
+      "reference": "",
+      "description": "Tailwind classic blue-50 for inactive primary buttons.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9372549019607843,
+          0.9647058823529412,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#eff6ff"
+      }
+    },
+    {
+      "name": "foundation.color.blue.200",
+      "designName": "foundation/color/blue/200",
+      "cssVariable": "--csa-foundation-color-blue-200",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#bfdbfe",
+      "reference": "",
+      "description": "Tailwind classic blue-200 for disabled actions and tertiary hover.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.7490196078431373,
+          0.8588235294117647,
+          0.996078431372549
+        ],
+        "alpha": 1,
+        "hex": "#bfdbfe"
+      }
+    },
+    {
       "name": "foundation.color.blue.500",
       "designName": "foundation/color/blue/500",
       "cssVariable": "--csa-foundation-color-blue-500",
@@ -175,6 +219,28 @@
         ],
         "alpha": 1,
         "hex": "#2563eb"
+      }
+    },
+    {
+      "name": "foundation.color.blue.700",
+      "designName": "foundation/color/blue/700",
+      "cssVariable": "--csa-foundation-color-blue-700",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#1d4ed8",
+      "reference": "",
+      "description": "Tailwind classic blue-700 for button hover and pressed states.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.11372549019607843,
+          0.3058823529411765,
+          0.8470588235294118
+        ],
+        "alpha": 1,
+        "hex": "#1d4ed8"
       }
     },
     {
@@ -3847,31 +3913,9 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#3b82f6",
-      "reference": "foundation.color.blue.500",
-      "description": "Default filled primary action background.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.23137254901960785,
-          0.5098039215686274,
-          0.9647058823529412
-        ],
-        "alpha": 1,
-        "hex": "#3b82f6"
-      }
-    },
-    {
-      "name": "semantic.color.action.primary-hover",
-      "designName": "semantic/color/action/primary-hover",
-      "cssVariable": "--csa-semantic-color-action-primary-hover",
-      "type": "color",
-      "layer": "semantic",
-      "category": "color",
       "value": "#2563eb",
       "reference": "foundation.color.blue.600",
-      "description": "Primary action background on hover or press.",
+      "description": "Default filled primary action background.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
@@ -3882,6 +3926,28 @@
         ],
         "alpha": 1,
         "hex": "#2563eb"
+      }
+    },
+    {
+      "name": "semantic.color.action.primary-hover",
+      "designName": "semantic/color/action/primary-hover",
+      "cssVariable": "--csa-semantic-color-action-primary-hover",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#1d4ed8",
+      "reference": "foundation.color.blue.700",
+      "description": "Primary action background on hover or press.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.11372549019607843,
+          0.3058823529411765,
+          0.8470588235294118
+        ],
+        "alpha": 1,
+        "hex": "#1d4ed8"
       }
     },
     {
@@ -4310,9 +4376,9 @@
       "type": "dimension",
       "layer": "component",
       "category": "button",
-      "value": "10px",
-      "reference": "foundation.radius.10",
-      "description": "Component radius mapped to the approved foundation scale.",
+      "value": "16px",
+      "reference": "foundation.radius.16",
+      "description": "Shared button radius for the approved three-tier hierarchy.",
       "status": "approved-update"
     },
     {
@@ -4322,10 +4388,54 @@
       "type": "dimension",
       "layer": "component",
       "category": "button",
-      "value": "10px",
-      "reference": "foundation.radius.10",
+      "value": "16px",
+      "reference": "component.button.radius",
       "description": "Component radius mapped to the approved foundation scale.",
       "status": "approved-update"
+    },
+    {
+      "name": "component.button.primary.disabled-background",
+      "designName": "component/button/primary/disabled-background",
+      "cssVariable": "--csa-component-button-primary-disabled-background",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#bfdbfe",
+      "reference": "foundation.color.blue.200",
+      "description": "Inactive primary action surface at 100% opacity.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.7490196078431373,
+          0.8588235294117647,
+          0.996078431372549
+        ],
+        "alpha": 1,
+        "hex": "#bfdbfe"
+      }
+    },
+    {
+      "name": "component.button.primary.disabled-label",
+      "designName": "component/button/primary/disabled-label",
+      "cssVariable": "--csa-component-button-primary-disabled-label",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#ffffff",
+      "reference": "semantic.color.text.inverse",
+      "description": "White label on disabled primary actions.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      }
     },
     {
       "name": "component.button.primary.background",
@@ -4334,31 +4444,9 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#3b82f6",
+      "value": "#2563eb",
       "reference": "semantic.color.action.primary",
       "description": "Button primary background.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.23137254901960785,
-          0.5098039215686274,
-          0.9647058823529412
-        ],
-        "alpha": 1,
-        "hex": "#3b82f6"
-      }
-    },
-    {
-      "name": "component.button.primary.hover",
-      "designName": "component/button/primary/hover",
-      "cssVariable": "--csa-component-button-primary-hover",
-      "type": "color",
-      "layer": "component",
-      "category": "button",
-      "value": "#2563eb",
-      "reference": "semantic.color.action.primary-hover",
-      "description": "Button primary hover.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
@@ -4369,6 +4457,28 @@
         ],
         "alpha": 1,
         "hex": "#2563eb"
+      }
+    },
+    {
+      "name": "component.button.primary.hover",
+      "designName": "component/button/primary/hover",
+      "cssVariable": "--csa-component-button-primary-hover",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#1d4ed8",
+      "reference": "semantic.color.action.primary-hover",
+      "description": "Button primary hover.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.11372549019607843,
+          0.3058823529411765,
+          0.8470588235294118
+        ],
+        "alpha": 1,
+        "hex": "#1d4ed8"
       }
     },
     {
@@ -4392,6 +4502,18 @@
         "alpha": 1,
         "hex": "#ffffff"
       }
+    },
+    {
+      "name": "component.button.secondary.radius",
+      "designName": "component/button/secondary/radius",
+      "cssVariable": "--csa-component-button-secondary-radius",
+      "type": "dimension",
+      "layer": "component",
+      "category": "button",
+      "value": "16px",
+      "reference": "component.button.panel-radius",
+      "description": "Secondary button radius matches Create variant.",
+      "status": "observed"
     },
     {
       "name": "component.button.secondary.background",
@@ -4422,19 +4544,129 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#404040",
-      "reference": "semantic.color.text.primary",
-      "description": "Outlined secondary button label; the border follows the label color.",
+      "value": "#2563eb",
+      "reference": "foundation.color.blue.600",
+      "description": "Enabled secondary button label.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.25098039215686274,
-          0.25098039215686274,
-          0.25098039215686274
+          0.1450980392156863,
+          0.38823529411764707,
+          0.9215686274509803
         ],
         "alpha": 1,
-        "hex": "#404040"
+        "hex": "#2563eb"
+      }
+    },
+    {
+      "name": "component.button.secondary.border",
+      "designName": "component/button/secondary/border",
+      "cssVariable": "--csa-component-button-secondary-border",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#2563eb",
+      "reference": "foundation.color.blue.600",
+      "description": "Enabled secondary button border.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.38823529411764707,
+          0.9215686274509803
+        ],
+        "alpha": 1,
+        "hex": "#2563eb"
+      }
+    },
+    {
+      "name": "component.button.secondary.hover-label",
+      "designName": "component/button/secondary/hover-label",
+      "cssVariable": "--csa-component-button-secondary-hover-label",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#1d4ed8",
+      "reference": "foundation.color.blue.700",
+      "description": "Secondary hover and pressed label.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.11372549019607843,
+          0.3058823529411765,
+          0.8470588235294118
+        ],
+        "alpha": 1,
+        "hex": "#1d4ed8"
+      }
+    },
+    {
+      "name": "component.button.secondary.hover-border",
+      "designName": "component/button/secondary/hover-border",
+      "cssVariable": "--csa-component-button-secondary-hover-border",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#1d4ed8",
+      "reference": "foundation.color.blue.700",
+      "description": "Secondary hover and pressed border.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.11372549019607843,
+          0.3058823529411765,
+          0.8470588235294118
+        ],
+        "alpha": 1,
+        "hex": "#1d4ed8"
+      }
+    },
+    {
+      "name": "component.button.secondary.disabled-label",
+      "designName": "component/button/secondary/disabled-label",
+      "cssVariable": "--csa-component-button-secondary-disabled-label",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#bfdbfe",
+      "reference": "foundation.color.blue.200",
+      "description": "Disabled secondary label.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.7490196078431373,
+          0.8588235294117647,
+          0.996078431372549
+        ],
+        "alpha": 1,
+        "hex": "#bfdbfe"
+      }
+    },
+    {
+      "name": "component.button.secondary.disabled-border",
+      "designName": "component/button/secondary/disabled-border",
+      "cssVariable": "--csa-component-button-secondary-disabled-border",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#bfdbfe",
+      "reference": "foundation.color.blue.200",
+      "description": "Disabled secondary border.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.7490196078431373,
+          0.8588235294117647,
+          0.996078431372549
+        ],
+        "alpha": 1,
+        "hex": "#bfdbfe"
       }
     },
     {
@@ -4444,19 +4676,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#f5f5f5",
-      "reference": "semantic.color.surface.subtle",
-      "description": "Outlined secondary button hover background.",
+      "value": "#ffffff",
+      "reference": "semantic.color.surface.default",
+      "description": "Secondary hover keeps the white surface.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.9607843137254902,
-          0.9607843137254902,
-          0.9607843137254902
+          1,
+          1,
+          1
         ],
         "alpha": 1,
-        "hex": "#f5f5f5"
+        "hex": "#ffffff"
       }
     },
     {
@@ -4466,19 +4698,175 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#e5e5e5",
-      "reference": "foundation.color.neutral.200",
+      "value": "#ffffff",
+      "reference": "semantic.color.surface.default",
       "description": "Outlined secondary button pressed background.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.8980392156862745,
-          0.8980392156862745,
-          0.8980392156862745
+          1,
+          1,
+          1
         ],
         "alpha": 1,
-        "hex": "#e5e5e5"
+        "hex": "#ffffff"
+      }
+    },
+    {
+      "name": "component.button.tertiary.radius",
+      "designName": "component/button/tertiary/radius",
+      "cssVariable": "--csa-component-button-tertiary-radius",
+      "type": "dimension",
+      "layer": "component",
+      "category": "button",
+      "value": "16px",
+      "reference": "component.button.radius",
+      "description": "Tertiary hover radius follows the shared button shape.",
+      "status": "observed"
+    },
+    {
+      "name": "component.button.tertiary.minimum-height",
+      "designName": "component/button/tertiary/minimum-height",
+      "cssVariable": "--csa-component-button-tertiary-minimum-height",
+      "type": "dimension",
+      "layer": "component",
+      "category": "button",
+      "value": "46px",
+      "reference": "component.button.height",
+      "description": "Tertiary height matches primary and secondary actions.",
+      "status": "observed"
+    },
+    {
+      "name": "component.button.tertiary.label",
+      "designName": "component/button/tertiary/label",
+      "cssVariable": "--csa-component-button-tertiary-label",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#2563eb",
+      "reference": "foundation.color.blue.600",
+      "description": "Tertiary text action label.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.38823529411764707,
+          0.9215686274509803
+        ],
+        "alpha": 1,
+        "hex": "#2563eb"
+      }
+    },
+    {
+      "name": "component.button.tertiary.hover-label",
+      "designName": "component/button/tertiary/hover-label",
+      "cssVariable": "--csa-component-button-tertiary-hover-label",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#1d4ed8",
+      "reference": "foundation.color.blue.700",
+      "description": "Tertiary hover and pressed label.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.11372549019607843,
+          0.3058823529411765,
+          0.8470588235294118
+        ],
+        "alpha": 1,
+        "hex": "#1d4ed8"
+      }
+    },
+    {
+      "name": "component.button.tertiary.hover-border",
+      "designName": "component/button/tertiary/hover-border",
+      "cssVariable": "--csa-component-button-tertiary-hover-border",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#1d4ed8",
+      "reference": "foundation.color.blue.700",
+      "description": "Tertiary hover and pressed outline.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.11372549019607843,
+          0.3058823529411765,
+          0.8470588235294118
+        ],
+        "alpha": 1,
+        "hex": "#1d4ed8"
+      }
+    },
+    {
+      "name": "component.button.tertiary.hover",
+      "designName": "component/button/tertiary/hover",
+      "cssVariable": "--csa-component-button-tertiary-hover",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#ffffff",
+      "reference": "semantic.color.surface.default",
+      "description": "White surface inside the tertiary hover outline.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      }
+    },
+    {
+      "name": "component.button.tertiary.pressed",
+      "designName": "component/button/tertiary/pressed",
+      "cssVariable": "--csa-component-button-tertiary-pressed",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#ffffff",
+      "reference": "semantic.color.surface.default",
+      "description": "Tertiary pressed surface.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      }
+    },
+    {
+      "name": "component.button.tertiary.disabled-label",
+      "designName": "component/button/tertiary/disabled-label",
+      "cssVariable": "--csa-component-button-tertiary-disabled-label",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#bfdbfe",
+      "reference": "foundation.color.blue.200",
+      "description": "Inactive tertiary action label.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.7490196078431373,
+          0.8588235294117647,
+          0.996078431372549
+        ],
+        "alpha": 1,
+        "hex": "#bfdbfe"
       }
     },
     {
@@ -4778,6 +5166,116 @@
       }
     },
     {
+      "name": "component.project-row.hover-background",
+      "designName": "component/project-row/hover-background",
+      "cssVariable": "--csa-component-project-row-hover-background",
+      "type": "color",
+      "layer": "component",
+      "category": "project-row",
+      "value": "#1d4ed8",
+      "reference": "foundation.color.blue.700",
+      "description": "Homepage list row hover and focus surface.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.11372549019607843,
+          0.3058823529411765,
+          0.8470588235294118
+        ],
+        "alpha": 1,
+        "hex": "#1d4ed8"
+      }
+    },
+    {
+      "name": "component.project-row.hover-label",
+      "designName": "component/project-row/hover-label",
+      "cssVariable": "--csa-component-project-row-hover-label",
+      "type": "color",
+      "layer": "component",
+      "category": "project-row",
+      "value": "#ffffff",
+      "reference": "semantic.color.text.inverse",
+      "description": "White title, metadata, and controls on active homepage list rows.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      }
+    },
+    {
+      "name": "component.project-card.hover-background",
+      "designName": "component/project-card/hover-background",
+      "cssVariable": "--csa-component-project-card-hover-background",
+      "type": "color",
+      "layer": "component",
+      "category": "project-card",
+      "value": "#2563eb",
+      "reference": "foundation.color.blue.600",
+      "description": "Homepage card hover fill: Tailwind Blue 600.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.38823529411764707,
+          0.9215686274509803
+        ],
+        "alpha": 1,
+        "hex": "#2563eb"
+      }
+    },
+    {
+      "name": "component.project-card.hover-label",
+      "designName": "component/project-card/hover-label",
+      "cssVariable": "--csa-component-project-card-hover-label",
+      "type": "color",
+      "layer": "component",
+      "category": "project-card",
+      "value": "#ffffff",
+      "reference": "semantic.color.text.inverse",
+      "description": "White title, metadata, and menu icon on hovered homepage cards.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      }
+    },
+    {
+      "name": "component.project-card.hover-border",
+      "designName": "component/project-card/hover-border",
+      "cssVariable": "--csa-component-project-card-hover-border",
+      "type": "color",
+      "layer": "component",
+      "category": "project-card",
+      "value": "#2563eb",
+      "reference": "foundation.color.blue.600",
+      "description": "Project card hover border: Tailwind Blue 600.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.38823529411764707,
+          0.9215686274509803
+        ],
+        "alpha": 1,
+        "hex": "#2563eb"
+      }
+    },
+    {
       "name": "component.project-card.height.desktop",
       "designName": "component/project-card/height/desktop",
       "cssVariable": "--csa-component-project-card-height-desktop",
@@ -4948,19 +5446,19 @@
       "type": "color",
       "layer": "component",
       "category": "checkbox",
-      "value": "#3b82f6",
+      "value": "#2563eb",
       "reference": "semantic.color.action.primary",
       "description": "Checkbox selected background.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.23137254901960785,
-          0.5098039215686274,
-          0.9647058823529412
+          0.1450980392156863,
+          0.38823529411764707,
+          0.9215686274509803
         ],
         "alpha": 1,
-        "hex": "#3b82f6"
+        "hex": "#2563eb"
       }
     },
     {

@@ -301,7 +301,8 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
       const variants = projectOutputs(project).filter(outputIsReady);
       const { more, menu } = projectActions(project);
       const title = node('h2');
-      const titleButton = node('button', 'project-title-button', project.title);
+      const titleButton = node('button', 'project-title-button');
+      titleButton.append(node('span', 'project-title-label', project.title));
       titleButton.type = 'button';
       titleButton.title = project.title;
       titleButton.setAttribute('aria-label', `Open project: ${project.title}`);
@@ -316,14 +317,7 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
       const separator = node('span', 'meta-dot', '·');
       separator.setAttribute('aria-hidden', 'true');
       meta.append(date, separator, count);
-      const actions = node('div', 'project-actions');
-      const open = node('button', 'project-open');
-      open.append(node('span', 'project-open-label', 'Open'), icon('arrow'));
-      open.type = 'button';
-      open.setAttribute('aria-label', `Open ${project.title}`);
-      open.addEventListener('click', () => { closeMenu(); onOpen(project.id); });
-      actions.append(open);
-      card.append(more, menu, title, meta, actions);
+      card.append(title, meta, more, menu);
       grid.append(card);
       projectItems.push(card);
     }

@@ -23,7 +23,7 @@ REBUILD / VERIFY (FROM THE CSA REPOSITORY)
   Open http://localhost:4173/design-system/
 
 NAMING
-  foundation.color.blue.500 = raw value #3b82f6
+  foundation.color.blue.600 = raw value #2563eb
   semantic.color.action.primary = foundation alias
   component.button.primary.background = semantic alias
   CSS: --csa-component-button-primary-background
@@ -42,21 +42,41 @@ TYPOGRAPHY
   DTCG lineHeight is a multiplier, not a pixel dimension.
 
 COMPONENT CONTRACTS
-  Primary action: #3b82f6, hover #2563eb, 46 px height,
-    Inter 16 / 20, weight 700. General radius 10 px;
-    workspace panel action radius 10 px.
+  Primary action: blue-600 (#2563eb), hover blue-700 (#1d4ed8),
+    disabled blue-200 (#bfdbfe); all three states use white labels.
+  Secondary action: white background, blue-600 label and border,
+    blue-700 label and border on hover, blue-200 label and border disabled.
+  Tertiary action: transparent background and blue-600 label;
+    hover adds a blue-700 label and outline on white. Disabled uses
+    blue-200 text with no fill or border.
+  All three action tiers: 46 px height, Inter 16 / 20, 16 px radius.
+    Primary labels use weight 700; secondary and tertiary use 600.
     Radius primitives: 2, 4, 8, 10, 16, 20, and 999 px.
     Components reference these primitives through aliases.
-  Rename, profile/variant settings, and feedback footer actions: Inter 12 px, weight 600,
-    matching their Cancel labels. Optional markers use #a3a3a3 at weight 400.
-  Disabled actions: white background and #a3a3a3 text.
-    Disabled icon buttons keep a transparent background.
+  Primary and secondary footer actions share their tier measurements.
+    Optional markers use #a3a3a3 at weight 400.
+  Disabled icon buttons keep transparent backgrounds and #a3a3a3 labels.
+  Accessibility: blue-600 / white is 5.17:1; blue-700 / white is 6.70:1.
+    Blue-600 text on the page canvas is 5.02:1. All enabled and hover
+    normal-text combinations meet the 4.5:1 AA target.
+    Disabled controls are exempt from contrast minimums.
   Format chip: #ffe4e6; Audience: #eef2ff; Voice: #ffedd5.
   Variant selected state: #3b82f6 border, #f8f1ee fill, dark text.
   Pending variant: dashed outline.
   Saved variant names and article headings are independent.
   Homepage project cards show the title, creation date, variant count,
-    project menu, and Open action without Draft/Sent to CMS badges.
+    and project menu without a separate Open button or Draft/Sent badges.
+    The native title button extends across the card surface and supports
+    keyboard activation. Title truncation stays on its inner label.
+    Menu controls remain separate siblings above the card's click target.
+    Hover fills the card and its border with blue-600; title and metadata
+    turn white without an underline. The New Project tile uses the same
+    blue-600 hover fill. Keyboard focus outlines the whole project card
+    using the shared blue focus ring. The menu keeps its independent target
+    and contrasting icon, while its popup retains its white surface.
+  Homepage list rows use blue-700 on hover and keyboard focus, with white
+    titles, counts, dates, and mobile field labels. Their separate menu
+    keeps a contrasting icon and white popup surface.
   Source checkbox: 24 px, outside photo area at top left.
   Icons: Material Symbols Outlined font with FILL 1 throughout.
     Keep custom SVG geometry where already supplied.
@@ -206,9 +226,9 @@ SCOPE / REVIEW
     colors are generated. SVG path coordinates remain intrinsic artwork.
   Browser layout syntax (zero, full width, grid tracks, alignment) and
     asset geometry are structural; third-party Quill code is vendored.
-  Muted text #a3a3a3 on white and white on primary #3b82f6 are below
-    the 4.5:1 normal-text AA contrast target. Review in a future palette
-    change; this extraction preserves their current appearance.
+  Muted text #a3a3a3 on white remains below the 4.5:1 normal-text
+    AA contrast target when used for active content. Primary, secondary,
+    and tertiary enabled/hover button labels now meet that target.
   The reference shell has its own documentation layout styles.
   Component specimens inherit the production app stylesheet.
 
@@ -247,8 +267,8 @@ COLOR CONSOLIDATION / EFFECTS
     the outside corners of the first and last segments.
 
 SHARED COLOR UPDATES — 2026-10-20
-  Active editor formatting uses primary blue-500 with white icons,
-    including while hovered. Article links use primary blue-500.
+  Active editor formatting uses primary blue-600 with white icons,
+    including while hovered. Article links use primary blue-600.
   Keyboard-focus outlines use blue-500; the navigation hover chevron
     uses neutral-700. Invalid-password/upload error text and Delete project
     confirmation hover/focus use red-700. Search thumbnail placeholders

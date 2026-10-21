@@ -21,6 +21,7 @@
   --csa-foundation-color-overlay-canvas-fade: #fbf6f4e6;
   --csa-foundation-color-overlay-scrim: #25355029;
   --csa-foundation-color-shadow-dropdown: #40404014;
+  --csa-foundation-color-shadow-dropdown-mobile: #40404029;
   --csa-foundation-space-0: 0px;
   --csa-foundation-space-1: 1px;
   --csa-foundation-space-2: 2px;
@@ -332,6 +333,7 @@
   --csa-semantic-typography-metadata-letter-spacing: 0px;
   --csa-semantic-typography-metadata-line-height: 1.6363636363636365;
   --csa-semantic-shadow-dropdown: var(--csa-foundation-space-0) var(--csa-foundation-space-4) var(--csa-foundation-space-12) var(--csa-foundation-space-0) var(--csa-foundation-color-shadow-dropdown);
+  --csa-semantic-shadow-dropdown-mobile: var(--csa-foundation-space-0) var(--csa-foundation-space-4) var(--csa-foundation-space-12) var(--csa-foundation-space-0) var(--csa-foundation-color-shadow-dropdown-mobile);
   --csa-component-button-height: 46px;
   --csa-component-button-radius: var(--csa-foundation-radius-10);
   --csa-component-button-panel-radius: var(--csa-foundation-radius-10);
@@ -339,6 +341,9 @@
   --csa-component-button-primary-hover: var(--csa-semantic-color-action-primary-hover);
   --csa-component-button-primary-label: var(--csa-semantic-color-text-inverse);
   --csa-component-button-secondary-background: var(--csa-semantic-color-surface-default);
+  --csa-component-button-secondary-label: var(--csa-semantic-color-text-primary);
+  --csa-component-button-secondary-hover: var(--csa-semantic-color-surface-subtle);
+  --csa-component-button-secondary-pressed: var(--csa-foundation-color-neutral-200);
   --csa-component-button-disabled-label: var(--csa-semantic-color-action-disabled-label);
   --csa-component-button-border: var(--csa-semantic-color-border-default);
   --csa-component-icon-button-minimum-target: 40px;

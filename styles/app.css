@@ -286,10 +286,10 @@ main:focus { outline: none; }
 .tool-saved-empty { margin: 0; padding: var(--csa-foundation-space-20) var(--csa-foundation-space-18) var(--csa-foundation-space-24); color: var(--muted); font-size: var(--csa-foundation-font-size-13); line-height: var(--csa-foundation-font-leading-1-6); }
 @media (hover: none) { .tool-option-favorite { opacity: 1; } }
 .composer-actions { display: grid; grid-template-columns: minmax(0, 1fr); margin-top: var(--csa-foundation-space-24); }
-.create-variant, .create-output, .editor-wordpress-button, .editor-add-source-button { height: var(--button-height); font-size: var(--csa-foundation-font-size-16); font-weight: var(--csa-foundation-font-weight-700); }
-.create-variant, .editor-add-source-button { display: grid; place-items: center; min-width: 0; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-16); background: var(--csa-foundation-color-neutral-100); color: var(--muted); }
-.create-variant:not(:disabled), .editor-add-source-button:not(:disabled) { background: var(--color-button-primary); border-color: var(--line); color: var(--csa-foundation-color-neutral-0); }
-.create-variant:not(:disabled):is(:hover, :active), .editor-add-source-button:not(:disabled):is(:hover, :active) { background: var(--color-button-primary-interaction); }
+.create-variant, .create-output, .editor-wordpress-button { height: var(--button-height); font-size: var(--csa-foundation-font-size-16); font-weight: var(--csa-foundation-font-weight-700); }
+.create-variant { display: grid; place-items: center; min-width: 0; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-16); background: var(--csa-foundation-color-neutral-100); color: var(--muted); }
+.create-variant:not(:disabled) { background: var(--color-button-primary); border-color: var(--line); color: var(--csa-foundation-color-neutral-0); }
+.create-variant:not(:disabled):is(:hover, :active) { background: var(--color-button-primary-interaction); }
 .composer-outputs { position: relative; display: flex; flex-direction: column; min-height: 0; padding: var(--csa-foundation-space-24) var(--csa-foundation-space-20); }
 .composer-outputs h2 { position: relative; z-index: var(--csa-foundation-layer-1); }
 :is(.output-status-tabs, .segmented-control) { display: flex; flex-shrink: 0; margin-top: var(--csa-foundation-space-24); border: var(--csa-component-button-border) var(--csa-foundation-border-width-1) solid; border-radius: var(--csa-component-dropdown-radius); }
@@ -533,7 +533,6 @@ body:has(#new-project-dialog[open]) { overflow: hidden; }
 #editor-source-list strong, #editor-source-list a { font-size: var(--csa-foundation-font-size-14); line-height: var(--csa-foundation-font-leading-1-5); font-weight: var(--csa-foundation-font-weight-600); overflow-wrap: anywhere; }
 #editor-source-list p, .editor-sources-empty { margin: var(--csa-foundation-space-6) 0 0; color: var(--muted); font-size: var(--csa-foundation-font-size-12); line-height: var(--csa-foundation-font-leading-1-6); overflow-wrap: anywhere; }
 .editor-add-source-button { display: grid; place-items: center; flex-shrink: 0; width: 100%; margin-bottom: var(--csa-foundation-space-16); }
-.editor-add-source-button:disabled { background: var(--csa-foundation-color-neutral-100); color: var(--muted); border-color: var(--line); }
 .editor-find-actions { display: flex; align-items: center; flex-wrap: wrap; gap: var(--csa-foundation-space-8); margin-top: var(--csa-foundation-space-16); }
 .editor-find-actions>span { margin-right: auto; color: var(--muted); font-size: var(--csa-foundation-font-size-12); }
 .editor-find-actions .secondary-button { min-height: var(--button-height); padding: var(--csa-foundation-space-6) var(--csa-foundation-space-11); }
@@ -648,6 +647,11 @@ textarea::placeholder { color: var(--muted); }
 .primary-button:not(:disabled):is(:hover, :active) { background: var(--color-button-primary-interaction); }
 .secondary-button { background: var(--csa-foundation-color-neutral-0); }
 .secondary-button:hover { background: var(--csa-foundation-color-neutral-100); }
+/* Outlined secondary action approved for Add new source. */
+.secondary-button--outlined { display: grid; place-items: center; border-color: currentColor; border-radius: var(--csa-foundation-radius-16); background: var(--csa-component-button-secondary-background); color: var(--csa-component-button-secondary-label); font-size: var(--csa-foundation-font-size-16); line-height: var(--csa-foundation-line-height-20); font-weight: var(--csa-foundation-font-weight-600); }
+.secondary-button--outlined:not(:disabled):hover { background: var(--csa-component-button-secondary-hover); }
+.secondary-button--outlined:not(:disabled):active { background: var(--csa-component-button-secondary-pressed); }
+.secondary-button--outlined:disabled { border-color: currentColor; background: var(--csa-component-button-secondary-background); color: var(--csa-component-button-disabled-label); cursor: default; }
 .form-error { margin: var(--csa-foundation-space-15) 0 0; color: var(--csa-semantic-color-danger-default); font-size: var(--csa-foundation-font-size-12); line-height: var(--csa-foundation-font-leading-1-6); }
 .recents-panel { position: fixed; z-index: var(--csa-foundation-layer-12); top: var(--csa-foundation-space-10); bottom: var(--csa-foundation-space-10); left: calc(var(--sidebar-left) + var(--sidebar-width) + var(--csa-foundation-space-12)); display: flex; flex-direction: column; width: min(var(--csa-foundation-size-360), calc(100vw - var(--sidebar-left) - var(--sidebar-width) - var(--csa-foundation-space-24))); min-height: 0; overflow: hidden; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-20); background: var(--surface); box-shadow: none; animation: rail-panel-reveal var(--csa-foundation-motion-duration-160) ease-out; }
 .sidebar .recents-panel { position: static; flex: 0 0 auto; top: auto; bottom: auto; left: auto; z-index: auto; width: calc(100% - var(--csa-foundation-space-16)); max-height: min(calc(var(--csa-foundation-layout-ratio-44) * 1svh), var(--csa-foundation-size-400)); margin: calc(-1 * var(--csa-foundation-space-6)) var(--csa-foundation-space-8) 0; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-10); box-shadow: none; animation: none; }
@@ -813,6 +817,7 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
 }
 
 @media (max-width: token(foundation.breakpoint.mobile)) {
+  :root { --csa-semantic-shadow-dropdown: var(--csa-semantic-shadow-dropdown-mobile); }
   body:is(:has(#home:not([hidden])), .showing-results, .showing-composer) .sidebar { z-index: var(--csa-foundation-layer-20); top: var(--csa-foundation-space-10); right: var(--csa-foundation-space-10); bottom: auto; left: var(--csa-foundation-space-10); display: flex; flex-direction: row; align-items: center; justify-content: space-between; width: auto; height: var(--csa-foundation-space-64); padding: var(--csa-foundation-space-8) var(--csa-foundation-space-12); cursor: default; transition: none; box-shadow: none; }
   body:is(:has(#home:not([hidden])), .showing-results, .showing-composer) .sidebar-header { width: auto; height: 100%; border: 0; }
   body:is(:has(#home:not([hidden])), .showing-results, .showing-composer) .brand { width: var(--csa-foundation-size-54); height: var(--csa-foundation-space-44); border-radius: var(--csa-foundation-radius-8); }
@@ -983,7 +988,7 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
 
 /* Shared primary action measurements: h-[46px] text-base font-bold. */
 .primary-button, .demo-access-submit, .project-open, .new-project-continue,
-.create-variant, .create-output, .editor-wordpress-button, .editor-add-source-button, .draft-button {
+.create-variant, .create-output, .editor-wordpress-button, .draft-button {
   height: var(--button-height);
   min-height: var(--button-height);
   font-size: var(--button-label-size);

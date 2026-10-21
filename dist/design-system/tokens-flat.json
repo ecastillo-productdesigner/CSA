@@ -460,6 +460,27 @@
       }
     },
     {
+      "name": "foundation.color.shadow.dropdown-mobile",
+      "designName": "foundation/color/shadow/dropdown-mobile",
+      "cssVariable": "--csa-foundation-color-shadow-dropdown-mobile",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#40404029",
+      "reference": "",
+      "description": "Stronger dropdown elevation on small screens, where white menus overlap white panels.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.25098039215686274,
+          0.25098039215686274,
+          0.25098039215686274
+        ],
+        "alpha": 0.16
+      }
+    },
+    {
       "name": "foundation.space.0",
       "designName": "foundation/space/0",
       "cssVariable": "--csa-foundation-space-0",
@@ -4237,6 +4258,18 @@
       "status": "observed"
     },
     {
+      "name": "semantic.shadow.dropdown-mobile",
+      "designName": "semantic/shadow/dropdown-mobile",
+      "cssVariable": "--csa-semantic-shadow-dropdown-mobile",
+      "type": "shadow",
+      "layer": "semantic",
+      "category": "shadow",
+      "value": "0px 4px 12px 0px #40404029",
+      "reference": "",
+      "description": "Mobile dropdown elevation; preserves the shared offset and blur with 16% neutral opacity.",
+      "status": "observed"
+    },
+    {
       "name": "component.button.height",
       "designName": "component/button/height",
       "cssVariable": "--csa-component-button-height",
@@ -4358,6 +4391,72 @@
         ],
         "alpha": 1,
         "hex": "#ffffff"
+      }
+    },
+    {
+      "name": "component.button.secondary.label",
+      "designName": "component/button/secondary/label",
+      "cssVariable": "--csa-component-button-secondary-label",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#404040",
+      "reference": "semantic.color.text.primary",
+      "description": "Outlined secondary button label; the border follows the label color.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.25098039215686274,
+          0.25098039215686274,
+          0.25098039215686274
+        ],
+        "alpha": 1,
+        "hex": "#404040"
+      }
+    },
+    {
+      "name": "component.button.secondary.hover",
+      "designName": "component/button/secondary/hover",
+      "cssVariable": "--csa-component-button-secondary-hover",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#f5f5f5",
+      "reference": "semantic.color.surface.subtle",
+      "description": "Outlined secondary button hover background.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9607843137254902,
+          0.9607843137254902,
+          0.9607843137254902
+        ],
+        "alpha": 1,
+        "hex": "#f5f5f5"
+      }
+    },
+    {
+      "name": "component.button.secondary.pressed",
+      "designName": "component/button/secondary/pressed",
+      "cssVariable": "--csa-component-button-secondary-pressed",
+      "type": "color",
+      "layer": "component",
+      "category": "button",
+      "value": "#e5e5e5",
+      "reference": "foundation.color.neutral.200",
+      "description": "Outlined secondary button pressed background.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8980392156862745,
+          0.8980392156862745,
+          0.8980392156862745
+        ],
+        "alpha": 1,
+        "hex": "#e5e5e5"
       }
     },
     {

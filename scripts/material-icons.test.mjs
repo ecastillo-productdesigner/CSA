@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
 import { iconAliases } from '../dist/icons.js';
+import { iconInventory } from '../dist/design-system/icon-inventory.js';
 
 test('every interface symbol is included in the Google Fonts subset for both entry pages', async () => {
   const pages = await Promise.all(['../dist/index.html', '../dist/design-system/index.html'].map(path => readFile(new URL(path, import.meta.url), 'utf8')));
@@ -25,4 +26,12 @@ test('Quill cannot overwrite the shared Material Symbols toolbar with its own ic
   assert.doesNotMatch(editor, /Quill\.import\('ui\/icons'\)/);
   const html = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8');
   for (const name of ['format_bold', 'format_italic', 'format_underlined', 'format_h2', 'format_h3', 'format_quote', 'format_list_bulleted', 'format_list_numbered', 'link_2', 'undo', 'redo']) assert.ok(html.includes('>' + name + '</span>'));
+});
+
+test('the DS icon gallery includes every symbol shipped with the app', async () => {
+  const html = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8');
+  const shipped = html.match(/icon_names=([^&"]+)/)[1].split(',').sort();
+  const catalog = iconInventory.map(([symbol]) => symbol).sort();
+  assert.equal(new Set(catalog).size, catalog.length, 'Gallery symbols must be unique');
+  assert.deepEqual(catalog, shipped, 'Keep the gallery in sync when adding or removing app icons');
 });

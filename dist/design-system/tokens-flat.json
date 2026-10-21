@@ -1587,7 +1587,7 @@
       "category": "font",
       "value": "\"Material Symbols Outlined\"",
       "reference": "",
-      "description": "Filled Material Symbols; family name remains Outlined with FILL 1.",
+      "description": "Material Symbols Outlined supports FILL 0 and FILL 1; selection state determines the fill axis.",
       "status": "observed"
     },
     {
@@ -6484,7 +6484,7 @@
       "category": "icon",
       "value": "1",
       "reference": "",
-      "description": "Always use filled Material Symbols throughout CSA. Custom supplied SVG assets retain their own geometry.",
+      "description": "Filled Material Symbols for selected controls and actions without a selection state. Custom SVG assets retain their geometry.",
       "status": "observed"
     },
     {
@@ -6520,7 +6520,7 @@
       "category": "icon",
       "value": "0",
       "reference": "",
-      "description": "Preserved shared design value.",
+      "description": "Outlined Material Symbols for unselected controls.",
       "status": "observed"
     },
     {

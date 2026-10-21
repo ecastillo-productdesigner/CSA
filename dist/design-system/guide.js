@@ -1,4 +1,5 @@
 import { createToolDropdowns } from '../tool-dropdowns.js?v=20261020-preset-settings';
+import { iconInventory } from './icon-inventory.js?v=20261021-icon-gallery';
 const $ = selector => document.querySelector(selector);
 createToolDropdowns();
 let toastTimer;
@@ -15,6 +16,27 @@ function element(tag, className, text) {
   if (text !== undefined) node.textContent = text;
   return node;
 }
+function renderIconInventory() {
+  const grid = $('#ds-icon-grid');
+  if (!grid) return;
+  const items = iconInventory.map(([symbol, name]) => {
+    const item = element('div', 'ds-icon-item');
+    const states = element('div', 'ds-icon-states');
+    for (const [fill, label] of [[0, 'Unselected'], [1, 'Selected']]) {
+      const state = element('div', 'ds-icon-state');
+      const icon = element('span', 'material-symbols-outlined', symbol);
+      icon.dataset.iconFill = fill;
+      icon.setAttribute('aria-hidden', 'true');
+      state.append(icon, element('small', '', label));
+      states.append(state);
+    }
+    item.append(element('h4', 'ds-icon-name', name), element('code', '', symbol), states);
+    return item;
+  });
+  grid.replaceChildren(...items);
+  $('#ds-icon-count').textContent = `${iconInventory.length} product icons`;
+}
+renderIconInventory();
 for (const button of document.querySelectorAll('[data-specimen-action]')) button.addEventListener('click', () => notify('Component preview · no project changes'));
 for (const select of document.querySelectorAll('.ds-native-field')) select.addEventListener('change', () => {
   select.dataset.kind = select.value ? select.id.replace('ds-', '') : '';

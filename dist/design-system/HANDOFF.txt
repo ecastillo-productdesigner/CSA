@@ -78,7 +78,7 @@ COMPONENT CONTRACTS
     titles, counts, dates, and mobile field labels. Their separate menu
     keeps a contrasting icon and white popup surface.
   Source checkbox: 24 px, outside photo area at top left.
-  Icons: Material Symbols Outlined font with FILL 1 throughout.
+  Icons: Material Symbols use FILL 0 when unselected and FILL 1 when selected. Stateless actions use FILL 1.
     Keep custom SVG geometry where already supplied.
   Editor toolbar: 8 px radius, 2 px top/bottom padding, document-aligned;
     horizontally scrollable
@@ -116,7 +116,7 @@ VARIANT STATUS SEGMENTS
   Arrow keys, Home/End, and roving tab focus select the segment.
 
 ICONS
-  All interface pictograms use Google Material Symbols Outlined, FILL 1.
+  All interface pictograms use Google Material Symbols. Selection controls use FILL 0 unselected and FILL 1 selected; stateless actions use FILL 1.
   dist/icons.js is the shared DOM helper and semantic alias map.
   Toolbar formatting uses Material Symbols; Quill renders content only.
   Native checkbox/cursor assets retain official Google symbol paths.
@@ -384,3 +384,7 @@ Empty content panels use “No content created yet.” in To Create and “No cr
 
 2026-10-21: Pasted-link cards expose the filled visibility eye immediately before the external-link action. The eye opens the existing fictional demo preview independently of source selection; its footer action is Close. No remote article text or publication date is fabricated. New Project accepts website links only and validates the entire input; search text cannot launch a search or create a project from this modal. Existing saved projects remain readable.
 The app entry, link preview modules, and shared stylesheet URLs carry the 20261021-link-previews asset version so newly loaded published pages request the updated behavior.
+
+2026-10-21: Standard Format uses the same fixed-value presentation as Audience and Voice. Target Word Count has no dropdown, chevron, menu, or keyboard stop. Its hidden value remains short for generation, with the shared field sizing on desktop and mobile.
+
+2026-10-21: Iconography documents outlined unselected states and filled selected states, with a complete icon library showing both variants. The shared app rules apply that state convention to pressed/selected icon controls. Actions without a selection state retain filled icons.

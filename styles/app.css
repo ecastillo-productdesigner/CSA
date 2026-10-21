@@ -1153,9 +1153,9 @@ body #home[data-layout="list"] .new-project-tile .material-symbols-outlined { wi
 .output-edit-menu .variant-word-count { margin-top: var(--csa-foundation-space-24); }
 .variant-word-count > label { display: block; margin: 0 0 var(--csa-foundation-space-8); color: var(--csa-semantic-color-text-primary); font-size: var(--csa-foundation-font-size-14); line-height: var(--csa-foundation-line-height-20); font-weight: var(--csa-foundation-font-weight-600); }
 .word-count-field { position: relative; min-width: 0; }
-.word-count-field .tool-dropdown-trigger { height: var(--csa-component-field-height-desktop); background: var(--csa-component-field-background); font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-600); }
+.word-count-field :is(.tool-dropdown-trigger, .tool-fixed-value) { height: var(--csa-component-field-height-desktop); background: var(--csa-component-field-background); font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-600); }
 @media (max-width: token(foundation.breakpoint.mobile)) {
-  .word-count-field .tool-dropdown-trigger { height: var(--csa-component-field-height-mobile); }
+  .word-count-field :is(.tool-dropdown-trigger, .tool-fixed-value) { height: var(--csa-component-field-height-mobile); }
 }
 @media (min-width: token(foundation.breakpoint.desktop-start)) {
   .composer-tools { display: flex; flex-direction: column; min-height: 0; max-height: calc(100svh - var(--csa-foundation-size-220) - var(--csa-foundation-space-30)); overflow: hidden; }
@@ -1213,3 +1213,7 @@ body #home[data-layout="list"] .new-project-tile .material-symbols-outlined { wi
 @media (max-width: token(foundation.breakpoint.mobile)) {
   .link-cards-panel .result-copy { padding-top: var(--csa-component-icon-button-minimum-target); padding-right: 0; }
 }
+
+/* Selection controls communicate their current state through the icon fill axis. */
+:is([aria-pressed="false"], [aria-selected="false"]) > .material-symbols-outlined { font-variation-settings: "FILL" var(--csa-component-icon-outline-fill), "wght" var(--csa-foundation-font-weight-400), "GRAD" var(--csa-component-icon-grade), "opsz" var(--csa-component-icon-optical-size); }
+:is([aria-pressed="true"], [aria-selected="true"]) > .material-symbols-outlined { font-variation-settings: "FILL" var(--csa-component-icon-fill), "wght" var(--csa-foundation-font-weight-400), "GRAD" var(--csa-component-icon-grade), "opsz" var(--csa-component-icon-optical-size); }

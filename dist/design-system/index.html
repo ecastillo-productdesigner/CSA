@@ -8,16 +8,16 @@
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,alt_route,archive,arrow_forward,arrow_upward,auto_awesome,build,check,chevron_forward,close,contract_edit,delete,description,draw,edit,edit_note,favorite,filter_list,folder_open,format_bold,format_clear,format_color_text,format_h2,format_h3,format_indent_decrease,format_indent_increase,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_strikethrough,format_underlined,history,ink_highlighter,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,redo,restore_from_trash,right_panel_open,search,send,thumb_down,thumb_up,tune,turn_slight_left,undo,upload,upload_file,view_module,visibility&amp;display=block">
-  <link rel="stylesheet" href="tokens.css?v=20261021-link-previews">
-  <link rel="stylesheet" href="../styles.css?v=20261021-link-previews">
-  <link rel="stylesheet" href="guide.css?v=20261020-ds-centralized">
-  <script src="guide.js?v=20261020-ds-centralized" type="module"></script>
+  <link rel="stylesheet" href="tokens.css?v=20261021-icon-library">
+  <link rel="stylesheet" href="../styles.css?v=20261021-icon-library">
+  <link rel="stylesheet" href="guide.css?v=20261021-icon-library">
+  <script src="guide.js?v=20261021-icon-library" type="module"></script>
 </head>
 <body class="ds-page">
   <a class="ds-skip" href="#overview">Skip to reference</a>
   <header class="ds-header">
     <a class="ds-brand" href="../">CSA <span>Design system</span></a>
-    <nav aria-label="Design system sections"><a href="#foundations">Foundations</a><a href="#components">Components</a><a href="#tokens">Tokens</a><a href="#handoff">Handoff</a></nav>
+    <nav aria-label="Design system sections"><a href="#foundations">Foundations</a><a href="#iconography">Icons</a><a href="#components">Components</a><a href="#tokens">Tokens</a><a href="#handoff">Handoff</a></nav>
     <span class="ds-version">v1.0</span>
   </header>
   <main class="ds-main">
@@ -36,9 +36,9 @@
         <article class="ds-panel"><div class="ds-panel-heading"><h3>Typography</h3><span>Inter + Newsreader</span></div><div id="ds-type-specimens"></div><p class="ds-caption">Interface text uses Inter. Newsreader is used for the home greeting, project-start heading, and serif-formatted articles. Composite type tokens export one CSS variable per property.</p></article>
         <article class="ds-panel"><div class="ds-panel-heading"><h3>Space &amp; shape</h3><span>4 px rhythm · 2 px refinements</span></div><div class="ds-spacing" id="ds-spacing"></div><div class="ds-radius-row"><div style="border-radius:var(--csa-foundation-radius-4)">4<span>Status / checkbox / detail</span></div><div style="border-radius:var(--csa-foundation-radius-8)">8<span>Field / menu / toolbar / panel / card</span></div><div style="border-radius:var(--csa-foundation-radius-16)">16<span>Button / dialog / popover / project card</span></div><div style="border-radius:var(--csa-foundation-radius-999)">999<span>Pill / circle</span></div></div><p class="ds-caption">Four radius primitives: 4, 8, 16, and 999 px. Component aliases map each interface element to this shared scale.</p></article>
       </div>
-      <div class="ds-two-column">
+      <div class="ds-stack">
         <article class="ds-panel"><div class="ds-panel-heading"><h3>Surfaces</h3><span>Subtle menu elevation</span></div><div class="ds-elevations"><div style="box-shadow:var(--csa-semantic-shadow-dropdown)">Dropdown</div><div style="box-shadow:var(--csa-semantic-shadow-dropdown)">Popover</div><div>Dialog</div></div><p class="ds-caption">Open dropdowns and floating menus use a 0px 4px 12px neutral shadow: 8% opacity on desktop and 16% on mobile. Mobile dialogs and open workspace panels share New Project’s 16% backdrop and 2px blur. Other surfaces remain flat; keyboard-focus outlines remain visible.</p></article>
-        <article class="ds-panel"><div class="ds-panel-heading"><h3>Iconography</h3><span>Material Symbols · FILL 1</span></div><div class="ds-icon-grid"><div><span class="material-symbols-outlined" aria-hidden="true">description</span><code>description</code></div><div><span class="material-symbols-outlined" aria-hidden="true">upload_file</span><code>upload_file</code></div><div><span class="material-symbols-outlined" aria-hidden="true">photo_camera</span><code>photo_camera</code></div><div><span class="material-symbols-outlined" aria-hidden="true">edit</span><code>edit</code></div></div><p class="ds-caption">Use the filled axis throughout the project: <code>"FILL" 1</code>. Default glyph 24 px; edit 18 px; Draft 14 px. All interface glyphs, including Sent and toolbar formatting, use this family. Checkbox and cursor assets retain official Google symbol paths.</p></article>
+        <article class="ds-panel ds-iconography" id="iconography" aria-labelledby="ds-iconography-title"><div class="ds-panel-heading"><h3 id="ds-iconography-title">Iconography</h3><span id="ds-icon-count">CSA icon library</span></div><p class="ds-caption"><strong>Unselected: outlined (<code>FILL 0</code>).</strong> <strong>Selected: filled (<code>FILL 1</code>).</strong> Apply this rule to icons in selection controls, including view switches, favorites, source folders, and formatting toggles. Actions without a selected state use filled icons.</p><p class="ds-caption">The complete Material Symbols library included with CSA is shown below, including current and retained interface glyphs. Each icon shows both states and its Material Symbols name. Default glyph size is 24 px; edit is 18 px and Draft is 14 px.</p><div class="ds-icon-grid" id="ds-icon-grid"></div></article>
       </div>
     </section>
 

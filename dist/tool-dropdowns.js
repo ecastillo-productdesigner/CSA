@@ -1,6 +1,6 @@
-import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261021-ds-active-icons';
-import { createIcon } from './icons.js?v=20261021-ds-active-icons';
-import { bindTapActivation } from './tap-activation.js?v=20261021-ds-active-icons';
+import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261021-compact-toast';
+import { createIcon } from './icons.js?v=20261021-compact-toast';
+import { bindTapActivation } from './tap-activation.js?v=20261021-compact-toast';
 
 export function createToolDropdowns() {
   const controls = [...document.querySelectorAll('.composer-field, .results-sort-field, .feedback-select-field, .editor-style-field, .word-count-field')].map(field => {

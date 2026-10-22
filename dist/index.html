@@ -10,9 +10,9 @@
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,close,delete,description,draw,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,post_add,redo,right_panel_open,search,send,undo,upload,view_module,visibility&amp;display=block">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
-    <link rel="stylesheet" href="./design-system/tokens.css?v=20261021-ds-active-icons">
-    <link rel="stylesheet" href="./styles.css?v=20261021-ds-active-icons">
-    <script src="./demo-access.js?v=20261021-ds-active-icons" type="module"></script>
+    <link rel="stylesheet" href="./design-system/tokens.css?v=20261021-compact-toast">
+    <link rel="stylesheet" href="./styles.css?v=20261021-compact-toast">
+    <script src="./demo-access.js?v=20261021-compact-toast" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -159,11 +159,11 @@
             <div class="composer-outputs-header"><h2 id="composer-outputs-heading" tabindex="-1"><span class="material-symbols-outlined" aria-hidden="true">article</span><span>Adapt Content</span></h2><button class="icon-button mobile-panel-close" type="button" data-close-navigation="variants" aria-label="Close Adapt Content Panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
             </div>
             <div class="output-status-tabs" role="tablist" aria-label="Content status">
-              <button id="output-pending-tab" type="button" role="tab" aria-selected="true" aria-controls="output-status-content" data-output-view="pending">To Create</button>
-              <button id="output-created-tab" type="button" role="tab" aria-selected="false" aria-controls="output-status-content" tabindex="-1" data-output-view="created">Created</button>
+              <button id="output-pending-tab" type="button" role="tab" aria-selected="true" aria-controls="output-status-content" data-output-view="pending">To Adapt</button>
+              <button id="output-created-tab" type="button" role="tab" aria-selected="false" aria-controls="output-status-content" tabindex="-1" data-output-view="created">Adapted</button>
             </div>
             <div class="output-status-content" id="output-status-content" role="tabpanel" aria-labelledby="output-pending-tab">
-            <div class="composer-empty" id="outputs-empty" role="status"><p>No content created yet.</p></div>
+            <div class="composer-empty" id="outputs-empty" role="status"><p>Your adapted content will appear here.</p></div>
             <ul class="output-list" id="output-list" aria-label="Content" hidden></ul>
             <div class="outputs-footer"><button class="create-output" id="create-output" type="button" disabled><span id="create-output-label">Adapt Content</span></button></div>
             <p class="visually-hidden" id="output-processing-status" role="status" aria-live="polite"></p>
@@ -283,7 +283,7 @@
       <p class="form-error" id="material-error" role="alert" hidden></p>
       <div class="dialog-footer"><button class="secondary-button" id="material-cancel" type="button" data-close="material-dialog">Cancel</button><button class="primary-button" id="use-material" type="button" disabled>Start Creating</button></div>
     </dialog>
-    <div class="toast" id="toast" role="status" hidden><span id="toast-message"></span><button id="toast-undo" type="button" hidden>Undo</button></div>
+    <div class="toast" id="toast" role="status" hidden><span class="toast-icon" id="toast-icon" aria-hidden="true" hidden><span class="material-symbols-outlined">delete</span></span><span class="toast-message" id="toast-message"></span><button class="toast-action" id="toast-undo" type="button" hidden>Undo</button></div>
     </div>
   </body>
 </html>

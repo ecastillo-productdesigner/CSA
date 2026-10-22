@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261021-ds-active-icons';
+import { createIcon } from './icons.js?v=20261021-compact-toast';
 
 export function createRevisionButton(output, disabled = false) {
   const button = document.createElement('button');

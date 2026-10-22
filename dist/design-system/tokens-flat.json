@@ -6988,6 +6988,316 @@
         "alpha": 1,
         "hex": "#ffffff"
       }
+    },
+    {
+      "name": "component.toast.background",
+      "designName": "component/toast/background",
+      "cssVariable": "--csa-component-toast-background",
+      "type": "color",
+      "layer": "component",
+      "category": "toast",
+      "value": "#ffffff",
+      "reference": "semantic.color.surface.default",
+      "description": "Approved Compact toast white surface.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      }
+    },
+    {
+      "name": "component.toast.foreground",
+      "designName": "component/toast/foreground",
+      "cssVariable": "--csa-component-toast-foreground",
+      "type": "color",
+      "layer": "component",
+      "category": "toast",
+      "value": "#404040",
+      "reference": "semantic.color.text.primary",
+      "description": "Compact toast message color.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.25098039215686274,
+          0.25098039215686274,
+          0.25098039215686274
+        ],
+        "alpha": 1,
+        "hex": "#404040"
+      }
+    },
+    {
+      "name": "component.toast.border",
+      "designName": "component/toast/border",
+      "cssVariable": "--csa-component-toast-border",
+      "type": "color",
+      "layer": "component",
+      "category": "toast",
+      "value": "#e5e5e5",
+      "reference": "semantic.color.border.default",
+      "description": "Compact toast and outlined action border.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8980392156862745,
+          0.8980392156862745,
+          0.8980392156862745
+        ],
+        "alpha": 1,
+        "hex": "#e5e5e5"
+      }
+    },
+    {
+      "name": "component.toast.radius",
+      "designName": "component/toast/radius",
+      "cssVariable": "--csa-component-toast-radius",
+      "type": "dimension",
+      "layer": "component",
+      "category": "toast",
+      "value": "16px",
+      "reference": "foundation.radius.16",
+      "description": "Compact toast uses the shared rounded surface corners.",
+      "status": "observed"
+    },
+    {
+      "name": "component.toast.width",
+      "designName": "component/toast/width",
+      "cssVariable": "--csa-component-toast-width",
+      "type": "dimension",
+      "layer": "component",
+      "category": "toast",
+      "value": "440px",
+      "reference": "",
+      "description": "Preferred Compact toast width, constrained by viewport insets.",
+      "status": "observed"
+    },
+    {
+      "name": "component.toast.shadow",
+      "designName": "component/toast/shadow",
+      "cssVariable": "--csa-component-toast-shadow",
+      "type": "shadow",
+      "layer": "component",
+      "category": "toast",
+      "value": "0px 4px 12px 0px #40404014",
+      "reference": "semantic.shadow.dropdown",
+      "description": "Subtle elevation for Compact toast notifications.",
+      "status": "observed"
+    },
+    {
+      "name": "component.toast.gap",
+      "designName": "component/toast/gap",
+      "cssVariable": "--csa-component-toast-gap",
+      "type": "dimension",
+      "layer": "component",
+      "category": "toast",
+      "value": "14px",
+      "reference": "foundation.space.14",
+      "description": "Space between toast icon, message, and action.",
+      "status": "observed"
+    },
+    {
+      "name": "component.toast.padding-block",
+      "designName": "component/toast/padding-block",
+      "cssVariable": "--csa-component-toast-padding-block",
+      "type": "dimension",
+      "layer": "component",
+      "category": "toast",
+      "value": "14px",
+      "reference": "foundation.space.14",
+      "description": "Toast vertical inset.",
+      "status": "observed"
+    },
+    {
+      "name": "component.toast.padding-inline",
+      "designName": "component/toast/padding-inline",
+      "cssVariable": "--csa-component-toast-padding-inline",
+      "type": "dimension",
+      "layer": "component",
+      "category": "toast",
+      "value": "16px",
+      "reference": "foundation.space.16",
+      "description": "Toast horizontal inset.",
+      "status": "observed"
+    },
+    {
+      "name": "component.toast.font-size",
+      "designName": "component/toast/font-size",
+      "cssVariable": "--csa-component-toast-font-size",
+      "type": "dimension",
+      "layer": "component",
+      "category": "toast",
+      "value": "16px",
+      "reference": "foundation.font.size.16",
+      "description": "Readable Compact toast message size.",
+      "status": "observed"
+    },
+    {
+      "name": "component.toast.line-height",
+      "designName": "component/toast/line-height",
+      "cssVariable": "--csa-component-toast-line-height",
+      "type": "dimension",
+      "layer": "component",
+      "category": "toast",
+      "value": "22px",
+      "reference": "foundation.line.height.22",
+      "description": "Compact toast message line height.",
+      "status": "observed"
+    },
+    {
+      "name": "component.toast.font-weight",
+      "designName": "component/toast/font-weight",
+      "cssVariable": "--csa-component-toast-font-weight",
+      "type": "fontWeight",
+      "layer": "component",
+      "category": "toast",
+      "value": "400",
+      "reference": "foundation.font.weight.400",
+      "description": "Compact toast message weight.",
+      "status": "observed"
+    },
+    {
+      "name": "component.toast.icon-size",
+      "designName": "component/toast/icon-size",
+      "cssVariable": "--csa-component-toast-icon-size",
+      "type": "dimension",
+      "layer": "component",
+      "category": "toast",
+      "value": "36px",
+      "reference": "foundation.space.36",
+      "description": "Circular deletion status badge size.",
+      "status": "observed"
+    },
+    {
+      "name": "component.toast.icon-glyph-size",
+      "designName": "component/toast/icon-glyph-size",
+      "cssVariable": "--csa-component-toast-icon-glyph-size",
+      "type": "dimension",
+      "layer": "component",
+      "category": "toast",
+      "value": "18px",
+      "reference": "foundation.font.size.18",
+      "description": "Deletion status symbol size.",
+      "status": "observed"
+    },
+    {
+      "name": "component.toast.icon-background",
+      "designName": "component/toast/icon-background",
+      "cssVariable": "--csa-component-toast-icon-background",
+      "type": "color",
+      "layer": "component",
+      "category": "toast",
+      "value": "#eff6ff",
+      "reference": "foundation.color.blue.50",
+      "description": "Pale blue deletion status badge surface.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9372549019607843,
+          0.9647058823529412,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#eff6ff"
+      }
+    },
+    {
+      "name": "component.toast.icon-foreground",
+      "designName": "component/toast/icon-foreground",
+      "cssVariable": "--csa-component-toast-icon-foreground",
+      "type": "color",
+      "layer": "component",
+      "category": "toast",
+      "value": "#2563eb",
+      "reference": "foundation.color.blue.600",
+      "description": "Blue deletion status symbol.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.38823529411764707,
+          0.9215686274509803
+        ],
+        "alpha": 1,
+        "hex": "#2563eb"
+      }
+    },
+    {
+      "name": "component.toast.action-height",
+      "designName": "component/toast/action-height",
+      "cssVariable": "--csa-component-toast-action-height",
+      "type": "dimension",
+      "layer": "component",
+      "category": "toast",
+      "value": "44px",
+      "reference": "foundation.space.44",
+      "description": "Toast Undo minimum target height.",
+      "status": "observed"
+    },
+    {
+      "name": "component.toast.action-radius",
+      "designName": "component/toast/action-radius",
+      "cssVariable": "--csa-component-toast-action-radius",
+      "type": "dimension",
+      "layer": "component",
+      "category": "toast",
+      "value": "8px",
+      "reference": "foundation.radius.8",
+      "description": "Compact outlined Undo corners.",
+      "status": "observed"
+    },
+    {
+      "name": "component.toast.action-foreground",
+      "designName": "component/toast/action-foreground",
+      "cssVariable": "--csa-component-toast-action-foreground",
+      "type": "color",
+      "layer": "component",
+      "category": "toast",
+      "value": "#2563eb",
+      "reference": "foundation.color.blue.600",
+      "description": "Compact toast Undo text.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1450980392156863,
+          0.38823529411764707,
+          0.9215686274509803
+        ],
+        "alpha": 1,
+        "hex": "#2563eb"
+      }
+    },
+    {
+      "name": "component.toast.action-hover",
+      "designName": "component/toast/action-hover",
+      "cssVariable": "--csa-component-toast-action-hover",
+      "type": "color",
+      "layer": "component",
+      "category": "toast",
+      "value": "#eff6ff",
+      "reference": "foundation.color.blue.50",
+      "description": "Subtle Undo hover and pressed surface.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9372549019607843,
+          0.9647058823529412,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#eff6ff"
+      }
     }
   ]
 }

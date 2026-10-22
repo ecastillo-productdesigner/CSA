@@ -561,4 +561,24 @@
   --csa-component-favorite-saved-color: var(--csa-semantic-color-favorite-active);
   --csa-component-avatar-background: var(--csa-foundation-color-neutral-700);
   --csa-component-avatar-foreground: var(--csa-foundation-color-neutral-0);
+  --csa-component-toast-background: var(--csa-semantic-color-surface-default);
+  --csa-component-toast-foreground: var(--csa-semantic-color-text-primary);
+  --csa-component-toast-border: var(--csa-semantic-color-border-default);
+  --csa-component-toast-radius: var(--csa-foundation-radius-16);
+  --csa-component-toast-width: 440px;
+  --csa-component-toast-shadow: var(--csa-semantic-shadow-dropdown);
+  --csa-component-toast-gap: var(--csa-foundation-space-14);
+  --csa-component-toast-padding-block: var(--csa-foundation-space-14);
+  --csa-component-toast-padding-inline: var(--csa-foundation-space-16);
+  --csa-component-toast-font-size: var(--csa-foundation-font-size-16);
+  --csa-component-toast-line-height: var(--csa-foundation-line-height-22);
+  --csa-component-toast-font-weight: var(--csa-foundation-font-weight-400);
+  --csa-component-toast-icon-size: var(--csa-foundation-space-36);
+  --csa-component-toast-icon-glyph-size: var(--csa-foundation-font-size-18);
+  --csa-component-toast-icon-background: var(--csa-foundation-color-blue-50);
+  --csa-component-toast-icon-foreground: var(--csa-foundation-color-blue-600);
+  --csa-component-toast-action-height: var(--csa-foundation-space-44);
+  --csa-component-toast-action-radius: var(--csa-foundation-radius-8);
+  --csa-component-toast-action-foreground: var(--csa-foundation-color-blue-600);
+  --csa-component-toast-action-hover: var(--csa-foundation-color-blue-50);
 }

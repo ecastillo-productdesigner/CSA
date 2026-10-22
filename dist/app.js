@@ -1,21 +1,21 @@
-import { updatePresetPreferences } from './preset-settings.js?v=20261021-ds-active-icons';
-import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261021-ds-active-icons';
-import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261021-ds-active-icons';
-import { createIcon as icon } from './icons.js?v=20261021-ds-active-icons';
-import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261021-ds-active-icons';
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261021-ds-active-icons';
-import { createProfile } from './profile.js?v=20261021-ds-active-icons';
-import { createSearchExperience } from './search.js?v=20261021-ds-active-icons';
-import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=20261021-ds-active-icons';
-import { createMaterialEditor } from './editor.js?v=20261021-ds-active-icons';
-import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261021-ds-active-icons';
-import { removeProjectContent } from './project-deletion.js?v=20261021-ds-active-icons';
-import { createContentPreview } from './content-preview.js?v=20261021-ds-active-icons';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261021-ds-active-icons';
-import { createRailNavigation } from './navigation.js?v=20261021-ds-active-icons';
-import { createProjectSources } from './sources.js?v=20261021-ds-active-icons';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261021-ds-active-icons';
-import { createEditorTabs } from './editor-tabs.js?v=20261021-ds-active-icons';
+import { updatePresetPreferences } from './preset-settings.js?v=20261021-compact-toast';
+import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261021-compact-toast';
+import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261021-compact-toast';
+import { createIcon as icon } from './icons.js?v=20261021-compact-toast';
+import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261021-compact-toast';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261021-compact-toast';
+import { createProfile } from './profile.js?v=20261021-compact-toast';
+import { createSearchExperience } from './search.js?v=20261021-compact-toast';
+import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=20261021-compact-toast';
+import { createMaterialEditor } from './editor.js?v=20261021-compact-toast';
+import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261021-compact-toast';
+import { removeProjectContent } from './project-deletion.js?v=20261021-compact-toast';
+import { createContentPreview } from './content-preview.js?v=20261021-compact-toast';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261021-compact-toast';
+import { createRailNavigation } from './navigation.js?v=20261021-compact-toast';
+import { createProjectSources } from './sources.js?v=20261021-compact-toast';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261021-compact-toast';
+import { createEditorTabs } from './editor-tabs.js?v=20261021-compact-toast';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -327,6 +327,7 @@ function notify(message, action = null) {
   clearTimeout(toastTimer);
   toastAction = action;
   $('#toast-message').textContent = message;
+  $('#toast-icon').hidden = !/\bdeleted\b|moved to Trash/i.test(message);
   $('#toast-undo').hidden = !action;
   $('#toast').hidden = false;
   toastTimer = setTimeout(() => { $('#toast').hidden = true; toastAction = null; }, action ? 9000 : 5500);
@@ -580,12 +581,14 @@ function showEditorProject(project) {
   for (const section of ['home', 'workspace', 'project-start']) $(`#${section}`).hidden = true;
   $('#composer').hidden = false;
   resumeOutputProcessing(project, false);
-  const readyOutputs = projectOutputs(project).filter(outputIsReady);
-  const selectedOutput = project.viewOriginalDraft ? null : projectOutputs(project).find(output => output.id === project.selectedOutputId && (outputIsReady(output) || output.needsRegeneration)) || readyOutputs[0];
+  const editableOutputs = projectOutputs(project).filter(output => outputIsReady(output) || output.needsRegeneration);
+  const readyOutputs = editableOutputs.filter(outputIsReady).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0));
+  const replacingSourceView = Boolean(project.viewOriginalDraft && editableOutputs.length);
+  const selectedOutput = editableOutputs.find(output => output.id === project.selectedOutputId) || readyOutputs[0] || editableOutputs[0];
   if (selectedOutput) {
     project.selectedOutputId = selectedOutput.id;
     project.viewOriginalDraft = false;
-    project.selectedOutputIds = outputIsReady(selectedOutput) ? [selectedOutput.id] : [...new Set([...selectedPendingOutputs(project).map(output => output.id), selectedOutput.id])];
+    project.selectedOutputIds = outputIsReady(selectedOutput) && !replacingSourceView ? [selectedOutput.id] : [...new Set([...selectedPendingOutputs(project).map(output => output.id), selectedOutput.id])];
     if (outputIsReady(selectedOutput)) populateOutputContent(selectedOutput);
     saveProjects();
   }
@@ -709,7 +712,7 @@ $('.create-variant').addEventListener('click', () => {
   showEditorProject(project);
   if (window.matchMedia(breakpointQuery()).matches) railNavigation.open('variants');
   [...$('#output-list').querySelectorAll('[data-output-id]')].find(button => button.dataset.outputId === output.id)?.focus({ preventScroll: true });
-  if (saved) notify('Content added to To Create.');
+  if (saved) notify('Content added to To Adapt.');
 });
 
 $('#output-list').addEventListener('click', event => {

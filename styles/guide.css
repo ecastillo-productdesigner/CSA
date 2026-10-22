@@ -129,7 +129,9 @@
 .ds-end { display: flex; align-items: center; gap: var(--csa-foundation-space-20); margin-top: var(--csa-foundation-space-50); padding: var(--csa-foundation-space-26) 0; border-top: var(--csa-foundation-border-width-1) solid var(--line); font-size: var(--csa-foundation-font-size-10); }
 .ds-end strong { font-size: var(--csa-foundation-font-size-20); }
 .ds-end a { margin-left: auto; }
-.ds-toast { position: fixed; bottom: var(--csa-foundation-space-24); left: 50%; transform: translateX(-50%); z-index: var(--csa-foundation-layer-100); padding: var(--csa-foundation-space-12) var(--csa-foundation-space-18); border-radius: var(--csa-foundation-radius-8); background: var(--ink); color: var(--csa-semantic-color-text-inverse); font-size: var(--csa-foundation-font-size-12); box-shadow: none; }
+.ds-toast.toast { bottom: var(--csa-foundation-space-24); left: 50%; z-index: var(--csa-foundation-layer-100); max-width: calc(100% - var(--csa-foundation-space-32)); }
+.ds-toast-stage { display: flex; flex-direction: column; align-items: flex-start; gap: var(--csa-foundation-space-16); }
+.ds-toast-specimen.toast { position: static; inset: auto; transform: none; max-width: 100%; }
 @media (max-width: token(foundation.breakpoint.mobile)) {
   .ds-header { padding: var(--csa-foundation-space-20); flex-wrap: wrap; gap: var(--csa-foundation-space-16); }
   .ds-brand { font-size: var(--csa-foundation-font-size-20); }

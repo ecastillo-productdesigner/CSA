@@ -1,7 +1,7 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261021-ds-active-icons';
-import { normalizeWordCount } from './variant-word-count.js?v=20261021-ds-active-icons';
-import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261021-ds-active-icons';
-import { customVariantName, savedVariantName } from './outputs.js?v=20261021-ds-active-icons';
+import { tokenNumber } from './design-system/runtime.js?v=20261021-compact-toast';
+import { normalizeWordCount } from './variant-word-count.js?v=20261021-compact-toast';
+import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261021-compact-toast';
+import { customVariantName, savedVariantName } from './outputs.js?v=20261021-compact-toast';
 
 export function createOutputSettings({ onSave, onDelete, onSavePreset, onDeletePreset, closeDropdowns }) {
   const menu = document.querySelector('#output-edit-menu');

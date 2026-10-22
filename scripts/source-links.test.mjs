@@ -36,6 +36,19 @@ test('adjacent article links after a query value split individually and retain d
   assert.equal(formatSourceLinks(pasted), urls.join('\n'));
   assert.deepEqual(parseSourceLinks(formatSourceLinks(pasted)), urls);
 });
+test('a four-link paste ending with a homepage produces four independently selectable cards', () => {
+  const urls = [
+    'https://www.charlotteobserver.com/news/business/article317692436.html?tbref=hp',
+    'https://www.charlotteobserver.com/latest-news/article317649444.html',
+    'https://www.charlotteobserver.com/news/local/article317529012.html',
+    'https://www.charlotteobserver.com/',
+  ];
+  const pasted = urls.join('');
+  assert.equal(formatSourceLinks(pasted), urls.join('\n'));
+  const cards = sourceLinkArticles(parseSourceLinks(pasted));
+  assert.deepEqual(cards.map(card => card.url), urls);
+  assert.equal(new Set(cards.map(card => card.id)).size, 4);
+});
 test('formatting preserves an empty next line while adding more links',()=>{
   const input='https://example.com/a\nhttps://example.org/b\n';
   assert.equal(formatSourceLinks(input),input);

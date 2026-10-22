@@ -1,5 +1,5 @@
-import { documentStyles } from './design-system/export-styles.js?v=20261021-ds-active-icons';
-import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261021-ds-active-icons';
+import { documentStyles } from './design-system/export-styles.js?v=20261021-compact-toast';
+import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261021-compact-toast';
 import './vendor/quill-2.0.3.js';
 
 const Quill = window.Quill;

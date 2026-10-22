@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261021-ds-active-icons';
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261021-ds-active-icons';
+import { createIcon } from './icons.js?v=20261021-compact-toast';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261021-compact-toast';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');
@@ -41,8 +41,8 @@ export function createEditorTabs({ onSelect }) {
     render(project) {
       const allOutputs = projectOutputs(project);
       const outputs = allOutputs.filter(output => outputIsReady(output) || output.needsRegeneration);
-      const showCreateTab = Boolean(project?.linkCards || project?.viewOriginalDraft || (project?.awaitingOutput && !outputs.length) || allOutputs.some(output => output.id === project?.lastPendingOutputId && !outputIsReady(output)));
-      const activeId = project?.viewOriginalDraft ? null : outputs.some(output => output.id === project?.selectedOutputId) ? project.selectedOutputId : outputs[0]?.id ?? null;
+      const showCreateTab = !outputs.length && Boolean(project?.linkCards || project?.viewOriginalDraft || project?.awaitingOutput || allOutputs.some(output => output.id === project?.lastPendingOutputId && !outputIsReady(output)));
+      const activeId = showCreateTab && project?.viewOriginalDraft ? null : outputs.some(output => output.id === project?.selectedOutputId) ? project.selectedOutputId : outputs[0]?.id ?? null;
       const nextSignature = JSON.stringify([project?.id, activeId, showCreateTab, outputs.map(output => [output.id, output.title, output.cmsSentAt])]);
       if (signature === nextSignature) return;
       signature = nextSignature;

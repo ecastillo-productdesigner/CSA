@@ -1,11 +1,11 @@
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261021-ds-active-icons';
-import { iconInventory } from './icon-inventory.js?v=20261021-ds-active-icons';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261021-compact-toast';
+import { iconInventory } from './icon-inventory.js?v=20261021-compact-toast';
 const $ = selector => document.querySelector(selector);
 createToolDropdowns();
 let toastTimer;
 function notify(message) {
   const toast = $('#ds-toast');
-  toast.textContent = message;
+  $('#ds-toast-message').textContent = message;
   toast.hidden = false;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { toast.hidden = true; }, 2200);
@@ -37,6 +37,19 @@ function renderIconInventory() {
   $('#ds-icon-count').textContent = `${iconInventory.length} product icons`;
 }
 renderIconInventory();
+$('#ds-toast-undo').addEventListener('click', () => {
+  const toast = $('#ds-toast-specimen');
+  toast.querySelector('.toast-message').textContent = 'Source restored.';
+  toast.querySelector('.toast-icon').hidden = true;
+  $('#ds-toast-undo').hidden = true;
+  $('#ds-show-toast').focus({ preventScroll: true });
+});
+$('#ds-show-toast').addEventListener('click', () => {
+  const toast = $('#ds-toast-specimen');
+  toast.querySelector('.toast-message').textContent = 'Source deleted.';
+  toast.querySelector('.toast-icon').hidden = false;
+  $('#ds-toast-undo').hidden = false;
+});
 for (const button of document.querySelectorAll('[data-specimen-action]')) button.addEventListener('click', () => notify('Component preview · no project changes'));
 const contentCard = $('#ds-variant');
 const contentSelection = $('#ds-content-select');

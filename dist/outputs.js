@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261021-ds-active-icons';
-import { normalizeWordCount } from './variant-word-count.js?v=20261021-ds-active-icons';
+import { createIcon } from './icons.js?v=20261021-compact-toast';
+import { normalizeWordCount } from './variant-word-count.js?v=20261021-compact-toast';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',
@@ -294,8 +294,8 @@ export function variantPanelState(project, requestedView) {
   return {
     view,
     outputs: view === 'pending' ? pending : created,
-    pendingLabel: pending.length ? `${pending.length} to Create` : 'To Create',
-    createdLabel: created.length ? `${created.length} Created` : 'Created',
+    pendingLabel: pending.length ? `${pending.length} Content to Adapt` : 'To Adapt',
+    createdLabel: created.length ? `${created.length} Adapted` : 'Adapted',
   };
 }
 
@@ -304,7 +304,7 @@ export function renderOutputs(project, requestedView) {
   for (const tab of document.querySelectorAll('[data-output-view]')) {
     const selected = tab.dataset.outputView === state.view;
     tab.textContent = tab.dataset.outputView === 'pending' ? state.pendingLabel : state.createdLabel;
-    tab.dataset.empty = String(tab.dataset.outputView === 'pending' ? state.pendingLabel === 'To Create' : state.createdLabel === 'Created');
+    tab.dataset.empty = String(tab.dataset.outputView === 'pending' ? state.pendingLabel === 'To Adapt' : state.createdLabel === 'Adapted');
     tab.setAttribute('aria-selected', String(selected));
     tab.tabIndex = selected ? 0 : -1;
   }
@@ -322,9 +322,9 @@ export function renderOutputs(project, requestedView) {
   document.querySelector('#output-processing-status').textContent = project?.outputProcessing?.kind === 'revision' ? 'Revising your variant. This takes about four seconds.' : processing ? 'Adapting your selected content. This takes about four seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
   const empty = document.querySelector('#outputs-empty');
   empty.hidden = state.outputs.length > 0;
-  empty.querySelector('p').textContent = state.view === 'pending' ? 'No content created yet.' : 'No created content yet.';
+  empty.querySelector('p').textContent = state.view === 'pending' ? 'Your adapted content will appear here.' : 'No adapted content yet. Adapt your article to see it here.';
   list.hidden = state.outputs.length === 0;
-  list.setAttribute('aria-label', state.view === 'pending' ? 'Content to Create' : 'Created Content');
+  list.setAttribute('aria-label', state.view === 'pending' ? 'Content to Adapt' : 'Adapted Content');
   list.replaceChildren(...state.outputs.map(output => {
     const item = document.createElement('li');
     const card = document.createElement('article');

@@ -105,14 +105,14 @@ COMPONENT CONTRACTS
     active variant or original document, using the browser's timezone.
 
 VARIANT STATUS SEGMENTS
-  To Create / Created separate pending and ready variants.
-  Prefix nonzero counts: "2 to Create", "4 Created"; omit zero counts.
+  To Adapt / Adapted separate pending and ready content.
+  Use "To Adapt" when empty and "1 Content to Adapt" / "2 Content to Adapt" for nonzero pending counts. Ready labels read "Adapted" or "4 Adapted"; omit zero counts.
   Inter 14 / 20, weight 600. Radius matches component.dropdown.radius (8 px).
-  Selected: button primary background and inverse label. Unselected:
+  Selected: secondary button white background, blue label and 1 px blue border; hover uses the secondary hover label and border. Unselected:
     default surface, primary text, button border (#e5e5e5). No checkmark.
-  Empty, unselected To Create and Created use disabled-label gray (#a3a3a3).
+  Empty, unselected To Adapt and Adapted use disabled-label gray (#a3a3a3).
   Heading -> segments and segments -> first card: 24 px.
-  Cards: 14 px gap. Create action appears only in To Create.
+  Cards: 14 px gap. Adapt action appears only in To Adapt.
   Arrow keys, Home/End, and roving tab focus select the segment.
 
 ICONS
@@ -343,7 +343,7 @@ New Project uses the plain “Paste a source link” field, without a search ico
 Add Content requires a selected source or content, a selected Format, and no generation in progress. None Selected disables the primary action using the shared disabled style; fixed Audience and Voice values do not satisfy the format requirement.
 
 Content queue restored — 2026-10-21
-New Variant is renamed New Content, and Create variant is renamed Add Content. Add Content queues a configuration in To Create. The Variants panel again has To Create / Created segments with counts, keyboard navigation, and a Create selected variants action. Generation moves completed items to Created and opens the newest result.
+New Variant is renamed New Content, and Create variant is renamed Add Content. Add Content queues a configuration in To Adapt. The Adapt Content panel has To Adapt / Adapted segments with counts, keyboard navigation, and an Adapt Content action. Generation moves completed items to Adapted and opens the newest result.
 
 While generating, the Creating… label has a Blue 600 band over a pale Blue 200 base. Reduced-motion preferences show static Blue 600 text.
 Pasted source links are checked automatically on import; users can uncheck individual cards. Their choices persist across reloads, and Add Content still requires a format.
@@ -380,10 +380,10 @@ Quote formatting — 2026-10-21
 The editor and DS toolbar include the filled format_quote symbol beside H2/H3. Block quote toggles the selected paragraphs, clears incompatible heading/list formatting, reflects its active state, and supports Undo/Redo and saved document restoration.
 
 2026-10-21: Action labels use Title Case. The generation panel is Adapt Content; its action reads Adapt [count] Content. Target Word Count offers Short (500–800 words), Medium (800–1200 words), and Long (1200–1500 words), defaulting to Short for new projects. Historical length settings remain readable. The selected editor tab bridges the sheet border without a gray line beneath it.
-Empty content panels use “No content created yet.” in To Create and “No created content yet.” in Created.
+The To Adapt empty state reads “Your adapted content will appear here.” Adapted reads “No adapted content yet. Adapt your article to see it here.”
 
 2026-10-21: Pasted-link cards expose the filled visibility eye immediately before the external-link action. The eye opens the existing fictional demo preview independently of source selection; only the top X closes it. Publication dates remain explicit when unavailable; sample headlines and body copy are fictional demo content. New Project accepts website links only and validates the entire input; search text cannot launch a search or create a project from this modal. Existing saved projects remain readable.
-The app entry, module graph, and shared stylesheet URLs carry the 20261021-ds-active-icons asset version so newly loaded published pages request the updated behavior.
+The app entry, module graph, and shared stylesheet URLs carry the 20261021-compact-toast asset version so newly loaded published pages request the updated behavior.
 
 2026-10-21: Standard Format uses the same fixed-value presentation as Audience and Voice, with the Format chip's pink background. Target Word Count uses the shared three-option dropdown, with a divider separating it from Voice on desktop and mobile.
 
@@ -394,7 +394,12 @@ The app entry, module graph, and shared stylesheet URLs carry the 20261021-ds-ac
 2026-10-21: Source link cards omit photos and show a title, fictional excerpt, Publish Date, and labeled full URL in that order; there is no separate domain label. Opaque article IDs use a matched sample headline in cards, previews, and the Sources list, including older saved projects without modifying their source snapshots. Publish Date and URL labels are semibold; values remain regular. Card body activation starts Adding to CSA feedback while retaining selection; the checkbox and eye/external-link actions remain independent. The Adapt [count] Content button retains that label while card-level progress runs. Editor metadata retains words, save status, and created date only. The preview modal keeps its X and omits its bottom Close action.
 Adaptation progress on each content card reads Adapting… and retains the existing blue shimmer. The fixed Standard Format field uses the same Format chip background token.
 Initial pasted-link source views open on Content to Create above a white sheet with cream source cards. The To Create badge uses article, a white fill, and a 1px dashed text-colored border. New Content uses post_add; Adapt Content uses article. Both replace the former route icons in the app, Google Fonts subsets, and 34-icon DS catalog.
-The source tab displays only its To Create badge; the redundant gray Content to Create title and Ready to Create Content heading are hidden. The empty adaptation segment reads To Create; counted labels read [count] to Create with a lowercase t. The main action reads Adapt Content when none are selected and Adapt [count] Content starting at one. Adding to CSA uses the same blue text shimmer and unboxed spinner treatment as Adapting. Sources-list and eye previews share all five fictional paragraphs for URL-only sources without saving demo text into source records. Delete Project includes a top-right X that cancels; closing remains guarded during deletion.
+The source tab displays only its To Create badge; the redundant gray Content to Create title and Ready to Create Content heading are hidden. The empty adaptation segment reads To Adapt; counted labels read [count] Content to Adapt. The ready segment reads Adapted with counts starting at one. The main action reads Adapt Content when none are selected and Adapt [count] Content starting at one. Adding to CSA uses the same blue text shimmer and unboxed spinner treatment as Adapting. Sources-list and eye previews share all five fictional paragraphs for URL-only sources without saving demo text into source records. Delete Project includes a top-right X that cancels; closing remains guarded during deletion.
 
 2026-10-21: The icon gallery and font subsets include only 34 glyphs used by reachable app flows. Removed 22 unused symbols, hidden toolbar glyph spans, and dormant aliases; hidden control hooks and saved formatting remain supported. Icon coverage tests follow the active module graph and reject unused font extras. DS fields now use the production fixed Format/Audience/Voice and custom word-count dropdown. Content-card and source/footer specimens match current app markup and states, including the pending checkbox and decorative dashed outline.
 New pastes split adjacent article URLs even after an existing query value, keeping duplicates and genuine embedded redirect/fragment URLs. Existing saved source data is unchanged, per user preference.
+
+2026-10-21: Compact toast uses a white surface, subtle border/elevation, dark text, a contextual outlined blue deletion symbol in a pale blue circle, and an outlined Undo button. Non-deletion notifications omit the symbol; Undo visibility, callbacks and dismissal timers stay unchanged. Layout wraps at mobile widths and appears above open workspace panels. The DS includes the shared toast specimen and reset/Undo demo. Existing saved joined source URLs remain unchanged; new-paste parser regressions cover both three and four adjacent URLs.
+The To Adapt empty state reads Your adapted content will appear here. Adapted reads No adapted content yet. Adapt your article to see it here.
+
+2026-10-21: The source-sheet To Create tab disappears when the first adapted draft is ready and stays hidden for drafts awaiting regeneration. Reopening an older source view selects an available adapted draft while preserving pending adaptation selections. The Sources rail remains available. Adaptation status segments use the shared secondary button treatment, wrap long count labels on narrow screens, and read To Adapt / Adapted when empty or [count] Content to Adapt / [count] Adapted when populated.

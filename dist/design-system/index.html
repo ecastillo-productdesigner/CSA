@@ -9,9 +9,9 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,close,delete,description,draw,edit,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,post_add,redo,right_panel_open,search,send,undo,upload,view_module,visibility&amp;display=block">
   <link rel="stylesheet" href="tokens.css?v=20261022-toast-copy">
-  <link rel="stylesheet" href="../styles.css?v=20261022-content-send-dialog">
+  <link rel="stylesheet" href="../styles.css?v=20261022-send-destinations">
   <link rel="stylesheet" href="guide.css?v=20261022-content-details">
-  <script src="guide.js?v=20261022-content-details" type="module"></script>
+  <script src="guide.js?v=20261022-send-destinations" type="module"></script>
 </head>
 <body class="ds-page">
   <a class="ds-skip" href="#overview">Skip to reference</a>
@@ -85,7 +85,7 @@
         </article>
       </div>
       <article class="ds-panel" aria-labelledby="ds-toast-title"><div class="ds-panel-heading"><h3 id="ds-toast-title">Toast notifications</h3><span>Compact feedback with an optional Undo action</span></div><div class="ds-toast-stage"><div class="toast ds-toast-specimen" id="ds-toast-specimen" role="status" aria-live="polite" aria-atomic="true"><span class="toast-icon" aria-hidden="true"><span class="material-symbols-outlined">delete</span></span><span class="toast-message">Source deleted</span><button class="toast-action" id="ds-toast-undo" type="button">Undo</button></div><button class="secondary-button" id="ds-show-toast" type="button">Show Toast Again</button></div><p class="ds-caption">Deletion feedback uses the shared white toast, a blue trash icon in a pale blue circle, and an outlined Undo button. Undo restores the message and removes the action. Other notifications use the same white surface without a deletion icon.</p></article>
-      <article class="ds-panel"><div class="ds-panel-heading"><h3>Send to WordPress</h3><span>Destination dialog</span></div><button class="primary-button" id="ds-open-send-destination" type="button">Open Send to WordPress</button><p class="ds-caption">The dialog uses the app’s heading, destination field, Cancel, and Send controls. The destination name and URL appear on two lines over a native, keyboard-accessible select. This specimen changes only the reference.</p></article>
+      <article class="ds-panel"><div class="ds-panel-heading"><h3>Send to WordPress</h3><span>Destination dialog</span></div><button class="primary-button" id="ds-open-send-destination" type="button">Open Send to WordPress</button><p class="ds-caption">The dialog uses the app’s heading, destination listbox, Cancel, and Send controls. Each option shows a destination name and URL. The four publisher destinations also show a noninteractive ADMIN VIEW badge. The selected row and hover use light gray; the panel uses a white surface, border, shadow, and 8 px corners. This specimen changes only the reference.</p></article>
       <article class="ds-panel"><div class="ds-panel-heading"><h3>Adaptation status segments</h3><span>Inter 14 / 400 · 36 px desktop · 46 px mobile</span></div><div class="output-status-tabs" role="group" aria-label="Adaptation segment specimen"><button type="button" aria-pressed="true" data-segment-specimen>2 Content to Adapt</button><button type="button" aria-pressed="false" data-segment-specimen>4 Adapted</button></div><p class="ds-caption">The selected segment uses the secondary button’s white background, blue text, and blue border; hover uses its shared secondary colors. Inactive segments use the same dark text with or without a count. Empty sections read To Adapt or Adapted. Pending counts read 1 Content to Adapt or 2 Content to Adapt; completed counts read 4 Adapted. The Adapt action belongs to To Adapt.</p></article>
       <article class="ds-panel"><div class="ds-panel-heading"><h3>Content card</h3><div class="ds-state-switch" role="group" aria-label="Content card specimen state"><button type="button" data-card-state="default" aria-pressed="false">Default</button><button type="button" data-card-state="selected" aria-pressed="true">Selected</button><button type="button" data-card-state="pending" aria-pressed="false">Pending</button></div></div>
         <div class="ds-card-stage"><article class="output-card" data-ready="true" data-selected="true" data-active="true" id="ds-variant">
@@ -127,11 +127,14 @@
     <dialog class="send-destination-dialog" id="send-destination-dialog" aria-labelledby="send-destination-heading">
       <form id="send-destination-form">
         <div class="send-destination-header"><h2 id="send-destination-heading">Where Do You Want to Send this to?</h2><button class="icon-button send-destination-close" id="send-destination-close" type="button" aria-label="Close send destination dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
-        <label class="visually-hidden" for="send-destination-site">Destination</label>
+        <span class="visually-hidden" id="send-destination-label">Destination</span>
         <div class="send-destination-site">
-          <select id="send-destination-site" aria-describedby="send-destination-site-url" required><option value="csa-gate-test" selected>CSA gate test (not a real site)</option></select>
-          <div class="send-destination-site-preview"><span class="send-destination-site-name" aria-hidden="true">CSA gate test (not a real site)</span><span class="send-destination-site-url" id="send-destination-site-url">https://csa-gate-test.invalid</span></div>
-          <span class="material-symbols-outlined send-destination-chevron" aria-hidden="true">keyboard_arrow_down</span>
+          <select id="send-destination-site" aria-label="Destination" hidden><option value="csa-gate-test" selected>CSA gate test (not a real site)</option></select>
+          <button class="send-destination-trigger" id="send-destination-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="send-destination-options" aria-labelledby="send-destination-label send-destination-name" aria-describedby="send-destination-url">
+            <span class="send-destination-site-preview"><span class="send-destination-name-row"><span class="send-destination-site-name" id="send-destination-name">CSA gate test (not a real site)</span><span class="send-destination-admin" id="send-destination-admin" hidden>ADMIN VIEW</span></span><span class="send-destination-site-url" id="send-destination-url">https://csa-gate-test.invalid</span></span>
+            <span class="material-symbols-outlined send-destination-chevron" aria-hidden="true">keyboard_arrow_down</span>
+          </button>
+          <div class="send-destination-options" id="send-destination-options" role="listbox" aria-label="Destination" hidden></div>
         </div>
         <p class="form-error send-destination-error" id="send-destination-error" role="alert" hidden></p>
         <div class="dialog-footer"><button class="secondary-button" id="send-destination-cancel" type="button">Cancel</button><button class="primary-button" id="send-destination-confirm" type="submit">Send</button></div>

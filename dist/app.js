@@ -17,7 +17,7 @@ import { createProjectSources } from './sources.js?v=20261022-toast-copy';
 import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-content-send-dialog';
 import { createEditorTabs } from './editor-tabs.js?v=20261022-content-send-dialog';
 import { createContentCardEditing } from './content-card-editing.js?v=20261022-card-menu';
-import { createSendDestinationDialog } from './send-destination.js?v=20261022-content-send-dialog';
+import { createSendDestinationDialog, isSendDestination } from './send-destination.js?v=20261022-send-destinations';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -148,7 +148,7 @@ const sendDestinationDialog = createSendDestinationDialog({
     return { projectId, outputId: output.id };
   },
   onSend(target, destination) {
-    if (destination !== 'csa-gate-test') return false;
+    if (!isSendDestination(destination)) return false;
     return markVariantSentToCms(target.projectId, target.outputId);
   },
 });

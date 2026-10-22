@@ -1,7 +1,7 @@
 import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-toast-copy';
 import { iconInventory } from './icon-inventory.js?v=20261022-content-details';
 import { tokenNumber } from './runtime.js?v=20261022-toast-copy';
-import { createSendDestinationDialog } from '../send-destination.js?v=20261022-content-send-dialog';
+import { createSendDestinationDialog } from '../send-destination.js?v=20261022-send-destinations';
 const $ = selector => document.querySelector(selector);
 createToolDropdowns();
 let toastTimer;

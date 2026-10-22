@@ -11,6 +11,7 @@ export function createFeedbackPill(output, disabled = false) {
     button.dataset.variantFeedback = output.id; button.dataset.feedbackRating = rating;
     button.disabled = disabled; button.setAttribute('aria-label', label); button.title = label;
     button.setAttribute('aria-haspopup', 'dialog'); button.setAttribute('aria-controls', 'experience-feedback-dialog');
+    button.setAttribute('aria-pressed', String(output.experienceFeedback?.rating === rating));
     button.append(createIcon(symbol)); pill.append(button);
   }
   return pill;
@@ -31,7 +32,7 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
   let rating = '';
 
   function valid() {
-    return ['up', 'down'].includes(rating) && Boolean(category.value) && Boolean(description.value.trim());
+    return ['up', 'down'].includes(rating) && Boolean(category.value) && Boolean(description.value.trim()) && description.value.length <= 500;
   }
 
   function refresh() {
@@ -51,7 +52,7 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
   form.addEventListener('change', refresh);
   form.addEventListener('submit', event => {
     event.preventDefault();
-    if (!target) return;
+    if (!target || form.hidden) return;
     if (!valid()) {
       error.hidden = false;
       (!rating ? ratings[0] : !category.value ? document.querySelector('#feedback-category-trigger') : description).focus();
@@ -68,6 +69,11 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
     };
     target.project.updatedAt = submittedAt;
     const saved = save();
+    document.querySelectorAll('[data-variant-feedback]').forEach(button => {
+      if (button.dataset.variantFeedback === target.variant.id) {
+        button.setAttribute('aria-pressed', String(button.dataset.feedbackRating === rating));
+      }
+    });
     closeDropdowns();
     form.hidden = true;
     complete.hidden = false;

@@ -33,6 +33,8 @@ export const iconInventory = [
   ['right_panel_open', 'Navigation Drawer'],
   ['search', 'Search / Find'],
   ['send', 'Sent'],
+  ['thumb_down', 'Feedback: Could Be Better'],
+  ['thumb_up', 'Feedback: Good'],
   ['undo', 'Undo'],
   ['upload', 'Upload'],
   ['view_module', 'Grid View'],

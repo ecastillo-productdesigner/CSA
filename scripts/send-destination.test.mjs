@@ -75,15 +75,19 @@ function setup(t) {
   let target = { projectId: 'project', outputId: 'output' };
   let send = () => true;
   const calls = [];
+  const sentCalls = [];
   const api = createSendDestinationDialog({
     getTarget: projectId => target?.projectId === projectId ? target : null,
     onSend(snapshot, destination) {
       calls.push({ target: structuredClone(snapshot), destination });
       return send(snapshot, destination);
     },
+    onSent(snapshot, destination) {
+      sentCalls.push({ target: structuredClone(snapshot), destination, dialogOpen: nodes.dialog.open, focused: document.activeElement });
+    },
   });
   return {
-    ...nodes, document: doc, main, opener, api, calls,
+    ...nodes, document: doc, main, opener, api, calls, sentCalls,
     option: id => nodes.options.children.find(button => button.dataset.sendDestination === id),
     target: () => target,
     setTarget(value) { target = value; },
@@ -380,4 +384,34 @@ test('busy confirmation closes the list and prevents changing the selected desti
   assert.equal(ui.calls[0].destination, 'us-weekly');
   finish(true);
   await pending;
+});
+
+
+test('post-Send feedback hook runs once after the destination dialog closes and restores focus', async t => {
+  const ui = setup(t);
+  ui.api.open('project');
+  ui.site.value = 'us-weekly';
+  ui.site.fire('change');
+  await ui.submit();
+  assert.equal(ui.sentCalls.length, 1);
+  assert.deepEqual(ui.sentCalls[0], { target: { projectId: 'project', outputId: 'output' }, destination: 'us-weekly', dialogOpen: false, focused: ui.opener });
+  ui.api.open('project');
+  ui.cancel.fire('click');
+  assert.equal(ui.sentCalls.length, 1);
+});
+
+test('cancelled, failed and stale sends never open post-Send feedback', async t => {
+  const ui = setup(t);
+  ui.api.open('project');
+  ui.cancel.fire('click');
+  ui.api.open('project');
+  ui.setSend(() => false);
+  await ui.submit();
+  assert.deepEqual(ui.sentCalls, []);
+  ui.setSend(() => { throw new Error('Try again'); });
+  await ui.submit();
+  assert.deepEqual(ui.sentCalls, []);
+  ui.setTarget(null);
+  await ui.submit();
+  assert.deepEqual(ui.sentCalls, []);
 });

@@ -7,11 +7,11 @@
   <title>CSA Design System</title>
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,close,delete,description,draw,edit,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,post_add,redo,right_panel_open,search,send,undo,upload,view_module,visibility&amp;display=block">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,close,delete,description,draw,edit,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,upload,view_module,visibility&amp;display=block">
   <link rel="stylesheet" href="tokens.css?v=20261022-ds-components">
   <link rel="stylesheet" href="../styles.css?v=20261022-send-destinations">
   <link rel="stylesheet" href="guide.css?v=20261022-ds-inventory">
-  <script src="guide.js?v=20261022-ds-inventory" type="module"></script>
+  <script src="guide.js?v=20261022-feedback-restored" type="module"></script>
 </head>
 <body class="ds-page">
   <a class="ds-skip" href="#overview">Skip to reference</a>
@@ -123,7 +123,7 @@
       <article class="ds-panel" id="form-components" aria-labelledby="ds-forms-title"><div class="ds-panel-heading"><h3 id="ds-forms-title">Text entry &amp; validation</h3><span>Default, disabled, and error states</span></div><div id="ds-form-sample-root"></div></article>
       <div class="ds-two-column">
         <article class="ds-panel" id="navigation-components" aria-labelledby="ds-navigation-title"><div class="ds-panel-heading"><h3 id="ds-navigation-title">Navigation controls</h3><span>Actions, avatar, and menu</span></div><div id="ds-navigation-sample-root"></div></article>
-        <article class="ds-panel" id="feedback-components" aria-labelledby="ds-feedback-title"><div class="ds-panel-heading"><h3 id="ds-feedback-title">Panels &amp; feedback</h3><span>Disclosure, empty, and loading states</span></div><div id="ds-state-sample-root"></div></article>
+        <article class="ds-panel" id="feedback-components" aria-labelledby="ds-feedback-title"><div class="ds-panel-heading"><h3 id="ds-feedback-title">Panels &amp; feedback</h3><span>Disclosure, draft feedback, and states</span></div><div id="ds-state-sample-root"></div><section id="ds-feedback-sample-root"></section></article>
       </div>
     </section>
 
@@ -145,6 +145,34 @@
     </section>
     <footer class="ds-end"><strong>CSA</strong><span>Design system v1.0 · Extracted from the product</span><a href="#overview">Back to top</a></footer>
   </main>
+    <dialog class="experience-feedback-dialog" id="experience-feedback-dialog" aria-labelledby="experience-feedback-heading">
+      <div class="panel-heading"><h2 id="experience-feedback-heading">Draft feedback</h2><button class="icon-button" type="button" data-close="experience-feedback-dialog" aria-label="Close feedback"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
+      <form id="experience-feedback-form" novalidate>
+        <div class="experience-feedback-body">
+          <fieldset class="feedback-rating-field"><legend>How would you rate this draft? <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></legend>
+            <div class="experience-feedback-options" id="experience-feedback-options">
+              <button type="button" data-experience-rating="up" aria-label="Good" aria-pressed="false"><span class="material-symbols-outlined" aria-hidden="true">thumb_up</span><span>Good</span></button>
+              <button type="button" data-experience-rating="down" aria-label="Could be better" aria-pressed="false"><span class="material-symbols-outlined" aria-hidden="true">thumb_down</span><span>Could be better</span></button>
+            </div>
+          </fieldset>
+          <div class="feedback-field-row">
+            <div class="feedback-form-field"><label id="feedback-category-label" for="feedback-category">Category <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label>
+              <div class="feedback-select-field" data-label="Category" data-placeholder="Select a category"><select id="feedback-category" name="category" required aria-labelledby="feedback-category-label" hidden>
+                <option value="">Select a category</option><option>Accuracy</option><option>Content Quality</option><option>Format</option><option>Length</option><option>Missing Data</option><option>Other</option><option>Quotes</option><option>Relevance</option><option>SPEED</option><option>Structure</option><option>Style Guide</option><option>Tone</option><option>UI / UX</option><option>Usability</option><option>Workflow</option>
+              </select></div>
+            </div>
+            <div class="feedback-form-field"><label for="feedback-severity">Severity</label>
+              <div class="feedback-select-field" data-label="Severity" data-placeholder="No severity"><select id="feedback-severity" name="severity" hidden><option value="">No severity</option><option>High</option><option>Low</option><option>Medium</option></select></div>
+            </div>
+          </div>
+          <div class="feedback-form-field"><label for="feedback-description">Describe the issue <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label><input id="feedback-description" name="description" type="text" maxlength="500" placeholder="Brief summary of the problem" aria-describedby="feedback-description-count" required><p class="feedback-character-count" id="feedback-description-count">500 characters remaining</p></div>
+          <div class="feedback-form-field"><label for="feedback-comments">Additional comments</label><textarea id="feedback-comments" name="comments" rows="3" placeholder="Any extra context or details (optional)"></textarea></div>
+          <p class="form-error" id="feedback-error" role="alert" hidden>Please choose a rating, select a category, and describe the issue.</p>
+        </div>
+        <div class="dialog-footer"><button class="secondary-button" type="button" data-close="experience-feedback-dialog">Cancel</button><button class="primary-button dialog-action-button" id="feedback-submit" type="submit" disabled>Submit Report</button></div>
+      </form>
+      <div class="experience-feedback-complete" id="experience-feedback-complete" hidden><p class="experience-feedback-thanks" id="experience-feedback-thanks" role="status">Thanks for your feedback!</p><button class="primary-button experience-feedback-done" id="experience-feedback-done" type="button" data-close="experience-feedback-dialog">Done</button></div>
+    </dialog>
   <div class="project-card-menu output-card-menu" id="ds-content-menu" role="menu" aria-label="Example content actions" hidden><button class="project-card-menu-item project-card-delete output-card-delete" id="ds-content-delete" type="button" role="menuitem"><span class="material-symbols-outlined" aria-hidden="true">delete</span><span>Delete</span></button></div>
   <div class="toast" id="ds-toast" role="status" aria-live="polite" aria-atomic="true" hidden><span class="toast-icon" id="ds-toast-icon" aria-hidden="true" hidden><span class="material-symbols-outlined">delete</span></span><span class="toast-message" id="ds-toast-message"></span><button class="toast-action" id="ds-toast-action" type="button" hidden>Undo</button></div>
 </body>

@@ -17,7 +17,8 @@ import { createProjectSources } from './sources.js?v=20261022-toast-copy';
 import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-content-send-dialog';
 import { createEditorTabs } from './editor-tabs.js?v=20261022-content-send-dialog';
 import { createContentCardEditing } from './content-card-editing.js?v=20261022-card-menu';
-import { createSendDestinationDialog, isSendDestination } from './send-destination.js?v=20261022-send-destinations';
+import { createSendDestinationDialog, isSendDestination } from './send-destination.js?v=20261022-feedback-restored';
+import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261022-feedback-restored';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -81,6 +82,7 @@ let dashboard = null;
 const outputTimers = new Map();
 const outputViews = new Map();
 const toolDropdowns = createToolDropdowns({ notify });
+const variantFeedback = createVariantFeedback({ save: saveProjects, refreshDropdowns: toolDropdowns.refresh, closeDropdowns: toolDropdowns.close });
 const contentPreview = createContentPreview({
   onChange(text) {
     const project = projects.find(entry => entry.id === activeProjectId);
@@ -151,6 +153,11 @@ const sendDestinationDialog = createSendDestinationDialog({
     if (!isSendDestination(destination)) return false;
     return markVariantSentToCms(target.projectId, target.outputId);
   },
+  onSent(target) {
+    const project = projects.find(entry => entry.id === target.projectId && !entry.deletedAt && !entry.archivedAt);
+    const output = projectOutputs(project).find(entry => entry.id === target.outputId && outputIsReady(entry));
+    if (activeProjectId === project?.id && output) variantFeedback.open(project, output);
+  },
 });
 const contentCardEditing = createContentCardEditing({
   getProject: () => projects.find(project => project.id === activeProjectId && !project.deletedAt),
@@ -168,6 +175,9 @@ function renderOutputs(project) {
   richEditor.setRevisionBusy(Boolean(project?.outputProcessing?.kind === 'revision' && project.outputProcessing.ids.includes(selectedOutput?.id)));
   const labels = $('#editor-variant-labels');
   labels.replaceChildren(...createOutputBadges(selectedOutput, { includeWordCount: false }));
+  if (selectedOutput && outputIsReady(selectedOutput) && !selectedOutput.needsRegeneration) {
+    labels.append(createFeedbackPill(selectedOutput, Boolean(project?.outputProcessing)));
+  }
   labels.hidden = !labels.childElementCount;
   syncSourceBadges();
 }
@@ -788,6 +798,18 @@ function openVariantSources(button) {
   }
 }
 $('#editor-variant-labels').addEventListener('click', event => {
+  const feedback = event.target.closest('[data-variant-feedback]');
+  if (feedback) {
+    richEditor.flush();
+    const project = projects.find(entry => entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
+    const output = projectOutputs(project).find(entry => entry.id === feedback.dataset.variantFeedback && outputIsReady(entry) && !entry.needsRegeneration);
+    if (output && !project.outputProcessing) {
+      toolDropdowns.close();
+      richEditor.closePanels();
+      variantFeedback.open(project, output, feedback.dataset.feedbackRating);
+    }
+    return;
+  }
   const button = event.target.closest('[data-variant-sources]');
   if (button) openVariantSources(button);
 });

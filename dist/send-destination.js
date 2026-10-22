@@ -16,7 +16,7 @@ const validTarget = target => Boolean(target && typeof target.projectId === 'str
 const sameTarget = (first, second) => validTarget(first) && validTarget(second)
   && first.projectId === second.projectId && first.outputId === second.outputId;
 
-export function createSendDestinationDialog({ getTarget, onSend }) {
+export function createSendDestinationDialog({ getTarget, onSend, onSent }) {
   const dialog = document.querySelector('#send-destination-dialog');
   const form = document.querySelector('#send-destination-form');
   const site = document.querySelector('#send-destination-site');
@@ -192,11 +192,14 @@ export function createSendDestinationDialog({ getTarget, onSend }) {
   dialog.addEventListener('close', () => {
     if (dialog.open) return;
     const trigger = active?.trigger;
+    const sentTarget = active?.sentDestination ? { ...active.target } : null;
+    const sentDestination = active?.sentDestination;
     active = null;
     sending = false;
     closePicker();
     updateControls();
     restoreFocus(trigger);
+    if (sentTarget) onSent?.(sentTarget, sentDestination);
   });
   site.addEventListener('change', () => { updateDestination(); updateControls(); });
   picker.addEventListener('click', () => { if (options.hidden) openPicker(); else closePicker(true); });
@@ -247,7 +250,10 @@ export function createSendDestinationDialog({ getTarget, onSend }) {
       if (active !== request || !dialog.open) return;
       sending = false;
       updateControls();
-      if (sent === true) close();
+      if (sent === true) {
+        request.sentDestination = destination;
+        close();
+      }
       else {
         showError('Content could not be sent. Please try again.');
         confirm.focus({ preventScroll: true });

@@ -28,7 +28,7 @@
 .ds-version { padding: var(--csa-foundation-space-5) var(--csa-foundation-space-9); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-999); font-size: var(--csa-foundation-font-size-10); }
 .ds-main { display: block; max-width: var(--csa-foundation-size-1260); margin: auto; padding: 0 var(--csa-foundation-space-40); }
 .ds-main > section { width: 100%; min-width: 0; }
-.ds-hero { padding: var(--csa-foundation-space-84) 0 var(--csa-foundation-space-60); }
+.ds-hero { padding: var(--csa-foundation-space-32) 0 var(--csa-foundation-space-60); }
 .ds-eyebrow { margin: 0 0 var(--csa-foundation-space-18); font-size: var(--csa-foundation-font-size-10); line-height: var(--csa-foundation-line-height-16); font-weight: var(--csa-foundation-font-weight-650); letter-spacing: var(--csa-foundation-font-tracking-1-8); }
 .ds-hero h1 { margin: 0; max-width: var(--csa-foundation-size-900); font: var(--csa-foundation-font-weight-700) clamp(var(--csa-foundation-space-38),calc(var(--csa-foundation-layout-ratio-5) * 1vw),var(--csa-foundation-space-64))/ var(--csa-foundation-font-leading-1-08) var(--csa-foundation-font-family-editorial); letter-spacing: var(--csa-foundation-font-tracking-negative-1-2); }
 .ds-lead { max-width: var(--csa-foundation-size-590); margin: var(--csa-foundation-space-24) 0; font-size: var(--csa-foundation-font-size-16); line-height: var(--csa-foundation-font-leading-1-7); }
@@ -139,7 +139,7 @@
   .ds-header nav { width: 100%; order: 3; margin: 0; justify-content: space-between; gap: var(--csa-foundation-space-12); font-size: var(--csa-foundation-font-size-11); }
   .ds-version { margin-left: auto; }
   .ds-main { padding: 0 var(--csa-foundation-space-20); }
-  .ds-hero { padding-top: var(--csa-foundation-space-50); padding-bottom: var(--csa-foundation-space-24); }
+  .ds-hero { padding-top: var(--csa-foundation-space-24); padding-bottom: var(--csa-foundation-space-24); }
   .ds-hero h1 { font-size: var(--csa-component-reference-font-size-40); }
   .ds-lead { font-size: var(--csa-foundation-font-size-14); }
   .ds-actions { gap: var(--csa-foundation-space-20); }

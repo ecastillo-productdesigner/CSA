@@ -110,7 +110,7 @@ VARIANT STATUS SEGMENTS
   Inter 14 / 20, weight 600. Radius matches component.dropdown.radius (8 px).
   Selected: secondary button white background, blue label and 1 px blue border; hover uses the secondary hover label and border. Unselected:
     default surface, primary text, button border (#e5e5e5). No checkmark.
-  Empty, unselected To Adapt and Adapted use disabled-label gray (#a3a3a3).
+  Inactive To Adapt and Adapted use the same primary dark gray (#404040), with or without a count. Both remain interactive.
   Heading -> segments and segments -> first card: 24 px.
   Cards: 14 px gap. Adapt action appears only in To Adapt.
   Arrow keys, Home/End, and roving tab focus select the segment.
@@ -383,7 +383,7 @@ The editor and DS toolbar include the filled format_quote symbol beside H2/H3. B
 The To Adapt empty state reads “Your adapted content will appear here.” Adapted reads “No adapted content yet. Adapt your article to see it here.”
 
 2026-10-21: Pasted-link cards expose the filled visibility eye immediately before the external-link action. The eye opens the existing fictional demo preview independently of source selection; only the top X closes it. Publication dates remain explicit when unavailable; sample headlines and body copy are fictional demo content. New Project accepts website links only and validates the entire input; search text cannot launch a search or create a project from this modal. Existing saved projects remain readable.
-The app entry, module graph, and shared stylesheet URLs carry the 20261021-compact-toast asset version so newly loaded published pages request the updated behavior.
+The app entry, module graph, and shared stylesheet URLs carry the 20261021-adaptation-tabs asset version so newly loaded published pages request the updated behavior.
 
 2026-10-21: Standard Format uses the same fixed-value presentation as Audience and Voice, with the Format chip's pink background. Target Word Count uses the shared three-option dropdown, with a divider separating it from Voice on desktop and mobile.
 
@@ -391,7 +391,7 @@ The app entry, module graph, and shared stylesheet URLs carry the 20261021-compa
 
 2026-10-21: New Project uses the article URL instructions and both Centredaily/Miami Herald example URLs as multiline placeholder text. The field stays empty and Continue disabled until real URLs are entered. Placeholder text wraps; the empty mobile field expands to show both examples, then returns to five visible lines once populated.
 
-2026-10-21: Source link cards omit photos and show a title, fictional excerpt, Publish Date, and labeled full URL in that order; there is no separate domain label. Opaque article IDs use a matched sample headline in cards, previews, and the Sources list, including older saved projects without modifying their source snapshots. Publish Date and URL labels are semibold; values remain regular. Card body activation starts Adding to CSA feedback while retaining selection; the checkbox and eye/external-link actions remain independent. The Adapt [count] Content button retains that label while card-level progress runs. Editor metadata retains words, save status, and created date only. The preview modal keeps its X and omits its bottom Close action.
+2026-10-21: Source link cards omit photos and show a title, fictional excerpt, Publish Date, and labeled full URL in that order; there is no separate domain label. Opaque article IDs use a matched sample headline in cards, previews, and the Sources list, including older saved projects without modifying their source snapshots. Publish Date and URL labels are semibold; values remain regular. Card body activation starts Adding to CSA feedback while retaining selection; the checkbox and eye/external-link actions remain independent. The Adapt [count] Content button retains that label while card-level progress runs. Editor metadata retains words and created date only; save progress and failure feedback appear only when needed. The preview modal keeps its X and omits its bottom Close action.
 Adaptation progress on each content card reads Adapting… and retains the existing blue shimmer. The fixed Standard Format field uses the same Format chip background token.
 Initial pasted-link source views open on Content to Create above a white sheet with cream source cards. The To Create badge uses article, a white fill, and a 1px dashed text-colored border. New Content uses post_add; Adapt Content uses article. Both replace the former route icons in the app, Google Fonts subsets, and 34-icon DS catalog.
 The source tab displays only its To Create badge; the redundant gray Content to Create title and Ready to Create Content heading are hidden. The empty adaptation segment reads To Adapt; counted labels read [count] Content to Adapt. The ready segment reads Adapted with counts starting at one. The main action reads Adapt Content when none are selected and Adapt [count] Content starting at one. Adding to CSA uses the same blue text shimmer and unboxed spinner treatment as Adapting. Sources-list and eye previews share all five fictional paragraphs for URL-only sources without saving demo text into source records. Delete Project includes a top-right X that cancels; closing remains guarded during deletion.
@@ -403,3 +403,5 @@ New pastes split adjacent article URLs even after an existing query value, keepi
 The To Adapt empty state reads Your adapted content will appear here. Adapted reads No adapted content yet. Adapt your article to see it here.
 
 2026-10-21: The source-sheet To Create tab disappears when the first adapted draft is ready and stays hidden for drafts awaiting regeneration. Reopening an older source view selects an available adapted draft while preserving pending adaptation selections. The Sources rail remains available. Adaptation status segments use the shared secondary button treatment, wrap long count labels on narrow screens, and read To Adapt / Adapted when empty or [count] Content to Adapt / [count] Adapted when populated.
+
+2026-10-21: Removed the resting Saved on this device footer label from the editor and DS metadata specimen. Saving progress and save-failure feedback retain their existing behavior.

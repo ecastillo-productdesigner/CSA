@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261021-compact-toast');
+  await import('./app.js?v=20261021-adaptation-tabs');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

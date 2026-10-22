@@ -1,7 +1,7 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261021-compact-toast';
-import { normalizeWordCount } from './variant-word-count.js?v=20261021-compact-toast';
-import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261021-compact-toast';
-import { customVariantName, savedVariantName } from './outputs.js?v=20261021-compact-toast';
+import { tokenNumber } from './design-system/runtime.js?v=20261021-adaptation-tabs';
+import { normalizeWordCount } from './variant-word-count.js?v=20261021-adaptation-tabs';
+import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261021-adaptation-tabs';
+import { customVariantName, savedVariantName } from './outputs.js?v=20261021-adaptation-tabs';
 
 export function createOutputSettings({ onSave, onDelete, onSavePreset, onDeletePreset, closeDropdowns }) {
   const menu = document.querySelector('#output-edit-menu');

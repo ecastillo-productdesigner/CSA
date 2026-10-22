@@ -304,7 +304,6 @@ main:focus { outline: none; }
 .segmented-control button:is([aria-selected="true"], [aria-pressed="true"]):hover { background: var(--csa-component-button-primary-hover); }
 .output-status-tabs button:is([aria-selected="true"], [aria-pressed="true"]) { background: var(--csa-component-button-secondary-background); color: var(--csa-component-button-secondary-label); box-shadow: inset 0 0 0 var(--csa-foundation-border-width-1) var(--csa-component-button-secondary-border); }
 .output-status-tabs button:is([aria-selected="true"], [aria-pressed="true"]):is(:hover, :active) { background: var(--csa-component-button-secondary-hover); color: var(--csa-component-button-secondary-hover-label); box-shadow: inset 0 0 0 var(--csa-foundation-border-width-1) var(--csa-component-button-secondary-hover-border); }
-:is(.output-status-tabs, .segmented-control) button[data-empty="true"]:not([aria-selected="true"]) { color: var(--csa-component-button-disabled-label); }
 :is(.output-status-tabs, .segmented-control) button:focus-visible { position: relative; z-index: var(--csa-foundation-layer-2); }
 .output-status-content { display: flex; flex: 1; flex-direction: column; min-height: 0; }
 .output-list { display: grid; align-content: start; gap: var(--csa-foundation-space-14); min-height: 0; margin: calc(var(--csa-foundation-space-24) - var(--csa-foundation-space-3)) calc(-1 * var(--csa-foundation-space-3)) 0; padding: var(--csa-foundation-space-3); overflow-y: auto; list-style: none; }

@@ -1,5 +1,5 @@
-import { documentStyles } from './design-system/export-styles.js?v=20261021-compact-toast';
-import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261021-compact-toast';
+import { documentStyles } from './design-system/export-styles.js?v=20261021-adaptation-tabs';
+import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261021-adaptation-tabs';
 import './vendor/quill-2.0.3.js';
 
 const Quill = window.Quill;
@@ -94,6 +94,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     updateSendButton();
     dirty = true;
     status.textContent = 'Saving…';
+    status.hidden = false;
     clearTimeout(saveTimer);
     saveTimer = setTimeout(flush, 450);
   }
@@ -112,7 +113,8 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     };
     const saved = onSave(snapshot);
     dirty = saved === false;
-    status.textContent = dirty ? 'Couldn’t save · download a copy' : 'Saved on this device';
+    status.textContent = dirty ? 'Couldn’t save · download a copy' : '';
+    status.hidden = !dirty;
     status.classList.toggle('editor-save-error', dirty);
     document.title = `${snapshot.title} — CSA`;
   }
@@ -338,7 +340,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       updateSendButton();
       quill.history.clear(); selection = { index: 0, length: 0 }; findIndex = -1;
       $('#editor-find-text').value = ''; $('#editor-replace-text').value = '';
-      status.textContent = 'Saved on this device'; status.classList.remove('editor-save-error');
+      status.textContent = ''; status.hidden = true; status.classList.remove('editor-save-error');
       for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = next.toolPreferences?.[key] || '';
       setPanel('', false); resizeTitle(); updateCounts(); updateToolbar(); updateFind();
       quill.root.scrollTop = 0;

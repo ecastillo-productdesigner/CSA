@@ -1,5 +1,5 @@
-import { savedVariantName } from './outputs.js?v=20261021-compact-toast';
-import { normalizeWordCount } from './variant-word-count.js?v=20261021-compact-toast';
+import { savedVariantName } from './outputs.js?v=20261021-adaptation-tabs';
+import { normalizeWordCount } from './variant-word-count.js?v=20261021-adaptation-tabs';
 const keys = ['format', 'audience', 'voice'];
 export function presetConfiguration(output) {
   const saved = output?.presetSettings;

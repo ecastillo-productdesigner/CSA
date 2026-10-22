@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261021-compact-toast';
-import { normalizeWordCount } from './variant-word-count.js?v=20261021-compact-toast';
+import { createIcon } from './icons.js?v=20261021-adaptation-tabs';
+import { normalizeWordCount } from './variant-word-count.js?v=20261021-adaptation-tabs';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',

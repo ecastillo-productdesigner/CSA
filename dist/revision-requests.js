@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261021-compact-toast';
+import { createIcon } from './icons.js?v=20261021-adaptation-tabs';
 
 export function createRevisionButton(output, disabled = false) {
   const button = document.createElement('button');

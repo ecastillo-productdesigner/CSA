@@ -1,6 +1,6 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261021-compact-toast';
-import { createIcon as icon } from './icons.js?v=20261021-compact-toast';
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261021-compact-toast';
+import { tokenNumber } from './design-system/runtime.js?v=20261021-adaptation-tabs';
+import { createIcon as icon } from './icons.js?v=20261021-adaptation-tabs';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261021-adaptation-tabs';
 
 const layoutKey = 'csa.dashboard.layout.v1';
 function readLayout() {

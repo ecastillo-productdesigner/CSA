@@ -1,7 +1,7 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261021-compact-toast';
-import { projectOutputs, createOutputBadges } from './outputs.js?v=20261021-compact-toast';
+import { tokenNumber } from './design-system/runtime.js?v=20261021-adaptation-tabs';
+import { projectOutputs, createOutputBadges } from './outputs.js?v=20261021-adaptation-tabs';
 
-import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261021-compact-toast';
+import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261021-adaptation-tabs';
 
 export function createOutputPresets({ onSelect, onDelete, onEdit }) {
   const root = document.querySelector('#output-presets');

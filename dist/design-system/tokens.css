@@ -25,6 +25,7 @@
   --csa-foundation-color-shadow-dropdown: #40404014;
   --csa-foundation-color-shadow-dropdown-mobile: #40404029;
   --csa-foundation-color-canvas-orange-50-half: #fffbf6;
+  --csa-foundation-color-legacy-editor-text: #26344a;
   --csa-foundation-space-0: 0px;
   --csa-foundation-space-1: 1px;
   --csa-foundation-space-2: 2px;
@@ -581,4 +582,5 @@
   --csa-component-toast-action-radius: var(--csa-foundation-radius-8);
   --csa-component-toast-action-foreground: var(--csa-foundation-color-blue-600);
   --csa-component-toast-action-hover: var(--csa-foundation-color-blue-50);
+  --csa-component-editor-color-input-default: var(--csa-foundation-color-legacy-editor-text);
 }

@@ -547,6 +547,28 @@
       }
     },
     {
+      "name": "foundation.color.legacy.editor-text",
+      "designName": "foundation/color/legacy/editor-text",
+      "cssVariable": "--csa-foundation-color-legacy-editor-text",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#26344a",
+      "reference": "",
+      "description": "Legacy default for the hidden editor color input; this is not the visible article text color.",
+      "status": "legacy",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.14901960784313725,
+          0.20392156862745098,
+          0.2901960784313726
+        ],
+        "alpha": 1,
+        "hex": "#26344a"
+      }
+    },
+    {
       "name": "foundation.space.0",
       "designName": "foundation/space/0",
       "cssVariable": "--csa-foundation-space-0",
@@ -7297,6 +7319,28 @@
         ],
         "alpha": 1,
         "hex": "#eff6ff"
+      }
+    },
+    {
+      "name": "component.editor.color-input-default",
+      "designName": "component/editor/color-input-default",
+      "cssVariable": "--csa-component-editor-color-input-default",
+      "type": "color",
+      "layer": "component",
+      "category": "editor",
+      "value": "#26344a",
+      "reference": "foundation.color.legacy.editor-text",
+      "description": "Preserves the hidden editor color input default without changing visible article text or saved formatting.",
+      "status": "legacy",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.14901960784313725,
+          0.20392156862745098,
+          0.2901960784313726
+        ],
+        "alpha": 1,
+        "hex": "#26344a"
       }
     }
   ]

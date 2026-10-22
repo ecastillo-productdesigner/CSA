@@ -1,16 +1,21 @@
+import { colorRoleGroups } from './color-roles.js?v=20261022-ds-components';
+import { typographyRoleGroups } from './typography-roles.js?v=20261022-ds-components';
 import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-toast-copy';
 import { iconInventory } from './icon-inventory.js?v=20261022-content-details';
 import { tokenNumber } from './runtime.js?v=20261022-toast-copy';
-import { createSendDestinationDialog } from '../send-destination.js?v=20261022-send-destinations';
+import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261022-content-send-dialog';
 const $ = selector => document.querySelector(selector);
 createToolDropdowns();
 let toastTimer;
-function notify(message) {
-  const toast = $('#ds-toast');
-  $('#ds-toast-message').textContent = message.replace(/\.\s*$/, '');
-  toast.hidden = false;
+let toastAction = null;
+function notify(message, action = null) {
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { toast.hidden = true; }, 2200);
+  toastAction = action;
+  $('#ds-toast-message').textContent = message.replace(/\.\s*$/, '');
+  $('#ds-toast-icon').hidden = !/\bdeleted\b|moved to Trash/i.test(message);
+  $('#ds-toast-action').hidden = !action;
+  $('#ds-toast').hidden = false;
+  toastTimer = setTimeout(() => { $('#ds-toast').hidden = true; toastAction = null; }, action ? 9000 : 5500);
 }
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -18,11 +23,6 @@ function element(tag, className, text) {
   if (text !== undefined) node.textContent = text;
   return node;
 }
-const sendDestinationDialog = createSendDestinationDialog({
-  getTarget: projectId => projectId === 'ds-send-project' ? { projectId, outputId: 'ds-send-output' } : null,
-  onSend: () => { notify('Send preview completed'); return true; },
-});
-$('#ds-open-send-destination').addEventListener('click', () => sendDestinationDialog.open('ds-send-project'));
 function renderIconInventory() {
   const grid = $('#ds-icon-grid');
   if (!grid) return;
@@ -44,68 +44,111 @@ function renderIconInventory() {
   $('#ds-icon-count').textContent = `${iconInventory.length} product icons`;
 }
 renderIconInventory();
-$('#ds-toast-undo').addEventListener('click', () => {
+function showToastSpecimen(restored = false) {
   const toast = $('#ds-toast-specimen');
-  toast.querySelector('.toast-message').textContent = 'Source restored';
-  toast.querySelector('.toast-icon').hidden = true;
-  $('#ds-toast-undo').hidden = true;
+  toast.querySelector('.toast-message').textContent = restored ? 'Source restored' : 'Source deleted';
+  toast.querySelector('.toast-icon').hidden = restored;
+  $('#ds-toast-undo').hidden = restored;
+}
+function restoreToastSpecimen() {
+  showToastSpecimen(true);
+  notify('Source restored');
   $('#ds-show-toast').focus({ preventScroll: true });
-});
+}
+$('#ds-toast-undo').addEventListener('click', restoreToastSpecimen);
 $('#ds-show-toast').addEventListener('click', () => {
-  const toast = $('#ds-toast-specimen');
-  toast.querySelector('.toast-message').textContent = 'Source deleted';
-  toast.querySelector('.toast-icon').hidden = false;
-  $('#ds-toast-undo').hidden = false;
+  showToastSpecimen();
+  notify('Source deleted', restoreToastSpecimen);
+});
+$('#ds-toast-action').addEventListener('click', () => {
+  const action = toastAction;
+  clearTimeout(toastTimer);
+  toastAction = null;
+  $('#ds-toast').hidden = true;
+  action?.();
 });
 for (const button of document.querySelectorAll('[data-specimen-action]')) button.addEventListener('click', () => notify('Component preview · no project changes'));
 const contentCard = $('#ds-variant');
 const contentSelection = $('#ds-content-select');
 const contentOpen = $('#ds-content-open');
-const contentTitle = contentCard.querySelector('.output-card-title').textContent;
 const contentBadges = contentCard.querySelector('.output-badges');
+const contentEdit = $('#ds-content-edit');
+const contentMenu = $('#ds-content-menu');
+const contentDelete = $('#ds-content-delete');
+const contentRestore = $('#ds-content-restore');
+const contentContext = $('#ds-content-context');
+const contentAdaptFooter = $('#ds-content-adapt-footer');
+const contentAdapt = $('#ds-content-adapt');
+const pendingContent = {
+  id: 'ds-content-example', title: 'A Surprise Studio Session Sparks a New Creative Chapter', status: 'pending', draftText: '',
+  labels: [{ key: 'format', label: 'Standard Format' }, { key: 'audience', label: 'General Audience' }, { key: 'voice', label: 'US Weekly' }],
+};
+const adaptedContent = structuredClone(pendingContent);
+populateOutputContent(adaptedContent);
+adaptedContent.status = 'ready';
+let contentState = 'selected';
+let pendingContentSelected = true;
+let contentDeleted = false;
 function updateContentBadgeOverflow() {
   const overflows = contentBadges.scrollWidth > contentBadges.clientWidth + 1;
   contentBadges.dataset.fadeStart = String(overflows && contentBadges.scrollLeft > 1);
   contentBadges.dataset.fadeEnd = String(overflows && contentBadges.scrollLeft + contentBadges.clientWidth < contentBadges.scrollWidth - 1);
   contentBadges.tabIndex = overflows ? 0 : -1;
 }
-function setContentCardState(state) {
-  const pending = state === 'pending';
-  const selected = state === 'selected';
+function renderContentCard() {
+  const pending = contentState === 'pending';
+  const selected = pending ? pendingContentSelected : contentState === 'selected';
+  const output = pending ? pendingContent : adaptedContent;
+  contentCard.hidden = contentDeleted;
+  contentRestore.hidden = !contentDeleted;
   contentCard.dataset.ready = String(!pending);
   contentCard.dataset.selected = String(selected);
   contentCard.dataset.active = String(selected);
   contentCard.querySelector('.output-card-dash').toggleAttribute('hidden', !pending);
-  contentCard.querySelector('.output-badge--words').hidden = pending;
+  contentBadges.replaceChildren(...createOutputBadges(output, { includeSourceCount: false }));
+  const heading = contentCard.querySelector('.output-card-title');
+  heading.textContent = output.title;
+  heading.title = output.title;
   contentSelection.hidden = !pending;
-  contentSelection.setAttribute('aria-checked', 'false');
-  contentSelection.setAttribute('aria-label', `Select content: ${contentTitle}`);
-  contentOpen.setAttribute('aria-label', `${pending ? 'Select' : 'Open'} content: ${contentTitle}`);
-  contentOpen.title = pending ? 'Select this content to create' : selected ? 'This content is selected' : 'Open this content';
+  contentSelection.setAttribute('aria-checked', String(pending && selected));
+  contentSelection.setAttribute('aria-label', `${selected ? 'Deselect' : 'Select'} content: ${output.title}`);
+  contentOpen.setAttribute('aria-label', `${pending ? 'Select' : 'Open'} content: ${output.title}`);
+  contentOpen.title = pending ? 'Select this content to adapt' : selected ? 'This content is open in the editor' : 'Open this content in the editor';
   if (selected) contentOpen.setAttribute('aria-current', 'true');
   else contentOpen.removeAttribute('aria-current');
-  for (const button of document.querySelectorAll('[data-card-state]')) button.setAttribute('aria-pressed', String(button.dataset.cardState === state));
+  contentContext.textContent = contentDeleted ? (pending ? 'To Adapt' : 'Adapted') : pending ? '1 Content to Adapt' : '1 Adapted';
+  contentAdaptFooter.hidden = !pending || contentDeleted;
+  contentAdapt.disabled = !selected;
+  contentAdapt.textContent = selected ? 'Adapt 1 Content' : 'Adapt Content';
+  contentAdapt.title = selected ? 'Adapt 1 Selected Content' : 'Select Content to Adapt';
+  for (const button of document.querySelectorAll('[data-card-state]')) button.setAttribute('aria-pressed', String(button.dataset.cardState === contentState));
   updateContentBadgeOverflow();
+}
+function setContentCardState(state) {
+  contentState = state;
+  pendingContentSelected = true;
+  contentDeleted = false;
+  renderContentCard();
 }
 function togglePendingContentSelection() {
   if (contentCard.dataset.ready === 'true') { setContentCardState('selected'); return; }
-  const selected = contentCard.dataset.selected !== 'true';
-  contentCard.dataset.selected = String(selected);
-  contentSelection.setAttribute('aria-checked', String(selected));
-  contentSelection.setAttribute('aria-label', `${selected ? 'Deselect' : 'Select'} content: ${contentTitle}`);
+  pendingContentSelected = !pendingContentSelected;
+  renderContentCard();
 }
 for (const button of document.querySelectorAll('[data-card-state]')) button.addEventListener('click', () => { closeContentMenu(false); setContentCardState(button.dataset.cardState); });
 contentSelection.addEventListener('click', togglePendingContentSelection);
 contentOpen.addEventListener('click', togglePendingContentSelection);
+contentAdapt.addEventListener('click', () => {
+  if (contentState !== 'pending' || !pendingContentSelected || contentDeleted) return;
+  setContentCardState('selected');
+  contentOpen.focus({ preventScroll: true });
+  notify('Content Adapted');
+});
 setContentCardState('selected');
 contentBadges.addEventListener('scroll', updateContentBadgeOverflow, { passive: true });
 const contentBadgeObserver = new ResizeObserver(updateContentBadgeOverflow);
 contentBadgeObserver.observe(contentBadges);
 for (const badge of contentBadges.children) contentBadgeObserver.observe(badge);
-const contentEdit = $('#ds-content-edit');
-const contentMenu = $('#ds-content-menu');
-const contentDelete = $('#ds-content-delete');
-const contentRestore = $('#ds-content-restore');
 function closeContentMenu(restoreFocus = true) {
   if (contentMenu.hidden) return;
   contentMenu.hidden = true;
@@ -154,19 +197,17 @@ window.addEventListener('resize', () => closeContentMenu());
 window.addEventListener('scroll', () => closeContentMenu(), true);
 contentDelete.addEventListener('click', () => {
   closeContentMenu(false);
-  contentCard.hidden = true;
-  contentRestore.hidden = false;
+  contentDeleted = true;
+  renderContentCard();
   contentRestore.focus();
   notify('Content deleted');
 });
 contentRestore.addEventListener('click', () => {
-  contentCard.hidden = false;
-  contentRestore.hidden = true;
+  contentDeleted = false;
+  renderContentCard();
   contentEdit.focus();
   notify('Content restored');
 });
-$('#ds-source-check').addEventListener('change', event => { event.target.closest('.result-card').dataset.selected = String(event.target.checked); });
-for (const button of document.querySelectorAll('[data-format-preview]')) button.addEventListener('click', () => button.setAttribute('aria-pressed', String(button.getAttribute('aria-pressed') !== 'true')));
 function luminance(hex) {
   const values = hex.slice(1,7).match(/../g).map(byte => parseInt(byte,16)/255).map(v => v <= .04045 ? v/12.92 : ((v+.055)/1.055)**2.4);
   return values[0]*.2126+values[1]*.7152+values[2]*.0722;
@@ -178,31 +219,73 @@ try {
   const {tokens} = await response.json();
   const byName = new Map(tokens.map(token => [token.name,token]));
   $('#ds-token-total').textContent = tokens.length;
-  const palette = [
-    ['Canvas','semantic.color.background.canvas'], ['Surface','semantic.color.surface.default'],
-    ['Text','semantic.color.text.primary'], ['Muted','semantic.color.text.muted'],
-    ['Border','semantic.color.border.default'], ['Primary','semantic.color.action.primary'],
-    ['Selected card','component.variant-card.selected-background'], ['Format','component.chip.format.background'],
-    ['Audience','component.chip.audience.background'], ['Voice','component.chip.voice.background'],
-    ['Avatar background','component.avatar.background'], ['Avatar initial','component.avatar.foreground']
-  ];
-  for (const [label,name] of palette) {
-    const token=byName.get(name);
-    const swatch=element('div','ds-swatch');
-    const sample=element('div','ds-swatch-sample'); sample.style.backgroundColor=token.value;
-    swatch.append(sample,element('h4','',label),element('code','',token.value.toUpperCase()),element('small','',name));
-    $('#ds-palette').append(swatch);
-  }
-  for (const [path,label,text] of [["greeting.desktop", "Display — serif · desktop", "Hello Athena,"], ["greeting.mobile", "Display — serif · mobile", "Hello Athena,"], ["editor-heading.desktop", "Page title · desktop", "A story worth sharing"], ["editor-heading.compact", "Page title · compact", "A story worth sharing"], ["project-title.desktop", "Homepage card title · desktop", "A creative chapter begins"], ["project-title.mobile", "Homepage card title · mobile", "A creative chapter begins"], ["panel-heading", "Panel heading", "New Content"], ["dialog-heading", "Dialog heading", "New Project"], ["project-list-title", "Homepage list title", "A creative chapter begins"], ["source-title", "Source title", "The approved source behind the story"], ["variant-title", "Variant title", "A fresh perspective on the week"], ["result-title", "Article card title", "A creative project brings neighbors together"], ["article-h2", "Article heading · H2", "A new perspective"], ["article-h3", "Article heading · H3", "The details that matter"], ["body", "Body text", "Bring your notes, an article, or a rough idea."], ["project-meta.desktop", "Card metadata · desktop", "Updated today · 2 Pieces of Content"], ["project-meta.mobile", "Card metadata · mobile", "Updated today · 2 Pieces of Content"], ["label", "Field label", "Audience"], ["field-value", "Field value", "Listicle"], ["button", "Primary button label", "Add"], ["secondary-button", "Secondary / tertiary label", "Cancel"], ["navigation", "Navigation label", "Sources"], ["chip", "Settings chip", "General Audience"], ["status", "Status badge", "Draft"], ["caption", "Caption / status message", "Ready to Create Content"], ["metadata", "Supporting text", "235 words · Created Oct 19, 2026"]]) {
-    const token=byName.get('semantic.typography.'+path);
-    const type=token.properties;
-    const row=element('div','ds-type-row'); const specimen=element('p','',text);
-    for(const prop of ['fontFamily','fontSize','fontWeight','lineHeight','letterSpacing']) {
-      const suffix=prop.replace(/[A-Z]/g,m=>'-'+m.toLowerCase());
-      specimen.style[prop]=`var(${token.cssVariable}-${suffix})`;
+  const colorCount = colorRoleGroups.reduce((count, group) => count + group.colors.length, 0);
+  $('#ds-color-count').textContent = `${colorCount} colors · usage and opacity`;
+  for (const group of colorRoleGroups) {
+    const section = element('section', 'ds-color-group');
+    section.id = `colors-${group.id}`;
+    const heading = element('h4', 'ds-foundation-group-title', group.title);
+    heading.id = `${section.id}-title`;
+    section.setAttribute('aria-labelledby', heading.id);
+    section.append(heading, element('p', 'ds-foundation-group-description', group.description));
+    const grid = element('div', 'ds-palette');
+    for (const role of group.colors) {
+      const token = byName.get(role.token);
+      const swatch = element('article', 'ds-swatch');
+      swatch.dataset.colorToken = role.token;
+      const sample = element('div', 'ds-swatch-sample');
+      sample.setAttribute('aria-hidden', 'true');
+      const fill = element('span', 'ds-swatch-fill');
+      fill.style.backgroundColor = token.value;
+      sample.append(fill);
+      swatch.append(sample, element('h5', '', role.name), element('code', '', token.value.toUpperCase()));
+      if (role.opacity !== undefined) swatch.append(element('span', 'ds-swatch-opacity', `${+(role.opacity * 100).toFixed(1)}% opacity`));
+      swatch.append(element('p', 'ds-swatch-use', role.description), element('small', '', role.token));
+      grid.append(swatch);
     }
-    row.append(specimen,element('small','',`${label} · ${type.fontSize.value} / ${+(type.fontSize.value*type.lineHeight).toFixed(2)} · ${type.fontWeight}`));
-    $('#ds-type-specimens').append(row);
+    section.append(grid);
+    $('#ds-palette').append(section);
+  }
+  for (const group of typographyRoleGroups) {
+    const section = element('section', 'ds-type-group');
+    section.id = `type-${group.id}`;
+    const heading = element('h4', 'ds-foundation-group-title', group.title);
+    heading.id = `${section.id}-title`;
+    section.setAttribute('aria-labelledby', heading.id);
+    section.append(heading, element('p', 'ds-foundation-group-description', group.description));
+    for (const role of group.roles) {
+      const row = element('article', 'ds-type-role');
+      const purpose = element('div', 'ds-type-purpose');
+      purpose.append(element('h5', '', role.name), element('p', '', role.usage));
+      const examples = element('div', 'ds-type-examples');
+      for (const style of role.styles) {
+        const token = byName.get(style.token);
+        const type = token.properties;
+        const item = element('div', 'ds-type-example');
+        item.dataset.typographyToken = style.token;
+        const specimen = element('p', 'ds-type-sample', role.example);
+        for (const prop of ['fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing']) {
+          const suffix = prop.replace(/[A-Z]/g, match => '-' + match.toLowerCase());
+          specimen.style[prop] = `var(${token.cssVariable}-${suffix})`;
+        }
+        for (const [property, name] of Object.entries(style.overrides || {})) {
+          specimen.style[property] = `var(${byName.get(name).cssVariable})`;
+        }
+        const fontSize = style.overrides?.fontSize ? Number.parseFloat(byName.get(style.overrides.fontSize).value) : type.fontSize.value;
+        const lineHeight = style.overrides?.lineHeight ? Number.parseFloat(byName.get(style.overrides.lineHeight).value) : +(fontSize * type.lineHeight).toFixed(2);
+        const fontWeight = style.overrides?.fontWeight ? byName.get(style.overrides.fontWeight).value : type.fontWeight;
+        const specs = `${fontSize} px size · ${lineHeight} px line height · weight ${fontWeight}`;
+        const details = element('details', 'ds-type-details');
+        const tracking = style.overrides?.letterSpacing ? byName.get(style.overrides.letterSpacing).value : typeof type.letterSpacing === 'object' ? `${type.letterSpacing.value}${type.letterSpacing.unit}` : type.letterSpacing;
+        details.append(element('summary', '', 'Token and letter spacing'), element('code', '', token.name), element('p', '', `Letter spacing: ${tracking}`));
+        item.append(element('p', 'ds-type-variant-label', style.label), specimen, element('p', 'ds-type-specs', specs), details);
+        if (style.note) item.append(element('p', 'ds-type-specs', style.note));
+        examples.append(item);
+      }
+      row.append(purpose, examples);
+      section.append(row);
+    }
+    $('#ds-type-specimens').append(section);
   }
   for (const value of [4,8,12,16,24,32,48,64]) {
     const row=element('div','ds-space'); const bar=element('i');

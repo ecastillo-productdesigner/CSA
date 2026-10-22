@@ -1,4 +1,4 @@
-import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261021-editor-subhead';
+import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261022-toast-copy';
 export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVariantOpen, onOpen }) {
   const panels = {
     sources: { trigger: document.querySelector('#show-sources'), panel: document.querySelector('#editor-sources') },

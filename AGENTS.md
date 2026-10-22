@@ -4,3 +4,4 @@
 - Custom interface design values must use tokens, including dimensions, colors, typography, motion, and breakpoints. Edit CSS in `styles/`; `dist/styles.css`, `dist/design-system/guide.css`, and document export styles are generated. Use `token(foundation.breakpoint.name)` in source query conditions and the shared runtime helper in JavaScript.
 - Shared design values live in `dist/design-system/tokens.json`. Prefer semantic and component tokens for new interface work. After changing tokens, run `npm run design-system:build`; do not edit generated token exports directly.
 - Keep `npm run design-system:check` passing and review desktop and mobile when changing shared styles. The visual reference and handoff notes live in `dist/design-system/`.
+- Toast messages must not end with a period. Apply the same copy style in the app and design system.

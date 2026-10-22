@@ -1,5 +1,5 @@
-import { savedVariantName } from './outputs.js?v=20261021-editor-subhead';
-import { normalizeWordCount } from './variant-word-count.js?v=20261021-editor-subhead';
+import { savedVariantName } from './outputs.js?v=20261022-toast-copy';
+import { normalizeWordCount } from './variant-word-count.js?v=20261022-toast-copy';
 const keys = ['format', 'audience', 'voice'];
 export function presetConfiguration(output) {
   const saved = output?.presetSettings;

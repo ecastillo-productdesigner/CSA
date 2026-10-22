@@ -1,7 +1,7 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261021-editor-subhead';
-import { projectOutputs, createOutputBadges } from './outputs.js?v=20261021-editor-subhead';
+import { tokenNumber } from './design-system/runtime.js?v=20261022-toast-copy';
+import { projectOutputs, createOutputBadges } from './outputs.js?v=20261022-toast-copy';
 
-import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261021-editor-subhead';
+import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261022-toast-copy';
 
 export function createOutputPresets({ onSelect, onDelete, onEdit }) {
   const root = document.querySelector('#output-presets');

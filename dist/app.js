@@ -1,21 +1,21 @@
-import { updatePresetPreferences } from './preset-settings.js?v=20261021-editor-subhead';
-import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261021-editor-subhead';
-import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261021-editor-subhead';
-import { createIcon as icon } from './icons.js?v=20261021-editor-subhead';
-import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261021-editor-subhead';
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261021-editor-subhead';
-import { createProfile } from './profile.js?v=20261021-editor-subhead';
-import { createSearchExperience } from './search.js?v=20261021-editor-subhead';
-import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=20261021-editor-subhead';
-import { createMaterialEditor } from './editor.js?v=20261021-editor-subhead';
-import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261021-editor-subhead';
-import { removeProjectContent } from './project-deletion.js?v=20261021-editor-subhead';
-import { createContentPreview } from './content-preview.js?v=20261021-editor-subhead';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261021-editor-subhead';
-import { createRailNavigation } from './navigation.js?v=20261021-editor-subhead';
-import { createProjectSources } from './sources.js?v=20261021-editor-subhead';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261021-editor-subhead';
-import { createEditorTabs } from './editor-tabs.js?v=20261021-editor-subhead';
+import { updatePresetPreferences } from './preset-settings.js?v=20261022-toast-copy';
+import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261022-toast-copy';
+import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261022-toast-copy';
+import { createIcon as icon } from './icons.js?v=20261022-toast-copy';
+import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261022-toast-copy';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261022-toast-copy';
+import { createProfile } from './profile.js?v=20261022-toast-copy';
+import { createSearchExperience } from './search.js?v=20261022-toast-copy';
+import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=20261022-toast-copy';
+import { createMaterialEditor } from './editor.js?v=20261022-toast-copy';
+import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261022-toast-copy';
+import { removeProjectContent } from './project-deletion.js?v=20261022-toast-copy';
+import { createContentPreview } from './content-preview.js?v=20261022-toast-copy';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261022-toast-copy';
+import { createRailNavigation } from './navigation.js?v=20261022-toast-copy';
+import { createProjectSources } from './sources.js?v=20261022-toast-copy';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-toast-copy';
+import { createEditorTabs } from './editor-tabs.js?v=20261022-toast-copy';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -336,7 +336,7 @@ function saveProjects() {
 function notify(message, action = null) {
   clearTimeout(toastTimer);
   toastAction = action;
-  $('#toast-message').textContent = message;
+  $('#toast-message').textContent = message.replace(/\.\s*$/, '');
   $('#toast-icon').hidden = !/\bdeleted\b|moved to Trash/i.test(message);
   $('#toast-undo').hidden = !action;
   $('#toast').hidden = false;

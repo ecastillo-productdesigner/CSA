@@ -1,11 +1,11 @@
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261021-editor-subhead';
-import { iconInventory } from './icon-inventory.js?v=20261021-editor-subhead';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-toast-copy';
+import { iconInventory } from './icon-inventory.js?v=20261022-toast-copy';
 const $ = selector => document.querySelector(selector);
 createToolDropdowns();
 let toastTimer;
 function notify(message) {
   const toast = $('#ds-toast');
-  $('#ds-toast-message').textContent = message;
+  $('#ds-toast-message').textContent = message.replace(/\.\s*$/, '');
   toast.hidden = false;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { toast.hidden = true; }, 2200);
@@ -39,14 +39,14 @@ function renderIconInventory() {
 renderIconInventory();
 $('#ds-toast-undo').addEventListener('click', () => {
   const toast = $('#ds-toast-specimen');
-  toast.querySelector('.toast-message').textContent = 'Source restored.';
+  toast.querySelector('.toast-message').textContent = 'Source restored';
   toast.querySelector('.toast-icon').hidden = true;
   $('#ds-toast-undo').hidden = true;
   $('#ds-show-toast').focus({ preventScroll: true });
 });
 $('#ds-show-toast').addEventListener('click', () => {
   const toast = $('#ds-toast-specimen');
-  toast.querySelector('.toast-message').textContent = 'Source deleted.';
+  toast.querySelector('.toast-message').textContent = 'Source deleted';
   toast.querySelector('.toast-icon').hidden = false;
   $('#ds-toast-undo').hidden = false;
 });

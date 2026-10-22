@@ -1,5 +1,5 @@
-import { documentStyles } from './design-system/export-styles.js?v=20261021-editor-subhead';
-import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261021-editor-subhead';
+import { documentStyles } from './design-system/export-styles.js?v=20261022-toast-copy';
+import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261022-toast-copy';
 import './vendor/quill-2.0.3.js';
 
 const Quill = window.Quill;

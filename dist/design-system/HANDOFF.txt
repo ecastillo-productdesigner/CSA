@@ -386,7 +386,7 @@ The editor and DS toolbar include the filled format_quote symbol beside H2/H3. B
 The To Adapt empty state reads “Your adapted content will appear here.” Adapted reads “No adapted content yet. Adapt your article to see it here.”
 
 2026-10-21: Pasted-link cards expose the filled visibility eye immediately before the external-link action. The eye opens the existing fictional demo preview independently of source selection; only the top X closes it. Publication dates remain explicit when unavailable; sample headlines and body copy are fictional demo content. New Project accepts website links only and validates the entire input; search text cannot launch a search or create a project from this modal. Existing saved projects remain readable.
-The app entry, module graph, and shared stylesheet URLs carry the 20261021-editor-subhead asset version so newly loaded published pages request the updated behavior.
+The app entry, module graph, and shared stylesheet URLs carry the 20261022-toast-copy asset version so newly loaded published pages request the updated behavior.
 
 2026-10-21: Standard Format uses the same fixed-value presentation as Audience and Voice, with the Format chip's pink background. Target Word Count uses the shared three-option dropdown, with a divider separating it from Voice on desktop and mobile.
 
@@ -403,6 +403,7 @@ The source tab displays only its To Create badge; the redundant gray Content to 
 New pastes split adjacent article URLs even after an existing query value, keeping duplicates and genuine embedded redirect/fragment URLs. Existing saved source data is unchanged, per user preference.
 
 2026-10-21: Compact toast uses a white surface, subtle border/elevation, dark text, a contextual outlined blue deletion symbol in a pale blue circle, and an outlined Undo button. Non-deletion notifications omit the symbol; Undo visibility, callbacks and dismissal timers stay unchanged. Layout wraps at mobile widths and appears above open workspace panels. The DS includes the shared toast specimen and reset/Undo demo. Existing saved joined source URLs remain unchanged; new-paste parser regressions cover both three and four adjacent URLs.
+Toast messages omit a final full stop, including deletion, restoration, and DS feedback messages.
 The To Adapt empty state reads Your adapted content will appear here. Adapted reads No adapted content yet. Adapt your article to see it here.
 
 2026-10-21: The source-sheet To Create tab disappears when the first adapted draft is ready and stays hidden for drafts awaiting regeneration. Reopening an older source view selects an available adapted draft while preserving pending adaptation selections. The Sources rail remains available. Adaptation status segments use the shared secondary button treatment, wrap long count labels on narrow screens, and read To Adapt / Adapted when empty or [count] Content to Adapt / [count] Adapted when populated.

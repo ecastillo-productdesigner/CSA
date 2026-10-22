@@ -72,7 +72,7 @@ export function createOutputWordCountBadge(output) {
   return badge;
 }
 
-export function createOutputBadges(output, { maxLabelLength = 20, includeSourceCount = true } = {}) {
+export function createOutputBadges(output, { maxLabelLength = 20, includeSourceCount = true, includeWordCount = true } = {}) {
   const badges = (Array.isArray(output?.labels) ? output.labels : [])
     .filter(label => label && ['format', 'audience', 'voice'].includes(label.key) && typeof label.label === 'string')
     .map(label => {
@@ -84,8 +84,10 @@ export function createOutputBadges(output, { maxLabelLength = 20, includeSourceC
       badge.setAttribute('aria-label', label.label);
       return badge;
     });
-  const words = createOutputWordCountBadge(output);
-  if (words) badges.push(words);
+  if (includeWordCount) {
+    const words = createOutputWordCountBadge(output);
+    if (words) badges.push(words);
+  }
   if (output && includeSourceCount) {
     const count = outputSourceCount(output);
     const label = `${count} ${count === 1 ? 'source' : 'sources'}`;

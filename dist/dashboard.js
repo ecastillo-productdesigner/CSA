@@ -1,6 +1,6 @@
 import { tokenNumber } from './design-system/runtime.js?v=20261022-toast-copy';
 import { createIcon as icon } from './icons.js?v=20261022-toast-copy';
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261022-card-menu';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261022-content-send-dialog';
 import { sourceLinkArticles } from './source-links.js?v=20261022-toast-copy';
 
 const layoutKey = 'csa.dashboard.layout.v1';

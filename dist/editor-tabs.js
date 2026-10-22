@@ -1,5 +1,5 @@
 import { createIcon } from './icons.js?v=20261022-toast-copy';
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261022-card-menu';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261022-content-send-dialog';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');

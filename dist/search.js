@@ -333,8 +333,10 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       const articles = linkResults ? sourceLinkArticles(linkSources.map(source => source.url)) : sampleArticles(query);
       const savedSelection = embedded ? linkSources.flatMap((source, index) => source.selected !== false ? [`link-${index + 1}`] : []) : Array.isArray(project.selectedArticleIds) ? project.selectedArticleIds : [];
       const selected = new Set(savedSelection.filter(id => articles.some(article => article.id === id)));
-      const savedAdded = Array.isArray(project.addedArticleIds) ? project.addedArticleIds : savedSelection;
-      const readyArticleIds = new Set((linkResults ? savedSelection : savedAdded).filter(id => articles.some(article => article.id === id)));
+      const savedAdded = linkResults
+        ? linkSources.flatMap((source, index) => source.addedToCsa !== false ? [`link-${index + 1}`] : [])
+        : Array.isArray(project.addedArticleIds) ? project.addedArticleIds : savedSelection;
+      const readyArticleIds = new Set(savedAdded.filter(id => articles.some(article => article.id === id)));
       state = { projectId: project.id, addingSources, linkResults, query, articles, editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '', sort: 'newest', source: 'all', after: '', visibleCount: linkResults ? articles.length : 4, selected, readyArticleIds };
       $('#create-draft').textContent = addingSources ? 'Add Sources' : 'Draft';
       $('.results-direction').hidden = addingSources || embedded;
@@ -362,7 +364,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       $('#results-filter-panel').hidden = true;
       $('#results-toggle-filters').setAttribute('aria-expanded', 'false');
       render();
-      if (!linkResults) for (const id of selected) startAddition(id);
+      for (const id of selected) startAddition(id);
     },
     hide() { clearAdditionTimers(); if (preview.open) preview.close(); previewArticle = null; state = null; $('#search-results').hidden = true; },
   };

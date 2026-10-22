@@ -77,6 +77,11 @@ test('shared badges show capitalized actual words before the unchanged source-co
   assert.equal(sources.children.at(-1).textContent, '3 sources');
   assert.equal(createOutputWordCountBadge({ ...output, draftText: 'one' }).textContent, '1 Word');
   assert.equal(createOutputBadges(output, { includeSourceCount: false }).at(-1).textContent, '642 Words');
+  const headerBadges = createOutputBadges(output, { includeWordCount: false });
+  assert.equal(headerBadges.some(hasWords), false);
+  assert.equal(headerBadges[0].textContent, 'Standard Format');
+  assert.equal(headerBadges.at(-1).dataset.variantSources, 'draft');
+  assert.equal(headerBadges.at(-1).children.at(-1).textContent, '3 sources');
 });
 
 test('pending, regenerating, and blank drafts omit word pills instead of displaying zero', t => {

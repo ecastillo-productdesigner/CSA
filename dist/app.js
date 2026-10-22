@@ -1,12 +1,12 @@
-import { updatePresetPreferences } from './preset-settings.js?v=20261022-card-menu';
+import { updatePresetPreferences } from './preset-settings.js?v=20261022-content-send-dialog';
 import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261022-toast-copy';
 import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261022-toast-copy';
 import { createIcon as icon } from './icons.js?v=20261022-toast-copy';
 import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261022-toast-copy';
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261022-card-menu';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261022-content-send-dialog';
 import { createProfile } from './profile.js?v=20261022-toast-copy';
-import { createSearchExperience } from './search.js?v=20261022-add-action';
-import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261022-card-menu';
+import { createSearchExperience } from './search.js?v=20261022-content-send-dialog';
+import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261022-content-send-dialog';
 import { createMaterialEditor } from './editor.js?v=20261022-toast-copy';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261022-toast-copy';
 import { removeProjectContent } from './project-deletion.js?v=20261022-toast-copy';
@@ -14,9 +14,10 @@ import { createContentPreview } from './content-preview.js?v=20261022-toast-copy
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261022-toast-copy';
 import { createRailNavigation } from './navigation.js?v=20261022-card-menu';
 import { createProjectSources } from './sources.js?v=20261022-toast-copy';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-card-menu';
-import { createEditorTabs } from './editor-tabs.js?v=20261022-card-menu';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-content-send-dialog';
+import { createEditorTabs } from './editor-tabs.js?v=20261022-content-send-dialog';
 import { createContentCardEditing } from './content-card-editing.js?v=20261022-card-menu';
+import { createSendDestinationDialog } from './send-destination.js?v=20261022-content-send-dialog';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -117,7 +118,7 @@ createProfile({
   },
 });
 const richEditor = createMaterialEditor({
-  onSendToCms: markVariantSentToCms,
+  onSendToCms: projectId => sendDestinationDialog.open(projectId),
   onContentChange: updateComposerActions,
   onToolbarChange: toolDropdowns.refresh,
   notify,
@@ -137,6 +138,20 @@ const richEditor = createMaterialEditor({
     return saved;
   },
 });
+const sendDestinationDialog = createSendDestinationDialog({
+  getTarget(projectId) {
+    richEditor.flush();
+    const project = projects.find(entry => entry.id === projectId);
+    const output = projectOutputs(project).find(entry => entry.id === project?.selectedOutputId && outputIsReady(entry));
+    if (activeProjectId !== projectId || !project || project.deletedAt || project.archivedAt || project.viewOriginalDraft
+      || project.outputProcessing || !output || output.needsRegeneration || !richEditor.canSend()) return null;
+    return { projectId, outputId: output.id };
+  },
+  onSend(target, destination) {
+    if (destination !== 'csa-gate-test') return false;
+    return markVariantSentToCms(target.projectId, target.outputId);
+  },
+});
 const contentCardEditing = createContentCardEditing({
   getProject: () => projects.find(project => project.id === activeProjectId && !project.deletedAt),
   onDelete: outputId => deleteVariant({ projectId: activeProjectId, outputId }),
@@ -152,7 +167,7 @@ function renderOutputs(project) {
   const selectedOutput = projectOutputs(project).find(output => output.id === project?.selectedOutputId && (outputIsReady(output) || output.needsRegeneration));
   richEditor.setRevisionBusy(Boolean(project?.outputProcessing?.kind === 'revision' && project.outputProcessing.ids.includes(selectedOutput?.id)));
   const labels = $('#editor-variant-labels');
-  labels.replaceChildren(...createOutputBadges(selectedOutput));
+  labels.replaceChildren(...createOutputBadges(selectedOutput, { includeWordCount: false }));
   labels.hidden = !labels.childElementCount;
   syncSourceBadges();
 }
@@ -429,6 +444,7 @@ function showSourceStart() {
 }
 
 function closeComposer() {
+  sendDestinationDialog.close();
   toolDropdowns.close();
   richEditor.close();
   $('#show-sources').hidden = true;
@@ -650,13 +666,12 @@ function closeProfile() {
 }
 
 function updateComposerActions() {
-  $('#composer-target-word-count').closest('.variant-word-count').hidden = !$('#composer-audience').value;
   const project = projects.find(project => project.id === activeProjectId);
   const hasContent = $('#composer').classList.contains('has-link-cards') ? project?.sources.some(source => source.selected !== false) : !$('#material-editor').hidden ? richEditor.hasContent() : !$('#output-placeholder').hidden && ($('#content-preview').hidden || contentPreview.hasContent());
   const processing = Boolean(projects.find(project => project.id === activeProjectId)?.outputProcessing);
   const canConfigure = hasContent && !processing;
   let changed = false;
-  for (const key of ['format', 'audience', 'voice', 'target-word-count']) {
+  for (const key of ['format', 'audience', 'voice']) {
     const select = $(`#composer-${key}`);
     if (select.disabled !== !canConfigure) changed = true;
     select.disabled = !canConfigure;
@@ -730,7 +745,7 @@ $('.create-variant').addEventListener('click', () => {
   const saved = saveProjects();
   showEditorProject(project);
   if (window.matchMedia(breakpointQuery()).matches) railNavigation.open('newVariant');
-  $('#composer-tools .tool-dropdown-trigger')?.focus({ preventScroll: true });
+  $('.create-variant').focus({ preventScroll: true });
   if (saved) notify('Content Added');
 });
 
@@ -800,7 +815,7 @@ function finishOutputProcessing(project, renderWhenReady = true) {
   if (active && renderWhenReady) {
     railNavigation.closeTransient();
     showEditorProject(project);
-    if (job.kind !== 'revision') notify(latestCreated ? 'Variant ready. The newest variant is open in the editor.' : 'Variant processing finished.');
+    if (job.kind !== 'revision') notify(latestCreated ? 'Content Adapted' : 'Variant processing finished.');
   }
   if (job.kind === 'revision') notify('Revision complete. Your draft has been updated.');
 }
@@ -860,10 +875,10 @@ function submitSource(input) {
   if (sourceTargetProjectId) {
     const target = projects.find(project => project.id === sourceTargetProjectId);
     if (target) { target.linkCards = true; target.viewOriginalDraft = true; }
-    appendProjectSources(sourceLinkArticles(urls).map(article => ({ type: 'link', title: article.title, url: article.url })));
+    appendProjectSources(sourceLinkArticles(urls).map(article => ({ type: 'link', title: article.title, url: article.url, addedToCsa: false })));
     return true;
   }
-  const sources = sourceLinkArticles(urls).map(article => ({ type: 'link', title: article.title, url: article.url, selected: true }));
+  const sources = sourceLinkArticles(urls).map(article => ({ type: 'link', title: article.title, url: article.url, selected: true, addedToCsa: false }));
   createProject(sources, { kind: 'draft', awaitingOutput: true, linkCards: true });
   if (!window.matchMedia(breakpointQuery()).matches) railNavigation.open('sources');
   return true;
@@ -1084,6 +1099,7 @@ for (const button of document.querySelectorAll('[data-close]')) button.addEventL
 for (const dialog of document.querySelectorAll('dialog')) {
   dialog.addEventListener('click', (event) => {
     if (dialog.id === 'delete-project-dialog' && dialog.getAttribute('aria-busy') === 'true') return;
+    if (dialog.id === 'send-destination-dialog' && dialog.dataset.busy === 'true') return;
     if (['material-dialog', 'new-project-dialog'].includes(dialog.id) && materialBusy) return;
     if (event.target !== dialog) return;
     const bounds = dialog.getBoundingClientRect();
@@ -1106,7 +1122,11 @@ const searchExperience = createSearchExperience({
       project.selectedArticleIds = selection;
       if (Array.isArray(addedArticleIds)) project.addedArticleIds = addedArticleIds;
       if (project.linkCards) {
-        project.sources.filter(source => source.type === 'link').forEach((source, index) => { source.selected = selection.includes(`link-${index + 1}`); });
+        project.sources.filter(source => source.type === 'link').forEach((source, index) => {
+          const id = `link-${index + 1}`;
+          source.selected = selection.includes(id);
+          if (Array.isArray(addedArticleIds)) source.addedToCsa = addedArticleIds.includes(id);
+        });
         updateComposerActions();
         if ($('#show-sources').getAttribute('aria-expanded') === 'true') renderProjectSources(project);
       }
@@ -1143,17 +1163,19 @@ function moveProject(id, destination) {
   });
 }
 
-function markVariantSentToCms(projectId) {
+function markVariantSentToCms(projectId, outputId) {
   const project = projects.find(entry => entry.id === projectId);
   const variant = projectOutputs(project).find(output => output.id === project?.selectedOutputId && outputIsReady(output));
-  if (!variant) { notify('Select a generated variant to send to CMS.'); return; }
-  if (!richEditor.canSend()) return;
+  if (!project || activeProjectId !== projectId || project.deletedAt || project.archivedAt || project.viewOriginalDraft
+    || project.outputProcessing || !variant || variant.id !== outputId || variant.needsRegeneration) return false;
+  if (!richEditor.canSend()) return false;
   variant.cmsSentAt = Date.now();
   variant.cmsSentContent = richEditor.markSent();
   project.updatedAt = variant.cmsSentAt;
   const saved = saveProjects();
   editorTabs.render(project);
   notify(saved ? 'Demo: variant marked as sent to CMS. WordPress is not connected.' : 'Demo: variant marked as sent for this session only. WordPress is not connected.');
+  return true;
 }
 
 

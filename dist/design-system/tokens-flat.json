@@ -5924,6 +5924,18 @@
       "status": "observed"
     },
     {
+      "name": "component.source-link-field.placeholder-height-mobile",
+      "designName": "component/source-link-field/placeholder-height-mobile",
+      "cssVariable": "--csa-component-source-link-field-placeholder-height-mobile",
+      "type": "dimension",
+      "layer": "component",
+      "category": "source-link-field",
+      "value": "240px",
+      "reference": "foundation.size.240",
+      "description": "Height of the empty source-link field on small screens so the wrapped instructions and both example URLs remain visible.",
+      "status": "observed"
+    },
+    {
       "name": "component.project-row.hover-background",
       "designName": "component/project-row/hover-background",
       "cssVariable": "--csa-component-project-row-hover-background",

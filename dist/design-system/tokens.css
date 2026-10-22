@@ -488,6 +488,7 @@
   --csa-component-chip-audience-background: var(--csa-foundation-color-indigo-50);
   --csa-component-chip-voice-background: var(--csa-foundation-color-orange-100);
   --csa-component-source-link-field-visible-height: var(--csa-foundation-size-120);
+  --csa-component-source-link-field-placeholder-height-mobile: var(--csa-foundation-size-240);
   --csa-component-project-row-hover-background: var(--csa-foundation-color-blue-700);
   --csa-component-project-row-hover-label: var(--csa-semantic-color-text-inverse);
   --csa-component-project-card-hover-background: var(--csa-foundation-color-blue-600);

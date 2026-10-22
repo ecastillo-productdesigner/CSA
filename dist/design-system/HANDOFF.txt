@@ -388,3 +388,5 @@ The app entry, link preview modules, and shared stylesheet URLs carry the 202610
 2026-10-21: Standard Format uses the same fixed-value presentation as Audience and Voice. Target Word Count has no dropdown, chevron, menu, or keyboard stop. Its hidden value remains short for generation, with the shared field sizing on desktop and mobile.
 
 2026-10-21: Iconography documents outlined unselected states and filled selected states, with a complete icon library showing both variants. The shared app rules apply that state convention to pressed/selected icon controls. Actions without a selection state retain filled icons.
+
+2026-10-21: New Project uses the article URL instructions and both Centredaily/Miami Herald example URLs as multiline placeholder text. The field stays empty and Continue disabled until real URLs are entered. Placeholder text wraps; the empty mobile field expands to show both examples, then returns to five visible lines once populated.

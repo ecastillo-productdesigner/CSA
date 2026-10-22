@@ -1043,6 +1043,7 @@ button:disabled:not(.output-open):not(.output-selection-button):not(.icon-button
 .new-project-input textarea::placeholder { color: var(--muted); opacity: 1; }
 @media (max-width: 768px) {
   .new-project-input textarea { font-size: var(--csa-foundation-font-size-16); }
+  .new-project-input textarea:placeholder-shown { min-height: var(--csa-component-source-link-field-placeholder-height-mobile); max-height: var(--csa-component-source-link-field-placeholder-height-mobile); }
 }
 
 .editor-style-field { position: relative; flex-shrink: 0; }

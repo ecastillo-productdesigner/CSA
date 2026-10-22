@@ -384,6 +384,9 @@ main:focus { outline: none; }
 @keyframes output-spin { to { transform: rotate(360deg); } }
 .composer-empty { display: grid; flex: 1; place-items: center; min-height: var(--csa-foundation-size-120); padding: var(--csa-foundation-space-24) 0; color: var(--muted); text-align: center; font-size: var(--csa-foundation-font-size-12); line-height: var(--csa-foundation-line-height-16); }
 .composer-empty p { margin: 0; }
+.composer-empty .output-empty-create { margin-top: var(--csa-foundation-space-8); }
+.output-empty-action { padding: 0; border: 0; background: transparent; color: var(--csa-component-button-secondary-label); font: inherit; text-decoration: underline; text-underline-offset: var(--csa-foundation-space-2); }
+.output-empty-action:hover { color: var(--csa-component-button-secondary-hover-label); }
 dialog { color: var(--ink); background: var(--surface); border: var(--csa-foundation-border-width-1) solid var(--line); padding: var(--csa-foundation-space-28); }
 dialog::backdrop { background: var(--csa-semantic-color-overlay-scrim); backdrop-filter: blur(var(--csa-foundation-space-3)); }
 .delete-project-dialog { width: min(var(--csa-foundation-size-420), calc(100% - var(--csa-foundation-space-32))); border-radius: var(--csa-foundation-radius-16); padding: var(--csa-foundation-space-26); }

@@ -412,3 +412,5 @@ The To Adapt empty state reads Your adapted content will appear here. Adapted re
 2026-10-21: Selected adaptation segments use their own blue border; the gray group outline is removed so there is no outer gray border around the active half. Inactive halves retain the neutral border. Share text is stored separately on each draft, included in copy/download/print and send-change detection, and omitted when blank. Existing sent signatures with no share text stay compatible.
 
 2026-10-21: The visible Share text / Subhead label is removed. The field remains below the title with its placeholder; a visually hidden label preserves its accessible name.
+
+2026-10-21: To Adapt’s empty state keeps Your adapted content will appear here. and adds Create new content underneath. Only new content is an underlined action; it expands the New Content panel on desktop and opens the New Content overlay on mobile, moving focus into the panel. The Adapted empty message remains unchanged.

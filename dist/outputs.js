@@ -324,6 +324,7 @@ export function renderOutputs(project, requestedView) {
   const empty = document.querySelector('#outputs-empty');
   empty.hidden = state.outputs.length > 0;
   empty.querySelector('p').textContent = state.view === 'pending' ? 'Your adapted content will appear here.' : 'No adapted content yet. Adapt your article to see it here.';
+  document.querySelector('#output-empty-create').hidden = state.view !== 'pending';
   list.hidden = state.outputs.length === 0;
   list.setAttribute('aria-label', state.view === 'pending' ? 'Content to Adapt' : 'Adapted Content');
   list.replaceChildren(...state.outputs.map(output => {

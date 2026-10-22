@@ -158,6 +158,16 @@ function selectOutputView(view) {
   renderOutputs(project);
   $('#output-list').scrollTop = 0;
 }
+$('#output-empty-new-content').addEventListener('click', () => {
+  richEditor.flush();
+  toolDropdowns.close();
+  const project = projects.find(entry => entry.id === activeProjectId);
+  if (project) { project.newVariantCollapsed = false; saveProjects(); }
+  setNewVariantCollapsed(false);
+  if (window.matchMedia(breakpointQuery()).matches) railNavigation.open('newVariant');
+  $('#composer-tools').scrollIntoView({ block: 'nearest' });
+  $('#toggle-new-variant').focus({ preventScroll: true });
+});
 $('.output-status-tabs').addEventListener('click', event => {
   const tab = event.target.closest('[data-output-view]');
   if (tab) selectOutputView(tab.dataset.outputView);

@@ -1,6 +1,7 @@
 import { tokenNumber } from './design-system/runtime.js?v=20261022-toast-copy';
 import { createIcon as icon } from './icons.js?v=20261022-toast-copy';
 import { projectOutputs, outputIsReady } from './outputs.js?v=20261022-toast-copy';
+import { sourceLinkArticles } from './source-links.js?v=20261022-toast-copy';
 
 const layoutKey = 'csa.dashboard.layout.v1';
 function readLayout() {
@@ -18,13 +19,36 @@ function node(tag, className, text) {
 
 
 export function cleanProjectTitle(title) {
-  return title.replace(/\s*—\s*Draft\s*$/i, '').trim() || 'Untitled story';
+  return (typeof title === 'string' ? title : '').replace(/\s*—\s*Draft\s*$/i, '').trim() || 'Untitled story';
+}
+
+function firstLinkedSource(sources) {
+  const source = Array.isArray(sources) ? sources.find(source => source?.type === 'link') : null;
+  if (typeof source?.url !== 'string') return null;
+  try {
+    const url = new URL(source.url);
+    return ['http:', 'https:'].includes(url.protocol) && url.hostname ? { source, url } : null;
+  } catch { return null; }
+}
+
+export function projectTitleFromSources(sources) {
+  const link = firstLinkedSource(sources);
+  if (!link) return '';
+  const title = typeof link.source.title === 'string' ? link.source.title.trim() : '';
+  const domain = link.url.hostname.replace(/^www\./, '');
+  const domainTitle = [domain, link.url.hostname].includes(title.toLowerCase());
+  const opaqueTitle = /^(?:article\s*)?\d+(?:\.(?:html?|aspx?|php))?$/i.test(title);
+  if (title && !domainTitle && !opaqueTitle && !/^https?:\/\//i.test(title) && title.toLowerCase() !== 'untitled story') return cleanProjectTitle(title);
+  return sourceLinkArticles([link.url.href])[0].title;
 }
 
 export function normalizeProjectTitles(projects) {
   let changed = false;
   for (const project of projects) {
-    const title = cleanProjectTitle(project.title);
+    let title = cleanProjectTitle(project.title);
+    const first = project.sources?.[0];
+    const link = first?.type === 'link' ? firstLinkedSource([first]) : null;
+    if (link && title === link.url.hostname.replace(/^www\./, '')) title = projectTitleFromSources([first]) || title;
     if (title !== project.title) { project.title = title; changed = true; }
   }
   return changed;

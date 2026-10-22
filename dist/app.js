@@ -6,7 +6,7 @@ import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './sourc
 import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261022-toast-copy';
 import { createProfile } from './profile.js?v=20261022-toast-copy';
 import { createSearchExperience } from './search.js?v=20261022-add-action';
-import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=20261022-toast-copy';
+import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261022-project-headings';
 import { createMaterialEditor } from './editor.js?v=20261022-toast-copy';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261022-toast-copy';
 import { removeProjectContent } from './project-deletion.js?v=20261022-toast-copy';
@@ -361,7 +361,7 @@ function createProject(sources, options = {}) {
   const first = sources[0];
   const project = {
     id: crypto.randomUUID(),
-    title: options.title || (first?.type === 'link' ? new URL(first.url).hostname.replace(/^www\./, '') : first ? titleFrom(first.title) : 'Untitled story'),
+    title: options.title || (first?.type === 'link' ? projectTitleFromSources(sources) || 'Untitled story' : first ? titleFrom(first.title) : 'Untitled story'),
     createdAt: Date.now(),
     sources,
     dashboard: first?.type !== 'search',

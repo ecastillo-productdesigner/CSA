@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { cleanProjectTitle, normalizeProjectTitles, projectUpdatedDate } from '../dist/dashboard.js';
+import { cleanProjectTitle, normalizeProjectTitles, projectTitleFromSources, projectUpdatedDate } from '../dist/dashboard.js';
 
 const now = Date.parse('2026-10-20T16:00:00Z');
 
@@ -19,6 +19,54 @@ test('title migration is repeatable and leaves variant headings and activity tim
   assert.equal(projects[0].updatedAt, 12);
   assert.equal(projects[0].outputs[0].title, 'An article — Draft');
   assert.equal(normalizeProjectTitles(projects), false);
+});
+
+test('link project headings use the first article headline without changing sources', () => {
+  const sources = [
+    { type: 'link', title: 'A Café Opens a New Chapter', url: 'https://www.charlotteobserver.com/latest-news/article317649444.html' },
+    { type: 'link', title: 'Another Story', url: 'https://example.com/another-story' },
+  ];
+  const original = structuredClone(sources);
+  assert.equal(projectTitleFromSources(sources), 'A Café Opens a New Chapter');
+  assert.deepEqual(sources, original);
+});
+
+test('domain and opaque link titles receive a readable existing demo headline', () => {
+  const url = 'https://www.charlotteobserver.com/latest-news/article317649444.html';
+  for (const title of ['charlotteobserver.com', 'www.charlotteobserver.com', 'article317649444', 'article317649444.html', '317649444', url, '', undefined, null]) {
+    assert.equal(projectTitleFromSources([{ type: 'link', title, url }]), 'A Neighborhood Project Brings a Community Together');
+  }
+  assert.equal(projectTitleFromSources([{ type: 'link', title: 'charlotteobserver.com', url: 'https://www.charlotteobserver.com/' }]), 'An Unexpected Collaboration Opens a New Chapter');
+});
+
+test('only exact automatic domain names migrate and preserve saved sources, URLs, outputs, and dates', () => {
+  const joinedUrl = 'https://www.charlotteobserver.com/firsthttps://www.charlotteobserver.com/second';
+  const source = { type: 'link', title: 'A Saved Article Heading', url: joinedUrl, selected: false };
+  const projects = [
+    { title: 'charlotteobserver.com', sources: [source], updatedAt: 12, outputs: [{ title: 'My edited draft', sourceSnapshots: [structuredClone(source)] }] },
+    { title: 'My custom project', sources: [structuredClone(source)] },
+    { title: 'charlotteobserver.com notes', sources: [structuredClone(source)] },
+    { title: 'www.charlotteobserver.com', sources: [structuredClone(source)] },
+  ];
+  const original = structuredClone(projects);
+  assert.equal(normalizeProjectTitles(projects), true);
+  assert.equal(projects[0].title, 'A Saved Article Heading');
+  assert.deepEqual({ ...projects[0], title: original[0].title }, original[0]);
+  assert.deepEqual(projects.slice(1), original.slice(1));
+  assert.equal(projects[0].sources[0].url, joinedUrl);
+  assert.equal(normalizeProjectTitles(projects), false);
+});
+
+test('missing and malformed source URLs cannot interrupt loading saved projects', () => {
+  const projects = [undefined, '', 'not a URL', 'https://', 'javascript:alert(1)'].map(url => ({
+    title: 'charlotteobserver.com', sources: [{ type: 'link', title: 'Saved article', ...(url === undefined ? {} : { url }) }],
+  }));
+  const original = structuredClone(projects);
+  assert.equal(normalizeProjectTitles(projects), false);
+  assert.deepEqual(projects, original);
+  for (const project of projects) assert.equal(projectTitleFromSources(project.sources), '');
+  assert.equal(projectTitleFromSources(), '');
+  assert.equal(projectTitleFromSources([{ type: 'text', title: 'Existing notes' }]), '');
 });
 
 test('dashboard labels the last edit rather than the creation date', () => {

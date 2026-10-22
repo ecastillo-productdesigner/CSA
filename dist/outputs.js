@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261021-adapt-count';
-import { normalizeWordCount } from './variant-word-count.js?v=20261021-adapt-count';
+import { createIcon } from './icons.js?v=20261021-segment-case';
+import { normalizeWordCount } from './variant-word-count.js?v=20261021-segment-case';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',
@@ -294,7 +294,7 @@ export function variantPanelState(project, requestedView) {
   return {
     view,
     outputs: view === 'pending' ? pending : created,
-    pendingLabel: pending.length ? `${pending.length} to Create` : 'to Create',
+    pendingLabel: pending.length ? `${pending.length} to Create` : 'To Create',
     createdLabel: created.length ? `${created.length} Created` : 'Created',
   };
 }
@@ -304,7 +304,7 @@ export function renderOutputs(project, requestedView) {
   for (const tab of document.querySelectorAll('[data-output-view]')) {
     const selected = tab.dataset.outputView === state.view;
     tab.textContent = tab.dataset.outputView === 'pending' ? state.pendingLabel : state.createdLabel;
-    tab.dataset.empty = String(tab.dataset.outputView === 'pending' ? state.pendingLabel === 'to Create' : state.createdLabel === 'Created');
+    tab.dataset.empty = String(tab.dataset.outputView === 'pending' ? state.pendingLabel === 'To Create' : state.createdLabel === 'Created');
     tab.setAttribute('aria-selected', String(selected));
     tab.tabIndex = selected ? 0 : -1;
   }

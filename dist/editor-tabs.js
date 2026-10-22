@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261021-adapt-count';
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261021-adapt-count';
+import { createIcon } from './icons.js?v=20261021-segment-case';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261021-segment-case';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');

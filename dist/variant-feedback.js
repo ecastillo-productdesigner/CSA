@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261021-adapt-count';
+import { createIcon } from './icons.js?v=20261021-segment-case';
 
 export function createFeedbackPill(output, disabled = false) {
   const pill = document.createElement('span');

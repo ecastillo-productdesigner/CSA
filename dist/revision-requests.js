@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261021-adapt-count';
+import { createIcon } from './icons.js?v=20261021-segment-case';
 
 export function createRevisionButton(output, disabled = false) {
   const button = document.createElement('button');

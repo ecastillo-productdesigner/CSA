@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261021-adapt-count');
+  await import('./app.js?v=20261021-segment-case');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

@@ -1,6 +1,6 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261021-adapt-count';
-import { createIcon as icon } from './icons.js?v=20261021-adapt-count';
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261021-adapt-count';
+import { tokenNumber } from './design-system/runtime.js?v=20261021-segment-case';
+import { createIcon as icon } from './icons.js?v=20261021-segment-case';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261021-segment-case';
 
 const layoutKey = 'csa.dashboard.layout.v1';
 function readLayout() {

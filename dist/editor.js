@@ -1,5 +1,5 @@
-import { documentStyles } from './design-system/export-styles.js?v=20261021-adapt-count';
-import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261021-adapt-count';
+import { documentStyles } from './design-system/export-styles.js?v=20261021-segment-case';
+import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261021-segment-case';
 import './vendor/quill-2.0.3.js';
 
 const Quill = window.Quill;

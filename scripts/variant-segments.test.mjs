@@ -5,7 +5,7 @@ import { variantPanelState, selectedPendingOutputs } from '../dist/outputs.js';
 const pending = { id: 'pending', title: 'Pending', status: 'pending' };
 const ready = { id: 'ready', title: 'Created', status: 'ready' };
 
-test('to Create keeps pending and regeneration records while Created includes ready and legacy drafts', () => {
+test('To Create keeps pending and regeneration records while Created includes ready and legacy drafts', () => {
   const legacy = { id: 'legacy', title: 'Legacy', draftText: 'Existing content' };
   const recreate = { id: 'recreate', title: 'Recreate', status: 'pending', needsRegeneration: true, draftText: 'Previous content' };
   const project = { outputs: [pending, ready, legacy, recreate, null] };
@@ -15,8 +15,8 @@ test('to Create keeps pending and regeneration records while Created includes re
   assert.equal(variantPanelState(project).createdLabel, '2 Created');
 });
 
-test('empty segments omit zero counts and default to to Create', () => {
-  assert.deepEqual(variantPanelState(null), { view: 'pending', outputs: [], pendingLabel: 'to Create', createdLabel: 'Created' });
+test('empty segments omit zero counts and default to To Create', () => {
+  assert.deepEqual(variantPanelState(null), { view: 'pending', outputs: [], pendingLabel: 'To Create', createdLabel: 'Created' });
 });
 
 test('explicit segment selection overrides the open editor while default follows a created draft', () => {

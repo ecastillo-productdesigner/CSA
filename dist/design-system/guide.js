@@ -1,5 +1,5 @@
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261021-adapt-count';
-import { iconInventory } from './icon-inventory.js?v=20261021-adapt-count';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261021-segment-case';
+import { iconInventory } from './icon-inventory.js?v=20261021-segment-case';
 const $ = selector => document.querySelector(selector);
 createToolDropdowns();
 let toastTimer;

@@ -1,4 +1,4 @@
-// App icon inventory audited 2026-10-21 against reachable interface controls,
+// App icon inventory audited 2026-10-22 against reachable interface controls,
 // app module imports, and existing-project flows. Hidden toolbar glyphs and
 // dormant feature modules are excluded; both entry-page font subsets match.
 export const iconInventory = [
@@ -10,6 +10,7 @@ export const iconInventory = [
   ['delete', 'Delete'],
   ['description', 'Document'],
   ['draw', 'Draft'],
+  ['edit', 'Edit Content'],
   ['folder_open', 'Sources'],
   ['format_bold', 'Bold'],
   ['format_h2', 'Heading 2'],

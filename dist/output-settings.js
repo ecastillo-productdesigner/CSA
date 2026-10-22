@@ -1,7 +1,7 @@
 import { tokenNumber } from './design-system/runtime.js?v=20261022-toast-copy';
 import { normalizeWordCount } from './variant-word-count.js?v=20261022-toast-copy';
-import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261022-toast-copy';
-import { customVariantName, savedVariantName } from './outputs.js?v=20261022-toast-copy';
+import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261022-content-details';
+import { customVariantName, savedVariantName } from './outputs.js?v=20261022-content-details';
 
 export function createOutputSettings({ onSave, onDelete, onSavePreset, onDeletePreset, closeDropdowns }) {
   const menu = document.querySelector('#output-edit-menu');

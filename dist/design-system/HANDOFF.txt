@@ -64,7 +64,7 @@ COMPONENT CONTRACTS
   Variant selected state: #3b82f6 border, #f8f1ee fill, dark text.
   Pending variant: dashed outline.
   Saved variant names and article headings are independent.
-  Homepage project cards show the title, creation date, variant count,
+  Homepage project cards show the title, creation date, Pieces of Content count,
     and project menu without a separate Open button or Draft/Sent badges.
     The native title button extends across the card surface and supports
     keyboard activation. Title truncation stays on its inner label.
@@ -107,7 +107,7 @@ COMPONENT CONTRACTS
 VARIANT STATUS SEGMENTS
   To Adapt / Adapted separate pending and ready content.
   Use "To Adapt" when empty and "1 Content to Adapt" / "2 Content to Adapt" for nonzero pending counts. Ready labels read "Adapted" or "4 Adapted"; omit zero counts.
-  Inter 14 / 20, weight 400. Overall height matches Target Word Count: 36 px desktop, 46 px mobile. Radius matches component.dropdown.radius (8 px).
+  Inter 14 / 20, weight 400. Overall height matches Target Length: 36 px desktop, 46 px mobile. Radius matches component.dropdown.radius (8 px).
   Selected: secondary button white background, blue label and 1 px blue border; hover uses the secondary hover label and border. Unselected:
     default surface, primary text, button border (#e5e5e5). No checkmark.
   Inactive To Adapt and Adapted use the same primary dark gray (#404040), with or without a count. Both remain interactive.
@@ -169,7 +169,7 @@ HOMEPAGE LAYOUTS
   Toolbar height stays fixed across layouts; selection slides and content
     fades/resizes over 200 ms. Reduced motion switches immediately.
   A stable scrollbar gutter prevents horizontal movement between layouts.
-  List shows Title, created Variants, Date, and a Delete-only action menu.
+  List shows Title, created Pieces of Content, Date, and a Delete-only action menu.
   New Project sits at the right of the layout toolbar in list view;
     grid view keeps its New Project tile.
   Date keeps Today / Updated Today semantics.
@@ -418,4 +418,8 @@ The To Adapt empty state reads Your adapted content will appear here. Adapted re
 
 2026-10-22: The Content panel heading and mobile open/close labels read Content. The New Content panel action reads Add, including its enabled tooltip and DS button specimen. Its existing queue behavior and all progress animations remain unchanged. Updated script entry URLs use the 20261022-add-action asset version.
 
-2026-10-22: The word-range field is labeled Target Length in the app, accessible dropdown names, and DS specimens. Its options and saved targetWordCount values are unchanged. Link-based projects use the source headline instead of the website domain; older automatic domain-only project names are updated from their source headline while custom titles, source records, URLs, and activity dates remain unchanged. Changed app/dashboard and DS guide entry URLs use the 20261022-project-headings asset version.
+2026-10-22: The word-range field is labeled Target Length in the app, accessible dropdown names, and DS specimens. The options read 500–800 Words, 800–1200 Words, and 1200–1500 Words without parenthetical size labels; ranges and saved targetWordCount values are unchanged. Link-based projects use the source headline instead of the website domain; older automatic domain-only project names are updated from their source headline while custom titles, source records, URLs, and activity dates remain unchanged. Changed app/dashboard and DS guide entry URLs use the 20261022-project-headings asset version.
+
+2026-10-22: Target Length options use capitalized Words. Ready, nonblank drafts show their actual body word count in a bordered pill on content cards and the editor settings row; pending and blank drafts omit it. Editor tabs retain only status and title. Sources are omitted from content cards and appear as a borderless action immediately next to the word count in the editor settings row. Its background is transparent at rest and while expanded; only hover adds light gray. Text and folder icon remain dark. Card metadata stays on one horizontally scrollable line above the title, with a directional fade for offscreen labels and space for the pending selection checkbox. Each content card has a top-right pencil that reveals that card’s Delete action. Pencil and Delete use 44 px minimum targets, support both pending and adapted cards, reuse Undo, and disable deletion during processing. The Adapted empty-state instruction starts on its own line. Updated script/style dependency URLs use the 20261022-content-details asset version.
+
+2026-10-22: Dashboard grid/list counts use Piece of Content for one item and Pieces of Content for zero or multiple items. Existing readiness filters and saved variant data keys remain unchanged.

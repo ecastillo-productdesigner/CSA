@@ -1,0 +1,125 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { outputWordCount, createOutputBadges, createOutputWordCountBadge } from '../dist/outputs.js';
+import { createEditorTabs } from '../dist/editor-tabs.js';
+
+class Element {
+  constructor(tagName = 'div') {
+    this.tagName = tagName.toUpperCase();
+    this.children = [];
+    this.dataset = {};
+    this.attributes = {};
+    this.className = '';
+    this.classList = { toggle() {} };
+  }
+  set textContent(value) { this.text = String(value); this.children = []; }
+  get textContent() { return this.text ?? this.children.map(child => child.textContent).join(''); }
+  setAttribute(name, value) { this.attributes[name] = String(value); }
+  removeAttribute(name) { delete this.attributes[name]; }
+  append(...children) { this.children.push(...children); }
+  replaceChildren(...children) { this.children = children; }
+  addEventListener() {}
+}
+
+function documentFor(t, roots = {}) {
+  const previous = { document: globalThis.document, ResizeObserver: globalThis.ResizeObserver, requestAnimationFrame: globalThis.requestAnimationFrame };
+  globalThis.document = {
+    createElement: tag => new Element(tag),
+    createTextNode: text => ({ textContent: text }),
+    querySelector: selector => roots[selector],
+  };
+  globalThis.ResizeObserver = class { observe() {} };
+  globalThis.requestAnimationFrame = () => {};
+  t.after(() => {
+    for (const [name, value] of Object.entries(previous)) {
+      if (value === undefined) delete globalThis[name];
+      else globalThis[name] = value;
+    }
+  });
+}
+
+const hasWords = badge => badge.className.split(' ').includes('output-badge--words');
+
+test('actual draft counts use authoritative body operations without counting formatting, embeds, or other fields', () => {
+  const output = {
+    title: 'Do not count this headline', shareText: 'Do not count this subhead',
+    document: { ops: [
+      { insert: 'Hel', attributes: { bold: true } },
+      { insert: 'lo world\n', attributes: { link: 'https://example.com/a-long-link' } },
+      { insert: { image: 'image words do not count' } },
+      { insert: 'Next\tparagraph\n' },
+    ] },
+    draftText: 'This stale fallback must not be counted',
+  };
+  assert.equal(outputWordCount(output), 4);
+  assert.equal(outputWordCount({ document: { ops: [] }, draftText: 'Stale saved text' }), 0);
+  assert.equal(outputWordCount({ document: { ops: [{ insert: '\n \t' }] }, draftText: 'Stale saved text' }), 0);
+});
+
+test('legacy drafts fall back to plain body text and handle empty or malformed content safely', () => {
+  assert.equal(outputWordCount({ draftText: 'One\n\ntwo\tthree\u00a0four' }), 4);
+  assert.equal(outputWordCount({ document: { ops: null }, draftText: 'Older body text' }), 3);
+  assert.equal(outputWordCount({ draftText: ' \n\t' }), 0);
+  assert.equal(outputWordCount({ draftText: null }), 0);
+  assert.equal(outputWordCount(), 0);
+});
+
+test('shared badges show capitalized actual words before the unchanged source-count action', t => {
+  documentFor(t);
+  const output = { id: 'draft', title: 'Article', status: 'ready', labels: [{ key: 'format', label: 'Standard Format' }], draftText: 'actual '.repeat(642), sourceCount: 3 };
+  const badges = createOutputBadges(output);
+  assert.equal(badges.find(hasWords).textContent, '642 Words');
+  assert.equal(badges.find(hasWords).attributes['aria-label'], '642 Words');
+  const sources = badges.at(-1);
+  assert.equal(sources.tagName, 'BUTTON');
+  assert.equal(sources.dataset.variantSources, 'draft');
+  assert.equal(sources.attributes['aria-controls'], 'editor-sources');
+  assert.equal(sources.children.at(-1).textContent, '3 sources');
+  assert.equal(createOutputWordCountBadge({ ...output, draftText: 'one' }).textContent, '1 Word');
+  assert.equal(createOutputBadges(output, { includeSourceCount: false }).at(-1).textContent, '642 Words');
+});
+
+test('pending, regenerating, and blank drafts omit word pills instead of displaying zero', t => {
+  documentFor(t);
+  for (const output of [
+    { status: 'pending', draftText: 'Previously saved body' },
+    { status: 'ready', needsRegeneration: true, draftText: 'Previously saved body' },
+    { status: 'ready', document: { ops: [] }, draftText: 'Stale fallback' },
+    { draftText: '  \n' },
+    undefined,
+  ]) {
+    assert.equal(createOutputWordCountBadge(output), null);
+    assert.equal(createOutputBadges(output).some(hasWords), false);
+  }
+});
+
+test('draft tabs retain status and heading while body counts stay in shared metadata badges', t => {
+  const root = new Element();
+  const panel = new Element();
+  panel.id = 'editor-canvas-content';
+  documentFor(t, { '#editor-variant-tabs': root, '#editor-canvas-content': panel });
+  const tabs = createEditorTabs({ onSelect() {} });
+  const output = { id: 'draft', title: 'Same article', status: 'ready', document: { ops: [{ insert: 'Two words\n' }] }, draftText: 'Stale fallback has many words' };
+  const project = { id: 'project', outputs: [output], selectedOutputId: output.id };
+  tabs.render(project);
+  const draftTab = root.children[0];
+  assert.equal(draftTab.children.some(hasWords), false);
+  assert.equal(draftTab.children.find(child => child.className === 'editor-tab-title').textContent, 'Same article');
+  assert.equal(draftTab.attributes['aria-description'], 'Draft');
+  assert.equal(createOutputBadges(output).find(hasWords).textContent, '2 Words');
+  output.document = { ops: [{ insert: 'Now three words\n' }] };
+  tabs.render(project);
+  assert.equal(root.children[0], draftTab, 'body-count changes must not replace the focused tab');
+  assert.equal(root.children[0].children.some(hasWords), false);
+  assert.equal(createOutputBadges(output).find(hasWords).textContent, '3 Words');
+  output.document = { ops: [] };
+  tabs.render(project);
+  assert.equal(root.children[0].children.some(hasWords), false);
+  assert.equal(createOutputBadges(output).some(hasWords), false);
+  output.cmsSentAt = 1;
+  tabs.render(project);
+  assert.equal(root.children[0].attributes['aria-description'], 'Sent');
+  assert.equal(root.children[0].children.some(hasWords), false);
+  tabs.render({ id: 'original', linkCards: true, outputs: [] });
+  assert.equal(root.children[0].children.some(hasWords), false);
+});

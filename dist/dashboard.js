@@ -1,6 +1,6 @@
 import { tokenNumber } from './design-system/runtime.js?v=20261022-toast-copy';
 import { createIcon as icon } from './icons.js?v=20261022-toast-copy';
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261022-toast-copy';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261022-content-details';
 import { sourceLinkArticles } from './source-links.js?v=20261022-toast-copy';
 
 const layoutKey = 'csa.dashboard.layout.v1';
@@ -63,6 +63,11 @@ export function projectUpdatedDate(project, now = Date.now()) {
   const sameYear = year.format(timestamp) === year.format(now);
   const label = day.format(timestamp) === day.format(now) ? 'Today' : new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', ...(!sameYear ? { year: 'numeric' } : {}) }).format(date);
   return { timestamp, label: wasUpdated ? `Updated ${label}` : label, full: new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', dateStyle: 'medium', timeStyle: 'short' }).format(date) };
+}
+
+export function projectContentCountLabel(project) {
+  const count = projectOutputs(project).filter(outputIsReady).length;
+  return `${count} ${count === 1 ? 'Piece' : 'Pieces'} of Content`;
 }
 
 export function createDashboard({ onNew, onOpen, onDelete }) {
@@ -257,8 +262,8 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
     const caption = node('caption', 'visually-hidden', 'Projects');
     const head = node('thead');
     const headerRow = node('tr');
-    for (const label of ['Title', 'Variants', 'Date', 'Actions']) {
-      const cell = node('th', `project-column-${label.toLowerCase()}`);
+    for (const [label, column] of [['Title', 'title'], ['Pieces of Content', 'variants'], ['Date', 'date'], ['Actions', 'actions']]) {
+      const cell = node('th', `project-column-${column}`);
       cell.scope = 'col';
       cell.append(node('span', label === 'Actions' ? 'visually-hidden' : '', label));
       headerRow.append(cell);
@@ -274,9 +279,8 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
       open.setAttribute('aria-label', `Open project: ${project.title}`);
       open.addEventListener('click', () => { closeMenu(); onOpen(project.id); });
       title.append(open);
-      const variantCount = projectOutputs(project).filter(outputIsReady).length;
-      const variants = node('td', 'project-table-variants', `${variantCount} ${variantCount === 1 ? 'variant' : 'variants'}`);
-      variants.dataset.label = 'Variants';
+      const variants = node('td', 'project-table-variants', projectContentCountLabel(project));
+      variants.dataset.label = 'Pieces of Content';
       const date = node('td', 'project-table-date');
       date.dataset.label = 'Date';
       const updated = projectUpdatedDate(project);
@@ -322,7 +326,6 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
     else for (const project of dashboardProjects) {
       const card = node('article', 'dashboard-project');
       card.setAttribute('aria-label', project.title);
-      const variants = projectOutputs(project).filter(outputIsReady);
       const { more, menu } = projectActions(project);
       const title = node('h2');
       const titleButton = node('button', 'project-title-button');
@@ -337,7 +340,7 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
       const date = node('time', '', updated.label);
       date.dateTime = new Date(updated.timestamp).toISOString();
       date.title = updated.full;
-      const count = node('span', '', `${variants.length} ${variants.length === 1 ? 'variant' : 'variants'}`);
+      const count = node('span', '', projectContentCountLabel(project));
       const separator = node('span', 'meta-dot', '·');
       separator.setAttribute('aria-hidden', 'true');
       meta.append(date, separator, count);

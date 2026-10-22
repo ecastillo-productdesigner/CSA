@@ -1,8 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { cleanProjectTitle, normalizeProjectTitles, projectTitleFromSources, projectUpdatedDate } from '../dist/dashboard.js';
+import { cleanProjectTitle, normalizeProjectTitles, projectTitleFromSources, projectUpdatedDate, projectContentCountLabel } from '../dist/dashboard.js';
 
 const now = Date.parse('2026-10-20T16:00:00Z');
+
+test('project content counts include adapted and legacy drafts while excluding pending and invalid records', () => {
+  const ready = { id: 'ready', title: 'Adapted article', status: 'ready' };
+  const pending = { id: 'pending', title: 'Pending article', status: 'pending' };
+  const legacy = { id: 'legacy', title: 'Older article', draftText: 'Saved article body' };
+  assert.equal(projectContentCountLabel({ outputs: [] }), '0 Pieces of Content');
+  assert.equal(projectContentCountLabel({ outputs: [pending, null, { status: 'ready' }] }), '0 Pieces of Content');
+  assert.equal(projectContentCountLabel({ outputs: [ready, pending] }), '1 Piece of Content');
+  assert.equal(projectContentCountLabel({ outputs: [ready, legacy, pending] }), '2 Pieces of Content');
+});
 
 test('project titles lose only a trailing Draft suffix and keep the meaningful name', () => {
   assert.equal(cleanProjectTitle('A neighborhood story — Draft'), 'A neighborhood story');

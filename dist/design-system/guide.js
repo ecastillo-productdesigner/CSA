@@ -1,5 +1,5 @@
 import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-toast-copy';
-import { iconInventory } from './icon-inventory.js?v=20261022-adapt-action';
+import { iconInventory } from './icon-inventory.js?v=20261022-content-details';
 const $ = selector => document.querySelector(selector);
 createToolDropdowns();
 let toastTimer;
@@ -55,6 +55,13 @@ const contentCard = $('#ds-variant');
 const contentSelection = $('#ds-content-select');
 const contentOpen = $('#ds-content-open');
 const contentTitle = contentCard.querySelector('.output-card-title').textContent;
+const contentBadges = contentCard.querySelector('.output-badges');
+function updateContentBadgeOverflow() {
+  const overflows = contentBadges.scrollWidth > contentBadges.clientWidth + 1;
+  contentBadges.dataset.fadeStart = String(overflows && contentBadges.scrollLeft > 1);
+  contentBadges.dataset.fadeEnd = String(overflows && contentBadges.scrollLeft + contentBadges.clientWidth < contentBadges.scrollWidth - 1);
+  contentBadges.tabIndex = overflows ? 0 : -1;
+}
 function setContentCardState(state) {
   const pending = state === 'pending';
   const selected = state === 'selected';
@@ -62,6 +69,7 @@ function setContentCardState(state) {
   contentCard.dataset.selected = String(selected);
   contentCard.dataset.active = String(selected);
   contentCard.querySelector('.output-card-dash').toggleAttribute('hidden', !pending);
+  contentCard.querySelector('.output-badge--words').hidden = pending;
   contentSelection.hidden = !pending;
   contentSelection.setAttribute('aria-checked', 'false');
   contentSelection.setAttribute('aria-label', `Select content: ${contentTitle}`);
@@ -70,6 +78,7 @@ function setContentCardState(state) {
   if (selected) contentOpen.setAttribute('aria-current', 'true');
   else contentOpen.removeAttribute('aria-current');
   for (const button of document.querySelectorAll('[data-card-state]')) button.setAttribute('aria-pressed', String(button.dataset.cardState === state));
+  updateContentBadgeOverflow();
 }
 function togglePendingContentSelection() {
   if (contentCard.dataset.ready === 'true') { setContentCardState('selected'); return; }
@@ -82,6 +91,34 @@ for (const button of document.querySelectorAll('[data-card-state]')) button.addE
 contentSelection.addEventListener('click', togglePendingContentSelection);
 contentOpen.addEventListener('click', togglePendingContentSelection);
 setContentCardState('selected');
+contentBadges.addEventListener('scroll', updateContentBadgeOverflow, { passive: true });
+const contentBadgeObserver = new ResizeObserver(updateContentBadgeOverflow);
+contentBadgeObserver.observe(contentBadges);
+for (const badge of contentBadges.children) contentBadgeObserver.observe(badge);
+const contentEdit = $('#ds-content-edit');
+const contentDelete = $('#ds-content-delete');
+const contentRestore = $('#ds-content-restore');
+contentEdit.addEventListener('click', () => {
+  const editing = contentEdit.getAttribute('aria-pressed') !== 'true';
+  contentEdit.setAttribute('aria-pressed', String(editing));
+  contentEdit.setAttribute('aria-label', editing ? 'Finish editing example content' : 'Edit example content');
+  contentEdit.title = editing ? 'Finish editing example content' : 'Edit example content';
+  contentCard.dataset.editing = String(editing);
+  contentDelete.hidden = !editing;
+  updateContentBadgeOverflow();
+});
+contentDelete.addEventListener('click', () => {
+  contentCard.hidden = true;
+  contentRestore.hidden = false;
+  contentRestore.focus();
+  notify('Content deleted');
+});
+contentRestore.addEventListener('click', () => {
+  contentCard.hidden = false;
+  contentRestore.hidden = true;
+  contentEdit.focus();
+  notify('Content restored');
+});
 $('#ds-source-check').addEventListener('change', event => { event.target.closest('.result-card').dataset.selected = String(event.target.checked); });
 for (const button of document.querySelectorAll('[data-format-preview]')) button.addEventListener('click', () => button.setAttribute('aria-pressed', String(button.getAttribute('aria-pressed') !== 'true')));
 function luminance(hex) {
@@ -110,7 +147,7 @@ try {
     swatch.append(sample,element('h4','',label),element('code','',token.value.toUpperCase()),element('small','',name));
     $('#ds-palette').append(swatch);
   }
-  for (const [path,label,text] of [["greeting.desktop", "Display — serif · desktop", "Hello Athena,"], ["greeting.mobile", "Display — serif · mobile", "Hello Athena,"], ["editor-heading.desktop", "Page title · desktop", "A story worth sharing"], ["editor-heading.compact", "Page title · compact", "A story worth sharing"], ["project-title.desktop", "Homepage card title · desktop", "A creative chapter begins"], ["project-title.mobile", "Homepage card title · mobile", "A creative chapter begins"], ["panel-heading", "Panel heading", "New Content"], ["dialog-heading", "Dialog heading", "New Project"], ["project-list-title", "Homepage list title", "A creative chapter begins"], ["source-title", "Source title", "The approved source behind the story"], ["variant-title", "Variant title", "A fresh perspective on the week"], ["result-title", "Article card title", "A creative project brings neighbors together"], ["article-h2", "Article heading · H2", "A new perspective"], ["article-h3", "Article heading · H3", "The details that matter"], ["body", "Body text", "Bring your notes, an article, or a rough idea."], ["project-meta.desktop", "Card metadata · desktop", "Updated today · 2 variants"], ["project-meta.mobile", "Card metadata · mobile", "Updated today · 2 variants"], ["label", "Field label", "Target Length"], ["field-value", "Field value", "Listicle"], ["button", "Primary button label", "Add"], ["secondary-button", "Secondary / tertiary label", "Cancel"], ["navigation", "Navigation label", "Sources"], ["chip", "Settings chip", "General Audience"], ["status", "Status badge", "Draft"], ["caption", "Caption / status message", "Ready to Create Content"], ["metadata", "Supporting text", "235 words · Created Oct 19, 2026"]]) {
+  for (const [path,label,text] of [["greeting.desktop", "Display — serif · desktop", "Hello Athena,"], ["greeting.mobile", "Display — serif · mobile", "Hello Athena,"], ["editor-heading.desktop", "Page title · desktop", "A story worth sharing"], ["editor-heading.compact", "Page title · compact", "A story worth sharing"], ["project-title.desktop", "Homepage card title · desktop", "A creative chapter begins"], ["project-title.mobile", "Homepage card title · mobile", "A creative chapter begins"], ["panel-heading", "Panel heading", "New Content"], ["dialog-heading", "Dialog heading", "New Project"], ["project-list-title", "Homepage list title", "A creative chapter begins"], ["source-title", "Source title", "The approved source behind the story"], ["variant-title", "Variant title", "A fresh perspective on the week"], ["result-title", "Article card title", "A creative project brings neighbors together"], ["article-h2", "Article heading · H2", "A new perspective"], ["article-h3", "Article heading · H3", "The details that matter"], ["body", "Body text", "Bring your notes, an article, or a rough idea."], ["project-meta.desktop", "Card metadata · desktop", "Updated today · 2 Pieces of Content"], ["project-meta.mobile", "Card metadata · mobile", "Updated today · 2 Pieces of Content"], ["label", "Field label", "Target Length"], ["field-value", "Field value", "Listicle"], ["button", "Primary button label", "Add"], ["secondary-button", "Secondary / tertiary label", "Cancel"], ["navigation", "Navigation label", "Sources"], ["chip", "Settings chip", "General Audience"], ["status", "Status badge", "Draft"], ["caption", "Caption / status message", "Ready to Create Content"], ["metadata", "Supporting text", "235 words · Created Oct 19, 2026"]]) {
     const token=byName.get('semantic.typography.'+path);
     const type=token.properties;
     const row=element('div','ds-type-row'); const specimen=element('p','',text);

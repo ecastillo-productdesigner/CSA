@@ -1,5 +1,7 @@
 import { createIcon } from './icons.js?v=20261022-toast-copy';
 import { normalizeWordCount } from './variant-word-count.js?v=20261022-toast-copy';
+import { countPreviewWords } from './content-preview.js?v=20261022-toast-copy';
+import { createContentCardActions } from './content-card-editing.js?v=20261022-content-details';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',
@@ -49,6 +51,27 @@ export function outputSourceCount(output) {
   return new Set((Array.isArray(output?.selectedSourceIndexes) ? output.selectedSourceIndexes : []).filter(index => Number.isInteger(index) && index >= 0)).size;
 }
 
+export function outputWordCount(output) {
+  const ops = output?.document?.ops;
+  const text = Array.isArray(ops)
+    ? ops.map(op => typeof op?.insert === 'string' ? op.insert : '').join('')
+    : typeof output?.draftText === 'string' ? output.draftText : '';
+  return countPreviewWords(text);
+}
+
+export function createOutputWordCountBadge(output) {
+  if (!output || !outputIsReady(output) || output.needsRegeneration) return null;
+  const count = outputWordCount(output);
+  if (!count) return null;
+  const label = `${count.toLocaleString('en-US')} ${count === 1 ? 'Word' : 'Words'}`;
+  const badge = document.createElement('span');
+  badge.className = 'output-badge output-badge--words';
+  badge.textContent = label;
+  badge.title = label;
+  badge.setAttribute('aria-label', label);
+  return badge;
+}
+
 export function createOutputBadges(output, { maxLabelLength = 20, includeSourceCount = true } = {}) {
   const badges = (Array.isArray(output?.labels) ? output.labels : [])
     .filter(label => label && ['format', 'audience', 'voice'].includes(label.key) && typeof label.label === 'string')
@@ -61,6 +84,8 @@ export function createOutputBadges(output, { maxLabelLength = 20, includeSourceC
       badge.setAttribute('aria-label', label.label);
       return badge;
     });
+  const words = createOutputWordCountBadge(output);
+  if (words) badges.push(words);
   if (output && includeSourceCount) {
     const count = outputSourceCount(output);
     const label = `${count} ${count === 1 ? 'source' : 'sources'}`;
@@ -323,7 +348,8 @@ export function renderOutputs(project, requestedView) {
   document.querySelector('#output-processing-status').textContent = project?.outputProcessing?.kind === 'revision' ? 'Revising your variant. This takes about four seconds.' : processing ? 'Adapting your selected content. This takes about four seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
   const empty = document.querySelector('#outputs-empty');
   empty.hidden = state.outputs.length > 0;
-  empty.querySelector('p').textContent = state.view === 'pending' ? 'Your adapted content will appear here.' : 'No adapted content yet. Adapt your article to see it here.';
+  empty.querySelector('p').textContent = state.view === 'pending' ? 'Your adapted content will appear here.' : 'No adapted content yet.';
+  document.querySelector('#output-empty-adapt-note').hidden = state.view === 'pending';
   document.querySelector('#output-empty-create').hidden = state.view !== 'pending';
   list.hidden = state.outputs.length === 0;
   list.setAttribute('aria-label', state.view === 'pending' ? 'Content to Adapt' : 'Adapted Content');
@@ -385,7 +411,7 @@ export function renderOutputs(project, requestedView) {
       drag = null;
       delete badges.dataset.dragging;
     });
-    badges.append(...createOutputBadges(output));
+    badges.append(...createOutputBadges(output, { includeSourceCount: false }));
     const heading = document.createElement('strong');
     heading.className = 'output-card-title';
     heading.textContent = output.title;
@@ -422,6 +448,7 @@ export function renderOutputs(project, requestedView) {
       overlay.append(spinner, label);
       card.append(overlay);
     }
+    card.append(createContentCardActions(output, { disabled: processing }));
     item.append(card);
     return item;
   }));

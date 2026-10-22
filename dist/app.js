@@ -1,12 +1,12 @@
-import { updatePresetPreferences } from './preset-settings.js?v=20261022-toast-copy';
+import { updatePresetPreferences } from './preset-settings.js?v=20261022-content-details';
 import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261022-toast-copy';
 import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261022-toast-copy';
 import { createIcon as icon } from './icons.js?v=20261022-toast-copy';
 import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261022-toast-copy';
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261022-toast-copy';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261022-content-details';
 import { createProfile } from './profile.js?v=20261022-toast-copy';
 import { createSearchExperience } from './search.js?v=20261022-add-action';
-import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261022-project-headings';
+import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261022-content-details';
 import { createMaterialEditor } from './editor.js?v=20261022-toast-copy';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261022-toast-copy';
 import { removeProjectContent } from './project-deletion.js?v=20261022-toast-copy';
@@ -14,8 +14,9 @@ import { createContentPreview } from './content-preview.js?v=20261022-toast-copy
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261022-toast-copy';
 import { createRailNavigation } from './navigation.js?v=20261022-toast-copy';
 import { createProjectSources } from './sources.js?v=20261022-toast-copy';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-toast-copy';
-import { createEditorTabs } from './editor-tabs.js?v=20261022-toast-copy';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-content-details';
+import { createEditorTabs } from './editor-tabs.js?v=20261022-content-details';
+import { createContentCardEditing } from './content-card-editing.js?v=20261022-content-details';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -136,12 +137,17 @@ const richEditor = createMaterialEditor({
     return saved;
   },
 });
+const contentCardEditing = createContentCardEditing({
+  getProject: () => projects.find(project => project.id === activeProjectId && !project.deletedAt),
+  onDelete: outputId => deleteVariant({ projectId: activeProjectId, outputId }),
+});
 
 function renderOutputs(project) {
   $('#show-sources').hidden = project?.kind !== 'draft';
   const view = variantPanelState(project, outputViews.get(project?.id)).view;
   outputViews.set(project?.id, view);
   renderProjectOutputs(project, view);
+  contentCardEditing.render(project);
   editorTabs.render(project);
   const selectedOutput = projectOutputs(project).find(output => output.id === project?.selectedOutputId && (outputIsReady(output) || output.needsRegeneration));
   richEditor.setRevisionBusy(Boolean(project?.outputProcessing?.kind === 'revision' && project.outputProcessing.ids.includes(selectedOutput?.id)));

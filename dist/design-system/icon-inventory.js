@@ -4,7 +4,7 @@
 export const iconInventory = [
   ['add_circle', 'Add'],
   ['arrow_forward', 'Continue'],
-  ['article', 'Adapt Content'],
+  ['article', 'Content'],
   ['check', 'Check'],
   ['close', 'Close'],
   ['delete', 'Delete'],

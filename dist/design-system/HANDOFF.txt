@@ -343,7 +343,7 @@ New Project uses the plain “Paste a source link” field, without a search ico
 Add Content requires a selected source or content, a selected Format, and no generation in progress. None Selected disables the primary action using the shared disabled style; fixed Audience and Voice values do not satisfy the format requirement.
 
 Content queue restored — 2026-10-21
-New Variant is renamed New Content, and Create variant is renamed Add Content. Add Content queues a configuration in To Adapt. The Adapt Content panel has To Adapt / Adapted segments with counts, keyboard navigation, and an Adapt Content action. Generation moves completed items to Adapted and opens the newest result.
+New Variant is renamed New Content, and Create variant is renamed Add Content. Add Content queues a configuration in To Adapt. The Content panel has To Adapt / Adapted segments with counts, keyboard navigation, and an Adapt Content action. Generation moves completed items to Adapted and opens the newest result.
 
 While generating, the Creating… label has a Blue 600 band over a pale Blue 200 base. Reduced-motion preferences show static Blue 600 text.
 Pasted source links are checked automatically on import; users can uncheck individual cards. Their choices persist across reloads, and Add Content still requires a format.

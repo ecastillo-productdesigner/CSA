@@ -116,10 +116,11 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
   document.addEventListener('pointerdown', event => {
     if (document.querySelector('dialog[open]')) return;
     if (active === 'profile' && floatingProfile() && !panels.profile.panel.contains(event.target) && !panels.profile.trigger.contains(event.target)) { close(); return; }
-    if (active !== 'sources' && mobileTopBar() && !sidebar.contains(event.target) && !panels[active]?.panel.contains(event.target) && !event.target.closest('.output-edit-menu, .editor-flyover, [data-variant-sources], [data-workspace-dropdown]')) close();
+    if (active !== 'sources' && mobileTopBar() && !sidebar.contains(event.target) && !panels[active]?.panel.contains(event.target) && !event.target.closest('.output-edit-menu, .output-card-menu, .editor-flyover, [data-variant-sources], [data-workspace-dropdown]')) close();
   });
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape' || event.defaultPrevented || document.querySelector('dialog[open]')) return;
+    if (document.querySelector('.output-card-menu:not([hidden])')) return;
     if (tooltips.some(({ tooltip }) => !tooltip.hidden)) { event.preventDefault(); hideTooltips(); return; }
     if (active) { event.preventDefault(); close(active, true); }
     else if (drawerOpen) { event.preventDefault(); setDrawer(false, true); }

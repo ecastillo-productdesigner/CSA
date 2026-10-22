@@ -1,7 +1,7 @@
 import { createIcon } from './icons.js?v=20261022-toast-copy';
 import { normalizeWordCount } from './variant-word-count.js?v=20261022-toast-copy';
 import { countPreviewWords } from './content-preview.js?v=20261022-toast-copy';
-import { createContentCardActions } from './content-card-editing.js?v=20261022-content-details';
+import { createContentCardActions } from './content-card-editing.js?v=20261022-card-menu';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',

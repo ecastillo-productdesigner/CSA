@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261022-content-details');
+  await import('./app.js?v=20261022-card-menu');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

@@ -1,22 +1,22 @@
-import { updatePresetPreferences } from './preset-settings.js?v=20261022-content-details';
+import { updatePresetPreferences } from './preset-settings.js?v=20261022-card-menu';
 import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261022-toast-copy';
 import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261022-toast-copy';
 import { createIcon as icon } from './icons.js?v=20261022-toast-copy';
 import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261022-toast-copy';
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261022-content-details';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261022-card-menu';
 import { createProfile } from './profile.js?v=20261022-toast-copy';
 import { createSearchExperience } from './search.js?v=20261022-add-action';
-import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261022-content-details';
+import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261022-card-menu';
 import { createMaterialEditor } from './editor.js?v=20261022-toast-copy';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261022-toast-copy';
 import { removeProjectContent } from './project-deletion.js?v=20261022-toast-copy';
 import { createContentPreview } from './content-preview.js?v=20261022-toast-copy';
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261022-toast-copy';
-import { createRailNavigation } from './navigation.js?v=20261022-toast-copy';
+import { createRailNavigation } from './navigation.js?v=20261022-card-menu';
 import { createProjectSources } from './sources.js?v=20261022-toast-copy';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-content-details';
-import { createEditorTabs } from './editor-tabs.js?v=20261022-content-details';
-import { createContentCardEditing } from './content-card-editing.js?v=20261022-content-details';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-card-menu';
+import { createEditorTabs } from './editor-tabs.js?v=20261022-card-menu';
+import { createContentCardEditing } from './content-card-editing.js?v=20261022-card-menu';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -256,8 +256,11 @@ function deleteVariant({ projectId, outputId }) {
   const persist = next => localStorage.setItem(storageKey, JSON.stringify(next));
   const refresh = () => {
     const project = projects.find(entry => entry.id === projectId && !entry.deletedAt);
-    if (project && activeProjectId === projectId && !$('#composer').hidden) showEditorProject(project);
-    else {
+    if (project && activeProjectId === projectId && !$('#composer').hidden) {
+      const contentPanelOpen = $('#composer-outputs').dataset.mobileOpen === 'true';
+      showEditorProject(project);
+      if (contentPanelOpen && window.matchMedia(breakpointQuery()).matches) railNavigation.open('variants');
+    } else {
       dashboard?.render(projects);
     }
   };
@@ -717,8 +720,8 @@ $('.create-variant').addEventListener('click', () => {
   delete project.variantPreset;
   project.outputs = [output, ...projectOutputs(project)];
   outputViews.set(project.id, 'pending');
-  project.newVariantCollapsed = true;
-  setNewVariantCollapsed(true);
+  project.newVariantCollapsed = false;
+  setNewVariantCollapsed(false);
   project.toolPreferences = { format: '', audience: '', voice: '' };
   for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = '';
   toolDropdowns.refresh();
@@ -726,9 +729,9 @@ $('.create-variant').addEventListener('click', () => {
   project.updatedAt = Date.now();
   const saved = saveProjects();
   showEditorProject(project);
-  if (window.matchMedia(breakpointQuery()).matches) railNavigation.open('variants');
-  [...$('#output-list').querySelectorAll('[data-output-id]')].find(button => button.dataset.outputId === output.id)?.focus({ preventScroll: true });
-  if (saved) notify('Content added to To Adapt.');
+  if (window.matchMedia(breakpointQuery()).matches) railNavigation.open('newVariant');
+  $('#composer-tools .tool-dropdown-trigger')?.focus({ preventScroll: true });
+  if (saved) notify('Content Added');
 });
 
 $('#output-list').addEventListener('click', event => {

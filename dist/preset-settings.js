@@ -1,4 +1,4 @@
-import { savedVariantName } from './outputs.js?v=20261022-content-details';
+import { savedVariantName } from './outputs.js?v=20261022-card-menu';
 import { normalizeWordCount } from './variant-word-count.js?v=20261022-toast-copy';
 const keys = ['format', 'audience', 'voice'];
 export function presetConfiguration(output) {

@@ -1,5 +1,6 @@
 import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-toast-copy';
 import { iconInventory } from './icon-inventory.js?v=20261022-content-details';
+import { tokenNumber } from './runtime.js?v=20261022-toast-copy';
 const $ = selector => document.querySelector(selector);
 createToolDropdowns();
 let toastTimer;
@@ -87,7 +88,7 @@ function togglePendingContentSelection() {
   contentSelection.setAttribute('aria-checked', String(selected));
   contentSelection.setAttribute('aria-label', `${selected ? 'Deselect' : 'Select'} content: ${contentTitle}`);
 }
-for (const button of document.querySelectorAll('[data-card-state]')) button.addEventListener('click', () => setContentCardState(button.dataset.cardState));
+for (const button of document.querySelectorAll('[data-card-state]')) button.addEventListener('click', () => { closeContentMenu(false); setContentCardState(button.dataset.cardState); });
 contentSelection.addEventListener('click', togglePendingContentSelection);
 contentOpen.addEventListener('click', togglePendingContentSelection);
 setContentCardState('selected');
@@ -96,18 +97,57 @@ const contentBadgeObserver = new ResizeObserver(updateContentBadgeOverflow);
 contentBadgeObserver.observe(contentBadges);
 for (const badge of contentBadges.children) contentBadgeObserver.observe(badge);
 const contentEdit = $('#ds-content-edit');
+const contentMenu = $('#ds-content-menu');
 const contentDelete = $('#ds-content-delete');
 const contentRestore = $('#ds-content-restore');
+function closeContentMenu(restoreFocus = true) {
+  if (contentMenu.hidden) return;
+  contentMenu.hidden = true;
+  contentEdit.setAttribute('aria-expanded', 'false');
+  if (restoreFocus && contentEdit.isConnected) contentEdit.focus({ preventScroll: true });
+}
+function openContentMenu() {
+  const rect = contentEdit.getBoundingClientRect();
+  const inset = tokenNumber('foundation.space.12');
+  const gap = tokenNumber('foundation.space.4');
+  contentMenu.hidden = false;
+  const width = contentMenu.offsetWidth;
+  const height = contentMenu.offsetHeight;
+  const left = Math.max(inset, Math.min(rect.right - width, window.innerWidth - width - inset));
+  const below = rect.bottom + gap;
+  const top = below + height <= window.innerHeight - inset ? below : Math.max(inset, rect.top - height - gap);
+  contentMenu.style.left = `${Math.round(left)}px`;
+  contentMenu.style.top = `${Math.round(top)}px`;
+  contentEdit.setAttribute('aria-expanded', 'true');
+  contentDelete.focus({ preventScroll: true });
+}
 contentEdit.addEventListener('click', () => {
-  const editing = contentEdit.getAttribute('aria-pressed') !== 'true';
-  contentEdit.setAttribute('aria-pressed', String(editing));
-  contentEdit.setAttribute('aria-label', editing ? 'Finish editing example content' : 'Edit example content');
-  contentEdit.title = editing ? 'Finish editing example content' : 'Edit example content';
-  contentCard.dataset.editing = String(editing);
-  contentDelete.hidden = !editing;
-  updateContentBadgeOverflow();
+  if (contentMenu.hidden) openContentMenu();
+  else closeContentMenu();
 });
+contentEdit.addEventListener('keydown', event => {
+  if (!['ArrowDown', 'ArrowUp'].includes(event.key)) return;
+  event.preventDefault();
+  openContentMenu();
+});
+contentMenu.addEventListener('keydown', event => {
+  if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+    event.preventDefault();
+    contentDelete.focus();
+  }
+});
+document.addEventListener('keydown', event => {
+  if (contentMenu.hidden) return;
+  if (event.key === 'Escape') { event.preventDefault(); closeContentMenu(); }
+  else if (event.key === 'Tab') closeContentMenu();
+});
+document.addEventListener('pointerdown', event => {
+  if (!contentMenu.hidden && !contentMenu.contains(event.target) && !contentEdit.contains(event.target)) closeContentMenu(false);
+});
+window.addEventListener('resize', () => closeContentMenu());
+window.addEventListener('scroll', () => closeContentMenu(), true);
 contentDelete.addEventListener('click', () => {
+  closeContentMenu(false);
   contentCard.hidden = true;
   contentRestore.hidden = false;
   contentRestore.focus();

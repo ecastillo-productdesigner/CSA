@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261022-adapt-action');
+  await import('./app.js?v=20261022-add-action');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

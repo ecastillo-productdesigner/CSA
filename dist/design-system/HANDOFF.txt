@@ -416,4 +416,4 @@ The To Adapt empty state reads Your adapted content will appear here. Adapted re
 
 2026-10-21: To Adapt’s empty state keeps Your adapted content will appear here. and adds Create new content underneath. Only new content is an underlined action; it expands the New Content panel on desktop and opens the New Content overlay on mobile, moving focus into the panel. The Adapted empty message remains unchanged.
 
-2026-10-22: The Content panel heading and mobile open/close labels read Content. The New Content panel action reads Adapt Content, including its enabled tooltip and DS button specimen. Its existing queue behavior and all progress animations remain unchanged. Updated script entry URLs use the 20261022-adapt-action asset version.
+2026-10-22: The Content panel heading and mobile open/close labels read Content. The New Content panel action reads Add, including its enabled tooltip and DS button specimen. Its existing queue behavior and all progress animations remain unchanged. Updated script entry URLs use the 20261022-add-action asset version.

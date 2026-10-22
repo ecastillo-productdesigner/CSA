@@ -343,7 +343,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       $('.results-toolbar').hidden = embedded;
       (embedded ? $('#editor-canvas-content') : resultsHome).append(results);
       results.classList.toggle('link-cards-panel', embedded);
-      $('#results-help').textContent = embedded ? 'Select sources and choose a format to enable Adapt Content.' : addingSources ? 'Select at least one article to add it to your project.' : 'Select at least one article to enable Draft.';
+      $('#results-help').textContent = embedded ? 'Select sources and choose a format to enable Add.' : addingSources ? 'Select at least one article to add it to your project.' : 'Select at least one article to enable Draft.';
       $('#search-results').hidden = false;
       $('#results-heading').textContent = embedded ? 'Ready to Create Content' : linkResults ? 'Choose sources from your links' : `Search results for ${query}`;
       $('#results-heading').classList.toggle('visually-hidden', !embedded);

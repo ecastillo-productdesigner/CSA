@@ -5,7 +5,7 @@ import { createIcon as icon } from './icons.js?v=20261022-toast-copy';
 import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261022-toast-copy';
 import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261022-toast-copy';
 import { createProfile } from './profile.js?v=20261022-toast-copy';
-import { createSearchExperience } from './search.js?v=20261022-adapt-action';
+import { createSearchExperience } from './search.js?v=20261022-add-action';
 import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=20261022-toast-copy';
 import { createMaterialEditor } from './editor.js?v=20261022-toast-copy';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261022-toast-copy';
@@ -657,7 +657,7 @@ function updateComposerActions() {
   const hasFormat = Boolean($('#composer-format').value);
   const enabled = hasContent && hasFormat && !processing;
   $('.create-variant').disabled = !enabled;
-  $('.create-variant').title = processing ? 'Adapting content…' : !hasContent ? 'Select a source first' : !hasFormat ? 'Select a format first' : 'Adapt Content';
+  $('.create-variant').title = processing ? 'Adapting content…' : !hasContent ? 'Select a source first' : !hasFormat ? 'Select a format first' : 'Add';
 }
 
 function ensureComposerProject(allowEmpty = false) {

@@ -296,7 +296,7 @@ main:focus { outline: none; }
 .composer-outputs h2 { position: relative; z-index: var(--csa-foundation-layer-1); }
 :is(.output-status-tabs, .segmented-control) { display: flex; flex-shrink: 0; margin-top: var(--csa-foundation-space-24); border: var(--csa-component-button-border) var(--csa-foundation-border-width-1) solid; border-radius: var(--csa-component-dropdown-radius); }
 :is(.output-status-tabs, .segmented-control) button { flex: 1; min-width: 0; min-height: var(--csa-foundation-space-40); padding: var(--csa-foundation-space-8) var(--csa-foundation-space-10); border: 0; background: var(--csa-component-button-secondary-background); color: var(--csa-semantic-color-text-primary); font-family: var(--csa-foundation-font-family-interface); font-size: var(--csa-foundation-font-size-14); line-height: var(--csa-foundation-line-height-20); font-weight: var(--csa-foundation-font-weight-600); white-space: nowrap; }
-.output-status-tabs button { white-space: normal; overflow-wrap: anywhere; }
+.output-status-tabs button { min-height: calc(var(--csa-component-field-height-desktop) - var(--csa-foundation-border-width-1) * 2); padding-block: var(--csa-foundation-space-6); font-weight: var(--csa-foundation-font-weight-400); white-space: normal; overflow-wrap: anywhere; }
 :is(.output-status-tabs, .segmented-control) button:first-child { border-radius: var(--csa-component-dropdown-radius) 0 0 var(--csa-component-dropdown-radius); }
 :is(.output-status-tabs, .segmented-control) button:last-child { border-left: var(--csa-foundation-border-width-1) solid var(--csa-component-button-border); border-radius: 0 var(--csa-component-dropdown-radius) var(--csa-component-dropdown-radius) 0; }
 :is(.output-status-tabs, .segmented-control) button:hover { background: var(--csa-semantic-color-surface-hover); }
@@ -898,7 +898,8 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
   body.showing-composer .composer-fields .tool-dropdown-trigger { height: var(--csa-foundation-size-46); }
   body.showing-composer .composer-fields .tool-fixed-value { min-height: var(--csa-component-field-height-mobile); }
   body.showing-composer .composer-direction textarea { font-size: var(--csa-foundation-font-size-16); }
-  body.showing-composer :is(.output-status-tabs, .segmented-control) button { min-height: var(--csa-foundation-space-44); }
+  body.showing-composer .segmented-control button { min-height: var(--csa-foundation-space-44); }
+  body.showing-composer .output-status-tabs button { min-height: calc(var(--csa-component-field-height-mobile) - var(--csa-foundation-border-width-1) * 2); }
   body.showing-composer .composer-outputs .output-list { flex: 1; overflow-y: auto; }
   body.showing-composer .sources-panel { position: fixed; z-index: var(--csa-foundation-layer-30); top: var(--csa-foundation-space-82); right: var(--csa-foundation-space-10); bottom: auto; left: var(--csa-foundation-space-10); width: auto; max-height: calc(100dvh - var(--csa-foundation-space-98)); margin: 0; padding: var(--csa-foundation-space-12) var(--csa-foundation-space-6); overflow-y: auto; overscroll-behavior: contain; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-8); background: var(--csa-foundation-color-neutral-0); box-shadow: none; animation: none; }
   body.showing-composer .mobile-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--csa-foundation-space-12); padding: 0 var(--csa-foundation-space-10) var(--csa-foundation-space-10); }
@@ -1188,7 +1189,7 @@ body #home[data-layout="list"] .new-project-tile .material-symbols-outlined { wi
   .has-variant-tabs .link-cards-panel { height: calc(100svh - var(--csa-foundation-size-122) - var(--editor-tabs-height)); min-height: var(--csa-foundation-size-360); padding: var(--csa-foundation-space-24) var(--csa-foundation-space-16); }
   .link-cards-panel .result-card { grid-template-columns: var(--csa-component-checkbox-size) var(--csa-foundation-space-48) minmax(0, 1fr); gap: var(--csa-foundation-space-8); }
   .link-cards-panel .result-thumbnail { width: var(--csa-foundation-space-48); height: var(--csa-foundation-space-64); }
-  .output-status-tabs button { min-height: var(--csa-foundation-space-44); }
+  .output-status-tabs button { min-height: calc(var(--csa-component-field-height-mobile) - var(--csa-foundation-border-width-1) * 2); }
 }
 
 .output-creating-label { color: var(--csa-foundation-color-blue-600); }

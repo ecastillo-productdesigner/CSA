@@ -1,7 +1,7 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261021-adaptation-tabs';
-import { projectOutputs, createOutputBadges } from './outputs.js?v=20261021-adaptation-tabs';
+import { tokenNumber } from './design-system/runtime.js?v=20261021-compact-segments';
+import { projectOutputs, createOutputBadges } from './outputs.js?v=20261021-compact-segments';
 
-import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261021-adaptation-tabs';
+import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261021-compact-segments';
 
 export function createOutputPresets({ onSelect, onDelete, onEdit }) {
   const root = document.querySelector('#output-presets');

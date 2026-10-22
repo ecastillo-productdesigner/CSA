@@ -1,5 +1,5 @@
-import { documentStyles } from './design-system/export-styles.js?v=20261021-adaptation-tabs';
-import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261021-adaptation-tabs';
+import { documentStyles } from './design-system/export-styles.js?v=20261021-compact-segments';
+import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261021-compact-segments';
 import './vendor/quill-2.0.3.js';
 
 const Quill = window.Quill;

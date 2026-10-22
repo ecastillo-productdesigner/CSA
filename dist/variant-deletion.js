@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady, selectedOutputs } from './outputs.js?v=20261021-adaptation-tabs';
+import { projectOutputs, outputIsReady, selectedOutputs } from './outputs.js?v=20261021-compact-segments';
 
 const selectionKeys = ['selectedOutputId', 'selectedOutputIds', 'selectedPendingOutputIds', 'lastPendingOutputId', 'viewOriginalDraft'];
 const selectionOf = project => Object.fromEntries(selectionKeys.map(key => [key, structuredClone(project[key])]));

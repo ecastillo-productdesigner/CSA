@@ -1,5 +1,5 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261021-adaptation-tabs';
-import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261021-adaptation-tabs';
+import { tokenNumber } from './design-system/runtime.js?v=20261021-compact-segments';
+import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261021-compact-segments';
 export function sourceSelectionFor(project, variant = null) {
   const available = project?.sources || [];
   if (!variant) return { sources: available, selectedSources: new Set(available.filter(source => source.selected !== false)) };

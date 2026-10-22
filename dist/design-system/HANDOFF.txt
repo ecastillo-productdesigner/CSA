@@ -107,7 +107,7 @@ COMPONENT CONTRACTS
 VARIANT STATUS SEGMENTS
   To Adapt / Adapted separate pending and ready content.
   Use "To Adapt" when empty and "1 Content to Adapt" / "2 Content to Adapt" for nonzero pending counts. Ready labels read "Adapted" or "4 Adapted"; omit zero counts.
-  Inter 14 / 20, weight 600. Radius matches component.dropdown.radius (8 px).
+  Inter 14 / 20, weight 400. Overall height matches Target Word Count: 36 px desktop, 46 px mobile. Radius matches component.dropdown.radius (8 px).
   Selected: secondary button white background, blue label and 1 px blue border; hover uses the secondary hover label and border. Unselected:
     default surface, primary text, button border (#e5e5e5). No checkmark.
   Inactive To Adapt and Adapted use the same primary dark gray (#404040), with or without a count. Both remain interactive.
@@ -383,7 +383,7 @@ The editor and DS toolbar include the filled format_quote symbol beside H2/H3. B
 The To Adapt empty state reads “Your adapted content will appear here.” Adapted reads “No adapted content yet. Adapt your article to see it here.”
 
 2026-10-21: Pasted-link cards expose the filled visibility eye immediately before the external-link action. The eye opens the existing fictional demo preview independently of source selection; only the top X closes it. Publication dates remain explicit when unavailable; sample headlines and body copy are fictional demo content. New Project accepts website links only and validates the entire input; search text cannot launch a search or create a project from this modal. Existing saved projects remain readable.
-The app entry, module graph, and shared stylesheet URLs carry the 20261021-adaptation-tabs asset version so newly loaded published pages request the updated behavior.
+The app entry, module graph, and shared stylesheet URLs carry the 20261021-compact-segments asset version so newly loaded published pages request the updated behavior.
 
 2026-10-21: Standard Format uses the same fixed-value presentation as Audience and Voice, with the Format chip's pink background. Target Word Count uses the shared three-option dropdown, with a divider separating it from Voice on desktop and mobile.
 

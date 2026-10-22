@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261020-ds-centralized';
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261020-preset-settings';
+import { createIcon } from './icons.js?v=20261021-content-cards';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261021-content-cards';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');
@@ -41,25 +41,26 @@ export function createEditorTabs({ onSelect }) {
     render(project) {
       const allOutputs = projectOutputs(project);
       const outputs = allOutputs.filter(output => outputIsReady(output) || output.needsRegeneration);
-      const showCreateTab = Boolean(project?.viewOriginalDraft || allOutputs.some(output => output.id === project?.lastPendingOutputId && !outputIsReady(output)));
-      const activeId = project?.viewOriginalDraft ? null : outputs.some(output => output.id === project?.selectedOutputId) ? project.selectedOutputId : outputs[0]?.id;
+      const showCreateTab = Boolean(project?.linkCards || project?.viewOriginalDraft || (project?.awaitingOutput && !outputs.length) || allOutputs.some(output => output.id === project?.lastPendingOutputId && !outputIsReady(output)));
+      const activeId = project?.viewOriginalDraft ? null : outputs.some(output => output.id === project?.selectedOutputId) ? project.selectedOutputId : outputs[0]?.id ?? null;
       const nextSignature = JSON.stringify([project?.id, activeId, showCreateTab, outputs.map(output => [output.id, output.title, output.cmsSentAt])]);
       if (signature === nextSignature) return;
       signature = nextSignature;
-      root.hidden = !outputs.length;
-      panel.classList.toggle('has-variant-tabs', Boolean(outputs.length));
-      if (!outputs.length) {
+      const hasTabs = showCreateTab || Boolean(outputs.length);
+      root.hidden = !hasTabs;
+      panel.classList.toggle('has-variant-tabs', hasTabs);
+      if (!hasTabs) {
         root.replaceChildren();
         panel.removeAttribute('role');
         panel.removeAttribute('aria-labelledby');
         return;
       }
-      const entries = [...(showCreateTab ? [{ id: null, title: 'Variant to Create', preview: true }] : []), ...outputs];
+      const entries = [...(showCreateTab ? [{ id: null, title: 'Content to Create', preview: true }] : []), ...outputs];
       root.replaceChildren(...entries.map(output => {
         const { id, cmsSentAt, preview } = output;
         const title = output.title;
         const sent = outputIsSent({ cmsSentAt });
-        const status = sent ? 'Sent' : 'Draft';
+        const status = preview ? 'To Create' : sent ? 'Sent' : 'Draft';
         const tab = document.createElement('button');
         tab.type = 'button';
         tab.id = `editor-tab-${id || 'original'}`;
@@ -69,20 +70,21 @@ export function createEditorTabs({ onSelect }) {
         tab.setAttribute('aria-selected', String(id === activeId));
         tab.tabIndex = id === activeId ? 0 : -1;
         tab.setAttribute('aria-label', title);
+        const badge = document.createElement('span');
+        badge.className = 'editor-tab-draft';
+        badge.setAttribute('aria-hidden', 'true');
+        badge.append(createIcon(preview ? 'article' : sent ? 'send' : 'draw'));
+        badge.append(document.createTextNode(status));
+        badge.dataset.sent = String(sent);
+        if (preview) badge.dataset.pending = 'true';
+        tab.append(badge);
+        tab.setAttribute('aria-description', preview ? 'Content to adapt' : status);
         if (!preview) {
-          const badge = document.createElement('span');
-          badge.className = 'editor-tab-draft';
-          badge.setAttribute('aria-hidden', 'true');
-          badge.append(createIcon(sent ? 'send' : 'draw'));
-          badge.append(document.createTextNode(status));
-          badge.dataset.sent = String(sent);
-          tab.append(badge);
+          const label = document.createElement('span');
+          label.className = 'editor-tab-title';
+          label.textContent = title;
+          tab.append(label);
         }
-        tab.setAttribute('aria-description', preview ? 'Content preview for creating variants' : status);
-        const label = document.createElement('span');
-        label.className = 'editor-tab-title';
-        label.textContent = title;
-        tab.append(label);
         tab.title = preview ? title : `${title} · ${status}`;
         return tab;
       }));

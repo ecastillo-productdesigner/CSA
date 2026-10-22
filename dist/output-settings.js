@@ -1,7 +1,7 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261020-ds-centralized';
-import { normalizeWordCount } from './variant-word-count.js';
-import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261020-preset-settings';
-import { customVariantName, savedVariantName } from './outputs.js?v=20261020-preset-settings';
+import { tokenNumber } from './design-system/runtime.js?v=20261021-content-cards';
+import { normalizeWordCount } from './variant-word-count.js?v=20261021-content-cards';
+import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261021-content-cards';
+import { customVariantName, savedVariantName } from './outputs.js?v=20261021-content-cards';
 
 export function createOutputSettings({ onSave, onDelete, onSavePreset, onDeletePreset, closeDropdowns }) {
   const menu = document.querySelector('#output-edit-menu');

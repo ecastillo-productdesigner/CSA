@@ -98,14 +98,9 @@
 .ds-native-field { width: 100%; min-width: 0; height: var(--csa-component-field-height-desktop); padding: var(--csa-foundation-space-6) var(--csa-foundation-space-12); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-component-field-radius); background: var(--csa-component-field-background); color: var(--ink); font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-600); }
 .ds-native-field[data-kind="format"] { background: var(--csa-component-chip-format-background); }
 .ds-native-field[data-kind="audience"] { background: var(--csa-component-chip-audience-background); }
-.ds-source { display: grid; grid-template-columns: var(--csa-component-checkbox-size) var(--csa-foundation-space-90) 1fr; gap: var(--csa-foundation-space-16); padding: var(--csa-foundation-space-16); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-8); }
-.ds-source input { appearance: none; width: var(--csa-component-checkbox-size); height: var(--csa-component-checkbox-size); margin: 0; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-component-checkbox-radius); background: var(--csa-semantic-color-surface-default); }
-.ds-source input:checked { background: var(--csa-component-checkbox-selected-background); }
-.ds-source input:checked { background-image: url("../assets/material-check.svg"); background-position: center; background-repeat: no-repeat; background-size: var(--csa-foundation-space-16) var(--csa-foundation-space-16); }
-.ds-photo { display: grid; place-items: center; min-height: var(--csa-foundation-space-90); border-radius: var(--csa-foundation-radius-8); background: var(--csa-foundation-color-neutral-200); color: var(--muted); }
-.ds-source .ds-caption { margin: 0; }
-.ds-source h4 { margin: var(--csa-foundation-space-6) 0; font-size: var(--csa-foundation-font-size-14); }
-.ds-source p:last-child { font-size: var(--csa-foundation-font-size-12); line-height: var(--csa-foundation-font-leading-1-7); margin: 0; }
+.ds-source-preview input[type="checkbox"] { appearance: none; top: var(--csa-foundation-space-16); left: var(--csa-foundation-space-16); width: var(--csa-component-checkbox-size); height: var(--csa-component-checkbox-size); margin: 0; padding: 0; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-component-checkbox-radius); background: var(--csa-semantic-color-surface-default); }
+.ds-source-preview input[type="checkbox"]:checked { background: var(--csa-component-checkbox-selected-background); background-image: url("../assets/material-check.svg"); background-position: center; background-repeat: no-repeat; background-size: var(--csa-foundation-space-16) var(--csa-foundation-space-16); }
+.ds-source-preview .result-title { padding-right: 0; }
 .ds-footer { padding-left: 0; padding-right: 0; margin-top: var(--csa-foundation-space-24); }
 .ds-alias-chain { display: flex; align-items: center; gap: var(--csa-foundation-space-20); margin-bottom: var(--csa-foundation-space-20); }
 .ds-alias-chain > div { display: grid; gap: var(--csa-foundation-space-12); min-width: 0; flex: 1; padding: var(--csa-foundation-space-22); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-8); }
@@ -169,10 +164,6 @@
   .ds-elevations { gap: var(--csa-foundation-space-12); }
   .ds-elevations > div { height: var(--csa-foundation-space-60); font-size: var(--csa-component-reference-font-size-9); }
   .ds-native-field { height: var(--csa-component-field-height-mobile); }
-  .ds-source { grid-template-columns: var(--csa-foundation-space-18) var(--csa-foundation-space-64) 1fr; gap: var(--csa-foundation-space-10); padding: var(--csa-foundation-space-12); }
-  .ds-photo { min-height: var(--csa-foundation-space-64); height: var(--csa-foundation-space-64); }
-  .ds-source h4 { font-size: var(--csa-foundation-font-size-12); }
-  .ds-source .ds-caption, .ds-source p:last-child { font-size: var(--csa-foundation-font-size-10); }
   .ds-card-edit { margin-left: 0; }
   .ds-variant .ds-inline { gap: var(--csa-foundation-space-6); }
   .ds-variant .output-badge { font-size: var(--csa-foundation-font-size-10); padding-inline: var(--csa-foundation-space-8); }

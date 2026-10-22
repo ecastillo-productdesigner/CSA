@@ -1,21 +1,21 @@
-import { updatePresetPreferences } from './preset-settings.js?v=20261020-preset-settings';
-import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js';
-import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261020-ds-centralized';
-import { createIcon as icon } from './icons.js?v=20261020-ds-centralized';
-import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js';
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261020-ds-centralized';
-import { createProfile } from './profile.js?v=20261020-ds-centralized';
-import { createSearchExperience } from './search.js?v=20261021-link-previews';
-import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=20261020-ds-centralized';
-import { createMaterialEditor } from './editor.js?v=20261020-ds-centralized';
-import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261020-ds-centralized';
-import { removeProjectContent } from './project-deletion.js?v=20261020-ds-centralized';
-import { createContentPreview } from './content-preview.js?v=20261020-ds-centralized';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261020-preset-settings';
-import { createRailNavigation } from './navigation.js?v=20261020-ds-centralized';
-import { createProjectSources } from './sources.js?v=20261021-link-previews';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261020-preset-settings';
-import { createEditorTabs } from './editor-tabs.js?v=20261020-preset-settings';
+import { updatePresetPreferences } from './preset-settings.js?v=20261021-content-cards';
+import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261021-content-cards';
+import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261021-content-cards';
+import { createIcon as icon } from './icons.js?v=20261021-content-cards';
+import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261021-content-cards';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261021-content-cards';
+import { createProfile } from './profile.js?v=20261021-content-cards';
+import { createSearchExperience } from './search.js?v=20261021-content-cards';
+import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=20261021-content-cards';
+import { createMaterialEditor } from './editor.js?v=20261021-content-cards';
+import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261021-content-cards';
+import { removeProjectContent } from './project-deletion.js?v=20261021-content-cards';
+import { createContentPreview } from './content-preview.js?v=20261021-content-cards';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261021-content-cards';
+import { createRailNavigation } from './navigation.js?v=20261021-content-cards';
+import { createProjectSources } from './sources.js?v=20261021-content-cards';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261021-content-cards';
+import { createEditorTabs } from './editor-tabs.js?v=20261021-content-cards';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -602,7 +602,7 @@ function showEditorProject(project) {
     $('#composer-heading').textContent = 'Story editor';
     richEditor.open(selectedOutput ? { ...project, ...selectedOutput, id: project.id, toolPreferences: project.toolPreferences } : project);
   }
-  $('#composer-target-word-count').value = 'short';
+  $('#composer-target-word-count').value = normalizeWordCount(project.targetWordCount);
   toolDropdowns.refresh();
   updateComposerActions();
   renderOutputs(project);
@@ -638,13 +638,13 @@ function updateComposerActions() {
     const select = $(`#composer-${key}`);
     if (select.disabled !== !canConfigure) changed = true;
     select.disabled = !canConfigure;
-    select.title = canConfigure ? '' : processing ? 'Creating content…' : 'Add content first';
+    select.title = canConfigure ? '' : processing ? 'Adapting content…' : 'Add content first';
   }
   if (changed) toolDropdowns.refresh();
   const hasFormat = Boolean($('#composer-format').value);
   const enabled = hasContent && hasFormat && !processing;
   $('.create-variant').disabled = !enabled;
-  $('.create-variant').title = processing ? 'Creating content…' : !hasContent ? 'Select a source first' : !hasFormat ? 'Select a format first' : 'Add Content';
+  $('.create-variant').title = processing ? 'Adapting content…' : !hasContent ? 'Select a source first' : !hasFormat ? 'Select a format first' : 'Add Content';
 }
 
 function ensureComposerProject(allowEmpty = false) {
@@ -1055,6 +1055,7 @@ for (const id of ['material-dialog', 'new-project-dialog']) $(`#${id}`).addEvent
 });
 
 for (const button of document.querySelectorAll('[data-close]')) button.addEventListener('click', () => {
+  if (button.dataset.close === 'delete-project-dialog' && $('#delete-project-dialog').getAttribute('aria-busy') === 'true') return;
   if (sourceTargetProjectId && ['new-project-dialog', 'material-dialog'].includes(button.dataset.close)) returnFromSourceAddition();
   else $(`#${button.dataset.close}`).close();
 });

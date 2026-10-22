@@ -1,7 +1,7 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261020-ds-centralized';
-import { projectOutputs, createOutputBadges } from './outputs.js?v=20261020-preset-settings';
+import { tokenNumber } from './design-system/runtime.js?v=20261021-content-cards';
+import { projectOutputs, createOutputBadges } from './outputs.js?v=20261021-content-cards';
 
-import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261020-preset-settings';
+import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261021-content-cards';
 
 export function createOutputPresets({ onSelect, onDelete, onEdit }) {
   const root = document.querySelector('#output-presets');

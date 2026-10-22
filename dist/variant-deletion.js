@@ -1,4 +1,4 @@
-import { projectOutputs, outputIsReady, selectedOutputs } from './outputs.js?v=20261020-ds-centralized';
+import { projectOutputs, outputIsReady, selectedOutputs } from './outputs.js?v=20261021-content-cards';
 
 const selectionKeys = ['selectedOutputId', 'selectedOutputIds', 'selectedPendingOutputIds', 'lastPendingOutputId', 'viewOriginalDraft'];
 const selectionOf = project => Object.fromEntries(selectionKeys.map(key => [key, structuredClone(project[key])]));

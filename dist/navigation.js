@@ -1,4 +1,4 @@
-import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261020-ds-centralized';
+import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261021-content-cards';
 export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVariantOpen, onOpen }) {
   const panels = {
     sources: { trigger: document.querySelector('#show-sources'), panel: document.querySelector('#editor-sources') },

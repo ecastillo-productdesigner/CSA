@@ -3,10 +3,10 @@
 // Includes current interface glyphs and retained symbols for saved/legacy UI.
 export const iconInventory = [
   ['add_circle', 'Add'],
-  ['alt_route', 'New Content'],
   ['archive', 'Archive'],
   ['arrow_forward', 'Continue'],
   ['arrow_upward', 'Back to Top'],
+  ['article', 'Adapt Content'],
   ['auto_awesome', 'Generate Content'],
   ['build', 'Tools'],
   ['check', 'Check'],
@@ -44,6 +44,7 @@ export const iconInventory = [
   ['more_horiz', 'More Actions'],
   ['open_in_new', 'Open Original'],
   ['photo_camera', 'Source Image'],
+  ['post_add', 'New Content'],
   ['redo', 'Redo'],
   ['restore_from_trash', 'Restore'],
   ['right_panel_open', 'Navigation Drawer'],
@@ -52,7 +53,6 @@ export const iconInventory = [
   ['thumb_down', 'Negative Feedback'],
   ['thumb_up', 'Positive Feedback'],
   ['tune', 'Filters'],
-  ['turn_slight_left', 'Contents'],
   ['undo', 'Undo'],
   ['upload', 'Upload'],
   ['upload_file', 'Upload File'],

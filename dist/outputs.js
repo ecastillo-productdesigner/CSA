@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261020-ds-centralized';
-import { normalizeWordCount } from './variant-word-count.js';
+import { createIcon } from './icons.js?v=20261021-content-cards';
+import { normalizeWordCount } from './variant-word-count.js?v=20261021-content-cards';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',
@@ -294,7 +294,7 @@ export function variantPanelState(project, requestedView) {
   return {
     view,
     outputs: view === 'pending' ? pending : created,
-    pendingLabel: pending.length ? `${pending.length} To Create` : 'To Create',
+    pendingLabel: pending.length ? `${pending.length} to Create` : 'to Create',
     createdLabel: created.length ? `${created.length} Created` : 'Created',
   };
 }
@@ -304,7 +304,7 @@ export function renderOutputs(project, requestedView) {
   for (const tab of document.querySelectorAll('[data-output-view]')) {
     const selected = tab.dataset.outputView === state.view;
     tab.textContent = tab.dataset.outputView === 'pending' ? state.pendingLabel : state.createdLabel;
-    tab.dataset.empty = String(tab.dataset.outputView === 'pending' ? state.pendingLabel === 'To Create' : state.createdLabel === 'Created');
+    tab.dataset.empty = String(tab.dataset.outputView === 'pending' ? state.pendingLabel === 'to Create' : state.createdLabel === 'Created');
     tab.setAttribute('aria-selected', String(selected));
     tab.tabIndex = selected ? 0 : -1;
   }
@@ -317,15 +317,14 @@ export function renderOutputs(project, requestedView) {
   document.querySelector('.composer-outputs').setAttribute('aria-busy', String(processing));
   const create = document.querySelector('#create-output');
   create.disabled = processing || !selectedPending.length;
-  create.title = processing ? 'Preparing selected variants' : selectedPending.length ? `Create ${selectedPending.length} selected variant${selectedPending.length === 1 ? '' : 's'}` : 'Select at least one pending variant';
-  document.querySelector('#create-output-label').textContent = processing ? 'Processing…' : `Create ${selectedPending.length} Content${selectedPending.length === 1 ? '' : 's'}`;
-  document.querySelector('#output-processing-spinner').hidden = !processing;
-  document.querySelector('#output-processing-status').textContent = project?.outputProcessing?.kind === 'revision' ? 'Revising your variant. This takes about four seconds.' : processing ? 'Processing your selected variants. This takes about four seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
+  create.title = processing ? 'Adapting Selected Content' : selectedPending.length ? `Adapt ${selectedPending.length} Selected Content` : 'Select Content to Adapt';
+  document.querySelector('#create-output-label').textContent = `Adapt ${selectedPending.length} Content`;
+  document.querySelector('#output-processing-status').textContent = project?.outputProcessing?.kind === 'revision' ? 'Revising your variant. This takes about four seconds.' : processing ? 'Adapting your selected content. This takes about four seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
   const empty = document.querySelector('#outputs-empty');
   empty.hidden = state.outputs.length > 0;
   empty.querySelector('p').textContent = state.view === 'pending' ? 'No content created yet.' : 'No created content yet.';
   list.hidden = state.outputs.length === 0;
-  list.setAttribute('aria-label', state.view === 'pending' ? 'Contents to Create' : 'Created Contents');
+  list.setAttribute('aria-label', state.view === 'pending' ? 'Content to Create' : 'Created Content');
   list.replaceChildren(...state.outputs.map(output => {
     const item = document.createElement('li');
     const card = document.createElement('article');
@@ -417,7 +416,7 @@ export function renderOutputs(project, requestedView) {
       spinner.setAttribute('aria-hidden', 'true');
       const label = document.createElement('span');
       label.className = 'output-creating-label';
-      label.textContent = 'Creating…';
+      label.textContent = 'Adapting…';
       overlay.append(spinner, label);
       card.append(overlay);
     }

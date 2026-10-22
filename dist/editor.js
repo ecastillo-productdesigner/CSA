@@ -1,5 +1,5 @@
-import { documentStyles } from './design-system/export-styles.js?v=20261020-ds-centralized';
-import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261020-ds-centralized';
+import { documentStyles } from './design-system/export-styles.js?v=20261021-content-cards';
+import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261021-content-cards';
 import './vendor/quill-2.0.3.js';
 
 const Quill = window.Quill;
@@ -121,8 +121,6 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     const text = quill.getText().replace(/\n$/, '');
     const words = text.trim().match(/\S+/gu)?.length || 0;
     $('#editor-word-count').textContent = `${words.toLocaleString()} ${words === 1 ? 'word' : 'words'}`;
-    $('#editor-character-count').textContent = `${text.length.toLocaleString()} characters`;
-    $('#editor-read-time').textContent = `${Math.ceil(words / 225)} min read`;
   }
 
   function updateToolbar() {

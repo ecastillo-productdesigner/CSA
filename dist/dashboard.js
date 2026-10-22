@@ -1,6 +1,6 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261020-ds-centralized';
-import { createIcon as icon } from './icons.js?v=20261020-ds-centralized';
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261020-ds-centralized';
+import { tokenNumber } from './design-system/runtime.js?v=20261021-content-cards';
+import { createIcon as icon } from './icons.js?v=20261021-content-cards';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261021-content-cards';
 
 const layoutKey = 'csa.dashboard.layout.v1';
 function readLayout() {

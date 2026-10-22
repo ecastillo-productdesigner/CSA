@@ -1,4 +1,5 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261020-ds-centralized';
+import { tokenNumber } from './design-system/runtime.js?v=20261021-content-cards';
+import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261021-content-cards';
 export function sourceSelectionFor(project, variant = null) {
   const available = project?.sources || [];
   if (!variant) return { sources: available, selectedSources: new Set(available.filter(source => source.selected !== false)) };
@@ -21,6 +22,27 @@ function sourceUrl(value) {
     const url = new URL(value);
     return ['http:', 'https:'].includes(url.protocol) ? url.href : null;
   } catch { return null; }
+}
+
+function sourceDisplayTitle(source) {
+  const url = source.type === 'link' ? sourceUrl(source.url) : null;
+  return url ? sourceLinkArticles([url])[0].title : source.title;
+}
+
+export function sourcePreviewParagraphs(source) {
+  let text = source.text || '';
+  if (source.type === 'link' && sourceUrl(source.url) && !text.trim()) return fictionalArticleParagraphs(sourceDisplayTitle(source));
+  if (text.startsWith('Fictional sample article · ') && text.includes('\n\n')) text = text.slice(text.indexOf('\n\n') + 2);
+  return text.split(/\n\s*\n/).map(value => value.trim()).filter(Boolean);
+}
+
+function sourceMetadata(label, value) {
+  const line = document.createElement('span');
+  const heading = document.createElement('span');
+  heading.className = 'source-metadata-label';
+  heading.textContent = `${label}: `;
+  line.append(heading, document.createTextNode(value));
+  return line;
 }
 
 export function createProjectSources({ onSelectionChange, onDownloadSource, onRemoveSource, onVariantContextChange = () => {} }) {
@@ -132,32 +154,33 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onRe
 
   function openPreview(source, button) {
     previewTrigger = button;
-    let text = source.text || '';
-    const fictional = text.startsWith('Fictional ');
+    const text = source.text || '';
+    const linkOnly = source.type === 'link' && sourceUrl(source.url) && !text.trim();
+    const fictional = Boolean(linkOnly) || text.startsWith('Fictional ');
     const meta = document.querySelector('#article-preview-meta');
     meta.replaceChildren();
     meta.hidden = false;
-    if (text.startsWith('Fictional sample article · ') && text.includes('\n\n')) {
+    if (linkOnly) {
+      meta.append(sourceMetadata('Publish Date', 'Not available'), sourceMetadata('URL', sourceUrl(source.url)));
+    } else if (text.startsWith('Fictional sample article · ') && text.includes('\n\n')) {
       const divider = text.indexOf('\n\n');
       const parts = text.slice(0, divider).split('·').map(part => part.trim());
       const date = /^\d{4}-\d{2}-\d{2}$/.test(parts[2] || '') ? new Date(`${parts[2]}T12:00:00`) : null;
       meta.textContent = [parts[1], date ? date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : parts[2]].filter(Boolean).join(' · ');
-      text = text.slice(divider + 2);
     } else if (sourceUrl(source.url || '')) {
       const link = document.createElement('a');
       link.href = sourceUrl(source.url);
       link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = source.url;
       meta.append(link);
     } else meta.textContent = source.type === 'file' ? 'Document source' : 'Project source';
-    document.querySelector('#article-preview-title').textContent = source.title;
+    document.querySelector('#article-preview-title').textContent = sourceDisplayTitle(source);
     document.querySelector('.article-preview-badge').textContent = fictional ? 'Fictional article preview' : 'Source preview';
     document.querySelector('#article-preview-notice').hidden = !fictional;
-    const paragraphs = text.split(/\n\s*\n/).map(value => value.trim()).filter(Boolean);
+    const paragraphs = sourcePreviewParagraphs(source);
     if (!paragraphs.length) paragraphs.push(source.attachmentId ? 'Download this document from Sources to read the original.' : 'No preview text is available for this source.');
     document.querySelector('#article-preview-body').replaceChildren(...paragraphs.map(value => {
       const paragraph = document.createElement('p'); paragraph.textContent = value; return paragraph;
     }));
-    document.querySelector('#article-preview-back').textContent = 'Close';
     previewDialog.showModal();
     document.querySelector('#article-preview-body').scrollTop = 0;
   }
@@ -190,6 +213,7 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onRe
     emptyRow.setAttribute('role', 'status');
     list.append(emptyRow);
     for (const source of sources) {
+      const title = sourceDisplayTitle(source);
       const row = document.createElement('li');
       const available = allSources.includes(source);
       const content = document.createElement('div');
@@ -197,14 +221,14 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onRe
       const open = document.createElement('button');
       open.type = 'button';
       open.className = 'editor-source-open';
-      open.setAttribute('aria-label', `Preview source: ${source.title}`);
+      open.setAttribute('aria-label', `Preview source: ${title}`);
       open.setAttribute('aria-haspopup', 'dialog');
       open.setAttribute('aria-controls', 'article-preview-dialog');
       open.addEventListener('click', () => openPreview(source, open));
       const heading = document.createElement('strong');
-      const titleCharacters = Array.from(source.title);
-      heading.textContent = titleCharacters.length > 70 ? `${titleCharacters.slice(0, 69).join('').trimEnd()}…` : source.title;
-      for (const eventName of ['mouseenter', 'focus']) open.addEventListener(eventName, () => showTitleTooltip(open, heading, source.title));
+      const titleCharacters = Array.from(title);
+      heading.textContent = titleCharacters.length > 70 ? `${titleCharacters.slice(0, 69).join('').trimEnd()}…` : title;
+      for (const eventName of ['mouseenter', 'focus']) open.addEventListener(eventName, () => showTitleTooltip(open, heading, title));
       for (const eventName of ['mouseleave', 'blur', 'click']) open.addEventListener(eventName, hideTitleTooltip);
       open.addEventListener('keydown', event => {
         if (event.key === 'Escape' && !titleTooltip.hidden) { event.preventDefault(); event.stopPropagation(); hideTitleTooltip(); }
@@ -216,7 +240,7 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onRe
         download.type = 'button';
         download.className = 'text-button document-download';
         download.textContent = 'Download Document';
-        download.setAttribute('aria-label', `Download ${source.title}`);
+        download.setAttribute('aria-label', `Download ${title}`);
         download.addEventListener('click', () => onDownloadSource(source));
         content.append(download);
       }
@@ -224,7 +248,7 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onRe
       const more = document.createElement('button');
       more.type = 'button';
       more.className = 'icon-button editor-source-more';
-      more.setAttribute('aria-label', `Source options: ${source.title}`);
+      more.setAttribute('aria-label', `Source options: ${title}`);
       more.setAttribute('aria-haspopup', 'menu');
       more.setAttribute('aria-expanded', 'false');
       more.setAttribute('aria-controls', menu.id);

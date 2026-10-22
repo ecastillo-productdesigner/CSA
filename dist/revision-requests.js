@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261020-ds-centralized';
+import { createIcon } from './icons.js?v=20261021-content-cards';
 
 export function createRevisionButton(output, disabled = false) {
   const button = document.createElement('button');

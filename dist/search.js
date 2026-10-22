@@ -1,8 +1,9 @@
-import { createIcon } from './icons.js?v=20261020-ds-centralized';
-import { sourceLinkArticles } from './source-links.js';
+import { createIcon } from './icons.js?v=20261021-content-cards';
+import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261021-content-cards';
 // Sample content for the results-screen prototype. No live news requests are made.
 function sampleArticles(query) {
   const isKelly = /^kelly\s+clarkson$/i.test(query.trim());
+  const previewParagraphs = fictionalArticleParagraphs(query);
   const referenceTitle = 'Kelly Clarkson, a local business and the return of social media beef';
   const referenceSnippet = '"Kelly Clarkson is, by no intended pun, an American-made celebrity brand, created by Americans, who voted her into the entertainment industry via \'American Idol\' and bear';
   const titles = [
@@ -24,15 +25,12 @@ function sampleArticles(query) {
     referenceImage: isKelly,
     paragraphs: [
       [
-        `In this fictional story, a neighborhood business becomes an unexpected part of the conversation around ${query}. What begins as a small creative idea draws attention to the people and everyday places behind it.`,
+        previewParagraphs[0],
         `In this fictional story, ${query} offers a behind-the-scenes look at a creative project that started with a simple question: what happens when a familiar idea is tried in a different way?`,
         `This fictional article explores the conversation around ${query}, following a small collaboration that gives people a new reason to talk about creativity and community.`,
         `In this fictional story, ${query} looks back at the ordinary moments that can become the beginning of something memorable. A shared interest brings a small group together for a new creative experiment.`,
       ][index % 4],
-      'The first meeting takes place in a modest shared workspace, where sketches, notebooks, and half-finished ideas cover a long table. The group agrees to try one small experiment before deciding what the larger project should become.',
-      'Each participant contributes a different perspective. One focuses on the visual details, another on the story behind the idea, and a third considers how neighbors might take part. Their early conversations help turn a loose concept into a practical plan.',
-      'A short rehearsal gives the team a chance to see what works. They simplify a few details, leave room for improvisation, and discover that the quieter moments connect most strongly with their small test audience.',
-      'The project ends with plans for another gathering. Its lasting effect is the connection between the people involved, and the reminder that a compelling story can begin with curiosity, a familiar place, and a willingness to try something new.',
+      ...previewParagraphs.slice(1),
     ],
   }));
 }
@@ -42,6 +40,12 @@ function node(tag, className, text) {
   if (className) element.className = className;
   if (text !== undefined) element.textContent = text;
   return element;
+}
+
+function sourceMetadata(label, value, className = '') {
+  const line = node('span', className);
+  line.append(node('span', 'source-metadata-label', `${label}: `), document.createTextNode(value));
+  return line;
 }
 
 function dateLabel(value) {
@@ -76,13 +80,15 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     if (separator) separator.hidden = !canInspect;
     inspect.title = canInspect ? 'Preview Article' : selected ? 'Adding to CSA' : 'Select this story to inspect';
     container.hidden = !selected;
-    container.classList.toggle('is-loading', selected && !ready);
+    const loading = selected && !ready;
+    container.classList.toggle('is-loading', loading);
+    item.querySelector('.result-add-button')?.setAttribute('aria-busy', String(loading));
     if (ready) container.append(node('span', 'visually-hidden', article.url ? 'Link selected.' : 'Added to CSA. Inspect article is ready.'));
     else if (selected) {
       const adding = node('span', 'result-adding');
       const spinner = node('span', 'output-processing-spinner');
       spinner.setAttribute('aria-hidden', 'true');
-      adding.append(spinner, node('span', '', 'Adding to CSA'));
+      adding.append(spinner, node('span', 'output-creating-label', 'Adding to CSA'));
       container.append(adding);
     }
   }
@@ -109,12 +115,22 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       additionTimers.delete(id);
     } else {
       state.selected.add(id);
-      if (state.linkResults) state.readyArticleIds.add(id);
-      else startAddition(id);
+      if (state.linkResults) state.readyArticleIds.delete(id);
+      startAddition(id);
     }
     onSelectionChange(state.projectId, [...state.selected], [...state.readyArticleIds]);
     render();
     $('#result-list').querySelector(`[data-article-id="${id}"] .result-select-button`)?.focus({ preventScroll: true });
+  }
+
+  function addLinkedArticle(id) {
+    if (!state || additionTimers.has(id)) return;
+    state.selected.add(id);
+    state.readyArticleIds.delete(id);
+    startAddition(id);
+    onSelectionChange(state.projectId, [...state.selected], [...state.readyArticleIds]);
+    render();
+    $('#result-list').querySelector(`[data-add-article-id="${id}"]`)?.focus({ preventScroll: true });
   }
 
   function openPreview(id) {
@@ -124,12 +140,16 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     document.querySelector('.article-preview-badge').textContent = 'Fictional article preview';
     $('#article-preview-notice').hidden = false;
     $('#article-preview-meta').hidden = false;
-    $('#article-preview-back').textContent = 'Close';
     $('#article-preview-title').textContent = article.title;
-    $('#article-preview-meta').textContent = `${article.source} · ${dateLabel(article.date)}`;
+    if (article.url) {
+      $('#article-preview-meta').replaceChildren(
+        sourceMetadata('Publish Date', dateLabel(article.date)),
+        sourceMetadata('URL', article.url),
+      );
+    } else $('#article-preview-meta').textContent = `${article.source} · ${dateLabel(article.date)}`;
     // Link cards have no fetched article text. Keep the requested demo preview
     // explicitly fictional without saving sample copy into the source.
-    const paragraphs = article.paragraphs.length ? article.paragraphs : sampleArticles(article.title)[0].paragraphs;
+    const paragraphs = article.paragraphs.length ? article.paragraphs : fictionalArticleParagraphs(article.title);
     $('#article-preview-body').replaceChildren(...paragraphs.map(paragraph => node('p', '', paragraph)));
     preview.showModal();
     $('#article-preview-body').scrollTop = 0;
@@ -170,7 +190,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     const list = $('#result-list');
     list.replaceChildren(...visible.map((article) => {
       const item = node('li', 'result-item');
-      const card = node('div', 'result-card');
+      const card = node('div', `result-card${article.url ? ' result-card--link' : ''}`);
       card.dataset.articleId = article.id;
       card.dataset.selected = String(state.selected.has(article.id));
       const selection = node('button', 'result-select-button');
@@ -198,15 +218,26 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       const separator = node('span', 'result-inspect-separator', '|');
       separator.setAttribute('aria-hidden', 'true');
       if (!article.url) publication.append(separator, inspect);
-      const date = node('span', 'result-date');
-      date.append(node('span', 'result-date-label', 'Published date: '), document.createTextNode(dateLabel(article.date)), node('span', 'result-date-separator', ' |'));
-      meta.append(date, publication);
-      copy.append(
-        meta,
-        node('strong', 'result-title', article.title),
-        node('span', 'result-snippet', article.excerpt),
-      );
-      card.append(selection, indicator, thumbnail, copy);
+      const title = node('strong', 'result-title', article.title);
+      const snippet = node('span', 'result-snippet', article.excerpt);
+      if (article.url) {
+        copy.append(title, snippet,
+          sourceMetadata('Publish Date', dateLabel(article.date), 'result-date'),
+          sourceMetadata('URL', article.url, 'result-url'));
+      } else {
+        const date = node('span', 'result-date');
+        date.append(node('span', 'result-date-label', 'Published date: '), document.createTextNode(dateLabel(article.date)), node('span', 'result-date-separator', ' |'));
+        meta.append(date, publication);
+        copy.append(meta, title, snippet);
+      }
+      if (article.url) {
+        const add = node('button', 'result-add-button');
+        add.type = 'button';
+        add.dataset.addArticleId = article.id;
+        add.setAttribute('aria-label', `Add Article to CSA: ${article.title}`);
+        add.setAttribute('aria-describedby', `source-addition-${article.id}`);
+        card.append(add, selection, indicator, copy);
+      } else card.append(selection, indicator, thumbnail, copy);
       const previewButton = node(article.url ? 'a' : 'button', 'icon-button result-preview-button');
       if (article.url) {
         previewButton.href = article.url;
@@ -230,6 +261,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       } else item.append(card, previewButton);
       const addition = node('div', 'result-addition');
       addition.dataset.additionArticleId = article.id;
+      addition.id = `source-addition-${article.id}`;
       addition.setAttribute('role', 'status');
       addition.setAttribute('aria-live', 'polite');
       addition.setAttribute('aria-atomic', 'true');
@@ -283,7 +315,8 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     const card = event.target.closest('.result-card');
     if (!card || !state) return;
     const id = card.dataset.articleId;
-    toggleSelection(id);
+    if (state.linkResults && !event.target.closest('.result-select-button')) addLinkedArticle(id);
+    else toggleSelection(id);
   });
   $('#create-draft').addEventListener('click', () => {
     if (!state) return;

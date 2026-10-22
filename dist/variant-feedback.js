@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261020-ds-centralized';
+import { createIcon } from './icons.js?v=20261021-content-cards';
 
 export function createFeedbackPill(output, disabled = false) {
   const pill = document.createElement('span');

@@ -8,11 +8,11 @@
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,alt_route,archive,arrow_forward,arrow_upward,auto_awesome,build,check,chevron_forward,close,contract_edit,delete,description,draw,edit,edit_note,favorite,filter_list,folder_open,format_bold,format_clear,format_color_text,format_h2,format_h3,format_indent_decrease,format_indent_increase,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_strikethrough,format_underlined,history,ink_highlighter,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,redo,restore_from_trash,right_panel_open,search,send,thumb_down,thumb_up,tune,turn_slight_left,undo,upload,upload_file,view_module,visibility&amp;display=block">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,archive,arrow_forward,arrow_upward,article,auto_awesome,build,check,chevron_forward,close,contract_edit,delete,description,draw,edit,edit_note,favorite,filter_list,folder_open,format_bold,format_clear,format_color_text,format_h2,format_h3,format_indent_decrease,format_indent_increase,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_strikethrough,format_underlined,history,ink_highlighter,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,post_add,redo,restore_from_trash,right_panel_open,search,send,thumb_down,thumb_up,tune,undo,upload,upload_file,view_module,visibility&amp;display=block">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
-    <link rel="stylesheet" href="./design-system/tokens.css?v=20261021-url-placeholder">
-    <link rel="stylesheet" href="./styles.css?v=20261021-url-placeholder">
-    <script src="./demo-access.js?v=20261021-link-previews" type="module"></script>
+    <link rel="stylesheet" href="./design-system/tokens.css?v=20261021-content-cards">
+    <link rel="stylesheet" href="./styles.css?v=20261021-content-cards">
+    <script src="./demo-access.js?v=20261021-content-cards" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -48,8 +48,8 @@
         <button class="icon-button drawer-toggle" id="toggle-navigation-drawer" type="button" aria-label="Close navigation drawer" aria-expanded="false" aria-controls="navigation-drawer"><span class="material-symbols-outlined" aria-hidden="true">right_panel_open</span></button>
       </div>
       <nav class="navigation" id="workspace-navigation" aria-label="Workspace">
-        <button class="icon-button nav-button mobile-workspace-trigger" id="show-new-variant" type="button" aria-label="New Content" title="New Content" aria-controls="composer-tools" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">alt_route</span></button>
-        <button class="icon-button nav-button mobile-workspace-trigger" id="show-variants" type="button" aria-label="Contents" title="Contents" aria-controls="composer-outputs" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">turn_slight_left</span></button>
+        <button class="icon-button nav-button mobile-workspace-trigger" id="show-new-variant" type="button" aria-label="New Content" title="New Content" aria-controls="composer-tools" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">post_add</span></button>
+        <button class="icon-button nav-button mobile-workspace-trigger" id="show-variants" type="button" aria-label="Adapt Content" title="Adapt Content" aria-controls="composer-outputs" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">article</span></button>
         <button class="icon-button nav-button" id="show-sources" type="button" aria-label="Sources" aria-describedby="sources-tooltip" hidden aria-controls="editor-sources" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">folder_open</span><span class="nav-label">Sources</span></button>
         <button class="icon-button nav-button" id="new-project" type="button" aria-label="New Project" aria-describedby="new-project-tooltip"><span class="material-symbols-outlined" aria-hidden="true">add_circle</span><span class="nav-label">New Project</span></button>
     <section class="recents-panel sources-panel" id="editor-sources" role="region" aria-label="Sources" hidden>
@@ -126,18 +126,18 @@
               </div>
               <div id="rich-text-editor"></div>
               <div class="editor-publish-actions"><button class="editor-wordpress-button" id="editor-wordpress" type="button">Send to WordPress</button></div>
-              <footer class="editor-footer"><span id="editor-word-count">0 words</span><span id="editor-character-count">0 characters</span><span id="editor-read-time">0 min read</span><span id="editor-save-status" role="status">Saved on this device</span><span class="editor-created" id="editor-created" hidden>Created: <time id="editor-created-time"></time></span><span class="editor-spellcheck">Spellcheck on</span><p class="editor-content-note">No new facts or information will be added. Each draft adapts your approved content while maintaining factual accuracy.</p></footer>
+              <footer class="editor-footer"><span id="editor-word-count">0 words</span><span id="editor-save-status" role="status">Saved on this device</span><span class="editor-created" id="editor-created" hidden>Created: <time id="editor-created-time"></time></span></footer>
             </div>
           </section>
           </div>
         </div>
         <aside class="composer-rail" aria-label="Project tools and contents">
           <section class="composer-panel composer-tools" id="composer-tools" aria-labelledby="composer-tools-heading">
-            <div class="composer-tools-header"><h2 id="composer-tools-heading" tabindex="-1"><button class="composer-tools-toggle" id="toggle-new-variant" type="button" aria-label="Collapse New Content" aria-expanded="true" aria-controls="composer-variant-form"><span class="material-symbols-outlined" aria-hidden="true">alt_route</span><span>New Content</span><span class="material-symbols-outlined" data-collapse-chevron aria-hidden="true">keyboard_arrow_up</span></button></h2><button class="icon-button mobile-panel-close" type="button" data-close-navigation="newVariant" aria-label="Close New Content panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
+            <div class="composer-tools-header"><h2 id="composer-tools-heading" tabindex="-1"><button class="composer-tools-toggle" id="toggle-new-variant" type="button" aria-label="Collapse New Content" aria-expanded="true" aria-controls="composer-variant-form"><span class="material-symbols-outlined" aria-hidden="true">post_add</span><span>New Content</span><span class="material-symbols-outlined" data-collapse-chevron aria-hidden="true">keyboard_arrow_up</span></button></h2><button class="icon-button mobile-panel-close" type="button" data-close-navigation="newVariant" aria-label="Close New Content panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
             <div id="composer-variant-form">
             <div class="composer-fields">
-              <div class="composer-field" data-label="Format">
-                <select id="composer-format" aria-label="Format" hidden><option value="">None Selected</option><option value="celebrity-relationship-timeline">Celebrity Relationship Timeline</option><option value="listicle">Listicle</option><option value="whos-returning-to-the-show">Who’s Returning to the Show?</option></select>
+              <div class="composer-field" data-label="Format" data-fixed-value="standard">
+                <select id="composer-format" aria-label="Format" hidden><option value="standard" selected>Standard Format</option></select>
               </div>
               <div class="composer-field" data-label="Audience" data-fixed-value="general">
                 <select id="composer-audience" aria-label="Audience" hidden><option value="general" selected>General Audience</option></select>
@@ -147,8 +147,8 @@
               </div>
             </div>
             <div class="variant-word-count" hidden>
-              <label for="composer-target-word-count">Target Word Count</label>
-              <div class="word-count-field" data-label="Target Word Count" data-fixed-value="short"><select id="composer-target-word-count" aria-label="Target Word Count" hidden><option value="short">Standard Format</option></select></div>
+              <label for="composer-target-word-count-trigger">Target Word Count</label>
+              <div class="word-count-field" data-label="Target Word Count"><select id="composer-target-word-count" aria-label="Target Word Count" hidden><option value="short" selected>500–800 words (Short)</option><option value="medium">800–1200 words (Medium)</option><option value="long">1200–1500 words (Long)</option></select></div>
             </div>
             <div class="composer-actions">
               <button class="create-variant" type="button" disabled title="Add Content">Add Content</button>
@@ -156,16 +156,16 @@
             </div>
           </section>
           <section class="composer-panel composer-outputs" id="composer-outputs" aria-labelledby="composer-outputs-heading">
-            <div class="composer-outputs-header"><h2 id="composer-outputs-heading" tabindex="-1"><span class="material-symbols-outlined" aria-hidden="true">turn_slight_left</span><span>Contents</span></h2><button class="icon-button mobile-panel-close" type="button" data-close-navigation="variants" aria-label="Close Contents Panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+            <div class="composer-outputs-header"><h2 id="composer-outputs-heading" tabindex="-1"><span class="material-symbols-outlined" aria-hidden="true">article</span><span>Adapt Content</span></h2><button class="icon-button mobile-panel-close" type="button" data-close-navigation="variants" aria-label="Close Adapt Content Panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
             </div>
             <div class="output-status-tabs" role="tablist" aria-label="Content status">
-              <button id="output-pending-tab" type="button" role="tab" aria-selected="true" aria-controls="output-status-content" data-output-view="pending">To Create</button>
+              <button id="output-pending-tab" type="button" role="tab" aria-selected="true" aria-controls="output-status-content" data-output-view="pending">to Create</button>
               <button id="output-created-tab" type="button" role="tab" aria-selected="false" aria-controls="output-status-content" tabindex="-1" data-output-view="created">Created</button>
             </div>
             <div class="output-status-content" id="output-status-content" role="tabpanel" aria-labelledby="output-pending-tab">
             <div class="composer-empty" id="outputs-empty" role="status"><p>No content created yet.</p></div>
-            <ul class="output-list" id="output-list" aria-label="Contents" hidden></ul>
-            <div class="outputs-footer"><button class="create-output" id="create-output" type="button" disabled><span class="output-processing-spinner" id="output-processing-spinner" aria-hidden="true" hidden></span><span id="create-output-label">Create 0 Contents</span></button></div>
+            <ul class="output-list" id="output-list" aria-label="Content" hidden></ul>
+            <div class="outputs-footer"><button class="create-output" id="create-output" type="button" disabled><span id="create-output-label">Adapt 0 Content</span></button></div>
             <p class="visually-hidden" id="output-processing-status" role="status" aria-live="polite"></p>
             </div>
           </section>
@@ -236,7 +236,7 @@
 
 
     <dialog class="delete-project-dialog" id="delete-project-dialog" role="alertdialog" aria-labelledby="delete-project-heading" aria-describedby="delete-project-name delete-project-warning">
-      <h2 id="delete-project-heading">Delete Project?</h2>
+      <div class="panel-heading"><h2 id="delete-project-heading">Delete Project?</h2><button class="icon-button" type="button" data-close="delete-project-dialog" aria-label="Close Delete Project Dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
       <p class="delete-project-name" id="delete-project-name"></p>
       <p class="delete-project-warning" id="delete-project-warning">This will permanently delete this project, its sources, and all outputs. This action cannot be undone.</p>
       <p class="form-error" id="delete-project-error" role="alert" hidden></p>
@@ -259,7 +259,6 @@
       <h2 id="article-preview-title"></h2><p class="article-preview-meta" id="article-preview-meta"></p>
       <p class="article-preview-notice" id="article-preview-notice">Made-up content for the CSA demo.</p>
       <div class="article-preview-body" id="article-preview-body" tabindex="0" role="region" aria-label="Article text"></div>
-      <div class="dialog-footer"><button class="secondary-button" id="article-preview-back" type="button" data-close="article-preview-dialog">Close</button></div>
     </dialog>
 
 

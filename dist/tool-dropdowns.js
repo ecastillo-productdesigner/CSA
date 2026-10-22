@@ -1,6 +1,6 @@
-import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261021-content-cards';
-import { createIcon } from './icons.js?v=20261021-content-cards';
-import { bindTapActivation } from './tap-activation.js?v=20261021-content-cards';
+import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261021-adapt-count';
+import { createIcon } from './icons.js?v=20261021-adapt-count';
+import { bindTapActivation } from './tap-activation.js?v=20261021-adapt-count';
 
 export function createToolDropdowns() {
   const controls = [...document.querySelectorAll('.composer-field, .results-sort-field, .feedback-select-field, .editor-style-field, .word-count-field')].map(field => {

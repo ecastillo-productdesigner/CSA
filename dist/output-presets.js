@@ -1,7 +1,7 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261021-content-cards';
-import { projectOutputs, createOutputBadges } from './outputs.js?v=20261021-content-cards';
+import { tokenNumber } from './design-system/runtime.js?v=20261021-adapt-count';
+import { projectOutputs, createOutputBadges } from './outputs.js?v=20261021-adapt-count';
 
-import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261021-content-cards';
+import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261021-adapt-count';
 
 export function createOutputPresets({ onSelect, onDelete, onEdit }) {
   const root = document.querySelector('#output-presets');

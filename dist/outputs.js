@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261021-content-cards';
-import { normalizeWordCount } from './variant-word-count.js?v=20261021-content-cards';
+import { createIcon } from './icons.js?v=20261021-adapt-count';
+import { normalizeWordCount } from './variant-word-count.js?v=20261021-adapt-count';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',
@@ -318,7 +318,7 @@ export function renderOutputs(project, requestedView) {
   const create = document.querySelector('#create-output');
   create.disabled = processing || !selectedPending.length;
   create.title = processing ? 'Adapting Selected Content' : selectedPending.length ? `Adapt ${selectedPending.length} Selected Content` : 'Select Content to Adapt';
-  document.querySelector('#create-output-label').textContent = `Adapt ${selectedPending.length} Content`;
+  document.querySelector('#create-output-label').textContent = selectedPending.length ? `Adapt ${selectedPending.length} Content` : 'Adapt Content';
   document.querySelector('#output-processing-status').textContent = project?.outputProcessing?.kind === 'revision' ? 'Revising your variant. This takes about four seconds.' : processing ? 'Adapting your selected content. This takes about four seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
   const empty = document.querySelector('#outputs-empty');
   empty.hidden = state.outputs.length > 0;

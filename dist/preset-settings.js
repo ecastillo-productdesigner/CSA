@@ -1,5 +1,5 @@
-import { savedVariantName } from './outputs.js?v=20261021-content-cards';
-import { normalizeWordCount } from './variant-word-count.js?v=20261021-content-cards';
+import { savedVariantName } from './outputs.js?v=20261021-adapt-count';
+import { normalizeWordCount } from './variant-word-count.js?v=20261021-adapt-count';
 const keys = ['format', 'audience', 'voice'];
 export function presetConfiguration(output) {
   const saved = output?.presetSettings;

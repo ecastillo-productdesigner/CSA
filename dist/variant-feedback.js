@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261021-content-cards';
+import { createIcon } from './icons.js?v=20261021-adapt-count';
 
 export function createFeedbackPill(output, disabled = false) {
   const pill = document.createElement('span');

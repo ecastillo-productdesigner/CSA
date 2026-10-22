@@ -10,8 +10,8 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,close,delete,description,draw,edit,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,post_add,redo,right_panel_open,search,send,undo,upload,view_module,visibility&amp;display=block">
   <link rel="stylesheet" href="tokens.css?v=20261022-ds-components">
   <link rel="stylesheet" href="../styles.css?v=20261022-send-destinations">
-  <link rel="stylesheet" href="guide.css?v=20261022-ds-components">
-  <script src="guide.js?v=20261022-ds-components" type="module"></script>
+  <link rel="stylesheet" href="guide.css?v=20261022-ds-inventory">
+  <script src="guide.js?v=20261022-ds-inventory" type="module"></script>
 </head>
 <body class="ds-page">
   <a class="ds-skip" href="#overview">Skip to reference</a>
@@ -49,7 +49,7 @@
     </section>
 
     <section class="ds-section" id="components" aria-labelledby="components-title">
-      <div class="ds-section-heading"><p class="ds-eyebrow">02 / COMPONENTS</p><h2 id="components-title">The pieces of the workspace.</h2><p>These specimens use the production component stylesheet. Try a state to see how it responds.</p></div>
+      <div class="ds-section-heading"><p class="ds-eyebrow">02 / COMPONENTS</p><h2 id="components-title">The pieces of the workspace.</h2><p>These specimens reuse the app’s production classes, tokens, and shared helpers. Try the controls with isolated example data.</p></div>
       <article class="ds-panel" id="button-hierarchy">
         <div class="ds-panel-heading"><h3>Button hierarchy</h3><span>46 px height · 16 px labels · 16 px radius</span></div>
         <div class="ds-button-matrix" role="group" aria-label="Primary, secondary, tertiary, and destructive button states">
@@ -119,6 +119,12 @@
         </article><div class="outputs-footer" id="ds-content-adapt-footer" hidden><button class="create-output" id="ds-content-adapt" type="button">Adapt 1 Content</button></div><button class="secondary-button" id="ds-content-restore" type="button" hidden>Restore Sample</button></div>
         <p class="ds-caption">Pending is content added to To Adapt before a draft has been created. It starts selected, with a blue dashed border, a checkbox, its generated heading, and Format, Audience, and Voice chips. Pending content has no word count or source counter. Click its checkbox or heading to select or deselect it; Adapt 1 Content is enabled only while selected. Adapt previews the ready card and its actual word-count pill. Default and Selected preview the adapted card’s inactive and active states. Settings stay on one line with an overflow fade. The pencil opens the same red Delete menu in every state; Restore Sample returns a deleted specimen. These controls change only this reference.</p>
       </article>
+      <article class="ds-panel" id="project-components" aria-labelledby="ds-projects-title"><div class="ds-panel-heading"><h3 id="ds-projects-title">Project cards &amp; list rows</h3><span>Homepage components</span></div><p class="ds-foundation-intro">The app’s project title, update date, content count, layout switch, and action menu use isolated example data here.</p><div id="ds-project-sample-root"></div></article>
+      <article class="ds-panel" id="form-components" aria-labelledby="ds-forms-title"><div class="ds-panel-heading"><h3 id="ds-forms-title">Text entry &amp; validation</h3><span>Default, disabled, and error states</span></div><div id="ds-form-sample-root"></div></article>
+      <div class="ds-two-column">
+        <article class="ds-panel" id="navigation-components" aria-labelledby="ds-navigation-title"><div class="ds-panel-heading"><h3 id="ds-navigation-title">Navigation controls</h3><span>Actions, avatar, and menu</span></div><div id="ds-navigation-sample-root"></div></article>
+        <article class="ds-panel" id="feedback-components" aria-labelledby="ds-feedback-title"><div class="ds-panel-heading"><h3 id="ds-feedback-title">Panels &amp; feedback</h3><span>Disclosure, empty, and loading states</span></div><div id="ds-state-sample-root"></div></article>
+      </div>
     </section>
 
     <section class="ds-section" id="tokens" aria-labelledby="tokens-title">

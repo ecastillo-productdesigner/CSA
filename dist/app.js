@@ -396,7 +396,7 @@ function createProject(sources, options = {}) {
     ...(options.awaitingOutput ? { awaitingOutput: true } : {}),
     ...(options.contentPreview ? { contentPreview: options.contentPreview } : {}),
     ...(options.linkCards ? { linkCards: true } : {}),
-    ...(typeof options.editorialDirection === 'string' ? { editorialDirection: options.editorialDirection } : {}),
+    editorialDirection: typeof options.editorialDirection === 'string' ? options.editorialDirection : '',
     targetWordCount: normalizeWordCount(options.targetWordCount),
     ...(options.toolPreferences ? { toolPreferences: options.toolPreferences } : {}),
   };
@@ -454,6 +454,7 @@ function closeComposer() {
   $('#composer').classList.remove('has-editor', 'has-output', 'has-link-cards');
   $('#output-placeholder').hidden = true;
   $('.create-variant').disabled = true;
+  $('#composer-editorial-direction').value = '';
   $('#composer-target-word-count').value = 'short';
   document.body.classList.remove('showing-composer', 'editing-material');
 }
@@ -640,6 +641,7 @@ function showEditorProject(project) {
     $('#composer-heading').textContent = 'Story editor';
     richEditor.open(selectedOutput ? { ...project, ...selectedOutput, shareText: typeof selectedOutput.shareText === 'string' ? selectedOutput.shareText : '', id: project.id, toolPreferences: project.toolPreferences } : project);
   }
+  $('#composer-editorial-direction').value = typeof project.editorialDirection === 'string' ? project.editorialDirection : '';
   $('#composer-target-word-count').value = normalizeWordCount(project.targetWordCount);
   toolDropdowns.refresh();
   updateComposerActions();
@@ -688,7 +690,7 @@ function ensureComposerProject(allowEmpty = false) {
   let project = projects.find(entry => entry.id === activeProjectId);
   if (project || $('#composer').hidden) return project;
   const preferences = Object.fromEntries(['format', 'audience', 'voice'].map(name => [name, $(`#composer-${name}`).value]));
-  const direction = '';
+  const direction = $('#composer-editorial-direction').value;
   if (!allowEmpty && !Object.values(preferences).some(Boolean) && !direction.trim()) return null;
   project = createProject([], { kind: 'draft', awaitingOutput: true, toolPreferences: preferences, editorialDirection: direction, targetWordCount: $('#composer-target-word-count').value, open: false });
   activeProjectId = project.id;
@@ -725,7 +727,7 @@ $('.create-variant').addEventListener('click', () => {
   richEditor.flush();
   const project = projects.find(entry => entry.id === activeProjectId);
   if (!project || project.outputProcessing || !$('#composer-format').value) return;
-  project.editorialDirection = '';
+  project.editorialDirection = $('#composer-editorial-direction').value;
   setProjectWordCount(project, $('#composer-target-word-count').value);
   const output = sampleVariant(project, selections);
   project.lastPendingOutputId = output.id;
@@ -840,6 +842,13 @@ $('#create-output').addEventListener('click', () => {
   resumeOutputProcessing(project);
 });
 
+$('#composer-editorial-direction').addEventListener('input', () => {
+  const project = ensureComposerProject();
+  if (!project) return;
+  project.editorialDirection = $('#composer-editorial-direction').value;
+  project.updatedAt = Date.now();
+  saveProjects();
+});
 $('#composer-target-word-count').addEventListener('change', () => {
   const project = ensureComposerProject();
   if (!project) return;

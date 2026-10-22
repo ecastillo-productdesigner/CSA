@@ -1,3 +1,6 @@
+import { mountProjectSpecimens } from './project-specimens.js?v=20261022-ds-inventory';
+import { mountFormSpecimens } from './form-specimens.js?v=20261022-ds-inventory';
+import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261022-ds-inventory';
 import { colorRoleGroups } from './color-roles.js?v=20261022-ds-components';
 import { typographyRoleGroups } from './typography-roles.js?v=20261022-ds-components';
 import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-toast-copy';
@@ -44,6 +47,10 @@ function renderIconInventory() {
   $('#ds-icon-count').textContent = `${iconInventory.length} product icons`;
 }
 renderIconInventory();
+mountProjectSpecimens($('#ds-project-sample-root'));
+mountFormSpecimens($('#ds-form-sample-root'));
+mountNavigationSpecimens($('#ds-navigation-sample-root'));
+mountStateSpecimens($('#ds-state-sample-root'));
 function showToastSpecimen(restored = false) {
   const toast = $('#ds-toast-specimen');
   toast.querySelector('.toast-message').textContent = restored ? 'Source restored' : 'Source deleted';

@@ -217,3 +217,46 @@
 
 /* Shared floating-menu shape applies only to the reference specimens. */
 .ds-page .output-edit-menu { border-radius: var(--csa-component-dropdown-radius); }
+
+/* Layout containers for isolated examples; component appearance comes from app.css. */
+.ds-project-specimens { min-width: 0; }
+.ds-project-specimens .ds-project-toolbar { position: static; margin: 0 0 var(--csa-foundation-space-20); display: flex; align-items: center; gap: var(--csa-foundation-space-16); }
+.ds-project-specimens .ds-project-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--csa-foundation-space-20); overflow: visible; margin: 0; }
+.ds-project-specimens[data-layout="list"] .ds-project-grid { display: block; overflow-x: auto; }
+.ds-project-specimens .project-table { width: 100%; }
+.ds-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--csa-foundation-space-28); }
+.ds-form-example { min-width: 0; }
+.ds-form-example h4 { margin: 0 0 var(--csa-foundation-space-16); font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-650); }
+.ds-form-example .field-label, .ds-form-example .new-project-search > label { display: block; margin: 0 0 var(--csa-foundation-space-8); font-size: var(--csa-semantic-typography-label-font-size); font-weight: var(--csa-semantic-typography-label-font-weight); line-height: var(--csa-semantic-typography-label-line-height); }
+.ds-form-actions { display: flex; align-items: center; flex-wrap: wrap; gap: var(--csa-foundation-space-12); margin-top: var(--csa-foundation-space-16); }
+.ds-form-actions .new-project-continue { width: auto; margin-top: 0; }
+@media (max-width: token(foundation.breakpoint.mobile)) {
+  .ds-form-grid, .ds-project-specimens .ds-project-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+.ds-navigation-actions { display: flex; align-items: center; flex-wrap: wrap; gap: var(--csa-foundation-space-16); }
+.ds-profile-specimen { position: relative; }
+.ds-profile-specimen .profile-button { margin: 0; }
+.ds-navigation-profile-menu { position: absolute; z-index: var(--csa-foundation-layer-10); top: calc(100% + var(--csa-foundation-space-8)); left: 0; width: var(--csa-component-navigation-profile-menu-width); max-width: calc(100vw - var(--csa-foundation-space-40)); margin: 0; }
+.ds-state-specimens { display: grid; gap: var(--csa-foundation-space-24); }
+.ds-disclosure-panel { width: 100%; max-width: var(--csa-foundation-size-320); }
+.ds-disclosure-body .create-variant { margin-top: var(--csa-foundation-space-16); }
+.ds-specimen-status { margin: var(--csa-foundation-space-12) 0 0; font-size: var(--csa-foundation-font-size-12); line-height: var(--csa-foundation-font-leading-1-6); }
+.ds-loading-specimen { padding: var(--csa-foundation-space-12) 0; }
+body.ds-page:has(dialog[open]) { overflow: hidden; }
+
+/* Mirror homepage responsive context without mounting the homepage controller. */
+@media (max-width: token(foundation.breakpoint.mobile)) {
+  .ds-navigation-profile-menu { left: auto; right: 0; }
+  .ds-project-specimens .new-project-tile { flex-direction: row; gap: var(--csa-foundation-space-12); height: var(--csa-foundation-space-64); min-height: var(--csa-foundation-space-64); border-radius: var(--csa-component-project-card-radius-mobile); font-size: var(--csa-foundation-font-size-16); line-height: var(--csa-foundation-line-height-22); }
+  .ds-project-specimens .new-project-tile .material-symbols-outlined { font-size: var(--csa-foundation-font-size-24); width: var(--csa-foundation-space-24); height: var(--csa-foundation-space-24); }
+  .ds-project-specimens .dashboard-project { --project-card-radius: var(--csa-component-project-card-radius-mobile); justify-content: center; gap: var(--csa-foundation-space-8); min-height: var(--csa-component-project-card-height-mobile); padding: var(--csa-foundation-space-16) var(--csa-foundation-space-60) var(--csa-foundation-space-16) var(--csa-foundation-space-16); border-radius: var(--project-card-radius); }
+  .ds-project-specimens .dashboard-project:has(.project-card-menu:not([hidden])) { z-index: var(--csa-foundation-layer-4); }
+  .ds-project-specimens .dashboard-project h2 { padding-right: 0; min-height: calc(2 * var(--csa-foundation-line-height-22)); margin: 0; font-size: var(--csa-foundation-font-size-16); line-height: var(--csa-foundation-line-height-22); }
+  .ds-project-specimens .project-meta { gap: var(--csa-foundation-space-6); font-size: var(--csa-foundation-font-size-12); line-height: var(--csa-foundation-line-height-18); }
+  .ds-project-specimens .project-meta .material-symbols-outlined { font-size: var(--csa-foundation-font-size-13); width: var(--csa-foundation-space-13); height: var(--csa-foundation-space-13); }
+  .ds-project-specimens .project-card-menu-button { top: var(--csa-foundation-space-4); right: var(--csa-foundation-space-8); }
+  .ds-project-specimens .project-card-menu { top: var(--csa-foundation-space-44); right: var(--csa-foundation-space-8); }
+}
+
+@media (max-width: token(foundation.breakpoint.mobile)) { .ds-disclosure-panel .composer-direction textarea { font-size: var(--csa-foundation-font-size-16); } }

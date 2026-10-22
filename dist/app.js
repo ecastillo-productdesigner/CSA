@@ -1,21 +1,21 @@
-import { updatePresetPreferences } from './preset-settings.js?v=20261021-compact-segments';
-import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261021-compact-segments';
-import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261021-compact-segments';
-import { createIcon as icon } from './icons.js?v=20261021-compact-segments';
-import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261021-compact-segments';
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261021-compact-segments';
-import { createProfile } from './profile.js?v=20261021-compact-segments';
-import { createSearchExperience } from './search.js?v=20261021-compact-segments';
-import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=20261021-compact-segments';
-import { createMaterialEditor } from './editor.js?v=20261021-compact-segments';
-import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261021-compact-segments';
-import { removeProjectContent } from './project-deletion.js?v=20261021-compact-segments';
-import { createContentPreview } from './content-preview.js?v=20261021-compact-segments';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261021-compact-segments';
-import { createRailNavigation } from './navigation.js?v=20261021-compact-segments';
-import { createProjectSources } from './sources.js?v=20261021-compact-segments';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261021-compact-segments';
-import { createEditorTabs } from './editor-tabs.js?v=20261021-compact-segments';
+import { updatePresetPreferences } from './preset-settings.js?v=20261021-editor-subhead';
+import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261021-editor-subhead';
+import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261021-editor-subhead';
+import { createIcon as icon } from './icons.js?v=20261021-editor-subhead';
+import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261021-editor-subhead';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261021-editor-subhead';
+import { createProfile } from './profile.js?v=20261021-editor-subhead';
+import { createSearchExperience } from './search.js?v=20261021-editor-subhead';
+import { createDashboard, normalizeProjectTitles } from './dashboard.js?v=20261021-editor-subhead';
+import { createMaterialEditor } from './editor.js?v=20261021-editor-subhead';
+import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261021-editor-subhead';
+import { removeProjectContent } from './project-deletion.js?v=20261021-editor-subhead';
+import { createContentPreview } from './content-preview.js?v=20261021-editor-subhead';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261021-editor-subhead';
+import { createRailNavigation } from './navigation.js?v=20261021-editor-subhead';
+import { createProjectSources } from './sources.js?v=20261021-editor-subhead';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261021-editor-subhead';
+import { createEditorTabs } from './editor-tabs.js?v=20261021-editor-subhead';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -126,7 +126,7 @@ const richEditor = createMaterialEditor({
     project.sources = snapshot.sources;
     const output = projectOutputs(project).find(entry => entry.id === project.selectedOutputId);
     if (output) {
-      for (const key of ['title', 'document', 'draftText', 'metadata', 'updatedAt']) output[key] = snapshot[key];
+      for (const key of ['title', 'shareText', 'document', 'draftText', 'metadata', 'updatedAt']) output[key] = snapshot[key];
       if (typeof snapshot.cmsSentContent === 'string') output.cmsSentContent = snapshot.cmsSentContent;
       project.toolPreferences = snapshot.toolPreferences;
       project.updatedAt = snapshot.updatedAt;
@@ -603,7 +603,7 @@ function showEditorProject(project) {
     document.body.classList.add('editing-material');
     $('#composer').classList.add('has-editor');
     $('#composer-heading').textContent = 'Story editor';
-    richEditor.open(selectedOutput ? { ...project, ...selectedOutput, id: project.id, toolPreferences: project.toolPreferences } : project);
+    richEditor.open(selectedOutput ? { ...project, ...selectedOutput, shareText: typeof selectedOutput.shareText === 'string' ? selectedOutput.shareText : '', id: project.id, toolPreferences: project.toolPreferences } : project);
   }
   $('#composer-target-word-count').value = normalizeWordCount(project.targetWordCount);
   toolDropdowns.refresh();

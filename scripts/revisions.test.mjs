@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { reviseSampleOutput, variantPanelState } from '../dist/outputs.js';
 
-const variant = () => ({ id: 'draft', title: 'Keep my title', status: 'ready', draftText: 'Original draft.', document: { ops: [{ insert: 'Original draft.\n' }] }, labels: [{ key: 'format', label: 'What to Know' }], name: 'My saved variant', nameEdited: true, isFavorite: true, createdAt: 1, selectedSourceIndexes: [1], sourceSnapshots: [{ title: 'Approved source' }], metadata: { author: 'Julia' } });
+const variant = () => ({ id: 'draft', title: 'Keep my title', shareText: 'Keep this draft’s share text.', status: 'ready', draftText: 'Original draft.', document: { ops: [{ insert: 'Original draft.\n' }] }, labels: [{ key: 'format', label: 'What to Know' }], name: 'My saved variant', nameEdited: true, isFavorite: true, createdAt: 1, selectedSourceIndexes: [1], sourceSnapshots: [{ title: 'Approved source' }], metadata: { author: 'Julia' } });
 
 test('demo revision replaces the body while preserving the variant identity and settings', () => {
   const output = variant();
@@ -10,7 +10,7 @@ test('demo revision replaces the body while preserving the variant identity and 
   reviseSampleOutput(output, 'Shorten the intro', 10, 20);
   assert.notEqual(output.draftText, before.draftText);
   assert.equal(output.document.ops.map(op => op.insert).join('').replace(/\s+/g, ' ').trim(), output.draftText.replace(/\s+/g, ' ').trim());
-  for (const key of ['id', 'title', 'name', 'nameEdited', 'isFavorite', 'createdAt', 'labels', 'selectedSourceIndexes', 'sourceSnapshots', 'metadata']) assert.deepEqual(output[key], before[key]);
+  for (const key of ['id', 'title', 'shareText', 'name', 'nameEdited', 'isFavorite', 'createdAt', 'labels', 'selectedSourceIndexes', 'sourceSnapshots', 'metadata']) assert.deepEqual(output[key], before[key]);
   assert.deepEqual(output.revisionRequests, [{ instructions: 'Shorten the intro', requestedAt: 10, completedAt: 20, status: 'complete' }]);
   assert.equal(output.updatedAt, 20);
   assert.deepEqual(variantPanelState({ outputs: [output] }).outputs, [output]);

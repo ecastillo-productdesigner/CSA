@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261021-compact-segments';
-import { normalizeWordCount } from './variant-word-count.js?v=20261021-compact-segments';
+import { createIcon } from './icons.js?v=20261021-editor-subhead';
+import { normalizeWordCount } from './variant-word-count.js?v=20261021-editor-subhead';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',
@@ -281,6 +281,7 @@ export function sampleVariant(project, selections) {
     editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '',
     targetWordCount: normalizeWordCount(project.targetWordCount),
     draftText: '',
+    shareText: '',
     metadata: { author: '', tags: '' },
   };
 }

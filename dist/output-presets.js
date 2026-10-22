@@ -1,7 +1,7 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261021-compact-segments';
-import { projectOutputs, createOutputBadges } from './outputs.js?v=20261021-compact-segments';
+import { tokenNumber } from './design-system/runtime.js?v=20261021-editor-subhead';
+import { projectOutputs, createOutputBadges } from './outputs.js?v=20261021-editor-subhead';
 
-import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261021-compact-segments';
+import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261021-editor-subhead';
 
 export function createOutputPresets({ onSelect, onDelete, onEdit }) {
   const root = document.querySelector('#output-presets');

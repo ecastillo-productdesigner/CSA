@@ -1,5 +1,5 @@
-import { documentStyles } from './design-system/export-styles.js?v=20261021-compact-segments';
-import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261021-compact-segments';
+import { documentStyles } from './design-system/export-styles.js?v=20261021-editor-subhead';
+import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261021-editor-subhead';
 import './vendor/quill-2.0.3.js';
 
 const Quill = window.Quill;
@@ -41,6 +41,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   const $ = (selector) => document.querySelector(selector);
   const root = $('#material-editor');
   const title = $('#editor-title');
+  const shareText = $('#editor-share-text');
   const status = $('#editor-save-status');
   const linkDialog = $('#editor-link-dialog');
   let quill = null;
@@ -67,13 +68,14 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   }
 
   function resizeTitle() { title.style.height = 'auto'; title.style.height = `${Math.max(tokenNumber('foundation.space.44'), title.scrollHeight)}px`; }
+  function syncShareText() { $('#editor-share-text-print').textContent = shareText.value.trim(); }
 
   function contentSignature() {
     const ops = quill.getContents().ops.map(op => ({
       insert: op.insert,
       ...(op.attributes ? { attributes: Object.fromEntries(Object.entries(op.attributes).sort(([a], [b]) => a.localeCompare(b))) } : {}),
     }));
-    return JSON.stringify([title.value.trim() || 'Untitled story', ops]);
+    return JSON.stringify([title.value.trim() || 'Untitled story', ops, ...(shareText.value.trim() ? [shareText.value.trim()] : [])]);
   }
 
   function canSend() {
@@ -103,7 +105,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     clearTimeout(saveTimer);
     if (!project || !quill || !dirty) return;
     const snapshot = {
-      id: project.id, title: title.value.trim() || 'Untitled story', kind: 'draft',
+      id: project.id, title: title.value.trim() || 'Untitled story', shareText: shareText.value, kind: 'draft',
       document: quill.getContents(), draftText: quill.getText().replace(/\n$/, ''),
       sources: project.sources,
       metadata: { ...project.metadata },
@@ -193,6 +195,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   $('#editor-align').addEventListener('change', () => format('align', $('#editor-align').value || false));
   $('#editor-color').addEventListener('input', () => format('color', $('#editor-color').value));
   title.addEventListener('input', () => { resizeTitle(); scheduleSave(); });
+  shareText.addEventListener('input', () => { syncShareText(); scheduleSave(); });
   let previousWidth = 0;
   new ResizeObserver(entries => {
     const width = entries[0].contentRect.width;
@@ -284,8 +287,8 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     if (!quill || !project) return;
     flush();
     const heading = title.value.trim() || 'Untitled story';
-    const text = `${heading}\n\n${quill.getText()}`;
-    const html = `<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>${escaped(heading)}</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap"><style>${documentStyles}</style></head><body><h1>${escaped(heading)}</h1>${quill.getSemanticHTML()}</body></html>`;
+    const text = [heading, shareText.value.trim(), quill.getText()].filter(Boolean).join('\n\n');
+    const html = `<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>${escaped(heading)}</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap"><style>${documentStyles}</style></head><body><h1>${escaped(heading)}</h1>${shareText.value.trim() ? `<p>${escaped(shareText.value.trim())}</p>` : ''}${quill.getSemanticHTML()}</body></html>`;
     const blob = new Blob([type === 'html' ? html : text], { type: type === 'html' ? 'text/html;charset=utf-8' : 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob); const anchor = document.createElement('a');
     anchor.href = url; anchor.download = `${heading.replace(/[^\p{L}\p{N} _-]/gu, '').slice(0, 90) || 'CSA-story'}.${type === 'html' ? 'html' : 'txt'}`;
@@ -294,7 +297,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   }
   for (const button of root.querySelectorAll('[data-export]')) button.addEventListener('click', () => exportDocument(button.dataset.export));
   $('#editor-copy').addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(`${title.value.trim() || 'Untitled story'}\n\n${quill.getText()}`); notify('Story copied.'); }
+    try { await navigator.clipboard.writeText([title.value.trim() || 'Untitled story', shareText.value.trim(), quill.getText()].filter(Boolean).join('\n\n')); notify('Story copied.'); }
     catch { notify('Select your text and use ⌘/Ctrl+C to copy.'); }
     $('#editor-download').open = false;
   });
@@ -322,7 +325,10 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       revisionBusy = false;
       quill.enable(true);
       title.disabled = false;
+      shareText.disabled = false;
       title.value = next.title === 'Untitled story' ? '' : next.title;
+      shareText.value = typeof next.shareText === 'string' ? next.shareText : '';
+      syncShareText();
       const created = new Date(next.createdAt);
       const hasCreatedAt = next.createdAt != null && next.createdAt !== '' && Number.isFinite(created.getTime());
       $('#editor-created').hidden = !hasCreatedAt;
@@ -352,6 +358,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       revisionBusy = value;
       quill?.enable(!value);
       title.disabled = value;
+      shareText.disabled = value;
       for (const control of $('#editor-toolbar').querySelectorAll('button, input, select')) control.disabled = value;
       onToolbarChange();
       updateSendButton();

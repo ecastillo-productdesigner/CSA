@@ -83,7 +83,7 @@ COMPONENT CONTRACTS
   Editor toolbar: 8 px radius, 2 px top/bottom padding, document-aligned;
     horizontally scrollable
     on small screens. The text-style menu reuses the shared dropdown.
-  Title-to-toolbar and toolbar-to-body gaps: foundation.space.20 (20 px).
+  The Share text / Subhead field sits below the article heading and above the toolbar. Heading, field, toolbar, and body use foundation.space.20 (20 px) gaps.
   New/Edit variant dropdown labels: Inter 14 / 20, weight 600.
   Open dropdown, profile, and project menus: 8 px corner radius,
     including the mobile profile menu.
@@ -352,6 +352,9 @@ The source-card canvas starts with “Ready to Create Content” in the compact 
 Editor toolbar — 2026-10-21
 The visible controls are Bold, Italic, Underline, H2, H3, bulleted list, numbered list, link (link_2), Undo, and Redo. H2/H3 toggle paragraph headings and expose their pressed state. The old text-style dropdown and strikethrough control are removed from the visible toolbar; saved document formatting remains supported. The design-system specimen matches the toolbar and retains horizontal scrolling on small screens.
 
+Share text / Subhead — 2026-10-21
+The editable text field appears directly below the article heading and before the formatting toolbar. Its placeholder reads “Add a short share text or subhead for this draft…”. Each draft autosaves its own value locally as the field is edited; switching drafts restores that draft’s saved value. The DS specimen demonstrates the field without changing project records.
+
 Profile initials now use Tailwind neutral-700 (#404040) backgrounds with white (#FFFFFF) letters. Pink-100 and pink-700 are removed from the token source, lookup, and generated exports. Any retained favorite-color aliases use neutral-700.
 
 Draft and Sent labels use capital initials and match the settings-chip font size (12px). DS selection-field examples use the shared filled keyboard_arrow_down symbol, with an inset matching the product controls, instead of the browser-native select arrow.
@@ -383,7 +386,7 @@ The editor and DS toolbar include the filled format_quote symbol beside H2/H3. B
 The To Adapt empty state reads “Your adapted content will appear here.” Adapted reads “No adapted content yet. Adapt your article to see it here.”
 
 2026-10-21: Pasted-link cards expose the filled visibility eye immediately before the external-link action. The eye opens the existing fictional demo preview independently of source selection; only the top X closes it. Publication dates remain explicit when unavailable; sample headlines and body copy are fictional demo content. New Project accepts website links only and validates the entire input; search text cannot launch a search or create a project from this modal. Existing saved projects remain readable.
-The app entry, module graph, and shared stylesheet URLs carry the 20261021-compact-segments asset version so newly loaded published pages request the updated behavior.
+The app entry, module graph, and shared stylesheet URLs carry the 20261021-editor-subhead asset version so newly loaded published pages request the updated behavior.
 
 2026-10-21: Standard Format uses the same fixed-value presentation as Audience and Voice, with the Format chip's pink background. Target Word Count uses the shared three-option dropdown, with a divider separating it from Voice on desktop and mobile.
 
@@ -405,3 +408,7 @@ The To Adapt empty state reads Your adapted content will appear here. Adapted re
 2026-10-21: The source-sheet To Create tab disappears when the first adapted draft is ready and stays hidden for drafts awaiting regeneration. Reopening an older source view selects an available adapted draft while preserving pending adaptation selections. The Sources rail remains available. Adaptation status segments use the shared secondary button treatment, wrap long count labels on narrow screens, and read To Adapt / Adapted when empty or [count] Content to Adapt / [count] Adapted when populated.
 
 2026-10-21: Removed the resting Saved on this device footer label from the editor and DS metadata specimen. Saving progress and save-failure feedback retain their existing behavior.
+
+2026-10-21: Selected adaptation segments use their own blue border; the gray group outline is removed so there is no outer gray border around the active half. Inactive halves retain the neutral border. Share text is stored separately on each draft, included in copy/download/print and send-change detection, and omitted when blank. Existing sent signatures with no share text stay compatible.
+
+2026-10-21: The visible Share text / Subhead label is removed. The field remains below the title with its placeholder; a visually hidden label preserves its accessible name.

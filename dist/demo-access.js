@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261021-compact-segments');
+  await import('./app.js?v=20261021-editor-subhead');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

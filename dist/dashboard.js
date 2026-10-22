@@ -1,6 +1,6 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261021-compact-segments';
-import { createIcon as icon } from './icons.js?v=20261021-compact-segments';
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261021-compact-segments';
+import { tokenNumber } from './design-system/runtime.js?v=20261021-editor-subhead';
+import { createIcon as icon } from './icons.js?v=20261021-editor-subhead';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261021-editor-subhead';
 
 const layoutKey = 'csa.dashboard.layout.v1';
 function readLayout() {

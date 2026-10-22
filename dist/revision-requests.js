@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261021-segment-case';
+import { createIcon } from './icons.js?v=20261021-ds-active-icons';
 
 export function createRevisionButton(output, disabled = false) {
   const button = document.createElement('button');

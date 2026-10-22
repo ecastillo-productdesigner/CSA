@@ -16,8 +16,10 @@ function linkParts(input) {
     for (const match of part.matchAll(/https?:\/\//gi)) {
       if (match.index <= offset) continue;
       const prefix = part.slice(offset, match.index);
-      // An embedded URL in a query or fragment belongs to the current link.
-      if (!/[?#]/.test(prefix) && safeUrl(prefix)) {
+      // A URL that starts a query value or sits inside a fragment belongs to
+      // the current link. A protocol appended after a value is another paste.
+      const embeddedUrl = prefix.includes('#') || /[?&][^?&#=]*=$/.test(prefix);
+      if (!embeddedUrl && safeUrl(prefix)) {
         links.push(prefix);
         offset = match.index;
       }

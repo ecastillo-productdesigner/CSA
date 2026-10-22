@@ -1,5 +1,5 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261021-segment-case';
-import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261021-segment-case';
+import { tokenNumber } from './design-system/runtime.js?v=20261021-ds-active-icons';
+import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261021-ds-active-icons';
 export function sourceSelectionFor(project, variant = null) {
   const available = project?.sources || [];
   if (!variant) return { sources: available, selectedSources: new Set(available.filter(source => source.selected !== false)) };

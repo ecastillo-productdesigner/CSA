@@ -7,24 +7,16 @@ export const iconAliases = {
   "more": "more_horiz",
   "delete-project": "delete",
   "open": "open_in_new",
-  "thumb-up": "thumb_up",
   "eye": "visibility",
   "undo": "undo",
   "redo": "redo",
   "upload": "upload",
-  "history": "history",
   "file": "description",
   "document": "description",
   "link": "link",
   "search": "search",
-  "filters": "tune",
-  "edit-output": "edit",
-  "archive": "archive",
   "trash": "delete",
-  "restore": "restore_from_trash",
-  "tools": "build",
-  "variants": "article",
-  "outputs": "auto_awesome"
+  "variants": "article"
 };
 
 export function createIcon(name, className = '') {

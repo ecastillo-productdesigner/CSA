@@ -1,5 +1,5 @@
-import { savedVariantName } from './outputs.js?v=20261021-segment-case';
-import { normalizeWordCount } from './variant-word-count.js?v=20261021-segment-case';
+import { savedVariantName } from './outputs.js?v=20261021-ds-active-icons';
+import { normalizeWordCount } from './variant-word-count.js?v=20261021-ds-active-icons';
 const keys = ['format', 'audience', 'voice'];
 export function presetConfiguration(output) {
   const saved = output?.presetSettings;

@@ -1,5 +1,5 @@
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261021-segment-case';
-import { iconInventory } from './icon-inventory.js?v=20261021-segment-case';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261021-ds-active-icons';
+import { iconInventory } from './icon-inventory.js?v=20261021-ds-active-icons';
 const $ = selector => document.querySelector(selector);
 createToolDropdowns();
 let toastTimer;
@@ -38,16 +38,38 @@ function renderIconInventory() {
 }
 renderIconInventory();
 for (const button of document.querySelectorAll('[data-specimen-action]')) button.addEventListener('click', () => notify('Component preview · no project changes'));
-for (const select of document.querySelectorAll('.ds-native-field')) select.addEventListener('change', () => {
-  select.dataset.kind = select.value ? select.id.replace('ds-', '') : '';
-});
-for (const button of document.querySelectorAll('[data-card-state]')) button.addEventListener('click', () => {
-  const state = button.dataset.cardState;
-  for (const item of document.querySelectorAll('[data-card-state]')) item.setAttribute('aria-pressed', String(item === button));
-  $('#ds-variant').dataset.selected = String(state === 'selected');
-  $('#ds-variant').dataset.ready = String(state !== 'pending');
-});
-$('#ds-heart').addEventListener('click', () => { const heart=$('#ds-heart'); heart.setAttribute('aria-pressed', String(heart.getAttribute('aria-pressed') !== 'true')); });
+const contentCard = $('#ds-variant');
+const contentSelection = $('#ds-content-select');
+const contentOpen = $('#ds-content-open');
+const contentTitle = contentCard.querySelector('.output-card-title').textContent;
+function setContentCardState(state) {
+  const pending = state === 'pending';
+  const selected = state === 'selected';
+  contentCard.dataset.ready = String(!pending);
+  contentCard.dataset.selected = String(selected);
+  contentCard.dataset.active = String(selected);
+  contentCard.querySelector('.output-card-dash').toggleAttribute('hidden', !pending);
+  contentSelection.hidden = !pending;
+  contentSelection.setAttribute('aria-checked', 'false');
+  contentSelection.setAttribute('aria-label', `Select content: ${contentTitle}`);
+  contentOpen.setAttribute('aria-label', `${pending ? 'Select' : 'Open'} content: ${contentTitle}`);
+  contentOpen.title = pending ? 'Select this content to create' : selected ? 'This content is selected' : 'Open this content';
+  if (selected) contentOpen.setAttribute('aria-current', 'true');
+  else contentOpen.removeAttribute('aria-current');
+  for (const button of document.querySelectorAll('[data-card-state]')) button.setAttribute('aria-pressed', String(button.dataset.cardState === state));
+}
+function togglePendingContentSelection() {
+  if (contentCard.dataset.ready === 'true') { setContentCardState('selected'); return; }
+  const selected = contentCard.dataset.selected !== 'true';
+  contentCard.dataset.selected = String(selected);
+  contentSelection.setAttribute('aria-checked', String(selected));
+  contentSelection.setAttribute('aria-label', `${selected ? 'Deselect' : 'Select'} content: ${contentTitle}`);
+}
+for (const button of document.querySelectorAll('[data-card-state]')) button.addEventListener('click', () => setContentCardState(button.dataset.cardState));
+contentSelection.addEventListener('click', togglePendingContentSelection);
+contentOpen.addEventListener('click', togglePendingContentSelection);
+setContentCardState('selected');
+$('#ds-source-check').addEventListener('change', event => { event.target.closest('.result-card').dataset.selected = String(event.target.checked); });
 for (const button of document.querySelectorAll('[data-format-preview]')) button.addEventListener('click', () => button.setAttribute('aria-pressed', String(button.getAttribute('aria-pressed') !== 'true')));
 function luminance(hex) {
   const values = hex.slice(1,7).match(/../g).map(byte => parseInt(byte,16)/255).map(v => v <= .04045 ? v/12.92 : ((v+.055)/1.055)**2.4);

@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261021-segment-case';
-import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261021-segment-case';
+import { createIcon } from './icons.js?v=20261021-ds-active-icons';
+import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261021-ds-active-icons';
 // Sample content for the results-screen prototype. No live news requests are made.
 function sampleArticles(query) {
   const isKelly = /^kelly\s+clarkson$/i.test(query.trim());

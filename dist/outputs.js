@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261021-segment-case';
-import { normalizeWordCount } from './variant-word-count.js?v=20261021-segment-case';
+import { createIcon } from './icons.js?v=20261021-ds-active-icons';
+import { normalizeWordCount } from './variant-word-count.js?v=20261021-ds-active-icons';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',

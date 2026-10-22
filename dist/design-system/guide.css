@@ -89,16 +89,8 @@
 .ds-state-switch button { padding: var(--csa-foundation-space-7) var(--csa-foundation-space-10); border: 0; border-radius: var(--csa-foundation-radius-4); background: transparent; font-size: var(--csa-foundation-font-size-10); }
 .ds-state-switch [aria-pressed="true"] { background: var(--surface); box-shadow: none; }
 .ds-card-stage { max-width: var(--csa-foundation-size-520); }
-.ds-variant { padding: var(--csa-foundation-space-14); }
-.ds-variant[data-ready="false"] { border-color: var(--ink); }
-.ds-variant .output-card-title { padding-top: var(--csa-foundation-space-4); }
-.ds-card-edit { margin-left: auto; }
-.ds-variant .material-symbols-outlined { font-size: var(--csa-foundation-font-size-18); }
-.ds-field-grid { display: grid; gap: var(--csa-foundation-space-18); }
-.ds-field-label { display: grid; gap: var(--csa-foundation-space-6); font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-600); }
-.ds-native-field { width: 100%; min-width: 0; height: var(--csa-component-field-height-desktop); padding: var(--csa-foundation-space-6) var(--csa-foundation-space-12); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-component-field-radius); background: var(--csa-component-field-background); color: var(--ink); font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-600); }
-.ds-native-field[data-kind="format"] { background: var(--csa-component-chip-format-background); }
-.ds-native-field[data-kind="audience"] { background: var(--csa-component-chip-audience-background); }
+.ds-selection-fields .composer-fields { margin-top: 0; }
+.ds-source-preview.result-card { background: var(--csa-semantic-color-background-canvas); }
 .ds-source-preview input[type="checkbox"] { appearance: none; top: var(--csa-foundation-space-16); left: var(--csa-foundation-space-16); width: var(--csa-component-checkbox-size); height: var(--csa-component-checkbox-size); margin: 0; padding: 0; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-component-checkbox-radius); background: var(--csa-semantic-color-surface-default); }
 .ds-source-preview input[type="checkbox"]:checked { background: var(--csa-component-checkbox-selected-background); background-image: url("../assets/material-check.svg"); background-position: center; background-repeat: no-repeat; background-size: var(--csa-foundation-space-16) var(--csa-foundation-space-16); }
 .ds-source-preview .result-title { padding-right: 0; }
@@ -164,10 +156,7 @@
   .ds-icon-grid { gap: var(--csa-foundation-space-12); }
   .ds-elevations { gap: var(--csa-foundation-space-12); }
   .ds-elevations > div { height: var(--csa-foundation-space-60); font-size: var(--csa-component-reference-font-size-9); }
-  .ds-native-field { height: var(--csa-component-field-height-mobile); }
-  .ds-card-edit { margin-left: 0; }
-  .ds-variant .ds-inline { gap: var(--csa-foundation-space-6); }
-  .ds-variant .output-badge { font-size: var(--csa-foundation-font-size-10); padding-inline: var(--csa-foundation-space-8); }
+  .ds-selection-fields .tool-fixed-value { min-height: var(--csa-component-field-height-mobile); }
   .ds-alias-chain { flex-direction: column; gap: var(--csa-foundation-space-10); align-items: stretch; }
   .ds-alias-chain > span { align-self: center; transform: rotate(90deg); }
   .ds-alias-chain > div { padding: var(--csa-foundation-space-18); }
@@ -181,14 +170,9 @@
   .ds-end a { margin-left: 0; }
 }
 
-.ds-heart { position: static; width: var(--csa-foundation-space-40); height: var(--csa-foundation-space-40); }
 .ds-toolbar { margin: 0; max-width: 100%; }
 
 .ds-text-link .material-symbols-outlined, .ds-downloads .material-symbols-outlined, .ds-end .material-symbols-outlined { font-size: var(--csa-foundation-font-size-16); vertical-align: middle; }
-
-.ds-select-wrap { position: relative; display: block; min-width: 0; }
-.ds-select-wrap .ds-native-field { appearance: none; -webkit-appearance: none; background-image: none; padding-right: var(--csa-foundation-space-40); }
-.ds-select-wrap > .material-symbols-outlined { position: absolute; top: 50%; right: var(--csa-foundation-space-12); transform: translateY(-50%); width: var(--csa-foundation-space-20); height: var(--csa-foundation-space-20); font-size: var(--csa-foundation-font-size-20); color: var(--ink); pointer-events: none; }
 
 .ds-two-column:has(#ds-type-specimens) { grid-template-columns: minmax(0, 1fr); }
 #ds-type-specimens { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 var(--csa-foundation-space-32); }

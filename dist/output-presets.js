@@ -1,7 +1,7 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261021-segment-case';
-import { projectOutputs, createOutputBadges } from './outputs.js?v=20261021-segment-case';
+import { tokenNumber } from './design-system/runtime.js?v=20261021-ds-active-icons';
+import { projectOutputs, createOutputBadges } from './outputs.js?v=20261021-ds-active-icons';
 
-import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261021-segment-case';
+import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261021-ds-active-icons';
 
 export function createOutputPresets({ onSelect, onDelete, onEdit }) {
   const root = document.querySelector('#output-presets');

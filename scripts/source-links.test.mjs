@@ -20,10 +20,21 @@ test('search topics and mixed prose remain intact instead of dropping text',()=>
   }
 });
 test('embedded query and fragment URLs remain part of a single link',()=>{
-  for(const input of ['https://example.com/?redirect=https://other.example/a','https://example.com/#https://other.example']) {
+  for(const input of ['https://example.com/?redirect=https://other.example/a','https://example.com/?first=1&redirect=http://other.example/a?next=https://third.example/','https://example.com/#https://other.example']) {
     assert.equal(formatSourceLinks(input),input);
     assert.deepEqual(parseSourceLinks(input),[input]);
   }
+});
+test('adjacent article links after a query value split individually and retain duplicates', () => {
+  const urls = [
+    'https://www.charlotteobserver.com/news/business/article317692436.html?tbref=hp',
+    'https://www.charlotteobserver.com/latest-news/article317649444.html',
+    'https://www.charlotteobserver.com/latest-news/article317649444.html',
+  ];
+  const pasted = urls.join('');
+  assert.deepEqual(parseSourceLinks(pasted), urls);
+  assert.equal(formatSourceLinks(pasted), urls.join('\n'));
+  assert.deepEqual(parseSourceLinks(formatSourceLinks(pasted)), urls);
 });
 test('formatting preserves an empty next line while adding more links',()=>{
   const input='https://example.com/a\nhttps://example.org/b\n';

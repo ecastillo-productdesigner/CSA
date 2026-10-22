@@ -2,7 +2,7 @@ import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261022-feedb
 import { mountProjectSpecimens } from './project-specimens.js?v=20261022-ds-inventory';
 import { mountFormSpecimens } from './form-specimens.js?v=20261022-ds-inventory';
 import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261022-ds-inventory';
-import { colorRoleGroups } from './color-roles.js?v=20261022-ds-components';
+import { colorRoleGroups } from './color-roles.js?v=20261022-toast-no-icon';
 import { typographyRoleGroups } from './typography-roles.js?v=20261022-ds-components';
 import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-toast-copy';
 import { iconInventory } from './icon-inventory.js?v=20261022-feedback-restored';
@@ -16,7 +16,6 @@ function notify(message, action = null) {
   clearTimeout(toastTimer);
   toastAction = action;
   $('#ds-toast-message').textContent = message.replace(/\.\s*$/, '');
-  $('#ds-toast-icon').hidden = !/\bdeleted\b|moved to Trash/i.test(message);
   $('#ds-toast-action').hidden = !action;
   $('#ds-toast').hidden = false;
   toastTimer = setTimeout(() => { $('#ds-toast').hidden = true; toastAction = null; }, action ? 9000 : 5500);
@@ -56,7 +55,6 @@ mountFeedbackSpecimens($('#ds-feedback-sample-root'), toolDropdowns);
 function showToastSpecimen(restored = false) {
   const toast = $('#ds-toast-specimen');
   toast.querySelector('.toast-message').textContent = restored ? 'Source restored' : 'Source deleted';
-  toast.querySelector('.toast-icon').hidden = restored;
   $('#ds-toast-undo').hidden = restored;
 }
 function restoreToastSpecimen() {

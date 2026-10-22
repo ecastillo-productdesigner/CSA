@@ -31,7 +31,7 @@ export const colorRoleGroups = [
     title: 'Actions & feedback',
     description: 'Action, selection, disabled, sent, and destructive colors include their distinct states.',
     colors: [
-      { name: 'Feedback tint reference', token: 'component.toast.icon-background', description: 'Pale-blue token for toast icon backgrounds and action hover; retained as a feedback reference.' },
+      { name: 'Feedback action hover', token: 'component.toast.action-hover', description: 'Pale-blue hover surface for the optional Undo action.' },
       { name: 'Disabled action', token: 'component.button.primary.disabled-background', description: 'Disabled primary fill and disabled secondary or tertiary labels and borders.' },
       { name: 'Selection / focus', token: 'semantic.color.border.selected', description: 'Selected content-card borders and the shared keyboard-focus ring.' },
       { name: 'Primary action', token: 'semantic.color.action.primary', description: 'Filled primary actions and primary-blue labels, borders, and links.' },

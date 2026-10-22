@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="tokens.css?v=20261022-ds-components">
   <link rel="stylesheet" href="../styles.css?v=20261022-send-destinations">
   <link rel="stylesheet" href="guide.css?v=20261022-ds-inventory">
-  <script src="guide.js?v=20261022-feedback-restored" type="module"></script>
+  <script src="guide.js?v=20261022-toast-no-icon" type="module"></script>
 </head>
 <body class="ds-page">
   <a class="ds-skip" href="#overview">Skip to reference</a>
@@ -103,10 +103,10 @@
       <article class="ds-panel" aria-labelledby="ds-toast-title">
         <div class="ds-panel-heading"><h3 id="ds-toast-title">Toast notifications</h3><span>5.5 seconds · 9 seconds with Undo</span></div>
         <div class="ds-toast-stage">
-          <div class="toast ds-toast-specimen" id="ds-toast-specimen" role="status" aria-live="polite" aria-atomic="true"><span class="toast-icon" aria-hidden="true"><span class="material-symbols-outlined">delete</span></span><span class="toast-message">Source deleted</span><button class="toast-action" id="ds-toast-undo" type="button">Undo</button></div>
+          <div class="toast ds-toast-specimen" id="ds-toast-specimen" role="status" aria-live="polite" aria-atomic="true"><span class="toast-message">Source deleted</span><button class="toast-action" id="ds-toast-undo" type="button">Undo</button></div>
           <button class="ds-text-action" id="ds-show-toast" type="button">Show Toast Again</button>
         </div>
-        <p class="ds-caption">The app uses this white toast with a blue deletion icon and outlined Undo action. Standard messages dismiss after 5.5 seconds; messages with Undo dismiss after 9 seconds. Undo shows Source restored for 5.5 seconds. Show Toast Again previews the timed notification.</p>
+        <p class="ds-caption">A white toast with dark message text, a subtle border and shadow, and an optional outlined Undo action. No icon. Standard messages dismiss after 5.5 seconds; messages with Undo dismiss after 9 seconds. Undo shows Source restored for 5.5 seconds. Show Toast Again previews the timed notification.</p>
       </article>
       <article class="ds-panel"><div class="ds-panel-heading"><h3>Content card</h3><div class="ds-state-switch" role="group" aria-label="Content card specimen state"><button type="button" data-card-state="default" aria-pressed="false">Default</button><button type="button" data-card-state="selected" aria-pressed="true">Selected</button><button type="button" data-card-state="pending" aria-pressed="false">Pending</button></div></div>
         <p class="ds-caption" id="ds-content-context" role="status">1 Adapted</p>
@@ -174,6 +174,6 @@
       <div class="experience-feedback-complete" id="experience-feedback-complete" hidden><p class="experience-feedback-thanks" id="experience-feedback-thanks" role="status">Thanks for your feedback!</p><button class="primary-button experience-feedback-done" id="experience-feedback-done" type="button" data-close="experience-feedback-dialog">Done</button></div>
     </dialog>
   <div class="project-card-menu output-card-menu" id="ds-content-menu" role="menu" aria-label="Example content actions" hidden><button class="project-card-menu-item project-card-delete output-card-delete" id="ds-content-delete" type="button" role="menuitem"><span class="material-symbols-outlined" aria-hidden="true">delete</span><span>Delete</span></button></div>
-  <div class="toast" id="ds-toast" role="status" aria-live="polite" aria-atomic="true" hidden><span class="toast-icon" id="ds-toast-icon" aria-hidden="true" hidden><span class="material-symbols-outlined">delete</span></span><span class="toast-message" id="ds-toast-message"></span><button class="toast-action" id="ds-toast-action" type="button" hidden>Undo</button></div>
+  <div class="toast" id="ds-toast" role="status" aria-live="polite" aria-atomic="true" hidden><span class="toast-message" id="ds-toast-message"></span><button class="toast-action" id="ds-toast-action" type="button" hidden>Undo</button></div>
 </body>
 </html>

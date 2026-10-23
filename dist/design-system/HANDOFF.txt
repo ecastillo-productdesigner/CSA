@@ -490,3 +490,15 @@ The To Adapt empty state reads Your adapted content will appear here. Adapted re
 2026-10-22: Content heading-to-tabs spacing uses foundation.space.16.
 
 2026-10-22: New Draft top padding now uses foundation.space.12 in expanded, collapsed, desktop, and mobile states. The heading row to first dropdown gap uses foundation.space.16; side/bottom padding and Content panel spacing stay as specified.
+
+2026-10-22: New Draft heading-to-first-dropdown gap now uses foundation.space.12 on desktop and mobile. Panel top padding remains foundation.space.12.
+
+2026-10-22: Drafting now lasts six seconds using component.drafting.processing-duration. Copy shimmer uses a narrow Blue 600 highlight on Blue 700 and sweeps edge to edge every 1600 ms; its lightest stop retains 5.17:1 contrast on white. Reduced motion remains static. Source adding and revision timing are unchanged.
+
+2026-10-22: The destination dialog heading now reads Export to WordPress. Its accessible dialog name follows that heading.
+
+2026-10-22: The destination dialog action reads Export, with Exporting… while pending and Export restored for retry. The existing demo export behavior is unchanged.
+
+2026-10-22: Successful Export opens a centered Go to WordPress primary link for the chosen destination above the existing Draft Feedback ratings flow. Direct thumb feedback omits the link, and closing clears its target. The link opens only when clicked. The shared drafting animation centers the papers and readable-width message as a group.
+
+2026-10-22: Removed the CSA gate test destination from the export picker. The four publisher destinations remain; Us Weekly WordPress is the default, including fallback from the removed historical value.

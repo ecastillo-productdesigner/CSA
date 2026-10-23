@@ -17,6 +17,7 @@ class Control {
   append(...children) { for (const child of children) { child.parent = this; this.children.push(child); } }
   setAttribute(name, value) { this.attributes.set(name, String(value)); }
   getAttribute(name) { return this.attributes.get(name); }
+  removeAttribute(name) { this.attributes.delete(name); }
   addEventListener(type, callback) { this.listeners.set(type, callback); }
   matches(selector) {
     if (selector.startsWith('#')) return this.id === selector.slice(1);
@@ -47,6 +48,7 @@ function setup(t, saved = null) {
     'feedback-category-trigger', 'feedback-severity', 'feedback-description', 'feedback-comments',
     'feedback-submit', 'feedback-error', 'experience-feedback-complete', 'feedback-description-count',
     'experience-feedback-options', 'experience-feedback-thanks', 'experience-feedback-done',
+    'experience-feedback-export', 'feedback-wordpress-link',
   ];
   const nodes = Object.fromEntries(ids.map(id => { const node = new Control(); node.id = id; return [id, node]; }));
   const get = id => nodes[id];
@@ -61,14 +63,16 @@ function setup(t, saved = null) {
   const fields = ['feedback-category', 'feedback-severity', 'feedback-description', 'feedback-comments'].map(get);
   form.reset = () => { fields.forEach(field => { field.value = ''; }); };
   form.append(body, get('feedback-submit'));
-  body.append(...ids.filter(id => !['experience-feedback-dialog', 'experience-feedback-form', 'experience-feedback-complete', 'experience-feedback-thanks', 'experience-feedback-done', 'feedback-submit'].includes(id)).map(get));
+  body.append(...ids.filter(id => !['experience-feedback-dialog', 'experience-feedback-form', 'experience-feedback-complete', 'experience-feedback-thanks', 'experience-feedback-done', 'feedback-submit', 'experience-feedback-export', 'feedback-wordpress-link'].includes(id)).map(get));
   const up = new Control('button');
   const down = new Control('button');
   up.dataset.experienceRating = 'up';
   down.dataset.experienceRating = 'down';
   get('experience-feedback-options').append(up, down);
   complete.append(get('experience-feedback-thanks'), get('experience-feedback-done'));
-  dialog.append(form, complete);
+  get('experience-feedback-export').append(get('feedback-wordpress-link'));
+  get('experience-feedback-export').hidden = true;
+  dialog.append(get('experience-feedback-export'), form, complete);
   doc.append(dialog);
   complete.hidden = true;
   dialog.open = false;
@@ -272,4 +276,77 @@ test('switching drafts resets prior fields and closing drops the save target', t
   assert.equal(next.experienceFeedback, undefined);
   assert.deepEqual(ui.output.experienceFeedback, saved);
   assert.equal(ui.project.updatedAt, 100);
+});
+
+
+test('post-export opening focuses a safe WordPress link and keeps normal rating requirements', t => {
+  const ui = setup(t);
+  const section = ui.get('experience-feedback-export');
+  const link = ui.get('feedback-wordpress-link');
+  ui.api.open(ui.project, ui.output, undefined, { exportUrl: 'https://publisher.example/wp-admin/post.php?post=12&action=edit' });
+  assert.equal(section.hidden, false);
+  assert.equal(link.getAttribute('href'), 'https://publisher.example/wp-admin/post.php?post=12&action=edit');
+  assert.equal(link.getAttribute('target'), '_blank');
+  assert.equal(link.getAttribute('rel'), 'noopener noreferrer');
+  assert.equal(document.activeElement, link);
+  assert.equal(ui.submit.disabled, true);
+  assert.equal(ui.up.getAttribute('aria-pressed'), 'false');
+  assert.equal(ui.down.getAttribute('aria-pressed'), 'false');
+  completeRequired(ui);
+  assert.equal(ui.submit.disabled, true, 'exporting does not supply a required rating');
+  ui.rate(ui.up);
+  assert.equal(ui.submit.disabled, false);
+  ui.send();
+  assert.equal(ui.calls.save, 1);
+  assert.equal(ui.complete.hidden, false);
+  assert.equal(section.hidden, false, 'the WordPress CTA remains available after feedback is submitted');
+  assert.equal(link.getAttribute('href'), 'https://publisher.example/wp-admin/post.php?post=12&action=edit');
+  assert.equal(document.activeElement, ui.get('experience-feedback-done'));
+});
+
+test('closing post-export feedback clears its target and normal thumb reopening removes any stale destination', t => {
+  const ui = setup(t);
+  const section = ui.get('experience-feedback-export');
+  const link = ui.get('feedback-wordpress-link');
+  ui.api.open(ui.project, ui.output, undefined, { exportUrl: 'https://first.example/wp-admin/' });
+  ui.rate(ui.up);
+  completeRequired(ui, 'Unsaved feedback');
+  ui.dialog.close();
+  assert.equal(section.hidden, true);
+  assert.equal(link.getAttribute('href'), undefined);
+  ui.send();
+  assert.equal(ui.calls.save, 0);
+  assert.equal(ui.output.experienceFeedback, undefined);
+  ui.api.open(ui.project, ui.output, 'down');
+  assert.equal(section.hidden, true);
+  assert.equal(link.getAttribute('href'), undefined);
+  assert.equal(ui.down.getAttribute('aria-pressed'), 'true');
+  assert.equal(ui.description.value, '');
+  assert.equal(ui.submit.disabled, true);
+  ui.dialog.close();
+  ui.api.open(ui.project, ui.output, undefined, { exportUrl: 'http://second.example/wp-admin/' });
+  assert.equal(section.hidden, false);
+  assert.equal(link.getAttribute('href'), 'http://second.example/wp-admin/');
+  assert.equal(document.activeElement, link);
+});
+
+test('unsafe, relative and missing export URLs never create a navigable CTA or retain an earlier URL', t => {
+  const ui = setup(t);
+  const section = ui.get('experience-feedback-export');
+  const link = ui.get('feedback-wordpress-link');
+  const unsafe = [undefined, null, '', '/wp-admin/', 'javascript:alert(1)', 'data:text/html,example', 'ftp://example.com/file', 'https://user:password@example.com/wp-admin/'];
+  for (const exportUrl of unsafe) {
+    ui.api.open(ui.project, ui.output, 'up', { exportUrl: 'https://safe.example/wp-admin/' });
+    assert.equal(section.hidden, false);
+    ui.dialog.close();
+    ui.api.open(ui.project, ui.output, 'up', { exportUrl });
+    assert.equal(section.hidden, true, String(exportUrl));
+    assert.equal(link.getAttribute('href'), undefined, String(exportUrl));
+    assert.equal(ui.up.getAttribute('aria-pressed'), 'true');
+    ui.dialog.close();
+  }
+  ui.api.open(ui.project, ui.output, 'up', null);
+  assert.equal(section.hidden, true);
+  assert.equal(link.getAttribute('href'), undefined);
+  assert.equal(ui.calls.save, 0);
 });

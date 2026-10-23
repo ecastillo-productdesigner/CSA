@@ -27,9 +27,30 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
   const submit = document.querySelector('#feedback-submit');
   const error = document.querySelector('#feedback-error');
   const complete = document.querySelector('#experience-feedback-complete');
+  const exportSection = document.querySelector('#experience-feedback-export');
+  const wordpressLink = document.querySelector('#feedback-wordpress-link');
   const ratings = [...dialog.querySelectorAll('[data-experience-rating]')];
   let target = null;
   let rating = '';
+
+  function clearExport() {
+    if (exportSection) exportSection.hidden = true;
+    wordpressLink?.removeAttribute('href');
+  }
+
+  function showExport(value) {
+    clearExport();
+    if (!exportSection || !wordpressLink || typeof value !== 'string') return false;
+    let url;
+    try { url = new URL(value); }
+    catch { return false; }
+    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) return false;
+    wordpressLink.setAttribute('href', url.href);
+    wordpressLink.setAttribute('target', '_blank');
+    wordpressLink.setAttribute('rel', 'noopener noreferrer');
+    exportSection.hidden = false;
+    return true;
+  }
 
   function valid() {
     return ['up', 'down'].includes(rating) && Boolean(category.value) && Boolean(description.value.trim()) && description.value.length <= 500;
@@ -80,11 +101,12 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
     document.querySelector('#experience-feedback-thanks').textContent = saved ? 'Thanks for your feedback!' : 'Thanks! Your feedback is saved for this session.';
     document.querySelector('#experience-feedback-done').focus();
   });
-  dialog.addEventListener('close', () => { closeDropdowns(); target = null; });
+  dialog.addEventListener('close', () => { closeDropdowns(); clearExport(); target = null; });
 
   return {
-    open(project, variant, initialRating) {
+    open(project, variant, initialRating, options = {}) {
       closeDropdowns();
+      const hasExport = showExport(options?.exportUrl);
       target = { project, variant };
       form.reset();
       const feedback = variant.experienceFeedback || {};
@@ -100,6 +122,7 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
       refreshDropdowns();
       dialog.showModal();
       dialog.querySelector('.experience-feedback-body').scrollTop = 0;
+      if (hasExport) wordpressLink.focus();
     },
   };
 }

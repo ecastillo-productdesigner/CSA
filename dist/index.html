@@ -10,9 +10,9 @@
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,chevron_forward,close,delete,description,draw,edit,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,upload,view_module,visibility&amp;display=block">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
-    <link rel="stylesheet" href="./design-system/tokens.css?v=20261022-accessible-drafting">
-    <link rel="stylesheet" href="./styles.css?v=20261022-accessible-drafting">
-    <script src="./demo-access.js?v=20261022-accessible-drafting" type="module"></script>
+    <link rel="stylesheet" href="./design-system/tokens.css?v=20261022-wordpress-flow">
+    <link rel="stylesheet" href="./styles.css?v=20261022-wordpress-flow">
+    <script src="./demo-access.js?v=20261022-wordpress-flow" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -283,7 +283,8 @@
     <dialog class="editor-link-dialog" id="editor-link-dialog" aria-labelledby="editor-link-heading"><form id="editor-link-form"><div class="editor-panel-heading"><h2 id="editor-link-heading">Add a link</h2><button class="icon-button" type="button" data-close="editor-link-dialog" aria-label="Close link dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div><label for="editor-link-text">Link text<input id="editor-link-text" type="text" placeholder="Text to display" maxlength="2000"></label><label for="editor-link-url">URL<input id="editor-link-url" type="text" placeholder="https://" required></label><p class="form-error" id="editor-link-error" role="alert" hidden></p><div class="dialog-footer"><button class="secondary-button" id="editor-remove-link" type="button">Remove Link</button><button class="primary-button" type="submit">Apply Link</button></div></form></dialog>
 
     <dialog class="experience-feedback-dialog" id="experience-feedback-dialog" aria-labelledby="experience-feedback-heading">
-      <div class="panel-heading"><h2 id="experience-feedback-heading">Draft feedback</h2><button class="icon-button" type="button" data-close="experience-feedback-dialog" aria-label="Close feedback"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
+      <div class="experience-feedback-export" id="experience-feedback-export" hidden><a class="primary-button feedback-wordpress-link" id="feedback-wordpress-link" target="_blank" rel="noopener noreferrer">Go to WordPress</a></div>
+      <div class="panel-heading"><h2 id="experience-feedback-heading">Draft Feedback</h2><button class="icon-button" type="button" data-close="experience-feedback-dialog" aria-label="Close feedback"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
       <form id="experience-feedback-form" novalidate>
         <div class="experience-feedback-body">
           <fieldset class="feedback-rating-field"><legend>How would you rate this draft? <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></legend>
@@ -313,18 +314,18 @@
 
     <dialog class="send-destination-dialog" id="send-destination-dialog" aria-labelledby="send-destination-heading">
       <form id="send-destination-form">
-        <div class="send-destination-header"><h2 id="send-destination-heading">Where Do You Want to Send this to?</h2><button class="icon-button send-destination-close" id="send-destination-close" type="button" aria-label="Close send destination dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
+        <div class="send-destination-header"><h2 id="send-destination-heading">Export to WordPress</h2><button class="icon-button send-destination-close" id="send-destination-close" type="button" aria-label="Close Export to WordPress dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
         <span class="visually-hidden" id="send-destination-label">Destination</span>
         <div class="send-destination-site">
-          <select id="send-destination-site" aria-label="Destination" hidden><option value="csa-gate-test" selected>CSA gate test (not a real site)</option></select>
+          <select id="send-destination-site" aria-label="Destination" hidden><option value="us-weekly" selected>Us Weekly WordPress</option></select>
           <button class="send-destination-trigger" id="send-destination-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="send-destination-options" aria-labelledby="send-destination-label send-destination-name" aria-describedby="send-destination-url">
-            <span class="send-destination-site-preview"><span class="send-destination-name-row"><span class="send-destination-site-name" id="send-destination-name">CSA gate test (not a real site)</span><span class="send-destination-admin" id="send-destination-admin" hidden>ADMIN VIEW</span></span><span class="send-destination-site-url" id="send-destination-url">https://csa-gate-test.invalid</span></span>
+            <span class="send-destination-site-preview"><span class="send-destination-name-row"><span class="send-destination-site-name" id="send-destination-name">Us Weekly WordPress</span><span class="send-destination-admin" id="send-destination-admin">ADMIN VIEW</span></span><span class="send-destination-site-url" id="send-destination-url">https://www.usmagazine.com</span></span>
             <span class="material-symbols-outlined send-destination-chevron" aria-hidden="true">keyboard_arrow_down</span>
           </button>
           <div class="send-destination-options" id="send-destination-options" role="listbox" aria-label="Destination" hidden></div>
         </div>
         <p class="form-error send-destination-error" id="send-destination-error" role="alert" hidden></p>
-        <div class="dialog-footer"><button class="secondary-button" id="send-destination-cancel" type="button">Cancel</button><button class="primary-button" id="send-destination-confirm" type="submit">Send</button></div>
+        <div class="dialog-footer"><button class="secondary-button" id="send-destination-cancel" type="button">Cancel</button><button class="primary-button" id="send-destination-confirm" type="submit">Export</button></div>
       </form>
     </dialog>
 

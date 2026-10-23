@@ -16,11 +16,11 @@ import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from '.
 import { createNewProjectUpload } from './new-project-upload.js?v=20261022-accessible-drafting';
 import { createRailNavigation } from './navigation.js?v=20261022-card-menu';
 import { createProjectSources } from './sources.js?v=20261022-toast-copy';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-accessible-drafting';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-drafting-six-seconds';
 import { createEditorTabs } from './editor-tabs.js?v=20261022-content-send-dialog';
 import { createContentCardEditing } from './content-card-editing.js?v=20261022-card-menu';
-import { createSendDestinationDialog, isSendDestination } from './send-destination.js?v=20261022-feedback-restored';
-import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261022-feedback-restored';
+import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261022-publisher-destinations';
+import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261022-wordpress-export-followup';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -171,10 +171,11 @@ const sendDestinationDialog = createSendDestinationDialog({
     if (!isSendDestination(destination)) return false;
     return markVariantSentToCms(target.projectId, target.outputId);
   },
-  onSent(target) {
+  onSent(target, destinationId) {
     const project = projects.find(entry => entry.id === target.projectId && !entry.deletedAt && !entry.archivedAt);
     const output = projectOutputs(project).find(entry => entry.id === target.outputId && outputIsReady(entry));
-    if (activeProjectId === project?.id && output) variantFeedback.open(project, output);
+    const destination = sendDestinations.find(entry => entry.id === destinationId);
+    if (activeProjectId === project?.id && output) variantFeedback.open(project, output, undefined, { exportUrl: destination?.url });
   },
 });
 const contentCardEditing = createContentCardEditing({
@@ -869,7 +870,7 @@ $('#create-output').addEventListener('click', () => {
   const outputs = selectedPendingOutputs(project);
   if (!outputs.length) return;
   richEditor.flush();
-  project.outputProcessing = { ids: outputs.map(output => output.id), openOutputId: outputs[0].id, readyAt: Date.now() + 4000 };
+  project.outputProcessing = { ids: outputs.map(output => output.id), openOutputId: outputs[0].id, readyAt: Date.now() + tokenNumber('component.drafting.processing-duration') };
   saveProjects();
   renderOutputs(project);
   updateComposerActions();

@@ -178,7 +178,7 @@ export function mountStateSpecimens(root) {
   header.append(heading);
   const body = element('div', 'ds-disclosure-body');
   body.id = 'ds-disclosure-body';
-  body.append(element('p', 'ds-caption', 'Choose any Format, Audience, or Voice to enable Add to List.'));
+  const guidance = element('p', 'ds-caption', 'Choose any Format, Audience, or Voice to enable Add to List.');
   const fields = element('div', 'composer-fields');
   for (const { label, key } of draftOptions) {
     const field = element('div', 'composer-field');
@@ -216,7 +216,7 @@ export function mountStateSpecimens(root) {
   const drafting = createDraftingAnimation({ compact: true });
   const draftingStage = element('div', 'ds-drafting-specimen');
   draftingStage.append(drafting.element);
-  loading.append(draftingStage, element('p', 'ds-caption', 'The app’s drafting feedback uses white paper, looping blue writing, and a new sheet for each message. Reduced motion keeps a static sheet and message.'));
+  loading.append(draftingStage, element('p', 'ds-caption', 'The app shows this drafting feedback for six seconds: white paper, looping blue writing, and a new sheet for each message. The reference preview repeats. Reduced motion keeps a static sheet and message.'));
   const adding = element('span', 'result-adding');
   const spinner = element('span', 'output-processing-spinner');
   spinner.setAttribute('aria-hidden', 'true');
@@ -236,7 +236,7 @@ export function mountStateSpecimens(root) {
   setExpanded(true);
   toggle.addEventListener('click', () => setExpanded(toggle.getAttribute('aria-expanded') !== 'true'));
   add.addEventListener('click', () => { status.textContent = 'Content Added'; });
-  root.append(panel, empty, loading, status);
+  root.append(panel, guidance, empty, loading, status);
   populateDraftOptions(panel);
   dropdowns = createToolDropdowns({ root: panel });
   const updateAdd = () => { add.disabled = !hasDraftSelection(Object.fromEntries([...fields.querySelectorAll('select')].map(select => [select.closest('.composer-field').dataset.label.toLowerCase(), select.value]))); };

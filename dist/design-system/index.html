@@ -8,10 +8,10 @@
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,chevron_forward,close,delete,description,draw,edit,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,upload,view_module,visibility&amp;display=block">
-  <link rel="stylesheet" href="tokens.css?v=20261022-accessible-drafting">
-  <link rel="stylesheet" href="../styles.css?v=20261022-accessible-drafting">
+  <link rel="stylesheet" href="tokens.css?v=20261022-wordpress-flow">
+  <link rel="stylesheet" href="../styles.css?v=20261022-wordpress-flow">
   <link rel="stylesheet" href="guide.css?v=20261022-accessible-drafting">
-  <script src="guide.js?v=20261022-accessible-drafting" type="module"></script>
+  <script src="guide.js?v=20261022-wordpress-flow" type="module"></script>
 </head>
 <body class="ds-page">
   <a class="ds-skip" href="#overview">Skip to reference</a>
@@ -25,7 +25,7 @@
       <p class="ds-eyebrow">THE CSA REFERENCE · OCTOBER 2026</p>
       <p class="ds-lead">The colors, type, spacing, and components behind CSA. Extracted from the product and connected to its stylesheets.</p>
       <div class="ds-actions"><a class="primary-button" href="../">Launch Prototype</a><a class="ds-text-link" href="tokens.json" download>Download token JSON <span class="material-symbols-outlined" aria-hidden="true">open_in_new</span></a></div>
-      <div class="ds-metrics"><div><strong id="ds-token-total">484</strong><span>named tokens</span></div><div><strong>3</strong><span>connected layers</span></div><div><strong>1</strong><span>source of truth</span></div></div>
+      <div class="ds-metrics"><div><strong id="ds-token-total">486</strong><span>named tokens</span></div><div><strong>3</strong><span>connected layers</span></div><div><strong>1</strong><span>source of truth</span></div></div>
     </section>
 
     <section class="ds-section" id="foundations" aria-label="Foundations">
@@ -146,7 +146,8 @@
     <footer class="ds-end"><strong>CSA</strong><span>Design system v1.0 · Extracted from the product</span><a href="#overview">Back to top</a></footer>
   </main>
     <dialog class="experience-feedback-dialog" id="experience-feedback-dialog" aria-labelledby="experience-feedback-heading">
-      <div class="panel-heading"><h2 id="experience-feedback-heading">Draft feedback</h2><button class="icon-button" type="button" data-close="experience-feedback-dialog" aria-label="Close feedback"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
+      <div class="experience-feedback-export" id="experience-feedback-export" hidden><a class="primary-button feedback-wordpress-link" id="feedback-wordpress-link" target="_blank" rel="noopener noreferrer">Go to WordPress</a></div>
+      <div class="panel-heading"><h2 id="experience-feedback-heading">Draft Feedback</h2><button class="icon-button" type="button" data-close="experience-feedback-dialog" aria-label="Close feedback"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
       <form id="experience-feedback-form" novalidate>
         <div class="experience-feedback-body">
           <fieldset class="feedback-rating-field"><legend>How would you rate this draft? <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></legend>

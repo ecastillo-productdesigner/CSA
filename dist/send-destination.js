@@ -3,7 +3,6 @@ import { tokenNumber } from './design-system/runtime.js?v=20261022-toast-copy';
 import { bindTapActivation } from './tap-activation.js?v=20261022-toast-copy';
 
 export const sendDestinations = Object.freeze([
-  { id: 'csa-gate-test', name: 'CSA gate test (not a real site)', url: 'https://csa-gate-test.invalid', adminView: false },
   { id: 'us-weekly', name: 'Us Weekly WordPress', url: 'https://www.usmagazine.com', adminView: true },
   { id: 'bargain-hunter', name: 'Bargain Hunter WordPress', url: 'https://www.bargainhunter.com', adminView: true },
   { id: 'womans-world', name: "Woman's World", url: 'https://www.womansworld.com', adminView: true },
@@ -142,6 +141,7 @@ export function createSendDestinationDialog({ getTarget, onSend, onSent }) {
     dismiss.disabled = sending;
     cancel.disabled = sending;
     confirm.disabled = sending || !active || !isSendDestination(site.value);
+    confirm.textContent = sending ? 'Exporting…' : 'Export';
     if (sending) closePicker();
   }
 

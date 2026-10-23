@@ -50,7 +50,7 @@ class Control {
   }
 }
 
-function setup(t) {
+function setup(t, initialSiteValue = 'us-weekly') {
   const previous = { document: globalThis.document, window: globalThis.window, getComputedStyle: globalThis.getComputedStyle };
   const nodes = Object.fromEntries(['dialog', 'form', 'site', 'trigger', 'name', 'url', 'admin', 'options', 'close', 'cancel', 'confirm', 'error'].map(name => [name, new Control()]));
   const main = new Control();
@@ -68,7 +68,7 @@ function setup(t) {
   nodes.dialog.append(nodes.trigger, nodes.options);
   nodes.options.hidden = true;
   nodes.options.rect = { left: 100, top: 280, width: 400, height: 380 };
-  nodes.site.value = 'csa-gate-test';
+  nodes.site.value = initialSiteValue;
   nodes.dialog.open = false;
   nodes.dialog.showModal = () => { nodes.dialog.open = true; };
   nodes.dialog.close = () => { nodes.dialog.open = false; nodes.dialog.fire('close'); };
@@ -125,13 +125,13 @@ test('an unsendable or different project cannot open a destination dialog', t =>
   assert.deepEqual(ui.calls, []);
 });
 
-test('Send confirms the captured draft and selected demo destination, then restores enabled fallback focus', async t => {
+test('Send confirms the captured draft and selected publisher destination, then restores enabled fallback focus', async t => {
   const ui = setup(t);
   ui.setSend(() => { ui.opener.disabled = true; return true; });
   ui.api.open('project');
   assert.deepEqual(ui.calls, []);
   await ui.submit();
-  assert.deepEqual(ui.calls, [{ target: { projectId: 'project', outputId: 'output' }, destination: 'csa-gate-test' }]);
+  assert.deepEqual(ui.calls, [{ target: { projectId: 'project', outputId: 'output' }, destination: 'us-weekly' }]);
   assert.equal(ui.dialog.open, false);
   assert.equal(document.activeElement, ui.main);
   assert.equal(ui.confirm.disabled, true);
@@ -146,7 +146,7 @@ test('invalid destinations and stale, removed, or switched drafts are blocked be
   await ui.submit();
   assert.equal(ui.error.hidden, false);
   assert.match(ui.error.textContent, /Choose a destination/);
-  ui.site.value = 'csa-gate-test';
+  ui.site.value = 'us-weekly';
   ui.site.fire('change');
   for (const target of [{ projectId: 'project', outputId: 'another-output' }, null, { projectId: 'other-project', outputId: 'output' }]) {
     ui.setTarget(target);
@@ -179,7 +179,7 @@ test('a pending Send cannot be duplicated or cancelled, and a false result retai
   await pending;
   assert.equal(ui.dialog.open, true);
   assert.equal(ui.error.hidden, false);
-  assert.equal(ui.site.value, 'csa-gate-test');
+  assert.equal(ui.site.value, 'us-weekly');
   assert.equal(ui.dialog.dataset.busy, 'false');
   assert.equal(document.activeElement, ui.confirm);
   assert.equal(ui.confirm.disabled, false);
@@ -199,7 +199,7 @@ test('send exceptions stay visible without discarding the selected destination',
   assert.equal(ui.dialog.open, true);
   assert.equal(ui.error.hidden, false);
   assert.match(ui.error.textContent, /could not be sent/);
-  assert.equal(ui.site.value, 'csa-gate-test');
+  assert.equal(ui.site.value, 'us-weekly');
   assert.equal(ui.confirm.disabled, false);
   ui.api.close();
   assert.equal(document.activeElement, ui.opener);
@@ -238,14 +238,13 @@ test('closing returns focus to main when the original trigger was removed or hid
 test('the destination catalog contains the requested names, URLs and four noninteractive Admin View tags', t => {
   const ui = setup(t);
   assert.deepEqual(sendDestinations.map(({ id, name, url, adminView }) => [id, name, url, adminView]), [
-    ['csa-gate-test', 'CSA gate test (not a real site)', 'https://csa-gate-test.invalid', false],
     ['us-weekly', 'Us Weekly WordPress', 'https://www.usmagazine.com', true],
     ['bargain-hunter', 'Bargain Hunter WordPress', 'https://www.bargainhunter.com', true],
     ['womans-world', "Woman's World", 'https://www.womansworld.com', true],
     ['soap-opera-digest', 'Soap Opera Digest', 'https://www.soapoperadigest.com', true],
   ]);
-  assert.equal(ui.site.children.length, 5);
-  assert.equal(ui.options.children.length, 5);
+  assert.equal(ui.site.children.length, 4);
+  assert.equal(ui.options.children.length, 4);
   for (const { id, adminView } of sendDestinations) {
     const row = ui.option(id);
     assert.equal(row.type, 'button');
@@ -258,7 +257,7 @@ test('the destination catalog contains the requested names, URLs and four nonint
     assert.equal(admin.tabIndex, undefined);
     assert.equal(isSendDestination(id), true);
   }
-  for (const invalid of ['', null, 'us-weekly.invalid', 'https://www.usmagazine.com', {}, 1]) assert.equal(isSendDestination(invalid), false);
+  for (const invalid of ['', null, 'csa-gate-test', 'us-weekly.invalid', 'https://www.usmagazine.com', {}, 1]) assert.equal(isSendDestination(invalid), false);
 });
 
 test('every destination can be chosen, updates both trigger lines, and sends only its ID on confirmation', async t => {
@@ -291,9 +290,9 @@ test('keyboard navigation chooses an option and Escape closes the list before cl
   const ui = setup(t);
   ui.api.open('project');
   ui.trigger.fire('keydown', { key: 'ArrowDown' });
-  assert.equal(document.activeElement, ui.option('csa-gate-test'));
-  ui.options.fire('keydown', { key: 'ArrowDown' });
   assert.equal(document.activeElement, ui.option('us-weekly'));
+  ui.options.fire('keydown', { key: 'ArrowDown' });
+  assert.equal(document.activeElement, ui.option('bargain-hunter'));
   ui.options.fire('keydown', { key: 'End' });
   assert.equal(document.activeElement, ui.option('soap-opera-digest'));
   ui.options.fire('keydown', { key: 'Home' });
@@ -304,10 +303,10 @@ test('keyboard navigation chooses an option and Escape closes the list before cl
   assert.equal(ui.trigger.getAttribute('aria-expanded'), 'false');
   assert.equal(ui.dialog.open, true);
   ui.trigger.fire('keydown', { key: 'Home' });
-  assert.equal(document.activeElement, ui.option('csa-gate-test'));
+  assert.equal(document.activeElement, ui.option('us-weekly'));
   ui.options.fire('keydown', { key: ' ' });
-  assert.equal(ui.site.value, 'csa-gate-test');
-  assert.equal(ui.admin.hidden, true);
+  assert.equal(ui.site.value, 'us-weekly');
+  assert.equal(ui.admin.hidden, false);
   ui.trigger.fire('keydown', { key: 'End' });
   ui.options.fire('keydown', { key: 'Escape' });
   assert.equal(ui.options.hidden, true);
@@ -339,7 +338,7 @@ test('outside interaction, focus movement, Tab and outside scrolling dismiss onl
     dismiss();
     assert.equal(ui.options.hidden, true);
     assert.equal(ui.dialog.open, true);
-    assert.equal(ui.site.value, 'csa-gate-test');
+    assert.equal(ui.site.value, 'us-weekly');
   }
   assert.deepEqual(ui.calls, []);
 });
@@ -356,7 +355,7 @@ test('the picker stays inside the modal and clamps to a narrow viewport with scr
   assert.equal(ui.options.style.left, '32px');
   assert.equal(ui.options.style.top, '320px');
   assert.equal(ui.options.style.maxHeight, '236px');
-  assert.equal(ui.options.children.length, 5);
+  assert.equal(ui.options.children.length, 4);
   ui.trigger.rect = { left: 32, top: 420, width: 256, height: 72, right: 288, bottom: 492 };
   window.fire('resize');
   assert.equal(ui.options.style.top, '32px');
@@ -414,4 +413,20 @@ test('cancelled, failed and stale sends never open post-Send feedback', async t 
   ui.setTarget(null);
   await ui.submit();
   assert.deepEqual(ui.sentCalls, []);
+});
+
+
+test('removed test-site and unknown historical selections fall back to the first real publisher', t => {
+  for (const historical of ['csa-gate-test', 'removed-publisher', '']) {
+    const ui = setup(t, historical);
+    assert.equal(ui.site.value, 'us-weekly');
+    assert.equal(ui.name.textContent, 'Us Weekly WordPress');
+    assert.equal(ui.url.textContent, 'https://www.usmagazine.com');
+    assert.equal(ui.admin.hidden, false);
+    assert.equal(ui.option('csa-gate-test'), undefined);
+    ui.api.open('project');
+    assert.equal(ui.confirm.disabled, false);
+    ui.cancel.fire('click');
+    assert.deepEqual(ui.calls, []);
+  }
 });

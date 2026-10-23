@@ -382,7 +382,7 @@ export function renderOutputs(project, requestedView) {
   create.disabled = processing || !selectedPending.length;
   create.title = processing ? 'Drafting Selected Content' : selectedPending.length ? 'Draft Selected Content' : 'Select Content to Draft';
   document.querySelector('#create-output-label').textContent = 'Draft';
-  document.querySelector('#output-processing-status').textContent = project?.outputProcessing?.kind === 'revision' ? 'Revising your variant. This takes about four seconds.' : processing ? 'Drafting your selected content. This takes about four seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
+  document.querySelector('#output-processing-status').textContent = project?.outputProcessing?.kind === 'revision' ? 'Revising your variant. This takes about four seconds.' : processing ? 'Drafting your selected content. This takes about six seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
   const empty = document.querySelector('#outputs-empty');
   empty.hidden = state.outputs.length > 0;
   empty.querySelector('p').textContent = state.view === 'pending' ? 'Your drafted content will appear here.' : 'No drafted content yet.';

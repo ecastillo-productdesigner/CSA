@@ -483,6 +483,7 @@
   --csa-component-status-creating-shimmer-duration: 1600ms;
   --csa-component-status-creating-shimmer-width: 200;
   --csa-component-status-font-size: var(--csa-foundation-font-size-12);
+  --csa-component-status-creating-shimmer-band-half-width: 8;
   --csa-component-chip-height: 24px;
   --csa-component-chip-radius: var(--csa-foundation-radius-999);
   --csa-component-chip-format-background: var(--csa-foundation-color-rose-100);
@@ -588,4 +589,5 @@
   --csa-component-drafting-paper-scale-step: 0.04;
   --csa-component-drafting-paper-lift-offset: 0.44;
   --csa-component-drafting-paper-front-offset: 0.47;
+  --csa-component-drafting-processing-duration: 6000ms;
 }

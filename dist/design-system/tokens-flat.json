@@ -5816,7 +5816,7 @@
       "category": "status",
       "value": "1600ms",
       "reference": "",
-      "description": "Blue 600 text shimmer sweep while content is being created.",
+      "description": "Time for a complete edge-to-edge accessible blue text shimmer sweep.",
       "status": "observed"
     },
     {
@@ -5841,6 +5841,18 @@
       "value": "12px",
       "reference": "foundation.font.size.12",
       "description": "Sent and Draft labels match the 12px settings-chip size.",
+      "status": "observed"
+    },
+    {
+      "name": "component.status.creating-shimmer-band-half-width",
+      "designName": "component/status/creating-shimmer-band-half-width",
+      "cssVariable": "--csa-component-status-creating-shimmer-band-half-width",
+      "type": "number",
+      "layer": "component",
+      "category": "status",
+      "value": "8",
+      "reference": "",
+      "description": "Half-width in percentage points of the narrow Blue 600 highlight within the Blue 700 text shimmer.",
       "status": "observed"
     },
     {
@@ -7401,6 +7413,18 @@
       "value": "0.47",
       "reference": "",
       "description": "Normalized handoff offset where the incoming sheet moves above the previous front sheet.",
+      "status": "observed"
+    },
+    {
+      "name": "component.drafting.processing-duration",
+      "designName": "component/drafting/processing-duration",
+      "cssVariable": "--csa-component-drafting-processing-duration",
+      "type": "duration",
+      "layer": "component",
+      "category": "drafting",
+      "value": "6000ms",
+      "reference": "",
+      "description": "Prototype draft-generation duration, expressed in milliseconds for the processing timer.",
       "status": "observed"
     }
   ]

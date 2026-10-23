@@ -1,7 +1,7 @@
-import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261022-feedback-restored';
+import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261022-wordpress-flow';
 import { mountProjectSpecimens } from './project-specimens.js?v=20261022-ds-inventory';
 import { mountFormSpecimens } from './form-specimens.js?v=20261022-accessible-drafting';
-import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261022-accessible-drafting';
+import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261022-drafting-six-seconds';
 import { colorRoleGroups } from './color-roles.js?v=20261022-accessible-drafting';
 import { typographyRoleGroups } from './typography-roles.js?v=20261022-draft-labels';
 import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-accessible-drafting';

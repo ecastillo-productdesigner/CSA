@@ -5,7 +5,7 @@ import { createIcon as icon } from './icons.js?v=20261022-toast-copy';
 import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261022-toast-copy';
 import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261022-content-send-dialog';
 import { createProfile } from './profile.js?v=20261022-toast-copy';
-import { createSearchExperience } from './search.js?v=20261022-content-send-dialog';
+import { createSearchExperience } from './search.js?v=20261022-adding-copy';
 import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261022-content-send-dialog';
 import { createMaterialEditor } from './editor.js?v=20261022-accessible-drafting';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261022-toast-copy';
@@ -16,8 +16,8 @@ import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from '.
 import { createNewProjectUpload } from './new-project-upload.js?v=20261022-accessible-drafting';
 import { createRailNavigation } from './navigation.js?v=20261022-card-menu';
 import { createProjectSources } from './sources.js?v=20261022-toast-copy';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-drafting-six-seconds';
-import { createEditorTabs } from './editor-tabs.js?v=20261022-content-send-dialog';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-draft-tab-labels';
+import { createEditorTabs } from './editor-tabs.js?v=20261022-source-draft-label';
 import { createContentCardEditing } from './content-card-editing.js?v=20261022-card-menu';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261022-publisher-destinations';
 import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261022-wordpress-export-followup';
@@ -764,14 +764,16 @@ $('.create-variant').addEventListener('click', () => {
   outputViews.set(project.id, 'pending');
   project.newVariantCollapsed = false;
   setNewVariantCollapsed(false);
-  project.toolPreferences = Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, $(`#composer-${key}`).value]));
+  project.toolPreferences = { format: '', audience: '', voice: '' };
+  for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = '';
+  toolDropdowns.close();
   toolDropdowns.refresh();
   updateComposerActions();
   project.updatedAt = Date.now();
   const saved = saveProjects();
   showEditorProject(project);
   if (window.matchMedia(breakpointQuery()).matches) railNavigation.open('newVariant');
-  $('.create-variant').focus({ preventScroll: true });
+  $('#composer-format-trigger')?.focus({ preventScroll: true });
   if (saved) notify('Content Added');
 });
 

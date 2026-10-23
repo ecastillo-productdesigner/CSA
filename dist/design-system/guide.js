@@ -1,7 +1,7 @@
 import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261022-wordpress-flow';
 import { mountProjectSpecimens } from './project-specimens.js?v=20261022-ds-inventory';
 import { mountFormSpecimens } from './form-specimens.js?v=20261022-accessible-drafting';
-import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261022-drafting-six-seconds';
+import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261022-draft-polish';
 import { colorRoleGroups } from './color-roles.js?v=20261022-accessible-drafting';
 import { typographyRoleGroups } from './typography-roles.js?v=20261022-draft-labels';
 import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-accessible-drafting';
@@ -125,7 +125,7 @@ function renderContentCard() {
   contentOpen.title = pending ? 'Select this content to draft' : selected ? 'This content is open in the editor' : 'Open this content in the editor';
   if (selected) contentOpen.setAttribute('aria-current', 'true');
   else contentOpen.removeAttribute('aria-current');
-  contentContext.textContent = pending ? (contentDeleted ? 'To Draft' : '1 Content to Draft') : 'Drafted';
+  contentContext.textContent = pending ? (contentDeleted ? 'To Draft' : 'Content to Draft') : 'Drafted';
   contentAdaptFooter.hidden = !pending || contentDeleted;
   contentAdapt.disabled = !selected;
   contentAdapt.textContent = 'Draft';

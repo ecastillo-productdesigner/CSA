@@ -11,13 +11,13 @@ test('To Draft keeps pending and regeneration records while Drafted includes rea
   const project = { outputs: [pending, ready, legacy, recreate, null] };
   assert.deepEqual(variantPanelState(project, 'pending').outputs.map(output => output.id), ['pending', 'recreate']);
   assert.deepEqual(variantPanelState(project, 'created').outputs.map(output => output.id), ['ready', 'legacy']);
-  assert.equal(variantPanelState(project).pendingLabel, '2 Content to Draft');
+  assert.equal(variantPanelState(project).pendingLabel, 'Content to Draft');
   assert.equal(variantPanelState(project).createdLabel, 'Drafted');
 });
 
 test('empty segments omit zero counts and default to To Draft', () => {
   assert.deepEqual(variantPanelState(null), { view: 'pending', outputs: [], pendingLabel: 'To Draft', createdLabel: 'Drafted' });
-  assert.equal(variantPanelState({ outputs: [pending] }).pendingLabel, '1 Content to Draft');
+  assert.equal(variantPanelState({ outputs: [pending] }).pendingLabel, 'Content to Draft');
 });
 
 test('explicit segment selection overrides the open editor while default follows a created draft', () => {
@@ -40,5 +40,13 @@ test('completing a batch moves only those records to Created without duplication
 test('Drafted stays unnumbered for zero, one, and multiple completed pieces', () => {
   for (const outputs of [[], [ready], [ready, { ...ready, id: 'second' }]]) {
     assert.equal(variantPanelState({ outputs }).createdLabel, 'Drafted');
+  }
+});
+
+
+test('pending content uses the same unnumbered label for one or many pieces and keeps its empty label', () => {
+  assert.equal(variantPanelState({ outputs: [] }).pendingLabel, 'To Draft');
+  for (const outputs of [[pending], [pending, { ...pending, id: 'second' }, { ...pending, id: 'third' }]]) {
+    assert.equal(variantPanelState({ outputs }).pendingLabel, 'Content to Draft');
   }
 });

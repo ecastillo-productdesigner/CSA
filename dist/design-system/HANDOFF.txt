@@ -502,3 +502,16 @@ The To Adapt empty state reads Your adapted content will appear here. Adapted re
 2026-10-22: Successful Export opens a centered Go to WordPress primary link for the chosen destination above the existing Draft Feedback ratings flow. Direct thumb feedback omits the link, and closing clears its target. The link opens only when clicked. The shared drafting animation centers the papers and readable-width message as a group.
 
 2026-10-22: Removed the CSA gate test destination from the export picker. The four publisher destinations remain; Us Weekly WordPress is the default, including fallback from the removed historical value.
+
+2026-10-22: Draft Feedback omits the header X and uses Close for its secondary footer dismissal in the app and DS. The completion action remains Done.
+
+2026-10-22: Content to Draft omits its numeric count; empty pending state remains To Draft. After Add to List snapshots the selected settings on its new content card, Format, Audience, and Voice reset to white None Selected and Add to List disables until a valid choice is selected again. Editorial Direction is retained. Focus returns to the Format trigger. The DS disclosure mirrors this reset.
+
+2026-10-22: The compact editor toolbar keeps a foundation.space.16 gap below its border and above the article scroll viewport, so scrolled text does not touch the toolbar.
+
+2026-10-22: Compact drafting copy uses a 180 px maximum line box, centered text, and balanced wrapping to remove the previous left-heavy appearance while preserving the horizontal paper-and-copy layout.
+
+2026-10-22: The editor source-preview badge now reads To Draft, with Content to Draft as its accessible title. Source-addition progress now reads Adding in app and DS; its three-second timing and existing spinner/shimmer are retained.
+
+- Compact drafting paper-to-copy gap uses foundation.space.24; papers and balanced centered copy remain centered as one group.
+- Post-export feedback has the centered heading “Export complete” above Go to WordPress.

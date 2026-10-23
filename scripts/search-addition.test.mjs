@@ -129,7 +129,7 @@ test('fresh embedded links start the existing loader together and complete indep
   assert.equal(ui.pending(), 3);
   for (const id of ['link-1', 'link-2', 'link-3']) {
     assert.equal(loading(ui.addition(id)), true);
-    assert.match(ui.addition(id).textContent, /Adding to CSA/);
+    assert.equal(ui.addition(id).querySelector('.output-creating-label').textContent, 'Adding');
     assert.equal(ui.addition(id).getAttribute('aria-live'), 'polite');
     assert.equal(ui.addition(id).parentElement.querySelector('.result-add-button').getAttribute('aria-busy'), 'true');
   }

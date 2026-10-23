@@ -355,7 +355,7 @@ export function variantPanelState(project, requestedView) {
   return {
     view,
     outputs: view === 'pending' ? pending : created,
-    pendingLabel: pending.length ? `${pending.length} Content to Draft` : 'To Draft',
+    pendingLabel: pending.length ? 'Content to Draft' : 'To Draft',
     createdLabel: 'Drafted',
   };
 }

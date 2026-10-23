@@ -78,7 +78,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     inspect.hidden = !canInspect;
     const separator = item.querySelector('.result-inspect-separator');
     if (separator) separator.hidden = !canInspect;
-    inspect.title = canInspect ? 'Preview Article' : selected ? 'Adding to CSA' : 'Select this story to inspect';
+    inspect.title = canInspect ? 'Preview Article' : selected ? 'Adding' : 'Select this story to inspect';
     container.hidden = !selected;
     const loading = selected && !ready;
     container.classList.toggle('is-loading', loading);
@@ -88,7 +88,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       const adding = node('span', 'result-adding');
       const spinner = node('span', 'output-processing-spinner');
       spinner.setAttribute('aria-hidden', 'true');
-      adding.append(spinner, node('span', 'output-creating-label', 'Adding to CSA'));
+      adding.append(spinner, node('span', 'output-creating-label', 'Adding'));
       container.append(adding);
     }
   }

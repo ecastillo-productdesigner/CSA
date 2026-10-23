@@ -220,7 +220,7 @@ export function mountStateSpecimens(root) {
   const adding = element('span', 'result-adding');
   const spinner = element('span', 'output-processing-spinner');
   spinner.setAttribute('aria-hidden', 'true');
-  adding.append(spinner, element('span', 'output-creating-label', 'Adding to CSA'));
+  adding.append(spinner, element('span', 'output-creating-label', 'Adding'));
   loading.append(element('h4', '', 'Adding a source'), adding);
   const status = element('p', 'ds-specimen-status');
   status.setAttribute('role', 'status');
@@ -235,7 +235,15 @@ export function mountStateSpecimens(root) {
   }
   setExpanded(true);
   toggle.addEventListener('click', () => setExpanded(toggle.getAttribute('aria-expanded') !== 'true'));
-  add.addEventListener('click', () => { status.textContent = 'Content Added'; });
+  add.addEventListener('click', () => {
+    if (add.disabled) return;
+    dropdowns.close();
+    for (const select of fields.querySelectorAll('select')) select.value = '';
+    dropdowns.refresh();
+    updateAdd();
+    status.textContent = 'Content Added';
+    fields.querySelector('.tool-dropdown-trigger')?.focus({ preventScroll: true });
+  });
   root.append(panel, guidance, empty, loading, status);
   populateDraftOptions(panel);
   dropdowns = createToolDropdowns({ root: panel });

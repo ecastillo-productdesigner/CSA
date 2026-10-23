@@ -431,10 +431,10 @@ body:has(#new-project-dialog[open]) { overflow: hidden; }
 .new-project-divider { display: flex; align-items: center; gap: var(--csa-foundation-space-14); margin: var(--csa-foundation-space-25) 0 var(--csa-foundation-space-20); color: var(--muted); font-size: var(--csa-foundation-font-size-12); text-align: center; }
 .new-project-divider::before, .new-project-divider::after { content: ''; flex: 1; height: var(--csa-foundation-space-1); background: var(--line); }
 .new-project-material { display: flex; align-items: center; gap: var(--csa-foundation-space-15); width: 100%; min-height: var(--csa-foundation-size-84); padding: var(--csa-foundation-space-17); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-8); background: var(--csa-foundation-color-neutral-0); text-align: left; }
-.new-project-material:hover { border-color: var(--line); background: var(--csa-foundation-color-neutral-100); }
+.new-project-material:not(.new-project-upload):hover { border-color: var(--line); background: var(--csa-foundation-color-neutral-100); }
 .new-project-material + .new-project-material { margin-top: var(--csa-foundation-space-12); }
 .new-project-upload { position: relative; cursor: pointer; }
-.new-project-upload .browse-label { text-decoration: underline; text-underline-offset: var(--csa-foundation-space-3); }
+.new-project-upload .browse-label { color: var(--csa-semantic-color-action-primary); text-decoration: underline; text-underline-offset: var(--csa-foundation-space-3); }
 .new-project-upload.dragging { border-color: var(--line); background: var(--csa-foundation-color-neutral-100); }
 .new-project-upload:focus-within { outline: var(--csa-foundation-border-width-3) solid var(--csa-foundation-color-blue-focus); outline-offset: var(--csa-foundation-space-4); }
 .new-project-upload-help { margin: var(--csa-foundation-space-8) var(--csa-foundation-space-2) 0; color: var(--muted); font-size: var(--csa-foundation-font-size-10); line-height: var(--csa-foundation-font-leading-1-5); }

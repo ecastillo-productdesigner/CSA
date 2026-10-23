@@ -15,3 +15,5 @@
 }
 
 2026-10-23: Homepage greeting uses a DeepSeek-inspired whole-heading fade and upward glide: opacity 0 to 1, 40px starting offset, 1000ms duration, symmetric ease-in-out. The exact greeting and typography stay intact. Component layout home-enter tokens define these values. Project cards use the same reveal, starting after 420ms with 45ms stagger capped at seven steps; the 1800ms cleanup covers the entire sequence. Home-entry replay and reduced-motion behavior remain in place.
+
+2026-10-23: Text-field and unchecked-checkbox outlines use semantic.color.border.control (Neutral 500, #737373), aliased by component.field.border and component.checkbox.border. Boundary contrast is 4.74:1 on white, 4.60:1 on canvas, and 4.35:1 on light gray, meeting the 3:1 non-text minimum. The DS includes editable-field and unchecked-checkbox examples. Neutral 200 stays on decorative card/panel/divider borders and dropdown outlines with dark labels and chevrons. Checked blue appearances, selected borders, and focus rings remain unchanged. Reference color roles document both uses without duplicate swatches.

@@ -292,6 +292,7 @@
   --csa-semantic-color-text-secondary: var(--csa-foundation-color-neutral-500);
   --csa-semantic-color-border-default: var(--csa-foundation-color-neutral-200);
   --csa-semantic-color-border-selected: var(--csa-foundation-color-blue-500);
+  --csa-semantic-color-border-control: var(--csa-foundation-color-neutral-500);
   --csa-semantic-color-action-primary: var(--csa-foundation-color-blue-600);
   --csa-semantic-color-action-primary-hover: var(--csa-foundation-color-blue-700);
   --csa-semantic-color-action-disabled-label: var(--csa-foundation-color-neutral-400);
@@ -476,7 +477,7 @@
   --csa-component-field-height-mobile: 46px;
   --csa-component-field-radius: var(--csa-foundation-radius-8);
   --csa-component-field-background: var(--csa-semantic-color-surface-default);
-  --csa-component-field-border: var(--csa-semantic-color-border-default);
+  --csa-component-field-border: var(--csa-semantic-color-border-control);
   --csa-component-status-height: 24px;
   --csa-component-status-radius: var(--csa-foundation-radius-4);
   --csa-component-status-draft-background: var(--csa-foundation-color-neutral-200);
@@ -509,6 +510,7 @@
   --csa-component-checkbox-size: 24px;
   --csa-component-checkbox-radius: var(--csa-foundation-radius-4);
   --csa-component-checkbox-selected-background: var(--csa-semantic-color-action-primary);
+  --csa-component-checkbox-border: var(--csa-semantic-color-border-control);
   --csa-component-dialog-width: 540px;
   --csa-component-dialog-radius-desktop: var(--csa-foundation-radius-16);
   --csa-component-dialog-radius-mobile: var(--csa-foundation-radius-16);

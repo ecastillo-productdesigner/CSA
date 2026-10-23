@@ -21,9 +21,9 @@ export const colorRoleGroups = [
     description: 'Neutral roles distinguish readable content, supporting text, inactive labels, and separators.',
     colors: [
       { name: 'Primary text', token: 'semantic.color.text.primary', description: 'Default body text, active editor tabs, blockquotes, and readable text on gray surfaces.' },
-      { name: 'Secondary text', token: 'semantic.color.text.secondary', description: 'Supporting labels, metadata, counts, and placeholders on white or the page canvas.' },
+      { name: 'Secondary text', token: 'semantic.color.text.secondary', description: 'Supporting labels, metadata, counts, and placeholders on white or the page canvas; also text-field and unchecked-checkbox outlines.' },
       { name: 'Muted / inactive text', token: 'semantic.color.text.muted', description: 'Inactive controls and decorative content. Readable labels and placeholders use Secondary text.' },
-      { name: 'Border / Draft', token: 'semantic.color.border.default', description: 'Shared control borders and separators; also the Draft status background.' },
+      { name: 'Border / Draft', token: 'semantic.color.border.default', description: 'Decorative card, panel, and divider borders, plus dropdown outlines identified by dark labels and chevrons; also the Draft status background.' },
     ],
   },
   {

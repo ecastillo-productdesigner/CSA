@@ -78,3 +78,19 @@ test('translucent roles disclose their token alpha and the canvas keeps its 50% 
   assert.deepEqual(canvas.components.map(value => Math.round(value * 255)), base.components.map((value, index) => Math.round((value * metadata.opacity + white.components[index] * (1 - metadata.opacity)) * 255)));
   assert.equal(colorKey('component.editor.color-input-default'), '26344aff');
 });
+
+test('text-field and unchecked-checkbox boundaries meet non-text contrast on field surfaces', () => {
+  const luminance = name => {
+    const { components, alpha = 1 } = resolveColor(name);
+    assert.equal(alpha, 1, `${name}: contrast calculation expects an opaque boundary or surface`);
+    const linear = components.map(value => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+    return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722;
+  };
+  for (const border of ['component.field.border', 'component.checkbox.border']) {
+    for (const surface of ['semantic.color.surface.default', 'semantic.color.background.canvas', 'semantic.color.surface.subtle']) {
+      const [dark, light] = [luminance(border), luminance(surface)].sort((a, b) => a - b);
+      const contrast = (light + 0.05) / (dark + 0.05);
+      assert.ok(contrast >= 3, `${border} against ${surface}: ${contrast}:1 is below WCAG AA 3:1`);
+    }
+  }
+});

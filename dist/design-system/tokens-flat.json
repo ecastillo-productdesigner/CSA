@@ -3835,7 +3835,7 @@
       "category": "color",
       "value": "#e5e5e5",
       "reference": "foundation.color.neutral.200",
-      "description": "Shared neutral separator and control border.",
+      "description": "Decorative card, panel, menu, and separator border. Meaningful input and unchecked-checkbox boundaries use the control border.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
@@ -3868,6 +3868,28 @@
         ],
         "alpha": 1,
         "hex": "#3b82f6"
+      }
+    },
+    {
+      "name": "semantic.color.border.control",
+      "designName": "semantic/color/border/control",
+      "cssVariable": "--csa-semantic-color-border-control",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#737373",
+      "reference": "foundation.color.neutral.500",
+      "description": "Meaningful text-field and unchecked-checkbox boundary. Meets 3:1 against white, canvas, and subtle gray surfaces.",
+      "status": "approved-update",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.45098039215686275,
+          0.45098039215686275,
+          0.45098039215686275
+        ],
+        "alpha": 1,
+        "hex": "#737373"
       }
     },
     {
@@ -5746,19 +5768,19 @@
       "type": "color",
       "layer": "component",
       "category": "field",
-      "value": "#e5e5e5",
-      "reference": "semantic.color.border.default",
-      "description": "Field border.",
-      "status": "observed",
+      "value": "#737373",
+      "reference": "semantic.color.border.control",
+      "description": "Text-input and textarea boundary; dropdown outlines use the decorative default border.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.8980392156862745,
-          0.8980392156862745,
-          0.8980392156862745
+          0.45098039215686275,
+          0.45098039215686275,
+          0.45098039215686275
         ],
         "alpha": 1,
-        "hex": "#e5e5e5"
+        "hex": "#737373"
       }
     },
     {
@@ -6263,6 +6285,28 @@
         ],
         "alpha": 1,
         "hex": "#2563eb"
+      }
+    },
+    {
+      "name": "component.checkbox.border",
+      "designName": "component/checkbox/border",
+      "cssVariable": "--csa-component-checkbox-border",
+      "type": "color",
+      "layer": "component",
+      "category": "checkbox",
+      "value": "#737373",
+      "reference": "semantic.color.border.control",
+      "description": "Visible unchecked-checkbox outline. Selected controls retain their blue fill.",
+      "status": "approved-update",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.45098039215686275,
+          0.45098039215686275,
+          0.45098039215686275
+        ],
+        "alpha": 1,
+        "hex": "#737373"
       }
     },
     {

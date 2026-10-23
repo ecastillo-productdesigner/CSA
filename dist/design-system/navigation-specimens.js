@@ -1,8 +1,10 @@
-import { createDraftingAnimation } from '../drafting-animation.js?v=20261022-accessible-drafting';
-import { createIcon } from '../icons.js?v=20261022-toast-copy';
-import { tokenNumber } from './runtime.js?v=20261022-toast-copy';
-import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261022-accessible-drafting';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-accessible-drafting';
+import { createRailPanelTransition } from '../navigation.js?v=20261022-linked-stories-motion';
+import { createPanelDisclosure } from '../panel-disclosure.js?v=20261022-linked-stories-motion';
+import { createDraftingAnimation } from '../drafting-animation.js?v=20261022-linked-stories-motion';
+import { createIcon } from '../icons.js?v=20261022-linked-stories-motion';
+import { tokenNumber } from './runtime.js?v=20261022-linked-stories-motion';
+import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261022-linked-stories-motion';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-linked-stories-motion';
 
 const navigationMounts = new WeakMap();
 const stateMounts = new WeakMap();
@@ -39,10 +41,13 @@ export function mountNavigationSpecimens(root) {
   sources.setAttribute('aria-controls', 'ds-navigation-selection-preview');
   const sourceIcon = sources.querySelector('.material-symbols-outlined');
   setSelectionIcon(sourceIcon, false);
-  const selectedPreview = element('p', 'ds-specimen-status', 'Sources navigation selected');
+  const selectedPreview = element('section', 'recents-panel sources-panel ds-navigation-panel-preview');
+  selectedPreview.append(element('p', 'ds-specimen-status', 'Sources navigation selected'));
   selectedPreview.id = 'ds-navigation-selection-preview';
   selectedPreview.hidden = true;
-  selectedPreview.setAttribute('role', 'status');
+  selectedPreview.setAttribute('role', 'region');
+  selectedPreview.setAttribute('aria-label', 'Sources navigation example');
+  const sourcesTransition = createRailPanelTransition(selectedPreview, { trigger: sources });
   const profileStage = element('div', 'ds-profile-specimen');
   const profile = button('profile-button', 'Profile options for athena@example.com');
   profile.setAttribute('aria-haspopup', 'menu');
@@ -118,7 +123,7 @@ export function mountNavigationSpecimens(root) {
     const selected = sources.getAttribute('aria-expanded') !== 'true';
     sources.setAttribute('aria-expanded', String(selected));
     setSelectionIcon(sourceIcon, selected);
-    selectedPreview.hidden = !selected;
+    sourcesTransition.setVisible(selected);
   });
   profile.addEventListener('click', () => menu.hidden ? openMenu() : closeMenu(true));
   profile.addEventListener('keydown', event => {
@@ -151,7 +156,8 @@ export function mountNavigationSpecimens(root) {
   window.addEventListener('resize', () => { hideTooltips(); closeMenu(); });
   window.addEventListener('scroll', hideTooltips, true);
   actions.append(newProject, sources, profileStage);
-  root.append(actions, selectedPreview, status);
+  const guidance = element('p', 'ds-caption', 'The left navigation expands and collapses over 200 ms with ease timing. Sources uses the same 200 ms timing with a short slide on open and close. Closing controls leave the focus order immediately; reduced motion changes both panels immediately.');
+  root.append(actions, selectedPreview, status, guidance);
   attachTooltip(newProject, 'New Project', 'ds-nav-new-project-tooltip');
   attachTooltip(sources, 'Sources', 'ds-nav-sources-tooltip');
   attachTooltip(profile, 'My account', 'ds-nav-account-tooltip');
@@ -178,7 +184,7 @@ export function mountStateSpecimens(root) {
   header.append(heading);
   const body = element('div', 'ds-disclosure-body');
   body.id = 'ds-disclosure-body';
-  const guidance = element('p', 'ds-caption', 'Choose any Format, Audience, or Voice to enable Add to List.');
+  const guidance = element('p', 'ds-caption', 'Choose any Format, Audience, or Voice to enable Add to List. New Draft and its dropdowns open and close over 200 ms with ease timing; dropdowns use a short fade and slide. Closing dropdowns leave the focus order immediately. Reduced motion changes them immediately.');
   const fields = element('div', 'composer-fields');
   for (const { label, key } of draftOptions) {
     const field = element('div', 'composer-field');
@@ -216,7 +222,7 @@ export function mountStateSpecimens(root) {
   const drafting = createDraftingAnimation({ compact: true });
   const draftingStage = element('div', 'ds-drafting-specimen');
   draftingStage.append(drafting.element);
-  loading.append(draftingStage, element('p', 'ds-caption', 'The app shows this drafting feedback for six seconds: white paper, looping blue writing, and a new sheet for each message. The reference preview repeats. Reduced motion keeps a static sheet and message.'));
+  loading.append(draftingStage, element('p', 'ds-caption', 'The app shows 3 messages over 15 seconds. Each message holds for 5 seconds, with an 800 ms paper handoff between messages: the first starts at 0 seconds, the second at 5 seconds, and the third at 10.8 seconds. The reference preview repeats the 3-message sequence. Reduced motion keeps a static sheet and message.'));
   const adding = element('span', 'result-adding');
   const spinner = element('span', 'output-processing-spinner');
   spinner.setAttribute('aria-hidden', 'true');
@@ -225,15 +231,12 @@ export function mountStateSpecimens(root) {
   const status = element('p', 'ds-specimen-status');
   status.setAttribute('role', 'status');
   let dropdowns;
-  function setExpanded(expanded) {
+  const disclosure = createPanelDisclosure({ body, trigger: toggle, panel, expanded: true });
+  function setExpanded(expanded, options) {
     dropdowns?.close();
-    panel.dataset.collapsed = String(!expanded);
-    body.hidden = !expanded;
-    toggle.setAttribute('aria-expanded', String(expanded));
-    toggle.setAttribute('aria-label', `${expanded ? 'Collapse' : 'Expand'} New Draft`);
-    chevron.textContent = expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
+    disclosure.setExpanded(expanded, options);
   }
-  setExpanded(true);
+  setExpanded(true, { animate: false });
   toggle.addEventListener('click', () => setExpanded(toggle.getAttribute('aria-expanded') !== 'true'));
   add.addEventListener('click', () => {
     if (add.disabled) return;
@@ -241,7 +244,7 @@ export function mountStateSpecimens(root) {
     for (const select of fields.querySelectorAll('select')) select.value = '';
     dropdowns.refresh();
     updateAdd();
-    status.textContent = 'Content Added';
+    status.textContent = '';
     fields.querySelector('.tool-dropdown-trigger')?.focus({ preventScroll: true });
   });
   root.append(panel, guidance, empty, loading, status);
@@ -250,7 +253,7 @@ export function mountStateSpecimens(root) {
   const updateAdd = () => { add.disabled = !hasDraftSelection(Object.fromEntries([...fields.querySelectorAll('select')].map(select => [select.closest('.composer-field').dataset.label.toLowerCase(), select.value]))); };
   fields.addEventListener('change', updateAdd);
   updateAdd();
-  const mounted = { setExpanded, destroy() { drafting.destroy(); dropdowns.close(); stateMounts.delete(root); } };
+  const mounted = { setExpanded, destroy() { disclosure.destroy(); drafting.destroy(); dropdowns.close(); stateMounts.delete(root); } };
   stateMounts.set(root, mounted);
   return mounted;
 }

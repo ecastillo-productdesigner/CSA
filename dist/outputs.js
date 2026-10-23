@@ -1,8 +1,9 @@
-import { createIcon } from './icons.js?v=20261022-toast-copy';
-import { normalizeWordCount } from './variant-word-count.js?v=20261022-toast-copy';
-import { countPreviewWords } from './content-preview.js?v=20261022-toast-copy';
-import { createContentCardActions } from './content-card-editing.js?v=20261022-card-menu';
-import { createDraftingAnimation } from './drafting-animation.js?v=20261022-paper-drafting';
+import { createIcon } from './icons.js?v=20261022-linked-stories-motion';
+import { normalizeWordCount } from './variant-word-count.js?v=20261022-linked-stories-motion';
+import { countPreviewWords } from './content-preview.js?v=20261022-linked-stories-motion';
+import { createContentCardActions } from './content-card-editing.js?v=20261022-linked-stories-motion';
+import { createDraftingAnimation } from './drafting-animation.js?v=20261022-linked-stories-motion';
+import { topicDraftContent } from './topic-draft.js?v=20261022-linked-stories-motion';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',
@@ -38,7 +39,7 @@ export function sampleOutputShareText(title) {
 
 export function initializeOutputShareText(output) {
   if (typeof output.shareText === 'string' && (output.shareText.trim() || output.shareTextEdited === true)) return false;
-  output.shareText = sampleOutputShareText(output.title);
+  output.shareText = (output.topicDraftVersion === 1 ? topicDraftContent(output.sourceSnapshots)?.shareText : '') || sampleOutputShareText(output.title);
   return true;
 }
 
@@ -284,7 +285,13 @@ export function populateOutputContent(output) {
   const index = sampleHeadlines.indexOf(output.title);
   const untouchedLegacy = !hasFormatting && normalized(current) === normalized(legacySampleContent(output.title));
   const untouchedSample = !hasFormatting && index >= 0 && normalized(current) === normalized(storyParagraphs[index].join('\n\n'));
-  if ((!current.trim() && !output.contentInitialized) || untouchedLegacy || untouchedSample) {
+  const sourceTopic = !current.trim() && !output.contentInitialized ? topicDraftContent(output.sourceSnapshots) : null;
+  if (sourceTopic) {
+    output.draftText = sourceTopic.paragraphs.join('\n\n');
+    output.document = { ops: sourceTopic.paragraphs.map(paragraph => ({ insert: `${paragraph}\n` })) };
+    output.topicDraftVersion = 1;
+    if (initializedShareText) output.shareText = sourceTopic.shareText;
+  } else if ((!current.trim() && !output.contentInitialized) || untouchedLegacy || untouchedSample) {
     const opening = index >= 0 ? storyParagraphs[index] : [
       `The story behind “${output.title}” begins with a small idea and an unexpected opportunity to explore it. A group of collaborators brings different perspectives to a project that continues to evolve as they work.`,
       ...storyParagraphs[2].slice(1),
@@ -299,12 +306,15 @@ export function populateOutputContent(output) {
 }
 
 export function reviseSampleOutput(output, instructions, requestedAt, completedAt = Date.now()) {
+  const revision = (Array.isArray(output.revisionRequests) ? output.revisionRequests.length : 0) + 1;
+  const sourceTopic = topicDraftContent(output.sourceSnapshots, { revision });
+  if (sourceTopic) output.topicDraftVersion = 1;
   initializeOutputShareText(output);
   const normalize = text => text.replace(/\s+/g, ' ').trim();
   const current = normalize(output.draftText || '');
   const samples = storyParagraphs.map((opening, index) => [...opening.slice(0, -1), ...extraStoryParagraphs[index], opening.at(-1)]);
   const choices = samples.filter(paragraphs => normalize(paragraphs.join('\n\n')) !== current);
-  const paragraphs = choices[Math.floor(Math.random() * choices.length)];
+  const paragraphs = sourceTopic?.paragraphs || choices[Math.floor(Math.random() * choices.length)];
   output.draftText = paragraphs.join('\n\n');
   output.document = { ops: paragraphs.map(paragraph => ({ insert: `${paragraph}\n` })) };
   output.contentInitialized = true;
@@ -324,7 +334,9 @@ export function sampleVariant(project, selections) {
   const available = sampleHeadlines.filter(title => !used.has(title));
   const choices = available.length ? available : sampleHeadlines;
   const selectedSourceIndexes = (project.sources || []).flatMap((source, index) => source.selected !== false ? [index] : []);
-  const title = choices[Math.floor(Math.random() * choices.length)];
+  const sourceSnapshots = selectedSourceIndexes.map(index => structuredClone(project.sources[index]));
+  const sourceTopic = topicDraftContent(sourceSnapshots, { variant: projectOutputs(project).length });
+  const title = sourceTopic?.title || choices[Math.floor(Math.random() * choices.length)];
   return {
     id: crypto.randomUUID(),
     name: '',
@@ -336,11 +348,12 @@ export function sampleVariant(project, selections) {
     toolPreferences: Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, selections.find(selection => selection.key === key)?.value || ''])),
     selectedSourceIndexes,
     sourceCount: selectedSourceIndexes.length,
-    sourceSnapshots: selectedSourceIndexes.map(index => structuredClone(project.sources[index])),
+    sourceSnapshots,
     editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '',
     targetWordCount: normalizeWordCount(project.targetWordCount),
     draftText: '',
-    shareText: sampleOutputShareText(title),
+    ...(sourceTopic ? { topicDraftVersion: 1 } : {}),
+    shareText: sourceTopic?.shareText || sampleOutputShareText(title),
     shareTextEdited: false,
     metadata: { author: '', tags: '' },
   };
@@ -382,7 +395,7 @@ export function renderOutputs(project, requestedView) {
   create.disabled = processing || !selectedPending.length;
   create.title = processing ? 'Drafting Selected Content' : selectedPending.length ? 'Draft Selected Content' : 'Select Content to Draft';
   document.querySelector('#create-output-label').textContent = 'Draft';
-  document.querySelector('#output-processing-status').textContent = project?.outputProcessing?.kind === 'revision' ? 'Revising your variant. This takes about four seconds.' : processing ? 'Drafting your selected content. This takes about six seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
+  document.querySelector('#output-processing-status').textContent = project?.outputProcessing?.kind === 'revision' ? 'Revising your variant. This takes about four seconds.' : processing ? 'Drafting your selected content. This takes about 15 seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
   const empty = document.querySelector('#outputs-empty');
   empty.hidden = state.outputs.length > 0;
   empty.querySelector('p').textContent = state.view === 'pending' ? 'Your drafted content will appear here.' : 'No drafted content yet.';

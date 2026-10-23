@@ -7362,7 +7362,7 @@
       "type": "duration",
       "layer": "component",
       "category": "drafting",
-      "value": "4400ms",
+      "value": "5000ms",
       "reference": "",
       "description": "Time each drafting message remains before the next sheet comes to the front.",
       "status": "observed"
@@ -7422,7 +7422,7 @@
       "type": "duration",
       "layer": "component",
       "category": "drafting",
-      "value": "6000ms",
+      "value": "15000ms",
       "reference": "",
       "description": "Prototype draft-generation duration, expressed in milliseconds for the processing timer.",
       "status": "observed"

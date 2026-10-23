@@ -1,14 +1,15 @@
-import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261022-wordpress-flow';
-import { mountProjectSpecimens } from './project-specimens.js?v=20261022-ds-inventory';
-import { mountFormSpecimens } from './form-specimens.js?v=20261022-accessible-drafting';
-import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261022-draft-polish';
-import { colorRoleGroups } from './color-roles.js?v=20261022-accessible-drafting';
-import { typographyRoleGroups } from './typography-roles.js?v=20261022-draft-labels';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-accessible-drafting';
-import { populateDraftOptions } from '../draft-options.js?v=20261022-accessible-drafting';
-import { iconInventory } from './icon-inventory.js?v=20261022-draft-labels';
-import { tokenNumber } from './runtime.js?v=20261022-toast-copy';
-import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261022-accessible-drafting';
+import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261022-linked-stories-motion';
+import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261022-linked-stories-motion';
+import { mountProjectSpecimens } from './project-specimens.js?v=20261022-linked-stories-motion';
+import { mountFormSpecimens } from './form-specimens.js?v=20261022-linked-stories-motion';
+import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261022-linked-stories-motion';
+import { colorRoleGroups } from './color-roles.js?v=20261022-linked-stories-motion';
+import { typographyRoleGroups } from './typography-roles.js?v=20261022-linked-stories-motion';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-linked-stories-motion';
+import { populateDraftOptions } from '../draft-options.js?v=20261022-linked-stories-motion';
+import { iconInventory } from './icon-inventory.js?v=20261022-linked-stories-motion';
+import { tokenNumber } from './runtime.js?v=20261022-linked-stories-motion';
+import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261022-linked-stories-motion';
 const $ = selector => document.querySelector(selector);
 populateDraftOptions(document);
 const toolDropdowns = createToolDropdowns();
@@ -345,8 +346,14 @@ try {
   console.error(error);
 }
 
+const segmentPreview = $('#ds-segment-content');
+const segmentTransition = createTabPanelTransition(segmentPreview);
 for (const button of document.querySelectorAll('[data-segment-specimen]')) {
   button.addEventListener('click', () => {
-    for (const peer of button.parentElement.querySelectorAll('button')) peer.setAttribute('aria-pressed', String(peer === button));
+    if (button.getAttribute('aria-pressed') === 'true') return;
+    segmentTransition.run(() => {
+      for (const peer of button.parentElement.querySelectorAll('button')) peer.setAttribute('aria-pressed', String(peer === button));
+      segmentPreview.textContent = button.dataset.segmentSpecimen === 'drafted' ? 'Completed drafts are shown here.' : 'Drafts waiting to be created are shown here.';
+    });
   });
 }

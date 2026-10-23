@@ -1,26 +1,29 @@
-import { updatePresetPreferences } from './preset-settings.js?v=20261022-content-send-dialog';
-import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261022-toast-copy';
-import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261022-toast-copy';
-import { createIcon as icon } from './icons.js?v=20261022-toast-copy';
-import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261022-toast-copy';
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261022-content-send-dialog';
-import { createProfile } from './profile.js?v=20261022-toast-copy';
-import { createSearchExperience } from './search.js?v=20261022-adding-copy';
-import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261022-content-send-dialog';
-import { createMaterialEditor } from './editor.js?v=20261022-accessible-drafting';
-import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261022-toast-copy';
-import { removeProjectContent } from './project-deletion.js?v=20261022-toast-copy';
-import { createContentPreview } from './content-preview.js?v=20261022-toast-copy';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261022-accessible-drafting';
-import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261022-accessible-drafting';
-import { createNewProjectUpload } from './new-project-upload.js?v=20261022-accessible-drafting';
-import { createRailNavigation } from './navigation.js?v=20261022-card-menu';
-import { createProjectSources } from './sources.js?v=20261022-toast-copy';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-draft-tab-labels';
-import { createEditorTabs } from './editor-tabs.js?v=20261022-source-draft-label';
-import { createContentCardEditing } from './content-card-editing.js?v=20261022-card-menu';
-import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261022-publisher-destinations';
-import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261022-wordpress-export-followup';
+import { updatePresetPreferences } from './preset-settings.js?v=20261022-linked-stories-motion';
+import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261022-linked-stories-motion';
+import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261022-linked-stories-motion';
+import { createIcon as icon } from './icons.js?v=20261022-linked-stories-motion';
+import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261022-linked-stories-motion';
+import { resolveArticleMetadata } from './article-metadata.js?v=20261022-linked-stories-motion';
+import { createPanelDisclosure } from './panel-disclosure.js?v=20261022-linked-stories-motion';
+import { createTabPanelTransition } from './tab-panel-transition.js?v=20261022-linked-stories-motion';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261022-linked-stories-motion';
+import { createProfile } from './profile.js?v=20261022-linked-stories-motion';
+import { createSearchExperience } from './search.js?v=20261022-linked-stories-motion';
+import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261022-linked-stories-motion';
+import { createMaterialEditor } from './editor.js?v=20261022-linked-stories-motion';
+import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261022-linked-stories-motion';
+import { removeProjectContent } from './project-deletion.js?v=20261022-linked-stories-motion';
+import { createContentPreview } from './content-preview.js?v=20261022-linked-stories-motion';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261022-linked-stories-motion';
+import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261022-linked-stories-motion';
+import { createNewProjectUpload } from './new-project-upload.js?v=20261022-linked-stories-motion';
+import { createRailNavigation } from './navigation.js?v=20261022-linked-stories-motion';
+import { createProjectSources } from './sources.js?v=20261022-linked-stories-motion';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-linked-stories-motion';
+import { createEditorTabs } from './editor-tabs.js?v=20261022-linked-stories-motion';
+import { createContentCardEditing } from './content-card-editing.js?v=20261022-linked-stories-motion';
+import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261022-linked-stories-motion';
+import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261022-linked-stories-motion';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -73,6 +76,8 @@ let projects = [
 ];
 let activeProjectId = null;
 let sourceTargetProjectId = null;
+let sourceImport = null;
+let deferredOutputProjectId = null;
 let materialMode = 'upload';
 let selectedFiles = [];
 let addingToProject = false;
@@ -85,7 +90,10 @@ const outputTimers = new Map();
 const outputViews = new Map();
 populateDraftOptions(document);
 const toolDropdowns = createToolDropdowns();
+const newDraftDisclosure = createPanelDisclosure({ body: $('#composer-variant-form'), trigger: $('#toggle-new-variant'), panel: $('.composer-tools'), expanded: true });
+const outputTabTransition = createTabPanelTransition($('#output-status-content'));
 const newProjectUpload = createNewProjectUpload({
+  isBlocked: () => Boolean(sourceImport),
   async onCreate(sources) {
     if (sourceTargetProjectId) {
       const target = projects.find(project => project.id === sourceTargetProjectId && !project.deletedAt);
@@ -204,9 +212,12 @@ function renderOutputs(project) {
 function selectOutputView(view) {
   const project = projects.find(entry => entry.id === activeProjectId);
   if (!project || !['pending', 'created'].includes(view)) return;
-  outputViews.set(project.id, view);
-  renderOutputs(project);
-  $('#output-list').scrollTop = 0;
+  if (outputViews.get(project.id) === view) return;
+  outputTabTransition.run(() => {
+    outputViews.set(project.id, view);
+    renderOutputs(project);
+    $('#output-list').scrollTop = 0;
+  });
 }
 $('.output-status-tabs').addEventListener('click', event => {
   const tab = event.target.closest('[data-output-view]');
@@ -507,8 +518,8 @@ function returnFromSourceAddition() {
   else showHome();
 }
 
-function appendProjectSources(sources) {
-  const project = projects.find(entry => entry.id === sourceTargetProjectId);
+function appendProjectSources(sources, projectId = sourceTargetProjectId) {
+  const project = projects.find(entry => entry.id === projectId && !entry.deletedAt);
   if (!project) { sourceTargetProjectId = null; showHome(); return; }
   const additions = sources.filter(source => !project.sources.some(existing => source.url ? existing.url === source.url : existing.type === source.type && existing.title === source.title && existing.text === source.text));
   project.sources.push(...additions.map(source => ({ ...source, selected: true })));
@@ -725,22 +736,16 @@ function ensureComposerProject(allowEmpty = false) {
   return project;
 }
 
-function setNewVariantCollapsed(collapsed) {
-  $('#composer-variant-form').hidden = collapsed;
-  $('#toggle-new-variant').setAttribute('aria-expanded', String(!collapsed));
-  const label = `${collapsed ? 'Expand' : 'Collapse'} New Draft`;
-  $('#toggle-new-variant').setAttribute('aria-label', label);
-  $('#toggle-new-variant').title = label;
-  $('#toggle-new-variant [data-collapse-chevron]').textContent = collapsed ? 'keyboard_arrow_down' : 'keyboard_arrow_up';
-  $('.composer-tools').dataset.collapsed = String(collapsed);
-  if (collapsed) { toolDropdowns.close(); }
+function setNewVariantCollapsed(collapsed, { animate = false } = {}) {
+  if (collapsed) toolDropdowns.close();
+  newDraftDisclosure.setExpanded(!collapsed, { animate });
 }
 
 $('#toggle-new-variant').addEventListener('click', () => {
-  const collapsed = !$('#composer-variant-form').hidden;
+  const collapsed = newDraftDisclosure.expanded;
   const project = projects.find(entry => entry.id === activeProjectId);
   if (project) { project.newVariantCollapsed = collapsed; saveProjects(); }
-  setNewVariantCollapsed(collapsed);
+  setNewVariantCollapsed(collapsed, { animate: true });
 });
 
 $('.create-variant').addEventListener('click', () => {
@@ -770,11 +775,10 @@ $('.create-variant').addEventListener('click', () => {
   toolDropdowns.refresh();
   updateComposerActions();
   project.updatedAt = Date.now();
-  const saved = saveProjects();
+  saveProjects();
   showEditorProject(project);
   if (window.matchMedia(breakpointQuery()).matches) railNavigation.open('newVariant');
   $('#composer-format-trigger')?.focus({ preventScroll: true });
-  if (saved) notify('Content Added');
 });
 
 $('#output-list').addEventListener('click', event => {
@@ -838,7 +842,8 @@ function finishOutputProcessing(project, renderWhenReady = true) {
   const ids = new Set(job.ids);
   project.selectedOutputIds = [...new Set([...selectedOutputs(project).map(output => output.id), ...ids])];
   const active = activeProjectId === project.id && !$('#composer').hidden;
-  if (active) richEditor.close();
+  const deferRender = $('#new-project-dialog').open || sourceImport || newProjectUpload.isBusy();
+  if (active && !deferRender) richEditor.close();
   for (const output of projectOutputs(project)) {
     if (ids.has(output.id)) {
       if (job.kind === 'revision') reviseSampleOutput(output, job.instructions, job.requestedAt);
@@ -853,8 +858,8 @@ function finishOutputProcessing(project, renderWhenReady = true) {
   if (job.kind === 'revision') project.updatedAt = Date.now();
   saveProjects();
   if (active && renderWhenReady) {
-    railNavigation.closeTransient();
-    showEditorProject(project);
+    if (deferRender) deferredOutputProjectId = project.id;
+    else { railNavigation.closeTransient(); showEditorProject(project); }
   }
   if (job.kind === 'revision') notify('Revision complete. Your draft has been updated.');
 }
@@ -915,19 +920,62 @@ $('#start-form').addEventListener('submit', (event) => {
   submitSource(input);
 });
 
-function submitSource(input) {
-  const urls = parseSourceLinks(input);
-  if (!urls) return false;
-  if (sourceTargetProjectId) {
-    const target = projects.find(project => project.id === sourceTargetProjectId);
-    if (target) { target.linkCards = true; target.viewOriginalDraft = true; }
-    appendProjectSources(sourceLinkArticles(urls).map(article => ({ type: 'link', title: article.title, url: article.url, addedToCsa: false })));
+async function submitSource(input) {
+  const parsed = parseSourceLinks(input);
+  if (!parsed || sourceImport || newProjectUpload.isBusy()) return false;
+  const urls = [...new Set(parsed)];
+  const targetProjectId = sourceTargetProjectId;
+  const originProjectId = activeProjectId;
+  if (targetProjectId && !projects.some(project => project.id === targetProjectId && !project.deletedAt)) return false;
+  const dialog = $('#new-project-dialog');
+  const fromDialog = dialog.open;
+  const request = { controller: new AbortController() };
+  sourceImport = request;
+  const controls = [...document.querySelectorAll('#new-project-dialog button, #new-project-dialog input, #new-project-dialog textarea, #start-form button, #start-form input, #source-input, .results-search-form button, .results-search-form input')].map(control => [control, control.disabled]);
+  for (const [control] of controls) control.disabled = true;
+  const button = $('#new-project-submit');
+  const label = button.textContent;
+  button.textContent = 'Reading articles…';
+  dialog.setAttribute('aria-busy', 'true');
+  $('#new-project-drop-zone').setAttribute('aria-disabled', 'true');
+  $('#new-project-link-status').textContent = 'Reading article headlines';
+  try {
+    let metadata;
+    try { metadata = await resolveArticleMetadata(urls, { signal: request.controller.signal }); }
+    catch { metadata = urls.map(url => ({ url, metadataStatus: 'fallback', headlineSource: 'url' })); }
+    if (request.controller.signal.aborted || sourceImport !== request
+      || sourceTargetProjectId !== targetProjectId || activeProjectId !== originProjectId
+      || (fromDialog && !dialog.open)) return false;
+    const sources = sourceLinkArticles(metadata).map(article => ({
+      type: 'link', title: article.title, url: article.url,
+      description: article.description || '', excerpt: article.excerpt,
+      headlineSource: article.headlineSource || 'url', metadataStatus: article.metadataStatus || 'fallback',
+      selected: true, addedToCsa: false,
+    }));
+    if (targetProjectId) {
+      const target = projects.find(project => project.id === targetProjectId && !project.deletedAt);
+      if (!target) return false;
+      target.linkCards = true;
+      target.viewOriginalDraft = true;
+      if (dialog.open) dialog.close();
+      appendProjectSources(sources, targetProjectId);
+    } else {
+      if (dialog.open) dialog.close();
+      createProject(sources, { kind: 'draft', awaitingOutput: true, linkCards: true });
+      if (!window.matchMedia(breakpointQuery()).matches) railNavigation.open('sources');
+    }
     return true;
+  } finally {
+    if (sourceImport === request) sourceImport = null;
+    button.textContent = label;
+    dialog.removeAttribute('aria-busy');
+    $('#new-project-drop-zone').removeAttribute('aria-disabled');
+    $('#new-project-link-status').textContent = '';
+    for (const [control, disabled] of controls) control.disabled = disabled;
+    if (fromDialog && !dialog.open) newProjectUpload.reset();
+    updateStarterInput();
+    renderDeferredOutput();
   }
-  const sources = sourceLinkArticles(urls).map(article => ({ type: 'link', title: article.title, url: article.url, selected: true, addedToCsa: false }));
-  createProject(sources, { kind: 'draft', awaitingOutput: true, linkCards: true });
-  if (!window.matchMedia(breakpointQuery()).matches) railNavigation.open('sources');
-  return true;
 }
 
 function updateStarterInput() {
@@ -959,8 +1007,7 @@ $('#new-project-search-form').addEventListener('submit', (event) => {
   event.preventDefault();
   if (newProjectUpload.isBusy() || !updateStarterInput()) return;
   const input = $('#new-project-query').value.trim();
-  $('#new-project-dialog').close();
-  submitSource(input);
+  void submitSource(input);
 });
 async function downloadSource(source) {
   try { await downloadDocument(source); }
@@ -1133,7 +1180,14 @@ $('#use-material').addEventListener('click', useMaterial);
 
 $('#material-dialog').addEventListener('cancel', event => { if (materialBusy) event.preventDefault(); });
 
-$('#new-project-dialog').addEventListener('close', () => newProjectUpload.reset());
+function renderDeferredOutput() {
+  if (!deferredOutputProjectId || $('#new-project-dialog').open || sourceImport || newProjectUpload.isBusy()) return;
+  const projectId = deferredOutputProjectId;
+  deferredOutputProjectId = null;
+  const project = projects.find(entry => entry.id === projectId && !entry.deletedAt);
+  if (project && activeProjectId === projectId && !$('#composer').hidden) showEditorProject(project);
+}
+$('#new-project-dialog').addEventListener('close', () => { newProjectUpload.reset(); renderDeferredOutput(); });
 for (const id of ['material-dialog', 'new-project-dialog']) $(`#${id}`).addEventListener('cancel', event => {
   if (id === 'new-project-dialog' && newProjectUpload.isBusy()) { event.preventDefault(); return; }
   if (sourceTargetProjectId && !materialBusy) { event.preventDefault(); returnFromSourceAddition(); }
@@ -1185,7 +1239,7 @@ const searchExperience = createSearchExperience({
   },
   onDraft({ query, articles, editorialDirection }) {
     const sources = articles.map((article) => article.url
-      ? { type: 'link', title: article.title, url: article.url }
+      ? { type: 'link', title: article.title, url: article.url, excerpt: article.excerpt, description: article.description || '', headlineSource: article.headlineSource, metadataStatus: article.metadataStatus }
       : { type: 'text', title: article.title, text: `Fictional sample article · ${article.source} · ${article.date}\n\n${article.paragraphs.join('\n\n')}` });
     if (sourceTargetProjectId) { appendProjectSources(sources); return; }
     createProject(sources, { title: articles[0]?.url ? articles[0].title : titleFrom(query), kind: 'draft', awaitingOutput: true, editorialDirection });

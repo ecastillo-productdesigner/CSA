@@ -1,4 +1,4 @@
-import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261022-accessible-drafting';
+import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261022-linked-stories-motion';
 
 export const draftingMessages = Object.freeze([
   'Checking for AI patterns, ensuring variety and authentic voice',
@@ -16,12 +16,15 @@ function durationMilliseconds(path) {
   return duration * (value.endsWith('ms') ? 1 : 1000);
 }
 
-export function createDraftingAnimation({ compact = true } = {}) {
+export function createDraftingAnimation({ compact = true, messageLimit = 3 } = {}) {
+  const count = Number.isFinite(messageLimit) ? Math.max(1, Math.min(draftingMessages.length, Math.floor(messageLimit))) : 3;
+  const messages = draftingMessages.slice(0, count);
   const element = document.createElement('div');
   element.className = 'drafting-animation';
   element.dataset.compact = String(compact);
   element.dataset.playing = 'false';
   element.dataset.messageIndex = '0';
+  element.dataset.messageCount = String(messages.length);
   const stack = document.createElement('div');
   stack.className = 'drafting-paper-stack';
   stack.setAttribute('aria-hidden', 'true');
@@ -43,7 +46,7 @@ export function createDraftingAnimation({ compact = true } = {}) {
   message.setAttribute('role', 'status');
   message.setAttribute('aria-live', 'polite');
   message.setAttribute('aria-atomic', 'true');
-  message.textContent = draftingMessages[0];
+  message.textContent = messages[0];
   element.append(stack, message);
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -112,10 +115,14 @@ export function createDraftingAnimation({ compact = true } = {}) {
     setDepth(incoming, 'front');
     setDepth(front, 'middle');
     setDepth(middle, 'back');
-    index = (index + 1) % draftingMessages.length;
-    message.textContent = draftingMessages[index];
+    index = (index + 1) % messages.length;
+    message.textContent = messages[index];
     element.dataset.messageIndex = String(index);
-    if (typeof incoming.animate !== 'function') { schedule(); return; }
+    if (typeof incoming.animate !== 'function') {
+      moving = true;
+      timer = setTimeout(() => { timer = null; moving = false; schedule(); }, timing.duration);
+      return;
+    }
     moving = true;
     const stamp = generation;
     animations = [

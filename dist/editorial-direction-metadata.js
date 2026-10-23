@@ -1,4 +1,4 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261022-toast-copy';
+import { tokenNumber } from './design-system/runtime.js?v=20261022-linked-stories-motion';
 
 // Receives the direction captured on this draft, never the current composer value.
 export function createEditorialDirectionMetadata() {

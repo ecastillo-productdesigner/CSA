@@ -1,5 +1,5 @@
-import { saveDocuments, deleteDocuments } from './documents.js?v=20261022-new-project-upload';
-import { createIcon } from './icons.js?v=20261022-toast-copy';
+import { saveDocuments, deleteDocuments } from './documents.js?v=20261022-linked-stories-motion';
+import { createIcon } from './icons.js?v=20261022-linked-stories-motion';
 
 const supportedExtensions = new Set(['pdf', 'docx', 'pptx', 'txt', 'md']);
 const maximumFileSize = 10 * 1024 * 1024;
@@ -9,7 +9,7 @@ function formatBytes(size) {
   return size < 1024 ? `${size} B` : size < 1048576 ? `${Math.round(size / 1024)} KB` : `${(size / 1048576).toFixed(1)} MB`;
 }
 
-export function createNewProjectUpload({ onCreate, saveFiles = saveDocuments, deleteFiles = deleteDocuments }) {
+export function createNewProjectUpload({ onCreate, saveFiles = saveDocuments, deleteFiles = deleteDocuments, isBlocked = () => false }) {
   if (typeof onCreate !== 'function') throw new TypeError('A project creation callback is required.');
   const get = name => document.querySelector(`#new-project-${name}`);
   const dialog = get('dialog');
@@ -45,7 +45,7 @@ export function createNewProjectUpload({ onCreate, saveFiles = saveDocuments, de
       remove.setAttribute('aria-label', `Remove ${file.name}`);
       remove.append(createIcon('close'));
       remove.addEventListener('click', () => {
-        if (busy) return;
+        if (busy || isBlocked()) return;
         files.splice(index, 1);
         clearError();
         renderFiles();
@@ -60,7 +60,7 @@ export function createNewProjectUpload({ onCreate, saveFiles = saveDocuments, de
   }
 
   function selectFiles(incoming) {
-    if (busy) return;
+    if (busy || isBlocked()) return;
     clearError();
     const rejected = [];
     for (const file of Array.from(incoming || [])) {
@@ -82,7 +82,7 @@ export function createNewProjectUpload({ onCreate, saveFiles = saveDocuments, de
   });
   zone.addEventListener('dragover', event => {
     event.preventDefault();
-    if (!busy) zone.classList.add('dragging');
+    if (!busy && !isBlocked()) zone.classList.add('dragging');
   });
   zone.addEventListener('dragleave', () => zone.classList.remove('dragging'));
   zone.addEventListener('drop', event => {
@@ -90,15 +90,15 @@ export function createNewProjectUpload({ onCreate, saveFiles = saveDocuments, de
     zone.classList.remove('dragging');
     selectFiles(event.dataTransfer?.files);
   });
-  zone.addEventListener('click', event => { if (busy) event.preventDefault(); });
+  zone.addEventListener('click', event => { if (busy || isBlocked()) event.preventDefault(); });
   zone.addEventListener('keydown', event => {
     if (event.target !== zone || !['Enter', ' '].includes(event.key)) return;
     event.preventDefault();
-    if (!busy) input.click();
+    if (!busy && !isBlocked()) input.click();
   });
 
   async function useFiles() {
-    if (busy || !files.length) return;
+    if (busy || isBlocked() || !files.length) return;
     busy = true;
     clearError();
     const label = create.textContent;
@@ -150,5 +150,5 @@ export function createNewProjectUpload({ onCreate, saveFiles = saveDocuments, de
   }
 
   reset();
-  return { reset, isBusy: () => busy };
+  return { reset, isBusy: () => busy || isBlocked() };
 }

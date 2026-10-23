@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fictionalArticleParagraphs, formatSourceLinks, parseSourceLinks, sourceLinkArticles } from '../dist/source-links.js';
-import { sourcePreviewParagraphs } from '../dist/sources.js';
+import { sourceDisplayTitle, sourcePreviewParagraphs } from '../dist/sources.js';
 
 test('pasted adjacent links are displayed on separate lines and parsed separately',()=>{
   const pasted='https://www.charlotteobserver.com/https://www.charlotteobserver.com/';
@@ -69,14 +69,13 @@ test('pasted links produce one selectable card each while retaining the complete
 
 test('link cards handle root pages, encoded paths and duplicates without sharing selection IDs', () => {
   const cards = sourceLinkArticles(['https://www.example.com/', 'https://example.com/caf%C3%A9-news', 'https://example.com/caf%C3%A9-news', 'https://example.com/%E0%A4%A']);
-  assert.ok(cards[0].title.split(/\s+/).length > 3);
-  assert.ok(!cards[0].title.includes(cards[0].source));
+  assert.equal(cards[0].title, 'example.com');
   assert.equal(cards[1].title, 'café news');
   assert.equal(new Set(cards.map(card => card.id)).size, 4);
-  assert.equal(cards[3].title, '%E0%A4%A');
+  assert.equal(cards[3].title, 'example.com');
 });
 
-test('opaque article IDs use fictional headlines consistently without altering source facts', () => {
+test('opaque article IDs use readable URL information without inventing an unrelated headline', () => {
   const urls = [
     'https://www.charlotteobserver.com/latest-news/article317649444.html?edition=2#story',
     'https://example.com/article123',
@@ -84,7 +83,7 @@ test('opaque article IDs use fictional headlines consistently without altering s
   ];
   const cards = sourceLinkArticles([...urls, urls[0]]);
   assert.deepEqual(cards.slice(0, 3).map(card => card.url), urls);
-  assert.ok(cards.every(card => card.title.split(/\s+/).length > 3 && !/article\d+/i.test(card.title)));
+  assert.deepEqual(cards.slice(0, 3).map(card => card.title), ['charlotteobserver.com — latest news', 'example.com', 'example.com']);
   assert.ok(cards.every(card => card.date === null));
   assert.equal(cards[0].source, 'charlotteobserver.com');
   assert.equal(cards[0].title, cards[3].title);
@@ -106,4 +105,52 @@ test('Sources preview preserves saved article and document text instead of subst
   assert.deepEqual(sourcePreviewParagraphs({ type: 'link', title: 'Saved article', url: 'https://example.com/story', text: 'Original introduction.\n\nOriginal conclusion.' }), ['Original introduction.', 'Original conclusion.']);
   assert.deepEqual(sourcePreviewParagraphs({ type: 'file', title: 'Notes', text: 'Document contents.' }), ['Document contents.']);
   assert.deepEqual(sourcePreviewParagraphs({ type: 'link', title: 'Legacy article', text: 'Fictional sample article · The State · 2026-10-12\n\nSaved fictional article.' }), ['Saved fictional article.']);
+});
+
+
+test('saved metadata headlines and descriptions survive card rebuilding without changing stored sources', () => {
+  const source = {
+    type: 'link', id: 'stored-source-id',
+    title: 'NC Democrats are off to their strongest early voting start in nearly two decades',
+    url: 'https://www.example.com/politics/article123.html?edition=2#story',
+    description: 'Early voting is underway, with turnout figures drawing attention across the state.',
+    publishedAt: '2026-10-22T16:15:00Z', headlineSource: 'og:title',
+    metadataProvenance: { provider: 'publisher metadata', fetchedAt: '2026-10-22T17:00:00Z' },
+    selected: false, addedToCsa: true,
+  };
+  const original = structuredClone(source);
+  const [first, duplicate] = sourceLinkArticles([source, source]);
+  assert.equal(first.id, 'link-1');
+  assert.equal(duplicate.id, 'link-2');
+  assert.equal(first.title, source.title);
+  assert.equal(first.url, source.url);
+  assert.equal(first.excerpt, source.description);
+  assert.equal(first.description, source.description);
+  assert.equal(first.date, '2026-10-22');
+  assert.equal(first.headlineSource, source.headlineSource);
+  assert.deepEqual(first.metadataProvenance, source.metadataProvenance);
+  assert.equal(first.selected, false);
+  assert.equal(first.addedToCsa, true);
+  assert.equal(sourceDisplayTitle(source), source.title);
+  assert.deepEqual(sourcePreviewParagraphs(source), fictionalArticleParagraphs(source.title));
+  assert.deepEqual(source, original);
+});
+
+test('saved excerpts and actual body paragraphs remain separate from generated fictional previews', () => {
+  const source = { type: 'link', title: 'A new telescope images a distant galaxy', url: 'https://example.com/article456', excerpt: 'A saved source summary.', description: 'Publisher description.', paragraphs: ['Saved first paragraph.', '', 'Saved second paragraph.'] };
+  const original = structuredClone(source);
+  const article = sourceLinkArticles([source])[0];
+  assert.equal(article.excerpt, source.excerpt);
+  assert.deepEqual(article.paragraphs, ['Saved first paragraph.', 'Saved second paragraph.']);
+  assert.deepEqual(source, original);
+});
+
+test('a missing headline uses a transparent URL fallback and labels invented summaries', () => {
+  const source = { type: 'link', title: 'article123', url: 'https://example.com/politics/article123.html' };
+  const article = sourceLinkArticles([source])[0];
+  assert.equal(article.title, 'example.com — politics');
+  assert.match(article.excerpt, /^Fictional preview:/);
+  assert.deepEqual(article.paragraphs, []);
+  assert.equal(sourceDisplayTitle(source), article.title);
+  assert.throws(() => sourceLinkArticles([{ url: 'javascript:alert(1)', title: 'Unsafe URL' }]), /valid article URL/);
 });

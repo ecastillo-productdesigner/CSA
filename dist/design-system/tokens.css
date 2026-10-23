@@ -584,10 +584,10 @@
   --csa-component-toast-action-foreground: var(--csa-foundation-color-blue-600);
   --csa-component-toast-action-hover: var(--csa-foundation-color-blue-50);
   --csa-component-editor-color-input-default: var(--csa-foundation-color-legacy-editor-text);
-  --csa-component-drafting-message-hold-duration: 4400ms;
+  --csa-component-drafting-message-hold-duration: 5000ms;
   --csa-component-drafting-paper-rotation-step: 3;
   --csa-component-drafting-paper-scale-step: 0.04;
   --csa-component-drafting-paper-lift-offset: 0.44;
   --csa-component-drafting-paper-front-offset: 0.47;
-  --csa-component-drafting-processing-duration: 6000ms;
+  --csa-component-drafting-processing-duration: 15000ms;
 }

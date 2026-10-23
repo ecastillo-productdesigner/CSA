@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261022-toast-copy';
-import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261022-toast-copy';
+import { createIcon } from './icons.js?v=20261022-linked-stories-motion';
+import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261022-linked-stories-motion';
 // Sample content for the results-screen prototype. No live news requests are made.
 function sampleArticles(query) {
   const isKelly = /^kelly\s+clarkson$/i.test(query.trim());
@@ -330,7 +330,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       const linkResults = embedded || project.kind === 'links';
       const linkSources = project.sources.filter(source => source.type === 'link');
       const query = linkResults ? linkSources.map(source => source.url).join(' ') : project.sources[0].title;
-      const articles = linkResults ? sourceLinkArticles(linkSources.map(source => source.url)) : sampleArticles(query);
+      const articles = linkResults ? sourceLinkArticles(linkSources) : sampleArticles(query);
       const savedSelection = embedded ? linkSources.flatMap((source, index) => source.selected !== false ? [`link-${index + 1}`] : []) : Array.isArray(project.selectedArticleIds) ? project.selectedArticleIds : [];
       const selected = new Set(savedSelection.filter(id => articles.some(article => article.id === id)));
       const savedAdded = linkResults

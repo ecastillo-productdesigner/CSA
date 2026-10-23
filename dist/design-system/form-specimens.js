@@ -1,4 +1,4 @@
-import { parseSourceLinks, formatSourceLinks } from '../source-links.js?v=20261022-toast-copy';
+import { parseSourceLinks, formatSourceLinks } from '../source-links.js?v=20261022-linked-stories-motion';
 
 const mounted = new WeakMap();
 

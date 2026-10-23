@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261022-toast-copy';
+import { createIcon } from './icons.js?v=20261022-linked-stories-motion';
 
 export function createFeedbackPill(output, disabled = false) {
   const pill = document.createElement('span');
@@ -45,9 +45,7 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
     try { url = new URL(value); }
     catch { return false; }
     if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) return false;
-    wordpressLink.setAttribute('href', url.href);
-    wordpressLink.setAttribute('target', '_blank');
-    wordpressLink.setAttribute('rel', 'noopener noreferrer');
+    // Prototype action only: never navigate to a live publisher.
     exportSection.hidden = false;
     return true;
   }

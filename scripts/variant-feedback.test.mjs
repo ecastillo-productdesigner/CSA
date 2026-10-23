@@ -279,15 +279,15 @@ test('switching drafts resets prior fields and closing drops the save target', t
 });
 
 
-test('post-export opening focuses a safe WordPress link and keeps normal rating requirements', t => {
+test('post-export opening focuses a demo WordPress button without a live destination', t => {
   const ui = setup(t);
   const section = ui.get('experience-feedback-export');
   const link = ui.get('feedback-wordpress-link');
   ui.api.open(ui.project, ui.output, undefined, { exportUrl: 'https://publisher.example/wp-admin/post.php?post=12&action=edit' });
   assert.equal(section.hidden, false);
-  assert.equal(link.getAttribute('href'), 'https://publisher.example/wp-admin/post.php?post=12&action=edit');
-  assert.equal(link.getAttribute('target'), '_blank');
-  assert.equal(link.getAttribute('rel'), 'noopener noreferrer');
+  assert.equal(link.getAttribute('href'), undefined);
+  assert.equal(link.getAttribute('target'), undefined);
+  assert.equal(link.getAttribute('rel'), undefined);
   assert.equal(document.activeElement, link);
   assert.equal(ui.submit.disabled, true);
   assert.equal(ui.up.getAttribute('aria-pressed'), 'false');
@@ -300,7 +300,7 @@ test('post-export opening focuses a safe WordPress link and keeps normal rating 
   assert.equal(ui.calls.save, 1);
   assert.equal(ui.complete.hidden, false);
   assert.equal(section.hidden, false, 'the WordPress CTA remains available after feedback is submitted');
-  assert.equal(link.getAttribute('href'), 'https://publisher.example/wp-admin/post.php?post=12&action=edit');
+  assert.equal(link.getAttribute('href'), undefined);
   assert.equal(document.activeElement, ui.get('experience-feedback-done'));
 });
 
@@ -326,7 +326,7 @@ test('closing post-export feedback clears its target and normal thumb reopening 
   ui.dialog.close();
   ui.api.open(ui.project, ui.output, undefined, { exportUrl: 'http://second.example/wp-admin/' });
   assert.equal(section.hidden, false);
-  assert.equal(link.getAttribute('href'), 'http://second.example/wp-admin/');
+  assert.equal(link.getAttribute('href'), undefined);
   assert.equal(document.activeElement, link);
 });
 

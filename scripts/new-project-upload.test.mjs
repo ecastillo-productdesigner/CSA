@@ -56,6 +56,7 @@ function setup(t, callbacks = {}) {
   const created = [];
   const deleted = [];
   const api = createNewProjectUpload({
+    isBlocked: callbacks.isBlocked,
     saveFiles: callbacks.saveFiles || (async incoming => { saved.push(incoming); return incoming.map((entry, index) => ({ type: 'file', title: entry.name, attachmentId: `attachment-${index}` })); }),
     onCreate: callbacks.onCreate || (async sources => { created.push(sources); }),
     deleteFiles: callbacks.deleteFiles || (async ids => { deleted.push(ids); }),
@@ -196,4 +197,27 @@ test('an explicitly rejected create also cleans up, and a cleanup failure is rep
   assert.equal(ui.get('selected-files').children.length, 1);
   assert.equal(ui.api.isBusy(), false);
   assert.match(ui.get('material-error').textContent, /could not be removed from browser storage/);
+});
+
+
+test('an active link import blocks file browse, drops and document creation until it finishes', async t => {
+  let blocked = false;
+  const ui = setup(t, { isBlocked: () => blocked });
+  ui.select([file('Saved.txt')]);
+  blocked = true;
+  assert.equal(ui.api.isBusy(), true);
+  ui.select([file('Ignored.txt')]);
+  ui.get('drop-zone').fire('drop', { dataTransfer: { files: [file('Dropped.txt')] } });
+  ui.get('drop-zone').fire('keydown', { key: 'Enter' });
+  ui.get('drop-zone').fire('click');
+  assert.equal(ui.get('drop-zone').lastEvent.defaultPrevented, true);
+  assert.equal(ui.get('file-input').clicks || 0, 0);
+  await ui.get('use-material').click();
+  assert.equal(ui.saved.length, 0);
+  assert.equal(ui.get('selected-files').children.length, 1);
+  blocked = false;
+  assert.equal(ui.api.isBusy(), false);
+  await ui.get('use-material').click();
+  assert.equal(ui.saved.length, 1);
+  assert.equal(ui.saved[0][0].name, 'Saved.txt');
 });

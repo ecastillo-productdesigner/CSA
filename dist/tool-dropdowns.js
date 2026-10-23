@@ -1,6 +1,7 @@
-import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261022-toast-copy';
-import { createIcon } from './icons.js?v=20261022-toast-copy';
-import { bindTapActivation } from './tap-activation.js?v=20261022-toast-copy';
+import { createDropdownTransition } from './dropdown-transition.js?v=20261022-linked-stories-motion';
+import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261022-linked-stories-motion';
+import { createIcon } from './icons.js?v=20261022-linked-stories-motion';
+import { bindTapActivation } from './tap-activation.js?v=20261022-linked-stories-motion';
 
 export function createToolDropdowns({ root = document } = {}) {
   const controls = [...root.querySelectorAll('.composer-field, .results-sort-field, .feedback-select-field, .editor-style-field, .word-count-field')].map(field => {
@@ -22,7 +23,7 @@ export function createToolDropdowns({ root = document } = {}) {
       }
       select.addEventListener('change', refresh);
       refresh();
-      return { contains: target => field.contains(target), close() {}, refresh };
+      return { connected: () => field.isConnected, contains: target => field.contains(target), close() {}, refresh };
     }
     const editorStyle = field.matches('.editor-style-field');
     const floating = Boolean(field.closest('#output-edit-menu')) || field.matches('.feedback-select-field') || editorStyle;
@@ -60,7 +61,7 @@ export function createToolDropdowns({ root = document } = {}) {
       button.textContent = option.textContent;
       button.append(createIcon('check', 'tool-dropdown-check'));
       bindTapActivation(button, () => {
-        if (menu.hidden || select.disabled) return;
+        if (!transition.expanded || select.disabled) return;
         select.value = option.value;
         select.dispatchEvent(new Event('change', { bubbles: true }));
         close(true);
@@ -71,12 +72,18 @@ export function createToolDropdowns({ root = document } = {}) {
     });
     menu.append(list);
     field.append(trigger, menu);
+    const transition = createDropdownTransition(menu, { onClosed: settleMenu });
 
+    function settleMenu() {
+      if (menu.parentElement !== field) field.append(menu);
+      delete menu.dataset.workspaceDropdown;
+      menu.removeAttribute('style');
+    }
     function refresh() {
       trigger.disabled = select.disabled;
       field.dataset.hasValue = String(Boolean(select.value));
       trigger.title = select.title;
-      if (select.disabled) close();
+      if (select.disabled) close(false, { animate: false });
       const selected = select.options[select.selectedIndex];
       const selectedLabel = select.value ? selected.textContent : placeholder;
       text.textContent = selectedLabel;
@@ -86,18 +93,15 @@ export function createToolDropdowns({ root = document } = {}) {
         button.setAttribute('aria-selected', String(option.selected));
       });
     }
-    function close(restoreFocus = false) {
-      menu.hidden = true;
-      if (menu.parentElement !== field) field.append(menu);
-      delete menu.dataset.workspaceDropdown;
-      menu.removeAttribute('style');
+    function close(restoreFocus = false, { animate = true } = {}) {
       field.classList.remove('is-open');
       trigger.setAttribute('aria-expanded', 'false');
       if (restoreFocus) trigger.focus({ preventScroll: true });
+      transition.close({ animate });
     }
     function open() {
       if (select.disabled) return;
-      closeAll();
+      closeAll(menu);
       refresh();
       if (inWorkspacePanel || editorStyle) {
         document.body.append(menu);
@@ -107,12 +111,13 @@ export function createToolDropdowns({ root = document } = {}) {
       menu.hidden = false;
       field.classList.add('is-open');
       trigger.setAttribute('aria-expanded', 'true');
+      let opensUp = false;
       if (floating || inWorkspacePanel) {
         const bounds = trigger.getBoundingClientRect();
         const below = document.documentElement.clientHeight - bounds.bottom - tokenNumber('foundation.space.12');
         const topLimit = mobileWorkspacePanel() ? tokenNumber('foundation.size.90') : tokenNumber('foundation.space.12');
         const above = bounds.top - topLimit;
-        const opensUp = below < tokenNumber('foundation.size.160') && above > below;
+        opensUp = below < tokenNumber('foundation.size.160') && above > below;
         const menuWidth = editorStyle ? Math.min(tokenNumber('foundation.size.220'), document.documentElement.clientWidth - tokenNumber('foundation.space.24')) : bounds.width;
         menu.style.position = 'fixed';
         menu.style.left = `${editorStyle ? Math.max(tokenNumber('foundation.space.12'), Math.min(bounds.left, document.documentElement.clientWidth - menuWidth - tokenNumber('foundation.space.12'))) : bounds.left}px`;
@@ -121,16 +126,18 @@ export function createToolDropdowns({ root = document } = {}) {
         menu.style.maxHeight = `${Math.max(tokenNumber('foundation.size.80'), Math.min(tokenNumber('foundation.size.360'), opensUp ? above : below))}px`;
         menu.style.top = `${opensUp ? Math.max(topLimit, bounds.top - menu.getBoundingClientRect().height - tokenNumber('foundation.space.8')) : bounds.bottom + tokenNumber('foundation.space.8')}px`;
       }
+      transition.open({ opensUp });
       const selected = rows.find(choice => choice.option.selected);
       (selected && !selected.row.hidden ? selected.button : rows.find(choice => !choice.row.hidden)?.button).focus({ preventScroll: true });
     }
-    trigger.addEventListener('click', () => { if (menu.hidden) open(); else close(true); });
+    trigger.addEventListener('click', () => { if (!transition.expanded) open(); else close(true); });
     trigger.addEventListener('keydown', event => {
       if (!['ArrowDown', 'ArrowUp'].includes(event.key)) return;
       event.preventDefault();
       open();
     });
     menu.addEventListener('keydown', event => {
+      if (!transition.expanded) return;
       if (event.key === 'Escape') {
         event.preventDefault(); event.stopPropagation(); close(true); return;
       }
@@ -150,10 +157,21 @@ export function createToolDropdowns({ root = document } = {}) {
       window.addEventListener('resize', () => close());
     }
     refresh();
-    return { contains: target => field.contains(target) || menu.contains(target), close, refresh };
+    return {
+      menu,
+      connected: () => field.isConnected,
+      contains: target => field.contains(target) || menu.contains(target),
+      close,
+      refresh() { transition.settle(); refresh(); },
+      destroy() { transition.destroy(); },
+    };
   });
 
-  function closeAll() { controls.forEach(control => control.close()); }
+  function closeAll(exceptMenu = null) { controls.forEach(control => { if (control.menu !== exceptMenu) control.close(); }); }
+  const removalObserver = typeof MutationObserver === 'function' ? new MutationObserver(() => {
+    controls.forEach(control => { if (!control.connected()) control.close(false, { animate: false }); });
+  }) : null;
+  removalObserver?.observe(document.body, { childList: true, subtree: true });
   // On touch browsers, moving between buttons can blur to the page before click.
   // Close on an actual outside interaction, not that temporary loss of focus.
   for (const eventName of ['pointerdown', 'focusin']) {
@@ -161,5 +179,9 @@ export function createToolDropdowns({ root = document } = {}) {
       controls.forEach(control => { if (!control.contains(event.target)) control.close(); });
     });
   }
-  return { close: closeAll, refresh: () => controls.forEach(control => control.refresh()) };
+  return {
+    close: closeAll,
+    refresh: () => controls.forEach(control => control.refresh()),
+    destroy() { removalObserver?.disconnect(); controls.forEach(control => control.destroy?.()); closeAll(); },
+  };
 }

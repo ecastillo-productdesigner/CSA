@@ -41,12 +41,12 @@ test('link project headings use the first article headline without changing sour
   assert.deepEqual(sources, original);
 });
 
-test('domain and opaque link titles receive a readable existing demo headline', () => {
+test('domain and opaque link titles use a readable URL fallback instead of an invented headline', () => {
   const url = 'https://www.charlotteobserver.com/latest-news/article317649444.html';
   for (const title of ['charlotteobserver.com', 'www.charlotteobserver.com', 'article317649444', 'article317649444.html', '317649444', url, '', undefined, null]) {
-    assert.equal(projectTitleFromSources([{ type: 'link', title, url }]), 'A Neighborhood Project Brings a Community Together');
+    assert.equal(projectTitleFromSources([{ type: 'link', title, url }]), 'charlotteobserver.com — latest news');
   }
-  assert.equal(projectTitleFromSources([{ type: 'link', title: 'charlotteobserver.com', url: 'https://www.charlotteobserver.com/' }]), 'An Unexpected Collaboration Opens a New Chapter');
+  assert.equal(projectTitleFromSources([{ type: 'link', title: 'charlotteobserver.com', url: 'https://www.charlotteobserver.com/' }]), 'charlotteobserver.com');
 });
 
 test('only exact automatic domain names migrate and preserve saved sources, URLs, outputs, and dates', () => {

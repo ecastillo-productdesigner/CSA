@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261022-toast-copy';
+import { createIcon } from './icons.js?v=20261022-linked-stories-motion';
 
 export function createRevisionButton(output, disabled = false) {
   const button = document.createElement('button');

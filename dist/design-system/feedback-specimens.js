@@ -1,5 +1,5 @@
-import { createFeedbackPill, createVariantFeedback } from '../variant-feedback.js?v=20261022-wordpress-export-followup';
-import { sendDestinations } from '../send-destination.js?v=20261022-publisher-destinations';
+import { createFeedbackPill, createVariantFeedback } from '../variant-feedback.js?v=20261022-linked-stories-motion';
+import { sendDestinations } from '../send-destination.js?v=20261022-linked-stories-motion';
 
 // The app controller operates on one in-memory draft here. No project storage,
 // content editor, server submission, or prototype controllers are mounted.

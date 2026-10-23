@@ -1,5 +1,5 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261022-toast-copy';
-import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261022-toast-copy';
+import { tokenNumber } from './design-system/runtime.js?v=20261022-linked-stories-motion';
+import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261022-linked-stories-motion';
 export function sourceSelectionFor(project, variant = null) {
   const available = project?.sources || [];
   if (!variant) return { sources: available, selectedSources: new Set(available.filter(source => source.selected !== false)) };
@@ -24,9 +24,9 @@ function sourceUrl(value) {
   } catch { return null; }
 }
 
-function sourceDisplayTitle(source) {
+export function sourceDisplayTitle(source) {
   const url = source.type === 'link' ? sourceUrl(source.url) : null;
-  return url ? sourceLinkArticles([url])[0].title : source.title;
+  return url ? sourceLinkArticles([source])[0].title : source.title;
 }
 
 export function sourcePreviewParagraphs(source) {
@@ -161,7 +161,9 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onRe
     meta.replaceChildren();
     meta.hidden = false;
     if (linkOnly) {
-      meta.append(sourceMetadata('Publish Date', 'Not available'), sourceMetadata('URL', sourceUrl(source.url)));
+      const date = sourceLinkArticles([source])[0].date;
+      const published = date ? new Date(`${date}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : 'Not available';
+      meta.append(sourceMetadata('Publish Date', published), sourceMetadata('URL', sourceUrl(source.url)));
     } else if (text.startsWith('Fictional sample article · ') && text.includes('\n\n')) {
       const divider = text.indexOf('\n\n');
       const parts = text.slice(0, divider).split('·').map(part => part.trim());

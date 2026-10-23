@@ -1,7 +1,7 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261022-toast-copy';
-import { projectOutputs, createOutputBadges } from './outputs.js?v=20261022-content-send-dialog';
+import { tokenNumber } from './design-system/runtime.js?v=20261022-linked-stories-motion';
+import { projectOutputs, createOutputBadges } from './outputs.js?v=20261022-linked-stories-motion';
 
-import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261022-content-send-dialog';
+import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261022-linked-stories-motion';
 
 export function createOutputPresets({ onSelect, onDelete, onEdit }) {
   const root = document.querySelector('#output-presets');

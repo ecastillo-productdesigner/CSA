@@ -1,4 +1,80 @@
-import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261022-toast-copy';
+import { tokenValue, tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261022-linked-stories-motion';
+
+function milliseconds(value) {
+  const amount = Number.parseFloat(value);
+  if (!Number.isFinite(amount) || amount < 0 || !/m?s$/.test(value)) throw new TypeError('A motion duration token is required');
+  return value.endsWith('ms') ? amount : amount * 1000;
+}
+
+/** Slide a rail panel without leaving closing controls in the focus order. */
+export function createRailPanelTransition(panel, { trigger, motionQuery, readToken = tokenValue, onHidden = () => {} } = {}) {
+  if (!panel) throw new TypeError('A rail panel is required');
+  const view = panel.ownerDocument?.defaultView || globalThis;
+  const motion = motionQuery || view.matchMedia?.('(prefers-reduced-motion: reduce)') || { matches: false };
+  let visible = !panel.hidden;
+  let running = null;
+  let revision = 0;
+  let destroyed = false;
+
+  function settle(sequence) {
+    if (sequence !== revision || destroyed) return;
+    const completed = running;
+    running = null;
+    panel.hidden = !visible;
+    completed?.cancel();
+    if (!visible) onHidden();
+  }
+
+  function setVisible(next, { animate = true } = {}) {
+    if (destroyed) return visible;
+    next = Boolean(next);
+    if (next === visible && animate) return visible;
+    const wasHidden = panel.hidden;
+    const previousTransform = !wasHidden && running ? view.getComputedStyle?.(panel).transform : null;
+    const sequence = ++revision;
+    running?.cancel();
+    running = null;
+    visible = next;
+    if (!next && panel.contains(panel.ownerDocument?.activeElement)) trigger?.focus({ preventScroll: true });
+    panel.inert = !next;
+    panel.setAttribute('aria-hidden', String(!next));
+    trigger?.setAttribute('aria-expanded', String(next));
+    panel.hidden = false;
+    if (!animate || motion.matches || !panel.isConnected || typeof panel.animate !== 'function' || (wasHidden && !next)) {
+      settle(sequence);
+      return visible;
+    }
+    try {
+      const shifted = `translateX(calc(-1 * ${readToken('foundation.space.5', panel)}))`;
+      const start = previousTransform || (wasHidden ? shifted : 'translateX(0)');
+      running = panel.animate([{ transform: start }, { transform: next ? 'translateX(0)' : shifted }], {
+        duration: milliseconds(readToken('foundation.motion.duration.200', panel)),
+        easing: readToken('foundation.motion.easing.ease', panel),
+        fill: 'both',
+      });
+      running.finished.then(() => settle(sequence), () => settle(sequence));
+    } catch {
+      settle(sequence);
+    }
+    return visible;
+  }
+
+  function onMotionChange() { if (motion.matches) setVisible(visible, { animate: false }); }
+  motion.addEventListener?.('change', onMotionChange);
+  setVisible(visible, { animate: false });
+  return {
+    setVisible,
+    get visible() { return visible; },
+    destroy() {
+      if (destroyed) return;
+      setVisible(visible, { animate: false });
+      destroyed = true;
+      revision++;
+      motion.removeEventListener?.('change', onMotionChange);
+    },
+  };
+}
+
 export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVariantOpen, onOpen }) {
   const panels = {
     sources: { trigger: document.querySelector('#show-sources'), panel: document.querySelector('#editor-sources') },
@@ -23,6 +99,10 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
   let active = null;
   const sourcesHome = document.createComment('Sources panel home');
   panels.sources.panel.before(sourcesHome);
+  const sourcesTransition = createRailPanelTransition(panels.sources.panel, {
+    trigger: panels.sources.trigger,
+    onHidden: () => sourcesHome.after(panels.sources.panel),
+  });
 
   function hideTooltips() { for (const { tooltip } of tooltips) tooltip.hidden = true; }
   function showTooltip(trigger, tooltip) {
@@ -40,13 +120,14 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
   }
   window.addEventListener('resize', hideTooltips);
 
-  function close(name = active, restoreFocus = false) {
+  function close(name = active, restoreFocus = false, { animate = true } = {}) {
     if (!name || !panels[name]) return;
     const { trigger, panel, mobileOnly } = panels[name];
     if (mobileOnly) delete panel.dataset.mobileOpen;
+    else if (name === 'sources') sourcesTransition.setVisible(false, { animate });
     else panel.hidden = true;
     trigger.setAttribute('aria-expanded', 'false');
-    if (name === 'sources') { sourcesHome.after(panel); onSourcesClose?.(); }
+    if (name === 'sources') onSourcesClose?.();
     if (active === name) active = null;
     if (restoreFocus) trigger.focus({ preventScroll: true });
   }
@@ -74,10 +155,11 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
     onOpen?.();
     if (name === 'sources') onSourcesOpen();
     if (name === 'newVariant') onNewVariantOpen?.();
-    if (panels[name].mobileOnly) panels[name].panel.dataset.mobileOpen = 'true';
-    else panels[name].panel.hidden = false;
     // Keep the mobile Sources panel above the backdrop without lifting its navigation bar.
     if (name === 'sources' && mobileTopBar()) document.querySelector('#workspace-app').append(panels.sources.panel);
+    if (panels[name].mobileOnly) panels[name].panel.dataset.mobileOpen = 'true';
+    else if (name === 'sources') sourcesTransition.setVisible(true);
+    else panels[name].panel.hidden = false;
     panels[name].trigger.setAttribute('aria-expanded', 'true');
     active = name;
   }
@@ -129,7 +211,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
   function syncLayout() {
     const available = drawerAvailable();
     const next = `${mobileTopBar()}:${available}`;
-    if (next !== layoutMode) { hideTooltips(); setDrawer(false); close(); layoutMode = next; }
+    if (next !== layoutMode) { hideTooltips(); close(active, false, { animate: false }); setDrawer(false); layoutMode = next; }
     sidebar.dataset.expandable = String(available);
     sidebar.tabIndex = available ? 0 : -1;
     sidebar.setAttribute('aria-label', !available || drawerOpen ? 'Main navigation' : 'Main navigation. Press Enter to open drawer.');

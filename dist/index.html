@@ -10,9 +10,9 @@
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,chevron_forward,close,delete,description,draw,edit,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,upload,view_module,visibility&amp;display=block">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
-    <link rel="stylesheet" href="./design-system/tokens.css?v=20261022-draft-polish">
-    <link rel="stylesheet" href="./styles.css?v=20261022-draft-polish">
-    <script src="./demo-access.js?v=20261022-draft-polish" type="module"></script>
+    <link rel="stylesheet" href="./design-system/tokens.css?v=20261022-linked-stories-motion">
+    <link rel="stylesheet" href="./styles.css?v=20261022-linked-stories-motion">
+    <script src="./demo-access.js?v=20261022-linked-stories-motion" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -256,6 +256,7 @@
         <div class="new-project-input"><span class="material-symbols-outlined" aria-hidden="true">search</span><textarea id="new-project-query" aria-describedby="new-project-link-error" rows="5" wrap="soft" placeholder="Search for articles or paste article URL (1 per line or separated by commas)&#10;&#10;Examples:&#10;https://www.centredaily.com/news/local/article123.html&#10;https://www.miamiherald.com/sports/article456.html" autocomplete="off" maxlength="4000" required></textarea></div>
         <p class="form-error" id="new-project-link-error" role="status" hidden>Paste a valid website link to continue.</p>
         <button class="new-project-continue" id="new-project-submit" type="submit" disabled>Continue</button>
+        <p class="visually-hidden" id="new-project-link-status" role="status" aria-live="polite"></p>
       </form>
       <div class="new-project-divider"><span>or</span></div>
       <label class="new-project-material new-project-upload" id="new-project-drop-zone" for="new-project-file-input">
@@ -283,8 +284,8 @@
     <dialog class="editor-link-dialog" id="editor-link-dialog" aria-labelledby="editor-link-heading"><form id="editor-link-form"><div class="editor-panel-heading"><h2 id="editor-link-heading">Add a link</h2><button class="icon-button" type="button" data-close="editor-link-dialog" aria-label="Close link dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div><label for="editor-link-text">Link text<input id="editor-link-text" type="text" placeholder="Text to display" maxlength="2000"></label><label for="editor-link-url">URL<input id="editor-link-url" type="text" placeholder="https://" required></label><p class="form-error" id="editor-link-error" role="alert" hidden></p><div class="dialog-footer"><button class="secondary-button" id="editor-remove-link" type="button">Remove Link</button><button class="primary-button" type="submit">Apply Link</button></div></form></dialog>
 
     <dialog class="experience-feedback-dialog" id="experience-feedback-dialog" aria-labelledby="experience-feedback-heading">
-      <div class="experience-feedback-export" id="experience-feedback-export" hidden><h2>Export complete</h2><a class="primary-button feedback-wordpress-link" id="feedback-wordpress-link" target="_blank" rel="noopener noreferrer">Go to WordPress</a></div>
-      <div class="panel-heading"><h2 id="experience-feedback-heading">Draft Feedback</h2></div>
+      <div class="experience-feedback-export" id="experience-feedback-export" hidden><h2>Export Complete</h2><button class="primary-button feedback-wordpress-link" id="feedback-wordpress-link" type="button">Go to WordPress</button></div>
+      <h2 class="visually-hidden" id="experience-feedback-heading">Draft Feedback</h2>
       <form id="experience-feedback-form" novalidate>
         <div class="experience-feedback-body">
           <fieldset class="feedback-rating-field"><legend>How would you rate this draft? <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></legend>

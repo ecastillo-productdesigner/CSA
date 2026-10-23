@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { createDraftingAnimation, draftingMessages } from '../dist/drafting-animation.js';
 
 class Events {
@@ -65,7 +66,7 @@ function setup(t, { reduced = false, observers = true } = {}) {
       '--csa-component-drafting-paper-scale-step': '0.04',
       '--csa-component-drafting-paper-lift-offset': '0.44',
       '--csa-component-drafting-paper-front-offset': '0.47',
-      '--csa-component-drafting-message-hold-duration': '4400ms',
+      '--csa-component-drafting-message-hold-duration': '5000ms',
       '--csa-foundation-motion-duration-800': '0.8s',
       '--csa-foundation-motion-easing-arrive': 'cubic-bezier(0.2, 0.7, 0.2, 1)',
       '--csa-foundation-space-2': '2px', '--csa-foundation-space-3': '3px',
@@ -117,6 +118,7 @@ const allAnimations = ui => ui.papers.flatMap(paper => paper.animations);
   const ui = env.create();
   assert.equal(ui.root.className, 'drafting-animation');
   assert.equal(ui.root.dataset.compact, 'true');
+  assert.equal(ui.root.dataset.messageCount, '3');
   assert.equal(ui.stack.getAttribute('aria-hidden'), 'true');
   assert.deepEqual(ui.papers.map(paper => paper.dataset.depth), ['back', 'middle', 'front']);
   assert.equal(ui.papers.every(paper => paper.children.length === 7), true);
@@ -138,12 +140,12 @@ const allAnimations = ui => ui.papers.flatMap(paper => paper.animations);
 
 test('each message change brings the back sheet to the front with token-driven motion and no text opacity animation', async t => {
   const env = setup(t);
-  const ui = env.create({ compact: false });
+  const ui = env.create({ compact: false, messageLimit: 6 });
   ui.mount();
   assert.equal(ui.root.dataset.compact, 'false');
   assert.equal(ui.root.dataset.playing, 'true');
   assert.equal(env.timers.size, 1);
-  env.tick(4399);
+  env.tick(4999);
   assert.equal(ui.message.textContent, draftingMessages[0]);
   env.tick(1);
   assert.equal(ui.message.textContent, draftingMessages[1]);
@@ -161,7 +163,7 @@ test('each message change brings the back sheet to the front with token-driven m
   await flush();
   assert.equal(env.timers.size, 1);
   for (let next = 2; next <= 6; next += 1) {
-    env.tick(4400);
+    env.tick(5000);
     assert.equal(ui.message.textContent, draftingMessages[next % draftingMessages.length]);
     allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
     await flush();
@@ -169,11 +171,76 @@ test('each message change brings the back sheet to the front with token-driven m
   ui.controller.destroy();
 });
 
+test('a 15-second drafting job shows exactly the first three messages at 0, 5, and 10.8 seconds', async t => {
+  const tokens = JSON.parse(readFileSync(new URL('../dist/design-system/tokens.json', import.meta.url), 'utf8'));
+  assert.deepEqual(tokens.component.drafting['message-hold-duration'].$value, { value: 5000, unit: 'ms' });
+  assert.deepEqual(tokens.component.drafting['processing-duration'].$value, { value: 15000, unit: 'ms' });
+  const env = setup(t);
+  const ui = env.create();
+  ui.mount();
+  const seen = [ui.message.textContent];
+  env.tick(4999);
+  assert.equal(ui.root.dataset.messageIndex, '0');
+  env.tick(1);
+  seen.push(ui.message.textContent);
+  assert.equal(ui.root.dataset.messageIndex, '1');
+  env.tick(800);
+  allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
+  await flush();
+  env.tick(4999);
+  assert.equal(ui.root.dataset.messageIndex, '1');
+  env.tick(1);
+  seen.push(ui.message.textContent);
+  assert.equal(ui.root.dataset.messageIndex, '2');
+  env.tick(800);
+  allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
+  await flush();
+  env.tick(3400);
+  assert.equal(ui.root.dataset.messageIndex, '2', 'the third message remains visible when the 15-second job finishes');
+  assert.deepEqual(seen, draftingMessages.slice(0, 3));
+  assert.equal(Math.min(...[...env.timers.values()].map(task => task.at)), 16600, 'no fourth transition can start before the app finishes');
+  ui.controller.destroy();
+  env.tick(100000);
+  assert.equal(ui.root.dataset.messageIndex, '2');
+  assert.equal(env.timers.size, 0);
+});
+
+test('the reference repeats the three-message sequence without advancing into the unused library messages', async t => {
+  const env = setup(t);
+  const ui = env.create();
+  ui.mount();
+  for (const expected of [1, 2, 0, 1]) {
+    env.tick(5000);
+    assert.equal(ui.root.dataset.messageIndex, String(expected));
+    assert.equal(ui.message.textContent, draftingMessages[expected]);
+    env.tick(800);
+    allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
+    await flush();
+  }
+  ui.controller.destroy();
+});
+
+test('browsers without animation APIs keep the same hold and handoff timing', t => {
+  const env = setup(t, { observers: false });
+  const ui = env.create();
+  ui.papers.forEach(paper => { paper.animate = undefined; });
+  ui.mount();
+  env.tick(5000);
+  assert.equal(ui.root.dataset.messageIndex, '1');
+  env.tick(5799);
+  assert.equal(ui.root.dataset.messageIndex, '1');
+  env.tick(1);
+  assert.equal(ui.root.dataset.messageIndex, '2');
+  env.tick(4200);
+  assert.equal(ui.root.dataset.messageIndex, '2');
+  ui.controller.destroy();
+});
+
 test('offscreen or hidden animation cancels current motion and resumes without accumulating timers', async t => {
   const env = setup(t);
   const ui = env.create();
   ui.mount();
-  env.tick(4400);
+  env.tick(5000);
   assert.equal(allAnimations(ui).some(animation => !animation.cancelled), true);
   env.intersections[0].visible(false);
   assert.equal(ui.root.dataset.playing, 'false');
@@ -218,7 +285,7 @@ test('removal and destroy clean up every timer, observer and listener, including
   const env = setup(t);
   const ui = env.create();
   ui.mount();
-  env.tick(4400);
+  env.tick(5000);
   ui.root.isConnected = false;
   env.mutations[0].change();
   assert.equal(ui.root.dataset.playing, 'false');
@@ -253,7 +320,7 @@ test('browsers without animation or observer APIs still rotate messages while vi
   const ui = env.create();
   ui.papers.forEach(paper => { paper.animate = undefined; });
   ui.mount();
-  env.tick(4400);
+  env.tick(5000);
   assert.equal(ui.message.textContent, draftingMessages[1]);
   assert.equal(env.timers.size, 1);
   ui.root.hasLayout = false;

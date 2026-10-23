@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261022-toast-copy';
-import { tokenNumber } from './design-system/runtime.js?v=20261022-toast-copy';
+import { createIcon } from './icons.js?v=20261022-linked-stories-motion';
+import { tokenNumber } from './design-system/runtime.js?v=20261022-linked-stories-motion';
 
 const contentOutputs = project => (Array.isArray(project?.outputs) ? project.outputs : [])
   .filter(output => output && typeof output.id === 'string');

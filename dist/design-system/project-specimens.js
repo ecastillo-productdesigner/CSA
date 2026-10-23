@@ -1,5 +1,5 @@
-import { createIcon } from '../icons.js?v=20261022-toast-copy';
-import { projectUpdatedDate, projectContentCountLabel } from '../dashboard.js?v=20261022-content-send-dialog';
+import { createIcon } from '../icons.js?v=20261022-linked-stories-motion';
+import { projectUpdatedDate, projectContentCountLabel } from '../dashboard.js?v=20261022-linked-stories-motion';
 
 // Isolated documentation data. This specimen never mounts the app dashboard
 // controller, reads browser storage, or changes a saved project.

@@ -3725,7 +3725,7 @@
       "category": "color",
       "value": "#404040",
       "reference": "foundation.color.neutral.700",
-      "description": "Default interface and body text.",
+      "description": "Default readable interface and body text; use on gray surfaces, active editor tabs, and blockquotes.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
@@ -3769,7 +3769,7 @@
       "category": "color",
       "value": "#a3a3a3",
       "reference": "foundation.color.neutral.400",
-      "description": "Secondary metadata, placeholders, and quiet labels. Review normal-text contrast.",
+      "description": "Inactive controls and decorative content; not for readable labels, metadata, or placeholders.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
@@ -3813,7 +3813,7 @@
       "category": "color",
       "value": "#737373",
       "reference": "foundation.color.neutral.500",
-      "description": "Readable secondary information such as dashboard dates and variant counts.",
+      "description": "Readable supporting text, metadata, counts, optional labels, and placeholders on white or the page canvas.",
       "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
@@ -7342,6 +7342,66 @@
         "alpha": 1,
         "hex": "#26344a"
       }
+    },
+    {
+      "name": "component.drafting.message-hold-duration",
+      "designName": "component/drafting/message-hold-duration",
+      "cssVariable": "--csa-component-drafting-message-hold-duration",
+      "type": "duration",
+      "layer": "component",
+      "category": "drafting",
+      "value": "4400ms",
+      "reference": "",
+      "description": "Time each drafting message remains before the next sheet comes to the front.",
+      "status": "observed"
+    },
+    {
+      "name": "component.drafting.paper-rotation-step",
+      "designName": "component/drafting/paper-rotation-step",
+      "cssVariable": "--csa-component-drafting-paper-rotation-step",
+      "type": "number",
+      "layer": "component",
+      "category": "drafting",
+      "value": "3",
+      "reference": "",
+      "description": "Degrees between successive paper poses.",
+      "status": "observed"
+    },
+    {
+      "name": "component.drafting.paper-scale-step",
+      "designName": "component/drafting/paper-scale-step",
+      "cssVariable": "--csa-component-drafting-paper-scale-step",
+      "type": "number",
+      "layer": "component",
+      "category": "drafting",
+      "value": "0.04",
+      "reference": "",
+      "description": "Scale difference between successive paper depths.",
+      "status": "observed"
+    },
+    {
+      "name": "component.drafting.paper-lift-offset",
+      "designName": "component/drafting/paper-lift-offset",
+      "cssVariable": "--csa-component-drafting-paper-lift-offset",
+      "type": "number",
+      "layer": "component",
+      "category": "drafting",
+      "value": "0.44",
+      "reference": "",
+      "description": "Normalized handoff offset where the incoming sheet reaches its lifted pose.",
+      "status": "observed"
+    },
+    {
+      "name": "component.drafting.paper-front-offset",
+      "designName": "component/drafting/paper-front-offset",
+      "cssVariable": "--csa-component-drafting-paper-front-offset",
+      "type": "number",
+      "layer": "component",
+      "category": "drafting",
+      "value": "0.47",
+      "reference": "",
+      "description": "Normalized handoff offset where the incoming sheet moves above the previous front sheet.",
+      "status": "observed"
     }
   ]
 }

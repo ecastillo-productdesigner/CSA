@@ -6,8 +6,8 @@ export function createToolDropdowns({ root = document } = {}) {
   const controls = [...root.querySelectorAll('.composer-field, .results-sort-field, .feedback-select-field, .editor-style-field, .word-count-field')].map(field => {
     const select = field.querySelector('select');
     const label = field.dataset.label;
-    const key = field.matches('.composer-field') && ['Format', 'Audience', 'Voice'].includes(label)
-      ? label.toLowerCase() : select.id.replace(/^(composer-|output-edit-)/, '');
+    const draftSetting = field.matches('.composer-field') && ['Format', 'Audience', 'Voice'].includes(label);
+    const key = draftSetting ? label.toLowerCase() : select.id.replace(/^(composer-|output-edit-)/, '');
     field.dataset.tool = key;
     if (field.dataset.fixedValue) {
       const value = field.dataset.fixedValue;
@@ -28,7 +28,7 @@ export function createToolDropdowns({ root = document } = {}) {
     const floating = Boolean(field.closest('#output-edit-menu')) || field.matches('.feedback-select-field') || editorStyle;
     const inWorkspacePanel = Boolean(field.closest('#composer-tools, .composer-tools'));
     const mobileWorkspacePanel = () => inWorkspacePanel && window.matchMedia(breakpointQuery()).matches;
-    const placeholder = field.dataset.placeholder || (['format', 'audience', 'voice'].includes(key) ? `Select ${label}` : label);
+    const placeholder = draftSetting ? 'None Selected' : field.dataset.placeholder || (['format', 'audience', 'voice'].includes(key) ? `Select ${label}` : label);
     const trigger = document.createElement('button');
     trigger.type = 'button';
     trigger.id = `${select.id}-trigger`;
@@ -78,8 +78,9 @@ export function createToolDropdowns({ root = document } = {}) {
       trigger.title = select.title;
       if (select.disabled) close();
       const selected = select.options[select.selectedIndex];
-      text.textContent = select.value ? selected.textContent : placeholder;
-      trigger.setAttribute('aria-label', select.value ? `${label}: ${selected.textContent}` : placeholder);
+      const selectedLabel = select.value ? selected.textContent : placeholder;
+      text.textContent = selectedLabel;
+      trigger.setAttribute('aria-label', select.value || draftSetting ? `${label}: ${selectedLabel}` : selectedLabel);
       rows.forEach(({ row, button, option }) => {
         row.dataset.selected = String(option.selected);
         button.setAttribute('aria-selected', String(option.selected));

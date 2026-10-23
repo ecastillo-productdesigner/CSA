@@ -3,6 +3,7 @@ export const draftOptions = [
     label: 'Format',
     key: 'format',
     options: [
+      { value: '', label: 'None Selected' },
       { value: 'standard', label: 'Standard Format' },
       { value: 'celebrity-relationship-timeline', label: 'Celebrity Relationship Timeline' },
       { value: 'listicle', label: 'Listicle' },
@@ -13,6 +14,7 @@ export const draftOptions = [
     label: 'Audience',
     key: 'audience',
     options: [
+      { value: '', label: 'None Selected' },
       { value: 'general', label: 'General Audience' },
       { value: 'millennial-pop-culture', label: 'Millennial Pop-Culture Fan' },
       { value: 'wellness-enthusiast', label: 'Wellness Enthusiast' },
@@ -23,6 +25,7 @@ export const draftOptions = [
     label: 'Voice',
     key: 'voice',
     options: [
+      { value: '', label: 'None Selected' },
       { value: 'us-weekly', label: 'US Weekly' },
       { value: 'womans-world', label: "Woman's World" },
     ],
@@ -51,5 +54,9 @@ export function populateDraftOptions(root = document) {
 export function draftPreferenceValue(key, value) {
   const configuration = draftOptions.find(item => item.key === key);
   if (!configuration) return '';
-  return configuration.options.some(option => option.value === value) ? value : configuration.options[0].value;
+  return configuration.options.some(option => option.value === value) ? value : '';
+}
+
+export function hasDraftSelection(preferences = {}) {
+  return draftOptions.some(({ key }) => Boolean(draftPreferenceValue(key, preferences?.[key])));
 }

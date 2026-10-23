@@ -478,3 +478,15 @@ The To Adapt empty state reads Your adapted content will appear here. Adapted re
 2026-10-22: Upload documents uses its original solid 1 px neutral border and 8 px corners in the app and DS. The surface has no hover effect; drop feedback and keyboard focus remain. Browse files uses semantic.color.action.primary with its underline. The URL placeholder uses the requested Search for articles or paste article URL first line and preserves both original example URLs.
 
 2026-10-22: New Project URL placeholders/examples, the or divider, and upload helper text use semantic.color.text.secondary (#737373), measuring 4.74:1 against white. Browse files keeps the primary action color. Decorative icons and unrelated muted text remain unchanged.
+
+2026-10-22: Applied the approved text-contrast roles across the app and shared DS specimens. Readable supporting text on white or canvas uses semantic.color.text.secondary; active editor tabs, blockquotes, feedback placeholders, and text on gray selected/drag surfaces use semantic.color.text.primary. Blue loading text remains opaque while shimmering between semantic.color.action.primary-hover and semantic.color.action.primary. Inactive controls and decorative glyphs retain their existing treatment.
+
+2026-10-22: Format, Audience, and Voice begin with None Selected on white upon entering a workspace. Their menu options retain the configured choices, clearing returns to None Selected, and choosing any one valid setting enables Add to List when source content is available. Saved output labels remain captured on their own content items. Content and New Draft panels use 16 px top padding. Content keeps 20 px horizontal and 24 px bottom padding; New Draft retains its existing side and bottom spacing.
+
+2026-10-22: The approved white-paper, blue-writing animation replaces the drafting spinner in busy content cards. The same shared component is shown in the DS. Three sheets move from back to front as the six requested messages cycle; blue lines keep drawing in a loop. The component pauses offscreen, cleans up when removed, and becomes static for reduced motion. The prototype’s existing four-second generation timing remains unchanged; longer-lived feedback, including the DS specimen, cycles through all messages. Five component motion tokens bring the inventory to 484.
+
+2026-10-22: Draft completion opens the drafted content without the Content Adapted notification. The DS pending-card action follows the same behavior.
+
+2026-10-22: Content heading-to-tabs spacing uses foundation.space.16.
+
+2026-10-22: New Draft top padding now uses foundation.space.12 in expanded, collapsed, desktop, and mobile states. The heading row to first dropdown gap uses foundation.space.16; side/bottom padding and Content panel spacing stay as specified.

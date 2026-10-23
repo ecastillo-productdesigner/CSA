@@ -1,14 +1,14 @@
 import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261022-feedback-restored';
 import { mountProjectSpecimens } from './project-specimens.js?v=20261022-ds-inventory';
-import { mountFormSpecimens } from './form-specimens.js?v=20261022-entry-contrast';
-import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261022-draft-workflow';
-import { colorRoleGroups } from './color-roles.js?v=20261022-toast-no-icon';
+import { mountFormSpecimens } from './form-specimens.js?v=20261022-accessible-drafting';
+import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261022-accessible-drafting';
+import { colorRoleGroups } from './color-roles.js?v=20261022-accessible-drafting';
 import { typographyRoleGroups } from './typography-roles.js?v=20261022-draft-labels';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-draft-workflow';
-import { populateDraftOptions } from '../draft-options.js?v=20261022-draft-workflow';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-accessible-drafting';
+import { populateDraftOptions } from '../draft-options.js?v=20261022-accessible-drafting';
 import { iconInventory } from './icon-inventory.js?v=20261022-draft-labels';
 import { tokenNumber } from './runtime.js?v=20261022-toast-copy';
-import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261022-draft-workflow';
+import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261022-accessible-drafting';
 const $ = selector => document.querySelector(selector);
 populateDraftOptions(document);
 const toolDropdowns = createToolDropdowns();
@@ -151,7 +151,6 @@ contentAdapt.addEventListener('click', () => {
   if (contentState !== 'pending' || !pendingContentSelected || contentDeleted) return;
   setContentCardState('selected');
   contentOpen.focus({ preventScroll: true });
-  notify('Content Adapted');
 });
 setContentCardState('selected');
 contentBadges.addEventListener('scroll', updateContentBadgeOverflow, { passive: true });

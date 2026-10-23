@@ -1,8 +1,8 @@
 import { documentStyles } from './design-system/export-styles.js?v=20261022-toast-copy';
 import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261022-toast-copy';
-import { initializeOutputShareText } from './outputs.js?v=20261022-draft-workflow';
-import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261022-draft-workflow';
-import { draftPreferenceValue } from './draft-options.js?v=20261022-draft-workflow';
+import { initializeOutputShareText } from './outputs.js?v=20261022-accessible-drafting';
+import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261022-accessible-drafting';
+import { draftPreferenceValue } from './draft-options.js?v=20261022-accessible-drafting';
 import './vendor/quill-2.0.3.js';
 
 const Quill = window.Quill;

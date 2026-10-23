@@ -7,16 +7,16 @@ import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261022-
 import { createProfile } from './profile.js?v=20261022-toast-copy';
 import { createSearchExperience } from './search.js?v=20261022-content-send-dialog';
 import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261022-content-send-dialog';
-import { createMaterialEditor } from './editor.js?v=20261022-draft-workflow';
+import { createMaterialEditor } from './editor.js?v=20261022-accessible-drafting';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261022-toast-copy';
 import { removeProjectContent } from './project-deletion.js?v=20261022-toast-copy';
 import { createContentPreview } from './content-preview.js?v=20261022-toast-copy';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261022-draft-workflow';
-import { populateDraftOptions, draftPreferenceValue } from './draft-options.js?v=20261022-draft-workflow';
-import { createNewProjectUpload } from './new-project-upload.js?v=20261022-draft-workflow';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261022-accessible-drafting';
+import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261022-accessible-drafting';
+import { createNewProjectUpload } from './new-project-upload.js?v=20261022-accessible-drafting';
 import { createRailNavigation } from './navigation.js?v=20261022-card-menu';
 import { createProjectSources } from './sources.js?v=20261022-toast-copy';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-draft-workflow';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-accessible-drafting';
 import { createEditorTabs } from './editor-tabs.js?v=20261022-content-send-dialog';
 import { createContentCardEditing } from './content-card-editing.js?v=20261022-card-menu';
 import { createSendDestinationDialog, isSendDestination } from './send-destination.js?v=20261022-feedback-restored';
@@ -524,7 +524,12 @@ function showProject(id) {
   const project = projects.find((entry) => entry.id === id);
   if (!project || project.deletedAt) return;
   if (project.kind === 'links') { project.kind = 'draft'; project.linkCards = true; project.awaitingOutput = true; saveProjects(); }
-  if (project.kind === 'draft') { showEditorProject(project); return; }
+  if (project.kind === 'draft') {
+    richEditor.flush();
+    project.toolPreferences = { format: '', audience: '', voice: '' };
+    showEditorProject(project);
+    return;
+  }
   closeComposer();
   railNavigation.closeTransient();
   activeProjectId = id;
@@ -699,10 +704,10 @@ function updateComposerActions() {
     select.title = canConfigure ? '' : processing ? 'Drafting content…' : 'Add content first';
   }
   if (changed) toolDropdowns.refresh();
-  const hasFormat = Boolean($('#composer-format').value);
-  const enabled = hasContent && hasFormat && !processing;
+  const hasSelection = hasDraftSelection(Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, $(`#composer-${key}`).value])));
+  const enabled = hasContent && hasSelection && !processing;
   $('.create-variant').disabled = !enabled;
-  $('.create-variant').title = processing ? 'Drafting content…' : !hasContent ? 'Select a source first' : !hasFormat ? 'Select a format first' : 'Add to List';
+  $('.create-variant').title = processing ? 'Drafting content…' : !hasContent ? 'Select a source first' : !hasSelection ? 'Select a setting first' : 'Add to List';
 }
 
 function ensureComposerProject(allowEmpty = false) {
@@ -745,7 +750,7 @@ $('.create-variant').addEventListener('click', () => {
   });
   richEditor.flush();
   const project = projects.find(entry => entry.id === activeProjectId);
-  if (!project || project.outputProcessing || !$('#composer-format').value) return;
+  if (!project || project.outputProcessing || !hasDraftSelection(Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, $(`#composer-${key}`).value])))) return;
   project.editorialDirection = $('#composer-editorial-direction').value;
   setProjectWordCount(project, $('#composer-target-word-count').value);
   const output = sampleVariant(project, selections);
@@ -847,7 +852,6 @@ function finishOutputProcessing(project, renderWhenReady = true) {
   if (active && renderWhenReady) {
     railNavigation.closeTransient();
     showEditorProject(project);
-    if (job.kind !== 'revision') notify(latestCreated ? 'Content Adapted' : 'Variant processing finished.');
   }
   if (job.kind === 'revision') notify('Revision complete. Your draft has been updated.');
 }

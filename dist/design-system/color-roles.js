@@ -20,9 +20,9 @@ export const colorRoleGroups = [
     title: 'Text & borders',
     description: 'Neutral roles distinguish readable content, supporting text, inactive labels, and separators.',
     colors: [
-      { name: 'Primary text', token: 'semantic.color.text.primary', description: 'Default body text, headings, and interface icons.' },
-      { name: 'Secondary text', token: 'semantic.color.text.secondary', description: 'Supporting information such as dashboard dates and content counts.' },
-      { name: 'Muted / inactive text', token: 'semantic.color.text.muted', description: 'Placeholders, quiet labels, and disabled-action labels.' },
+      { name: 'Primary text', token: 'semantic.color.text.primary', description: 'Default body text, active editor tabs, blockquotes, and readable text on gray surfaces.' },
+      { name: 'Secondary text', token: 'semantic.color.text.secondary', description: 'Supporting labels, metadata, counts, and placeholders on white or the page canvas.' },
+      { name: 'Muted / inactive text', token: 'semantic.color.text.muted', description: 'Inactive controls and decorative content. Readable labels and placeholders use Secondary text.' },
       { name: 'Border / Draft', token: 'semantic.color.border.default', description: 'Shared control borders and separators; also the Draft status background.' },
     ],
   },

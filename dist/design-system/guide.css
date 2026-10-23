@@ -102,7 +102,7 @@
 .ds-icon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--csa-foundation-size-140)), 1fr)); gap: var(--csa-foundation-space-16); margin-top: var(--csa-foundation-space-24); }
 .ds-icon-item { display: grid; align-content: start; gap: var(--csa-foundation-space-10); min-width: 0; padding: var(--csa-foundation-space-16) var(--csa-foundation-space-12); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-8); }
 .ds-icon-name { margin: 0; font-size: var(--csa-foundation-font-size-12); font-weight: var(--csa-foundation-font-weight-600); overflow-wrap: anywhere; }
-.ds-icon-grid code { font-size: var(--csa-foundation-font-size-10); color: var(--muted); overflow-wrap: anywhere; }
+.ds-icon-grid code { font-size: var(--csa-foundation-font-size-10); color: var(--csa-semantic-color-text-secondary); overflow-wrap: anywhere; }
 .ds-icon-states { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--csa-foundation-space-12); }
 .ds-icon-state { display: grid; justify-items: center; gap: var(--csa-foundation-space-8); padding-block: var(--csa-foundation-space-8); font-size: var(--csa-foundation-font-size-10); }
 .ds-icon-state small { font-size: inherit; }
@@ -262,3 +262,5 @@ body.ds-page:has(dialog[open]) { overflow: hidden; }
 }
 
 @media (max-width: 768px) { .ds-disclosure-panel .composer-direction textarea { font-size: var(--csa-foundation-font-size-16); } }
+
+.ds-drafting-specimen { width: 100%; max-width: var(--csa-component-navigation-drawer-width); }

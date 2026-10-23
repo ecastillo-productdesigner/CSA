@@ -2,6 +2,7 @@ import { createIcon } from './icons.js?v=20261022-toast-copy';
 import { normalizeWordCount } from './variant-word-count.js?v=20261022-toast-copy';
 import { countPreviewWords } from './content-preview.js?v=20261022-toast-copy';
 import { createContentCardActions } from './content-card-editing.js?v=20261022-card-menu';
+import { createDraftingAnimation } from './drafting-animation.js?v=20261022-paper-drafting';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',
@@ -152,6 +153,7 @@ export function selectedPendingOutputs(project) {
 }
 
 let badgeOverflowObserver;
+const draftingAnimations = new Set();
 
 function updateBadgeOverflow(badges) {
   const overflows = badges.scrollWidth > badges.clientWidth + 1;
@@ -359,6 +361,8 @@ export function variantPanelState(project, requestedView) {
 }
 
 export function renderOutputs(project, requestedView) {
+  for (const animation of draftingAnimations) animation.destroy();
+  draftingAnimations.clear();
   const state = variantPanelState(project, requestedView);
   for (const tab of document.querySelectorAll('[data-output-view]')) {
     const selected = tab.dataset.outputView === state.view;
@@ -467,17 +471,10 @@ export function renderOutputs(project, requestedView) {
     badges.inert = revising;
     card.append(badges);
     if (revising) {
-      const overlay = document.createElement('div');
-      overlay.className = 'output-revision-overlay';
-      overlay.setAttribute('role', 'status');
-      const spinner = document.createElement('span');
-      spinner.className = 'output-processing-spinner revision-spinner';
-      spinner.setAttribute('aria-hidden', 'true');
-      const label = document.createElement('span');
-      label.className = 'output-creating-label';
-      label.textContent = 'Drafting…';
-      overlay.append(spinner, label);
-      card.append(overlay);
+      const animation = createDraftingAnimation();
+      animation.element.classList.add('output-revision-overlay');
+      draftingAnimations.add(animation);
+      card.append(animation.element);
     }
     card.append(createContentCardActions(output, { disabled: processing }));
     item.append(card);

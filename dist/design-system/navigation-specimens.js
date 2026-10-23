@@ -1,7 +1,8 @@
+import { createDraftingAnimation } from '../drafting-animation.js?v=20261022-accessible-drafting';
 import { createIcon } from '../icons.js?v=20261022-toast-copy';
 import { tokenNumber } from './runtime.js?v=20261022-toast-copy';
-import { draftOptions, populateDraftOptions } from '../draft-options.js?v=20261022-draft-workflow';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-draft-workflow';
+import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261022-accessible-drafting';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-accessible-drafting';
 
 const navigationMounts = new WeakMap();
 const stateMounts = new WeakMap();
@@ -177,7 +178,7 @@ export function mountStateSpecimens(root) {
   header.append(heading);
   const body = element('div', 'ds-disclosure-body');
   body.id = 'ds-disclosure-body';
-  body.append(element('p', 'ds-caption', 'Add to List queues a draft with the selected Format, Audience, and Voice.'));
+  body.append(element('p', 'ds-caption', 'Choose any Format, Audience, or Voice to enable Add to List.'));
   const fields = element('div', 'composer-fields');
   for (const { label, key } of draftOptions) {
     const field = element('div', 'composer-field');
@@ -211,12 +212,16 @@ export function mountStateSpecimens(root) {
   emptyCopy.append(element('p', '', 'Your drafted content will appear here.'));
   empty.append(emptyCopy);
   const loading = element('div', 'ds-loading-specimen');
-  loading.setAttribute('role', 'status');
+  loading.append(element('h4', '', 'Drafting content'));
+  const drafting = createDraftingAnimation({ compact: true });
+  const draftingStage = element('div', 'ds-drafting-specimen');
+  draftingStage.append(drafting.element);
+  loading.append(draftingStage, element('p', 'ds-caption', 'The app’s drafting feedback uses white paper, looping blue writing, and a new sheet for each message. Reduced motion keeps a static sheet and message.'));
   const adding = element('span', 'result-adding');
   const spinner = element('span', 'output-processing-spinner');
   spinner.setAttribute('aria-hidden', 'true');
   adding.append(spinner, element('span', 'output-creating-label', 'Adding to CSA'));
-  loading.append(adding);
+  loading.append(element('h4', '', 'Adding a source'), adding);
   const status = element('p', 'ds-specimen-status');
   status.setAttribute('role', 'status');
   let dropdowns;
@@ -234,7 +239,10 @@ export function mountStateSpecimens(root) {
   root.append(panel, empty, loading, status);
   populateDraftOptions(panel);
   dropdowns = createToolDropdowns({ root: panel });
-  const mounted = { setExpanded };
+  const updateAdd = () => { add.disabled = !hasDraftSelection(Object.fromEntries([...fields.querySelectorAll('select')].map(select => [select.closest('.composer-field').dataset.label.toLowerCase(), select.value]))); };
+  fields.addEventListener('change', updateAdd);
+  updateAdd();
+  const mounted = { setExpanded, destroy() { drafting.destroy(); dropdowns.close(); stateMounts.delete(root); } };
   stateMounts.set(root, mounted);
   return mounted;
 }

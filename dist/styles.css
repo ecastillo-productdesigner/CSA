@@ -131,10 +131,10 @@ main:focus { outline: none; }
 .home.is-scrolled .home-header::after { opacity: 1; }
 .dashboard-bottom-fade { position: fixed; z-index: var(--csa-foundation-layer-2); right: 0; bottom: 0; left: calc(var(--sidebar-left) + var(--workspace-sidebar-width) + var(--csa-foundation-space-30)); height: var(--csa-foundation-space-56); transition: left var(--csa-foundation-motion-duration-200) var(--csa-foundation-motion-easing-ease); background: linear-gradient(to bottom, transparent, var(--csa-semantic-color-overlay-canvas-fade) calc(var(--csa-foundation-layout-ratio-75) * 1%), var(--background)); pointer-events: none; }
 .home[hidden]+.dashboard-bottom-fade { display: none; }
-.home.is-entering #greeting { animation: greeting-arrive var(--csa-foundation-motion-duration-450) var(--csa-foundation-motion-easing-arrive) both; }
-.home.is-entering .dashboard-grid>* { animation: card-arrive var(--csa-foundation-motion-duration-520) var(--csa-foundation-motion-easing-arrive) both; animation-delay: calc(var(--csa-foundation-motion-duration-420) + var(--reveal-order, 0) * var(--csa-foundation-motion-duration-45)); }
-@keyframes greeting-arrive { from { opacity: 0; transform: translateY(var(--csa-foundation-space-6)); } to { opacity: 1; transform: translateY(0); } }
-@keyframes card-arrive { from { opacity: 0; transform: translateY(var(--csa-foundation-space-14)); } to { opacity: 1; transform: translateY(0); } }
+.home.is-entering #greeting { animation: greeting-arrive var(--csa-component-layout-home-enter-duration) var(--csa-component-layout-home-enter-easing) both; }
+.home.is-entering .dashboard-grid>* { animation: card-arrive var(--csa-component-layout-home-enter-duration) var(--csa-component-layout-home-enter-easing) both; animation-delay: calc(var(--csa-foundation-motion-duration-420) + var(--reveal-order, 0) * var(--csa-foundation-motion-duration-45)); }
+@keyframes greeting-arrive { from { opacity: 0; transform: translateY(var(--csa-component-layout-home-enter-offset)); } to { opacity: 1; transform: translateY(0); } }
+@keyframes card-arrive { from { opacity: 0; transform: translateY(var(--csa-component-layout-home-enter-offset)); } to { opacity: 1; transform: translateY(0); } }
 .project-start { width: 100%; min-width: 0; max-width: var(--csa-foundation-size-520); text-align: center; transform: translateY(calc(-1 * var(--csa-foundation-space-20))); }
 .starter-back { display: block; margin: 0 0 var(--csa-foundation-space-24); color: var(--csa-semantic-color-text-secondary); }
 .dashboard-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--csa-foundation-space-24); padding-top: var(--csa-foundation-space-16); text-align: left; }

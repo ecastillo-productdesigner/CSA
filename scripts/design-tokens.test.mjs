@@ -113,3 +113,13 @@ test('runtime layout and offline export styles reference existing design tokens'
     assert.doesNotMatch(js, /(?:\d+px\b|#[a-f\d]{6}\b)/i,`${file}: fixed interface design value`);
   }
 });
+
+test('homepage entrance cleanup covers the final staggered card', async () => {
+  const source = JSON.parse(await readFile(new URL('../dist/design-system/tokens.json', import.meta.url), 'utf8'));
+  const tokens = new Map(compileTokens(source).flat.map(token => [token.name, token.value]));
+  const ms = name => { const value = tokens.get(name); return Number.parseFloat(value) * (value.endsWith('ms') ? 1 : 1000); };
+  const finalCardEnd = ms('foundation.motion.duration.420')
+    + tokens.get('component.layout.max-entry-order') * ms('foundation.motion.duration.45')
+    + ms('component.layout.home-enter-duration');
+  assert.ok(ms('component.layout.enter-cleanup') >= finalCardEnd, 'entrance class must remain until the last card completes');
+});

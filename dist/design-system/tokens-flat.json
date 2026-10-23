@@ -2317,7 +2317,7 @@
       "category": "motion",
       "value": "cubic-bezier(0.2, 0.7, 0.2, 1)",
       "reference": "",
-      "description": "Greeting and project-card entrance easing.",
+      "description": "Project-card and interface arrival easing.",
       "status": "observed"
     },
     {
@@ -6482,9 +6482,9 @@
       "type": "duration",
       "layer": "component",
       "category": "layout",
-      "value": "1400ms",
+      "value": "1800ms",
       "reference": "",
-      "description": "Homepage entrance lifecycle duration.",
+      "description": "Homepage entrance lifecycle duration, covering the last staggered project card.",
       "status": "observed"
     },
     {
@@ -6497,6 +6497,42 @@
       "value": "7",
       "reference": "",
       "description": "Last staggered card in the entrance sequence.",
+      "status": "observed"
+    },
+    {
+      "name": "component.layout.home-enter-duration",
+      "designName": "component/layout/home-enter-duration",
+      "cssVariable": "--csa-component-layout-home-enter-duration",
+      "type": "duration",
+      "layer": "component",
+      "category": "layout",
+      "value": "1000ms",
+      "reference": "",
+      "description": "Shared homepage greeting and project-card fade and upward entrance duration.",
+      "status": "observed"
+    },
+    {
+      "name": "component.layout.home-enter-offset",
+      "designName": "component/layout/home-enter-offset",
+      "cssVariable": "--csa-component-layout-home-enter-offset",
+      "type": "dimension",
+      "layer": "component",
+      "category": "layout",
+      "value": "40px",
+      "reference": "foundation.space.40",
+      "description": "Starting vertical offset for the homepage greeting and project-card reveals.",
+      "status": "observed"
+    },
+    {
+      "name": "component.layout.home-enter-easing",
+      "designName": "component/layout/home-enter-easing",
+      "cssVariable": "--csa-component-layout-home-enter-easing",
+      "type": "cubicBezier",
+      "layer": "component",
+      "category": "layout",
+      "value": "cubic-bezier(0.42, 0, 0.58, 1)",
+      "reference": "",
+      "description": "Symmetric ease-in-out for homepage greeting and project-card entrances.",
       "status": "observed"
     },
     {

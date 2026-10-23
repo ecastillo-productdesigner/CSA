@@ -13,3 +13,5 @@
     "design-system:check": "node scripts/build-design-tokens.mjs --check"
   }
 }
+
+2026-10-23: Homepage greeting uses a DeepSeek-inspired whole-heading fade and upward glide: opacity 0 to 1, 40px starting offset, 1000ms duration, symmetric ease-in-out. The exact greeting and typography stay intact. Component layout home-enter tokens define these values. Project cards use the same reveal, starting after 420ms with 45ms stagger capped at seven steps; the 1800ms cleanup covers the entire sequence. Home-entry replay and reduced-motion behavior remain in place.

@@ -524,8 +524,11 @@
   --csa-component-navigation-cursor-foreground: var(--csa-foundation-color-neutral-700);
   --csa-component-layout-home-max-width: 1260px;
   --csa-component-layout-switch-start-opacity: 0.35;
-  --csa-component-layout-enter-cleanup: 1400ms;
+  --csa-component-layout-enter-cleanup: 1800ms;
   --csa-component-layout-max-entry-order: 7;
+  --csa-component-layout-home-enter-duration: 1000ms;
+  --csa-component-layout-home-enter-offset: var(--csa-foundation-space-40);
+  --csa-component-layout-home-enter-easing: cubic-bezier(0.42, 0, 0.58, 1);
   --csa-component-icon-hover-background: var(--csa-semantic-color-surface-hover);
   --csa-component-icon-fill: 1;
   --csa-component-icon-grade: 0;

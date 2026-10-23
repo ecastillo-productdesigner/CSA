@@ -24,7 +24,7 @@ export function mountFormSpecimens(root) {
         <h4 id="ds-form-links-title">Article URLs</h4>
         <form class="new-project-search" id="ds-form-links" novalidate>
           <label for="ds-form-query">Article URLs</label>
-          <div class="new-project-input"><span class="material-symbols-outlined" aria-hidden="true">search</span><textarea id="ds-form-query" aria-describedby="ds-form-link-error" rows="5" wrap="soft" placeholder="Search for articles or paste article URL (One per line or separated by commas)&#10;&#10;Examples:&#10;https://www.centredaily.com/news/local/article123.html&#10;https://www.miamiherald.com/sports/article456.html" autocomplete="off" maxlength="4000" required></textarea></div>
+          <div class="new-project-input"><span class="material-symbols-outlined" aria-hidden="true">search</span><textarea id="ds-form-query" aria-describedby="ds-form-link-error" rows="5" wrap="soft" placeholder="Search for articles or paste article URL (1 per line or separated by commas)&#10;&#10;Examples:&#10;https://www.centredaily.com/news/local/article123.html&#10;https://www.miamiherald.com/sports/article456.html" autocomplete="off" maxlength="4000" required></textarea></div>
           <p class="form-error" id="ds-form-link-error" role="status" hidden>Paste a valid website link to continue.</p>
           <div class="ds-form-actions"><button class="ds-text-action" id="ds-form-validate" type="button">Validate example</button><button class="new-project-continue" id="ds-form-continue" type="submit" disabled>Continue</button></div>
           <p class="ds-caption" id="ds-form-validation" role="status" aria-live="polite"></p>

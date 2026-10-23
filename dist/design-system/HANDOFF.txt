@@ -476,3 +476,5 @@ The To Adapt empty state reads Your adapted content will appear here. Adapted re
 2026-10-22: App and DS toasts are icon-free, including deletion feedback. They share the message surface and optional Undo action; normal messages remain visible for 5.5 seconds and Undo messages for 9 seconds.
 
 2026-10-22: Upload documents uses its original solid 1 px neutral border and 8 px corners in the app and DS. The surface has no hover effect; drop feedback and keyboard focus remain. Browse files uses semantic.color.action.primary with its underline. The URL placeholder uses the requested Search for articles or paste article URL first line and preserves both original example URLs.
+
+2026-10-22: New Project URL placeholders/examples, the or divider, and upload helper text use semantic.color.text.secondary (#737373), measuring 4.74:1 against white. Browse files keeps the primary action color. Decorative icons and unrelated muted text remain unchanged.

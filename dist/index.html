@@ -8,11 +8,11 @@
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,close,delete,description,draw,edit,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,upload,view_module,visibility&amp;display=block">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,chevron_forward,close,delete,description,draw,edit,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,upload,view_module,visibility&amp;display=block">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
     <link rel="stylesheet" href="./design-system/tokens.css?v=20261022-toast-copy">
-    <link rel="stylesheet" href="./styles.css?v=20261022-send-destinations">
-    <script src="./demo-access.js?v=20261022-feedback-restored" type="module"></script>
+    <link rel="stylesheet" href="./styles.css?v=20261022-draft-workflow">
+    <script src="./demo-access.js?v=20261022-draft-workflow" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -48,7 +48,7 @@
         <button class="icon-button drawer-toggle" id="toggle-navigation-drawer" type="button" aria-label="Close navigation drawer" aria-expanded="false" aria-controls="navigation-drawer"><span class="material-symbols-outlined" aria-hidden="true">right_panel_open</span></button>
       </div>
       <nav class="navigation" id="workspace-navigation" aria-label="Workspace">
-        <button class="icon-button nav-button mobile-workspace-trigger" id="show-new-variant" type="button" aria-label="New Content" title="New Content" aria-controls="composer-tools" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">post_add</span></button>
+        <button class="icon-button nav-button mobile-workspace-trigger" id="show-new-variant" type="button" aria-label="New Draft" title="New Draft" aria-controls="composer-tools" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">post_add</span></button>
         <button class="icon-button nav-button mobile-workspace-trigger" id="show-variants" type="button" aria-label="Content" title="Content" aria-controls="composer-outputs" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">article</span></button>
         <button class="icon-button nav-button" id="show-sources" type="button" aria-label="Sources" aria-describedby="sources-tooltip" hidden aria-controls="editor-sources" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">folder_open</span><span class="nav-label">Sources</span></button>
         <button class="icon-button nav-button" id="new-project" type="button" aria-label="New Project" aria-describedby="new-project-tooltip"><span class="material-symbols-outlined" aria-hidden="true">add_circle</span><span class="nav-label">New Project</span></button>
@@ -114,7 +114,7 @@
               <div class="editor-find-actions"><span id="editor-find-count" role="status">Enter text to find</span><button class="secondary-button" id="editor-find-next" type="button">Next</button><button class="secondary-button" id="editor-replace-one" type="button">Replace</button><button class="secondary-button" id="editor-replace-all" type="button">Replace All</button></div>
             </div>
             <div class="editor-sheet">
-              <header class="editor-document-header"><div class="editor-document-status"><span class="editor-draft-badge editor-tab-draft"><span class="material-symbols-outlined" aria-hidden="true">draw</span>Draft</span></div><div class="editor-variant-labels" id="editor-variant-labels" role="group" aria-label="Variant settings" hidden></div><label class="visually-hidden" for="editor-title">Story title</label><textarea id="editor-title" rows="1" maxlength="180" placeholder="Untitled story"></textarea><div class="editor-subhead-field"><label class="visually-hidden" for="editor-share-text">Share text / Subhead</label><input id="editor-share-text" type="text" placeholder="Add a short share text or subhead for this draft…"></div><p class="editor-share-text-print" id="editor-share-text-print"></p></header>
+              <header class="editor-document-header"><div class="editor-document-status"><span class="editor-draft-badge editor-tab-draft"><span class="material-symbols-outlined" aria-hidden="true">draw</span>Draft</span></div><div class="editor-variant-labels" id="editor-variant-labels" role="group" aria-label="Variant settings" hidden></div><label class="visually-hidden" for="editor-title">Story title</label><textarea id="editor-title" rows="1" maxlength="180" placeholder="Untitled story"></textarea><div class="editor-subhead-field"><label class="visually-hidden" for="editor-share-text">Share text / Subhead</label><textarea id="editor-share-text" rows="1" maxlength="500" placeholder="Add a short share text or subhead for this draft…"></textarea></div><p class="editor-share-text-print" id="editor-share-text-print"></p></header>
               <div class="editor-toolbar" id="editor-toolbar" role="toolbar" aria-label="Text formatting">
                 <div class="editor-toolbar-group"><button type="button" data-format="bold" aria-pressed="false" aria-label="Bold" title="Bold"><span class="material-symbols-outlined" aria-hidden="true">format_bold</span></button><button type="button" data-format="italic" aria-pressed="false" aria-label="Italic" title="Italic"><span class="material-symbols-outlined" aria-hidden="true">format_italic</span></button><button type="button" data-format="underline" aria-pressed="false" aria-label="Underline" title="Underline"><span class="material-symbols-outlined" aria-hidden="true">format_underlined</span></button></div>
                 <div class="editor-toolbar-group"><button type="button" data-header="2" aria-pressed="false" aria-label="Heading 2" title="Heading 2"><span class="material-symbols-outlined" aria-hidden="true">format_h2</span></button><button type="button" data-header="3" aria-pressed="false" aria-label="Heading 3" title="Heading 3"><span class="material-symbols-outlined" aria-hidden="true">format_h3</span></button><button type="button" data-format="blockquote" aria-pressed="false" aria-label="Block Quote" title="Block Quote"><span class="material-symbols-outlined" aria-hidden="true">format_quote</span></button></div>
@@ -126,23 +126,27 @@
               </div>
               <div id="rich-text-editor"></div>
               <div class="editor-publish-actions"><button class="editor-wordpress-button" id="editor-wordpress" type="button">Send to WordPress</button></div>
-              <footer class="editor-footer"><span id="editor-word-count">0 words</span><span id="editor-save-status" role="status" hidden></span><span class="editor-created" id="editor-created" hidden>Created: <time id="editor-created-time"></time></span></footer>
+              <footer class="editor-footer"><span id="editor-word-count">0 words</span><span id="editor-save-status" role="status" hidden></span><span class="editor-created" id="editor-created" hidden>Created: <time id="editor-created-time"></time></span><span id="editor-direction-empty">No Editorial Direction</span><button class="editor-metadata-trigger" id="editor-direction-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-direction-popover" hidden>Editorial Direction<span class="material-symbols-outlined editor-flyover-chevron" aria-hidden="true">chevron_forward</span></button></footer>
+            </div>
+            <div class="editor-context-panel editor-flyover" id="editor-direction-popover" role="dialog" aria-labelledby="editor-direction-heading" tabindex="-1" hidden>
+              <div class="editor-panel-heading"><h2 id="editor-direction-heading">Editorial Direction</h2><button class="icon-button" id="editor-direction-close" type="button" aria-label="Close Editorial Direction"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
+              <div class="editor-seo-metadata"><p class="editor-direction-copy" id="editor-direction-copy"></p></div>
             </div>
           </section>
           </div>
         </div>
         <aside class="composer-rail" aria-label="Project tools and contents">
           <section class="composer-panel composer-tools" id="composer-tools" aria-labelledby="composer-tools-heading">
-            <div class="composer-tools-header"><h2 id="composer-tools-heading" tabindex="-1"><button class="composer-tools-toggle" id="toggle-new-variant" type="button" aria-label="Collapse New Content" aria-expanded="true" aria-controls="composer-variant-form"><span class="material-symbols-outlined" aria-hidden="true">post_add</span><span>New Content</span><span class="material-symbols-outlined" data-collapse-chevron aria-hidden="true">keyboard_arrow_up</span></button></h2><button class="icon-button mobile-panel-close" type="button" data-close-navigation="newVariant" aria-label="Close New Content panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
+            <div class="composer-tools-header"><h2 id="composer-tools-heading" tabindex="-1"><button class="composer-tools-toggle" id="toggle-new-variant" type="button" aria-label="Collapse New Draft" aria-expanded="true" aria-controls="composer-variant-form"><span class="material-symbols-outlined" aria-hidden="true">post_add</span><span>New Draft</span><span class="material-symbols-outlined" data-collapse-chevron aria-hidden="true">keyboard_arrow_up</span></button></h2><button class="icon-button mobile-panel-close" type="button" data-close-navigation="newVariant" aria-label="Close New Draft panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
             <div id="composer-variant-form">
             <div class="composer-fields">
-              <div class="composer-field" data-label="Format" data-fixed-value="standard">
+              <div class="composer-field" data-label="Format">
                 <select id="composer-format" aria-label="Format" hidden><option value="standard" selected>Standard Format</option></select>
               </div>
-              <div class="composer-field" data-label="Audience" data-fixed-value="general">
+              <div class="composer-field" data-label="Audience">
                 <select id="composer-audience" aria-label="Audience" hidden><option value="general" selected>General Audience</option></select>
               </div>
-              <div class="composer-field" data-label="Voice" data-fixed-value="us-weekly">
+              <div class="composer-field" data-label="Voice">
                 <select id="composer-voice" aria-label="Voice" hidden><option value="us-weekly" selected>US Weekly</option></select>
               </div>
             </div>
@@ -152,7 +156,7 @@
             </div>
             <input id="composer-target-word-count" type="hidden" value="short">
             <div class="composer-actions">
-              <button class="create-variant" type="button" disabled title="Add">Add</button>
+              <button class="create-variant" type="button" disabled title="Add to List">Add to List</button>
             </div>
             </div>
           </section>
@@ -160,13 +164,13 @@
             <div class="composer-outputs-header"><h2 id="composer-outputs-heading" tabindex="-1"><span class="material-symbols-outlined" aria-hidden="true">article</span><span>Content</span></h2><button class="icon-button mobile-panel-close" type="button" data-close-navigation="variants" aria-label="Close Content Panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
             </div>
             <div class="output-status-tabs" role="tablist" aria-label="Content status">
-              <button id="output-pending-tab" type="button" role="tab" aria-selected="true" aria-controls="output-status-content" data-output-view="pending">To Adapt</button>
-              <button id="output-created-tab" type="button" role="tab" aria-selected="false" aria-controls="output-status-content" tabindex="-1" data-output-view="created">Adapted</button>
+              <button id="output-pending-tab" type="button" role="tab" aria-selected="true" aria-controls="output-status-content" data-output-view="pending">To Draft</button>
+              <button id="output-created-tab" type="button" role="tab" aria-selected="false" aria-controls="output-status-content" tabindex="-1" data-output-view="created">Drafted</button>
             </div>
             <div class="output-status-content" id="output-status-content" role="tabpanel" aria-labelledby="output-pending-tab">
-            <div class="composer-empty" id="outputs-empty" role="status"><div class="composer-empty-copy"><p>Your adapted content will appear here.</p><p id="output-empty-adapt-note" hidden>Adapt your article to see it here.</p><p class="output-empty-create" id="output-empty-create">Create <button class="output-empty-action" id="output-empty-new-content" type="button" aria-controls="composer-tools">new content</button></p></div></div>
+            <div class="composer-empty" id="outputs-empty" role="status"><div class="composer-empty-copy"><p>Your drafted content will appear here.</p></div></div>
             <ul class="output-list" id="output-list" aria-label="Content" hidden></ul>
-            <div class="outputs-footer"><button class="create-output" id="create-output" type="button" disabled><span id="create-output-label">Adapt Content</span></button></div>
+            <div class="outputs-footer"><button class="create-output" id="create-output" type="button" disabled><span id="create-output-label">Draft</span></button></div>
             <p class="visually-hidden" id="output-processing-status" role="status" aria-live="polite"></p>
             </div>
           </section>
@@ -249,10 +253,23 @@
       <button class="icon-button new-project-close" type="button" data-close="new-project-dialog" aria-label="Close new project modal"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
       <form class="new-project-search" id="new-project-search-form">
         <label class="visually-hidden" for="new-project-query">Article URLs</label>
-        <div class="new-project-input"><textarea id="new-project-query" aria-describedby="new-project-link-error" rows="5" wrap="soft" placeholder="Enter article URLs (one per line or separated by commas)&#10;&#10;Examples:&#10;https://www.centredaily.com/news/local/article123.html&#10;https://www.miamiherald.com/sports/article456.html" autocomplete="off" maxlength="4000" required></textarea></div>
+        <div class="new-project-input"><span class="material-symbols-outlined" aria-hidden="true">search</span><textarea id="new-project-query" aria-describedby="new-project-link-error" rows="5" wrap="soft" placeholder="Enter article URLs (one per line or separated by commas)&#10;&#10;Examples:&#10;https://www.centredaily.com/news/local/article123.html&#10;https://www.miamiherald.com/sports/article456.html" autocomplete="off" maxlength="4000" required></textarea></div>
         <p class="form-error" id="new-project-link-error" role="status" hidden>Paste a valid website link to continue.</p>
         <button class="new-project-continue" id="new-project-submit" type="submit" disabled>Continue</button>
       </form>
+      <div class="new-project-divider"><span>or</span></div>
+      <label class="new-project-material new-project-upload" id="new-project-drop-zone" for="new-project-file-input">
+        <span class="new-project-material-icon"><span class="material-symbols-outlined" aria-hidden="true">upload</span></span>
+        <span><strong>Upload documents</strong><small><span class="new-project-upload-desktop">Drop files here or <span class="browse-label">browse files</span></span><span class="new-project-upload-mobile">Choose files to upload</span></small></span>
+        <input class="visually-hidden" id="new-project-file-input" type="file" aria-label="Upload documents" multiple accept=".pdf,.docx,.pptx,.txt,.md">
+      </label>
+      <div id="new-project-upload-selection" hidden>
+        <ul class="selected-files" id="new-project-selected-files"></ul>
+        <p class="file-status" id="new-project-file-status" role="status" aria-live="polite"></p>
+        <button class="new-project-continue" id="new-project-use-material" type="button" disabled>Start creating</button>
+        <p class="material-hint">PDF, DOCX, PPTX, TXT or MD · Up to 10 MB each, 20 files at a time. Originals stay in this browser and can be downloaded from Sources.</p>
+      </div>
+      <p class="form-error" id="new-project-material-error" role="alert" hidden></p>
     </dialog>
 
     <dialog class="article-preview-dialog" id="article-preview-dialog" aria-labelledby="article-preview-title" aria-describedby="article-preview-notice">
@@ -330,7 +347,7 @@
       <p class="form-error" id="material-error" role="alert" hidden></p>
       <div class="dialog-footer"><button class="secondary-button" id="material-cancel" type="button" data-close="material-dialog">Cancel</button><button class="primary-button" id="use-material" type="button" disabled>Start Creating</button></div>
     </dialog>
-    <div class="toast" id="toast" role="status" hidden><span class="toast-icon" id="toast-icon" aria-hidden="true" hidden><span class="material-symbols-outlined">delete</span></span><span class="toast-message" id="toast-message"></span><button class="toast-action" id="toast-undo" type="button" hidden>Undo</button></div>
+    <div class="toast" id="toast" role="status" hidden><span class="toast-message" id="toast-message"></span><button class="toast-action" id="toast-undo" type="button" hidden>Undo</button></div>
     </div>
   </body>
 </html>

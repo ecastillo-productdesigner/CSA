@@ -185,7 +185,8 @@
   .ds-icon-grid { gap: var(--csa-foundation-space-12); }
   .ds-elevations { gap: var(--csa-foundation-space-12); }
   .ds-elevations > div { height: var(--csa-foundation-space-60); font-size: var(--csa-component-reference-font-size-9); }
-  .ds-selection-fields .tool-fixed-value { min-height: var(--csa-component-field-height-mobile); }
+  .ds-selection-fields .tool-dropdown-trigger, .ds-disclosure-panel .tool-dropdown-trigger { height: var(--csa-component-field-height-mobile); }
+  .ds-selection-fields .tool-fixed-value, .ds-disclosure-panel .tool-fixed-value { min-height: var(--csa-component-field-height-mobile); }
   .ds-alias-chain { flex-direction: column; gap: var(--csa-foundation-space-10); align-items: stretch; }
   .ds-alias-chain > span { align-self: center; transform: rotate(90deg); }
   .ds-alias-chain > div { padding: var(--csa-foundation-space-18); }

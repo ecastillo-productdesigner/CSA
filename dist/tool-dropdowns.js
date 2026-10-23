@@ -2,11 +2,12 @@ import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtim
 import { createIcon } from './icons.js?v=20261022-toast-copy';
 import { bindTapActivation } from './tap-activation.js?v=20261022-toast-copy';
 
-export function createToolDropdowns() {
-  const controls = [...document.querySelectorAll('.composer-field, .results-sort-field, .feedback-select-field, .editor-style-field, .word-count-field')].map(field => {
+export function createToolDropdowns({ root = document } = {}) {
+  const controls = [...root.querySelectorAll('.composer-field, .results-sort-field, .feedback-select-field, .editor-style-field, .word-count-field')].map(field => {
     const select = field.querySelector('select');
     const label = field.dataset.label;
-    const key = select.id.replace(/^(composer-|output-edit-)/, '');
+    const key = field.matches('.composer-field') && ['Format', 'Audience', 'Voice'].includes(label)
+      ? label.toLowerCase() : select.id.replace(/^(composer-|output-edit-)/, '');
     field.dataset.tool = key;
     if (field.dataset.fixedValue) {
       const value = field.dataset.fixedValue;
@@ -25,7 +26,7 @@ export function createToolDropdowns() {
     }
     const editorStyle = field.matches('.editor-style-field');
     const floating = Boolean(field.closest('#output-edit-menu')) || field.matches('.feedback-select-field') || editorStyle;
-    const inWorkspacePanel = Boolean(field.closest('#composer-tools'));
+    const inWorkspacePanel = Boolean(field.closest('#composer-tools, .composer-tools'));
     const mobileWorkspacePanel = () => inWorkspacePanel && window.matchMedia(breakpointQuery()).matches;
     const placeholder = field.dataset.placeholder || (['format', 'audience', 'voice'].includes(key) ? `Select ${label}` : label);
     const trigger = document.createElement('button');

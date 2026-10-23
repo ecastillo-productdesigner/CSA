@@ -462,3 +462,15 @@ The To Adapt empty state reads Your adapted content will appear here. Adapted re
 2026-10-22: Restored per-content thumbs up/down feedback in the app. Ready adapted content exposes the feedback pill beside its settings and source counter. The original form requires rating, Category, and a description up to 500 characters, with optional Severity and Additional comments; successful submission shows thanks and Done. Reports save on the content item in browser-local project storage, refill on reopening, and remain unchanged when edits are cancelled. A successful demo Send closes its destination dialog before opening feedback; failed or cancelled sends do not prompt. Shared controller and original styles also power the isolated DS sample.
 
 2026-10-22: Updated the DS toast reference to the requested icon-free design: white surface, dark text, subtle border/shadow, and optional outlined Undo. Both the inline specimen and timed notification omit the icon without reserving space for it. Timing remains 5.5 seconds normally and 9 seconds with Undo. App files are unchanged.
+
+2026-10-22: Draft workflow labels now read New Draft, Add to List, To Draft, Drafted, and Draft. Drafted and the Draft action omit counts; pending counts retain Content to Draft. Removed the Create new content empty-state prompt. Content cards omit their word-count pill; editor-footer word counts remain.
+
+2026-10-22: The editor footer shows Editorial Direction with the historical metadata chevron and anchored flyover when that draft captured nonblank guidance. The read-only popover preserves the exact multiline snapshot; absent guidance shows inert No Editorial Direction with no chevron. It never falls back to a later project/composer value.
+
+2026-10-22: Drafts include fictional, title-matched subheads. Subheads edit inline like headings, resize as they wrap, and save per draft. Legacy unmarked blanks gain sample copy once; shareTextEdited preserves later intentional clearing. Removed DS editor/source metadata specimens remain excluded. The animation remains an in-conversation preview only.
+
+2026-10-22: Rating thumbs align to the right of the editor settings/source row. Removed the secondary Draft your article to see it here empty-state note as requested.
+
+2026-10-22: New Project restores the magnifying-glass URL field and Upload documents surface with supported-file guidance, selection/removal, and project creation from documents. The DS upload example keeps files only in memory and previews confirmation. New Draft restores the Format, Audience, and Voice choices; DS dropdown and fixed-value fields mirror the app’s 46 px mobile height.
+
+2026-10-22: App and DS toasts are icon-free, including deletion feedback. They share the message surface and optional Undo action; normal messages remain visible for 5.5 seconds and Undo messages for 9 seconds.

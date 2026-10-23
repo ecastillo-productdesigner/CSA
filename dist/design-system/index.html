@@ -7,11 +7,11 @@
   <title>CSA Design System</title>
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,close,delete,description,draw,edit,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,upload,view_module,visibility&amp;display=block">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,chevron_forward,close,delete,description,draw,edit,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,upload,view_module,visibility&amp;display=block">
   <link rel="stylesheet" href="tokens.css?v=20261022-ds-components">
-  <link rel="stylesheet" href="../styles.css?v=20261022-send-destinations">
-  <link rel="stylesheet" href="guide.css?v=20261022-ds-inventory">
-  <script src="guide.js?v=20261022-toast-no-icon" type="module"></script>
+  <link rel="stylesheet" href="../styles.css?v=20261022-draft-workflow">
+  <link rel="stylesheet" href="guide.css?v=20261022-draft-workflow">
+  <script src="guide.js?v=20261022-draft-workflow" type="module"></script>
 </head>
 <body class="ds-page">
   <a class="ds-skip" href="#overview">Skip to reference</a>
@@ -44,7 +44,7 @@
       </div>
       <div class="ds-stack">
         <article class="ds-panel"><div class="ds-panel-heading"><h3>Surfaces</h3><span>Subtle menu elevation</span></div><div class="ds-elevations"><div class="ds-menu-surface">Dropdown</div><div class="ds-menu-surface">Popover</div><div>Dialog</div></div><p class="ds-caption">Dropdowns and popovers share a white surface, 1 px neutral border, 8 px corners, and a 0px 4px 12px shadow at 8% opacity on desktop and 16% on mobile. Mobile dialogs and open workspace panels share New Project’s 16% backdrop and 2px blur. Other surfaces remain flat; keyboard-focus outlines remain visible.</p></article>
-        <article class="ds-panel ds-iconography" id="iconography" aria-labelledby="ds-iconography-title"><div class="ds-panel-heading"><h3 id="ds-iconography-title">Iconography</h3><span id="ds-icon-count">CSA icon library</span></div><p class="ds-caption"><strong>Unselected: outlined (<code>FILL 0</code>).</strong> <strong>Selected: filled (<code>FILL 1</code>).</strong> Apply this rule to icons in selection controls, including view switches, source folders, and formatting toggles. Actions without a selected state use filled icons.</p><p class="ds-caption">The gallery includes current and legacy app icons. Continue, Document, Source Link, Source Image, and Upload belong to older flows; Search / Find is currently hidden. Each icon shows both states and its Material Symbols name. Default glyph size is 24 px; Draft is 14 px.</p><div class="ds-icon-grid" id="ds-icon-grid"></div></article>
+        <article class="ds-panel ds-iconography" id="iconography" aria-labelledby="ds-iconography-title"><div class="ds-panel-heading"><h3 id="ds-iconography-title">Iconography</h3><span id="ds-icon-count">CSA icon library</span></div><p class="ds-caption"><strong>Unselected: outlined (<code>FILL 0</code>).</strong> <strong>Selected: filled (<code>FILL 1</code>).</strong> Apply this rule to icons in selection controls, including view switches, source folders, and formatting toggles. Actions without a selected state use filled icons.</p><p class="ds-caption">The gallery includes current and legacy app icons. Continue and Upload appear in New Project, and Search marks article URL entry. Document, Source Link, and Source Image also remain available from older flows. Each icon shows both states and its Material Symbols name. Default glyph size is 24 px; Draft is 14 px.</p><div class="ds-icon-grid" id="ds-icon-grid"></div></article>
       </div>
     </section>
 
@@ -82,9 +82,9 @@
         <p class="ds-caption">Primary uses white text on Blue 600, Blue 700 on hover, and Blue 200 when disabled. Secondary (Cancel) keeps a white surface with Blue 600 text and outline, Blue 700 on hover, and Blue 200 when disabled. Tertiary uses Blue 600 text without a resting border; hover adds a Blue 700 outline and label on white. Disabled tertiary labels use Blue 200. Destructive (Delete) uses white text on Red 700, Red 800 on hover or press, and a neutral surface and label when disabled. The middle column previews hover. Keyboard focus keeps the visible shared ring.</p>
         <p class="ds-caption">Text contrast: Blue 600 and white measure 5.17:1; Blue 700 and white measure 6.70:1. Blue 600 text on the page canvas measures 5.02:1. All enabled and hover combinations meet the 4.5:1 normal-text AA target. Disabled states are exempt from contrast minimums.</p>
         <section class="ds-button-example" aria-labelledby="ds-adaptation-segments-label">
-          <h4 class="ds-button-example-title" id="ds-adaptation-segments-label">Adaptation status segments</h4>
-          <div class="output-status-tabs ds-button-status-segments" role="group" aria-label="Adaptation segment specimen"><button type="button" aria-pressed="true" data-segment-specimen>2 Content to Adapt</button><button type="button" aria-pressed="false" data-segment-specimen>4 Adapted</button></div>
-          <p class="ds-caption">Switch between content to adapt and completed drafts. The selected segment uses secondary-button colors; counts show the content in each group.</p>
+          <h4 class="ds-button-example-title" id="ds-adaptation-segments-label">Draft status segments</h4>
+          <div class="output-status-tabs ds-button-status-segments" role="group" aria-label="Draft segment specimen"><button type="button" aria-pressed="true" data-segment-specimen>2 Content to Draft</button><button type="button" aria-pressed="false" data-segment-specimen>Drafted</button></div>
+          <p class="ds-caption">Switch between content to draft and completed drafts. The selected segment uses secondary-button colors; only To Draft shows a pending count.</p>
         </section>
       </article>
       <div class="ds-two-column">
@@ -92,12 +92,12 @@
         <article class="ds-panel" id="composer-tools"><div class="ds-panel-heading"><h3>Selection fields</h3><span>14 px / 600 · 36 px desktop · 46 px mobile</span></div>
           <div class="ds-selection-fields" id="composer-variant-form">
             <div class="composer-fields">
-              <div class="composer-field" data-label="Format" data-fixed-value="standard"><select id="composer-format" aria-label="Format" hidden><option value="standard" selected>Standard Format</option></select></div>
-              <div class="composer-field" data-label="Audience" data-fixed-value="general"><select id="composer-audience" aria-label="Audience" hidden><option value="general" selected>General Audience</option></select></div>
-              <div class="composer-field" data-label="Voice" data-fixed-value="us-weekly"><select id="composer-voice" aria-label="Voice" hidden><option value="us-weekly" selected>US Weekly</option></select></div>
+              <div class="composer-field" data-label="Format"><select id="composer-format" aria-label="Format" hidden><option value="standard" selected>Standard Format</option></select></div>
+              <div class="composer-field" data-label="Audience"><select id="composer-audience" aria-label="Audience" hidden><option value="general" selected>General Audience</option></select></div>
+              <div class="composer-field" data-label="Voice"><select id="composer-voice" aria-label="Voice" hidden><option value="us-weekly" selected>US Weekly</option></select></div>
             </div>
           </div>
-          <p class="ds-caption">Format, Audience, and Voice each display their single fixed setting using the app’s shared fields and chip colors.</p>
+          <p class="ds-caption">Choose Format, Audience, and Voice using the app’s shared dropdowns and chip colors.</p>
         </article>
       </div>
       <article class="ds-panel" aria-labelledby="ds-toast-title">
@@ -109,18 +109,18 @@
         <p class="ds-caption">A white toast with dark message text, a subtle border and shadow, and an optional outlined Undo action. No icon. Standard messages dismiss after 5.5 seconds; messages with Undo dismiss after 9 seconds. Undo shows Source restored for 5.5 seconds. Show Toast Again previews the timed notification.</p>
       </article>
       <article class="ds-panel"><div class="ds-panel-heading"><h3>Content card</h3><div class="ds-state-switch" role="group" aria-label="Content card specimen state"><button type="button" data-card-state="default" aria-pressed="false">Default</button><button type="button" data-card-state="selected" aria-pressed="true">Selected</button><button type="button" data-card-state="pending" aria-pressed="false">Pending</button></div></div>
-        <p class="ds-caption" id="ds-content-context" role="status">1 Adapted</p>
+        <p class="ds-caption" id="ds-content-context" role="status">Drafted</p>
         <div class="ds-card-stage"><article class="output-card" data-ready="true" data-selected="true" data-active="true" id="ds-variant">
           <svg class="output-card-dash" aria-hidden="true" focusable="false" hidden><rect x=".5" y=".5" rx="7.5"></rect></svg>
           <button class="output-open" id="ds-content-open" type="button" aria-label="Open content: A Surprise Studio Session Sparks a New Creative Chapter" aria-current="true"><span class="output-card-top"></span><strong class="output-card-title">A Surprise Studio Session Sparks a New Creative Chapter</strong></button>
           <button class="output-selection-button" id="ds-content-select" type="button" role="checkbox" aria-label="Select content: A Surprise Studio Session Sparks a New Creative Chapter" aria-checked="false" hidden><span class="output-selection-indicator" aria-hidden="true"></span></button>
-          <span class="output-badges" role="group" aria-label="Content settings"><span class="output-badge output-badge--format" title="Standard Format" aria-label="Standard Format">Standard Format</span><span class="output-badge output-badge--audience" title="General Audience" aria-label="General Audience">General Audience</span><span class="output-badge output-badge--voice" title="US Weekly" aria-label="US Weekly">US Weekly</span><span class="output-badge output-badge--words" aria-label="231 Words">231 Words</span></span>
+          <span class="output-badges" role="group" aria-label="Content settings"><span class="output-badge output-badge--format" title="Standard Format" aria-label="Standard Format">Standard Format</span><span class="output-badge output-badge--audience" title="General Audience" aria-label="General Audience">General Audience</span><span class="output-badge output-badge--voice" title="US Weekly" aria-label="US Weekly">US Weekly</span></span>
           <span class="output-card-actions"><button class="icon-button output-card-edit" id="ds-content-edit" type="button" aria-label="Edit example content" title="Edit example content" aria-haspopup="menu" aria-expanded="false" aria-controls="ds-content-menu"><span class="material-symbols-outlined" aria-hidden="true">edit</span></button></span>
-        </article><div class="outputs-footer" id="ds-content-adapt-footer" hidden><button class="create-output" id="ds-content-adapt" type="button">Adapt 1 Content</button></div><button class="secondary-button" id="ds-content-restore" type="button" hidden>Restore Sample</button></div>
-        <p class="ds-caption">Pending is content added to To Adapt before a draft has been created. It starts selected, with a blue dashed border, a checkbox, its generated heading, and Format, Audience, and Voice chips. Pending content has no word count or source counter. Click its checkbox or heading to select or deselect it; Adapt 1 Content is enabled only while selected. Adapt previews the ready card and its actual word-count pill. Default and Selected preview the adapted card’s inactive and active states. Settings stay on one line with an overflow fade. The pencil opens the same red Delete menu in every state; Restore Sample returns a deleted specimen. These controls change only this reference.</p>
+        </article><div class="outputs-footer" id="ds-content-adapt-footer" hidden><button class="create-output" id="ds-content-adapt" type="button">Draft</button></div><button class="secondary-button" id="ds-content-restore" type="button" hidden>Restore Sample</button></div>
+        <p class="ds-caption">Pending is content added to To Draft before a draft has been created. It starts selected, with a blue dashed border, a checkbox, its generated heading, and Format, Audience, and Voice chips. Pending and drafted content cards have no word-count pill or source counter. Click its checkbox or heading to select or deselect it; Draft is enabled only while selected. Draft previews the ready card. Default and Selected preview the drafted card’s inactive and active states. Settings stay on one line with an overflow fade. The pencil opens the same red Delete menu in every state; Restore Sample returns a deleted specimen. These controls change only this reference.</p>
       </article>
       <article class="ds-panel" id="project-components" aria-labelledby="ds-projects-title"><div class="ds-panel-heading"><h3 id="ds-projects-title">Project cards &amp; list rows</h3><span>Homepage components</span></div><p class="ds-foundation-intro">The app’s project title, update date, content count, layout switch, and action menu use isolated example data here.</p><div id="ds-project-sample-root"></div></article>
-      <article class="ds-panel" id="form-components" aria-labelledby="ds-forms-title"><div class="ds-panel-heading"><h3 id="ds-forms-title">Text entry &amp; validation</h3><span>Default, disabled, and error states</span></div><div id="ds-form-sample-root"></div></article>
+      <article class="ds-panel" id="form-components" aria-labelledby="ds-forms-title"><div class="ds-panel-heading"><h3 id="ds-forms-title">Text entry &amp; validation</h3><span>Default, disabled, error, and upload states</span></div><div id="ds-form-sample-root"></div></article>
       <div class="ds-two-column">
         <article class="ds-panel" id="navigation-components" aria-labelledby="ds-navigation-title"><div class="ds-panel-heading"><h3 id="ds-navigation-title">Navigation controls</h3><span>Actions, avatar, and menu</span></div><div id="ds-navigation-sample-root"></div></article>
         <article class="ds-panel" id="feedback-components" aria-labelledby="ds-feedback-title"><div class="ds-panel-heading"><h3 id="ds-feedback-title">Panels &amp; feedback</h3><span>Disclosure, draft feedback, and states</span></div><div id="ds-state-sample-root"></div><section id="ds-feedback-sample-root"></section></article>

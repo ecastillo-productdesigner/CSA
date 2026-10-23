@@ -7,14 +7,16 @@ import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261022-
 import { createProfile } from './profile.js?v=20261022-toast-copy';
 import { createSearchExperience } from './search.js?v=20261022-content-send-dialog';
 import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261022-content-send-dialog';
-import { createMaterialEditor } from './editor.js?v=20261022-toast-copy';
+import { createMaterialEditor } from './editor.js?v=20261022-draft-workflow';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261022-toast-copy';
 import { removeProjectContent } from './project-deletion.js?v=20261022-toast-copy';
 import { createContentPreview } from './content-preview.js?v=20261022-toast-copy';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261022-toast-copy';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261022-draft-workflow';
+import { populateDraftOptions, draftPreferenceValue } from './draft-options.js?v=20261022-draft-workflow';
+import { createNewProjectUpload } from './new-project-upload.js?v=20261022-draft-workflow';
 import { createRailNavigation } from './navigation.js?v=20261022-card-menu';
 import { createProjectSources } from './sources.js?v=20261022-toast-copy';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-content-send-dialog';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-draft-workflow';
 import { createEditorTabs } from './editor-tabs.js?v=20261022-content-send-dialog';
 import { createContentCardEditing } from './content-card-editing.js?v=20261022-card-menu';
 import { createSendDestinationDialog, isSendDestination } from './send-destination.js?v=20261022-feedback-restored';
@@ -81,7 +83,23 @@ let sourcePanelOutputId = null;
 let dashboard = null;
 const outputTimers = new Map();
 const outputViews = new Map();
-const toolDropdowns = createToolDropdowns({ notify });
+populateDraftOptions(document);
+const toolDropdowns = createToolDropdowns();
+const newProjectUpload = createNewProjectUpload({
+  async onCreate(sources) {
+    if (sourceTargetProjectId) {
+      const target = projects.find(project => project.id === sourceTargetProjectId && !project.deletedAt);
+      if (!target) return false;
+      const duplicates = sources.filter(source => target.sources.some(existing => existing.type === source.type && existing.title === source.title && existing.text === source.text));
+      await deleteDocuments(duplicates.map(source => source.attachmentId));
+      appendProjectSources(sources.filter(source => !duplicates.includes(source)));
+    } else {
+      createProject(sources, { kind: 'draft', awaitingOutput: true });
+      if (!window.matchMedia(breakpointQuery()).matches) railNavigation.open('sources');
+    }
+    return true;
+  },
+});
 const variantFeedback = createVariantFeedback({ save: saveProjects, refreshDropdowns: toolDropdowns.refresh, closeDropdowns: toolDropdowns.close });
 const contentPreview = createContentPreview({
   onChange(text) {
@@ -130,7 +148,7 @@ const richEditor = createMaterialEditor({
     project.sources = snapshot.sources;
     const output = projectOutputs(project).find(entry => entry.id === project.selectedOutputId);
     if (output) {
-      for (const key of ['title', 'shareText', 'document', 'draftText', 'metadata', 'updatedAt']) output[key] = snapshot[key];
+      for (const key of ['title', 'shareText', 'shareTextEdited', 'document', 'draftText', 'metadata', 'updatedAt']) output[key] = snapshot[key];
       if (typeof snapshot.cmsSentContent === 'string') output.cmsSentContent = snapshot.cmsSentContent;
       project.toolPreferences = snapshot.toolPreferences;
       project.updatedAt = snapshot.updatedAt;
@@ -189,16 +207,6 @@ function selectOutputView(view) {
   renderOutputs(project);
   $('#output-list').scrollTop = 0;
 }
-$('#output-empty-new-content').addEventListener('click', () => {
-  richEditor.flush();
-  toolDropdowns.close();
-  const project = projects.find(entry => entry.id === activeProjectId);
-  if (project) { project.newVariantCollapsed = false; saveProjects(); }
-  setNewVariantCollapsed(false);
-  if (window.matchMedia(breakpointQuery()).matches) railNavigation.open('newVariant');
-  $('#composer-tools').scrollIntoView({ block: 'nearest' });
-  $('#toggle-new-variant').focus({ preventScroll: true });
-});
 $('.output-status-tabs').addEventListener('click', event => {
   const tab = event.target.closest('[data-output-view]');
   if (tab) selectOutputView(tab.dataset.outputView);
@@ -371,7 +379,6 @@ function notify(message, action = null) {
   clearTimeout(toastTimer);
   toastAction = action;
   $('#toast-message').textContent = message.replace(/\.\s*$/, '');
-  $('#toast-icon').hidden = !/\bdeleted\b|moved to Trash/i.test(message);
   $('#toast-undo').hidden = !action;
   $('#toast').hidden = false;
   toastTimer = setTimeout(() => { $('#toast').hidden = true; toastAction = null; }, action ? 9000 : 5500);
@@ -478,10 +485,12 @@ function showProjectStart() {
 }
 
 function openProjectDialog(reset = true, sourceProjectId = null) {
+  if (newProjectUpload.isBusy()) return;
   sourceTargetProjectId = sourceProjectId;
   $('#new-project-dialog-title').textContent = sourceProjectId ? 'Add source' : 'New Project';
   $('.new-project-close').setAttribute('aria-label', sourceProjectId ? 'Close add source modal' : 'Close new project modal');
-  if (reset) $('#new-project-query').value = '';
+  if (reset) { $('#new-project-query').value = ''; newProjectUpload.reset(); }
+  $('#new-project-use-material').textContent = sourceProjectId ? 'Add to Project' : 'Start creating';
   if (!$('#new-project-dialog').open) $('#new-project-dialog').showModal();
   updateStarterInput();
   const focusTarget = window.matchMedia(breakpointQuery()).matches ? $('.new-project-close') : $('#new-project-query');
@@ -643,13 +652,13 @@ function showEditorProject(project) {
     $('#composer-heading').textContent = 'Story workspace';
     renderSourceStory(project);
     $('#output-placeholder').hidden = Boolean(project.linkCards && !selectedOutput);
-    for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = project.toolPreferences?.[key] || '';
+    for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = draftPreferenceValue(key, project.toolPreferences?.[key]);
     $('#main').focus({ preventScroll: true });
   } else {
     document.body.classList.add('editing-material');
     $('#composer').classList.add('has-editor');
     $('#composer-heading').textContent = 'Story editor';
-    richEditor.open(selectedOutput ? { ...project, ...selectedOutput, shareText: typeof selectedOutput.shareText === 'string' ? selectedOutput.shareText : '', id: project.id, toolPreferences: project.toolPreferences } : project);
+    richEditor.open(selectedOutput ? { ...project, ...selectedOutput, shareText: typeof selectedOutput.shareText === 'string' ? selectedOutput.shareText : undefined, shareTextEdited: selectedOutput.shareTextEdited === true, editorialDirection: typeof selectedOutput.editorialDirection === 'string' ? selectedOutput.editorialDirection : '', id: project.id, toolPreferences: project.toolPreferences } : project);
   }
   $('#composer-editorial-direction').value = typeof project.editorialDirection === 'string' ? project.editorialDirection : '';
   $('#composer-target-word-count').value = normalizeWordCount(project.targetWordCount);
@@ -687,13 +696,13 @@ function updateComposerActions() {
     const select = $(`#composer-${key}`);
     if (select.disabled !== !canConfigure) changed = true;
     select.disabled = !canConfigure;
-    select.title = canConfigure ? '' : processing ? 'Adapting content…' : 'Add content first';
+    select.title = canConfigure ? '' : processing ? 'Drafting content…' : 'Add content first';
   }
   if (changed) toolDropdowns.refresh();
   const hasFormat = Boolean($('#composer-format').value);
   const enabled = hasContent && hasFormat && !processing;
   $('.create-variant').disabled = !enabled;
-  $('.create-variant').title = processing ? 'Adapting content…' : !hasContent ? 'Select a source first' : !hasFormat ? 'Select a format first' : 'Add';
+  $('.create-variant').title = processing ? 'Drafting content…' : !hasContent ? 'Select a source first' : !hasFormat ? 'Select a format first' : 'Add to List';
 }
 
 function ensureComposerProject(allowEmpty = false) {
@@ -713,7 +722,7 @@ function ensureComposerProject(allowEmpty = false) {
 function setNewVariantCollapsed(collapsed) {
   $('#composer-variant-form').hidden = collapsed;
   $('#toggle-new-variant').setAttribute('aria-expanded', String(!collapsed));
-  const label = `${collapsed ? 'Expand' : 'Collapse'} New Content`;
+  const label = `${collapsed ? 'Expand' : 'Collapse'} New Draft`;
   $('#toggle-new-variant').setAttribute('aria-label', label);
   $('#toggle-new-variant').title = label;
   $('#toggle-new-variant [data-collapse-chevron]').textContent = collapsed ? 'keyboard_arrow_down' : 'keyboard_arrow_up';
@@ -749,8 +758,7 @@ $('.create-variant').addEventListener('click', () => {
   outputViews.set(project.id, 'pending');
   project.newVariantCollapsed = false;
   setNewVariantCollapsed(false);
-  project.toolPreferences = { format: '', audience: '', voice: '' };
-  for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = '';
+  project.toolPreferences = Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, $(`#composer-${key}`).value]));
   toolDropdowns.refresh();
   updateComposerActions();
   project.updatedAt = Date.now();
@@ -929,7 +937,7 @@ function updateStarterInput() {
   field.setAttribute('aria-invalid', String(invalid));
   const error = $('#new-project-link-error');
   if (error) error.hidden = !invalid;
-  $('#new-project-submit').disabled = !valid;
+  $('#new-project-submit').disabled = newProjectUpload.isBusy() || !valid;
   return valid;
 }
 $('#new-project-query').addEventListener('input', updateStarterInput);
@@ -942,7 +950,7 @@ $('#new-project-query').addEventListener('keydown', event => {
 });
 $('#new-project-search-form').addEventListener('submit', (event) => {
   event.preventDefault();
-  if (!updateStarterInput()) return;
+  if (newProjectUpload.isBusy() || !updateStarterInput()) return;
   const input = $('#new-project-query').value.trim();
   $('#new-project-dialog').close();
   submitSource(input);
@@ -1118,11 +1126,14 @@ $('#use-material').addEventListener('click', useMaterial);
 
 $('#material-dialog').addEventListener('cancel', event => { if (materialBusy) event.preventDefault(); });
 
+$('#new-project-dialog').addEventListener('close', () => newProjectUpload.reset());
 for (const id of ['material-dialog', 'new-project-dialog']) $(`#${id}`).addEventListener('cancel', event => {
+  if (id === 'new-project-dialog' && newProjectUpload.isBusy()) { event.preventDefault(); return; }
   if (sourceTargetProjectId && !materialBusy) { event.preventDefault(); returnFromSourceAddition(); }
 });
 
 for (const button of document.querySelectorAll('[data-close]')) button.addEventListener('click', () => {
+  if (button.dataset.close === 'new-project-dialog' && newProjectUpload.isBusy()) return;
   if (button.dataset.close === 'delete-project-dialog' && $('#delete-project-dialog').getAttribute('aria-busy') === 'true') return;
   if (sourceTargetProjectId && ['new-project-dialog', 'material-dialog'].includes(button.dataset.close)) returnFromSourceAddition();
   else $(`#${button.dataset.close}`).close();
@@ -1131,6 +1142,7 @@ for (const dialog of document.querySelectorAll('dialog')) {
   dialog.addEventListener('click', (event) => {
     if (dialog.id === 'delete-project-dialog' && dialog.getAttribute('aria-busy') === 'true') return;
     if (dialog.id === 'send-destination-dialog' && dialog.dataset.busy === 'true') return;
+    if (dialog.id === 'new-project-dialog' && newProjectUpload.isBusy()) return;
     if (['material-dialog', 'new-project-dialog'].includes(dialog.id) && materialBusy) return;
     if (event.target !== dialog) return;
     const bounds = dialog.getBoundingClientRect();

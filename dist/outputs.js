@@ -13,6 +13,34 @@ const sampleHeadlines = [
   'The Unexpected Connection Between Music, Community and a Neighborhood Café',
 ];
 
+const sampleSubheads = [
+  'An unexpected recording session brings local musicians together and opens the door to a new sound.',
+  'A handwritten invitation turns a quiet café into a lively exchange of songs, memories, and neighborhood stories.',
+  'Three artists turn an everyday object into a shared experiment in music, photography, and storytelling.',
+  'A delayed film screening gives neighbors an impromptu concert and an idea for their next gathering.',
+  'Small changes close to home offer a fresh view of the people and places shaping the week.',
+  'Neighbors transform a neglected courtyard in a weekend and build connections that could last much longer.',
+  'One roll of film helps a photographer slow down and discover new stories in familiar streets.',
+  'A neighborhood listening session gives unfinished songs a patient audience and room to grow.',
+];
+
+export function sampleOutputShareText(title) {
+  const index = sampleHeadlines.indexOf(title);
+  if (index >= 0) return sampleSubheads[index];
+  const topic = String(title || '').toLowerCase();
+  if (/camera|photo/.test(topic)) return sampleSubheads[6];
+  if (/café|cafe/.test(topic)) return sampleSubheads[1];
+  if (/neighborhood|community|courtyard/.test(topic)) return sampleSubheads[5];
+  if (/studio|music|song|performance/.test(topic)) return sampleSubheads[0];
+  return 'A simple idea brings people together, sparks an unexpected collaboration, and points toward what comes next.';
+}
+
+export function initializeOutputShareText(output) {
+  if (typeof output.shareText === 'string' && (output.shareText.trim() || output.shareTextEdited === true)) return false;
+  output.shareText = sampleOutputShareText(output.title);
+  return true;
+}
+
 export function projectOutputs(project) {
   return Array.isArray(project?.outputs) ? project.outputs.filter(output => output && typeof output.id === 'string' && typeof output.title === 'string') : [];
 }
@@ -244,7 +272,8 @@ const extraStoryParagraphs = [
 ];
 
 export function populateOutputContent(output) {
-  if (output.contentVersion === 3) return false;
+  const initializedShareText = initializeOutputShareText(output);
+  if (output.contentVersion === 3) return initializedShareText;
   const ops = Array.isArray(output.document?.ops) ? output.document.ops : [];
   const hasRichText = ops.some(op => op && (typeof op.insert === 'string' ? op.insert.trim() : op.insert));
   const current = hasRichText ? ops.map(op => typeof op?.insert === 'string' ? op.insert : '\ufffc').join('') : output.draftText || '';
@@ -268,6 +297,7 @@ export function populateOutputContent(output) {
 }
 
 export function reviseSampleOutput(output, instructions, requestedAt, completedAt = Date.now()) {
+  initializeOutputShareText(output);
   const normalize = text => text.replace(/\s+/g, ' ').trim();
   const current = normalize(output.draftText || '');
   const samples = storyParagraphs.map((opening, index) => [...opening.slice(0, -1), ...extraStoryParagraphs[index], opening.at(-1)]);
@@ -308,7 +338,8 @@ export function sampleVariant(project, selections) {
     editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '',
     targetWordCount: normalizeWordCount(project.targetWordCount),
     draftText: '',
-    shareText: '',
+    shareText: sampleOutputShareText(title),
+    shareTextEdited: false,
     metadata: { author: '', tags: '' },
   };
 }
@@ -322,8 +353,8 @@ export function variantPanelState(project, requestedView) {
   return {
     view,
     outputs: view === 'pending' ? pending : created,
-    pendingLabel: pending.length ? `${pending.length} Content to Adapt` : 'To Adapt',
-    createdLabel: created.length ? `${created.length} Adapted` : 'Adapted',
+    pendingLabel: pending.length ? `${pending.length} Content to Draft` : 'To Draft',
+    createdLabel: 'Drafted',
   };
 }
 
@@ -332,7 +363,7 @@ export function renderOutputs(project, requestedView) {
   for (const tab of document.querySelectorAll('[data-output-view]')) {
     const selected = tab.dataset.outputView === state.view;
     tab.textContent = tab.dataset.outputView === 'pending' ? state.pendingLabel : state.createdLabel;
-    tab.dataset.empty = String(tab.dataset.outputView === 'pending' ? state.pendingLabel === 'To Adapt' : state.createdLabel === 'Adapted');
+    tab.dataset.empty = String(tab.dataset.outputView === 'pending' ? state.pendingLabel === 'To Draft' : !projectOutputs(project).some(outputIsReady));
     tab.setAttribute('aria-selected', String(selected));
     tab.tabIndex = selected ? 0 : -1;
   }
@@ -345,16 +376,14 @@ export function renderOutputs(project, requestedView) {
   document.querySelector('.composer-outputs').setAttribute('aria-busy', String(processing));
   const create = document.querySelector('#create-output');
   create.disabled = processing || !selectedPending.length;
-  create.title = processing ? 'Adapting Selected Content' : selectedPending.length ? `Adapt ${selectedPending.length} Selected Content` : 'Select Content to Adapt';
-  document.querySelector('#create-output-label').textContent = selectedPending.length ? `Adapt ${selectedPending.length} Content` : 'Adapt Content';
-  document.querySelector('#output-processing-status').textContent = project?.outputProcessing?.kind === 'revision' ? 'Revising your variant. This takes about four seconds.' : processing ? 'Adapting your selected content. This takes about four seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
+  create.title = processing ? 'Drafting Selected Content' : selectedPending.length ? 'Draft Selected Content' : 'Select Content to Draft';
+  document.querySelector('#create-output-label').textContent = 'Draft';
+  document.querySelector('#output-processing-status').textContent = project?.outputProcessing?.kind === 'revision' ? 'Revising your variant. This takes about four seconds.' : processing ? 'Drafting your selected content. This takes about four seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
   const empty = document.querySelector('#outputs-empty');
   empty.hidden = state.outputs.length > 0;
-  empty.querySelector('p').textContent = state.view === 'pending' ? 'Your adapted content will appear here.' : 'No adapted content yet.';
-  document.querySelector('#output-empty-adapt-note').hidden = state.view === 'pending';
-  document.querySelector('#output-empty-create').hidden = state.view !== 'pending';
+  empty.querySelector('p').textContent = state.view === 'pending' ? 'Your drafted content will appear here.' : 'No drafted content yet.';
   list.hidden = state.outputs.length === 0;
-  list.setAttribute('aria-label', state.view === 'pending' ? 'Content to Adapt' : 'Adapted Content');
+  list.setAttribute('aria-label', state.view === 'pending' ? 'Content to Draft' : 'Drafted Content');
   list.replaceChildren(...state.outputs.map(output => {
     const item = document.createElement('li');
     const card = document.createElement('article');
@@ -413,7 +442,7 @@ export function renderOutputs(project, requestedView) {
       drag = null;
       delete badges.dataset.dragging;
     });
-    badges.append(...createOutputBadges(output, { includeSourceCount: false }));
+    badges.append(...createOutputBadges(output, { includeSourceCount: false, includeWordCount: false }));
     const heading = document.createElement('strong');
     heading.className = 'output-card-title';
     heading.textContent = output.title;
@@ -446,7 +475,7 @@ export function renderOutputs(project, requestedView) {
       spinner.setAttribute('aria-hidden', 'true');
       const label = document.createElement('span');
       label.className = 'output-creating-label';
-      label.textContent = 'Adapting…';
+      label.textContent = 'Drafting…';
       overlay.append(spinner, label);
       card.append(overlay);
     }

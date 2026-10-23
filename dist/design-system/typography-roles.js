@@ -26,8 +26,8 @@ export const typographyRoleGroups = [
       },
       {
         name: 'Panel heading',
-        usage: 'Name a workspace region, such as New Content or Content, so its purpose is clear before the controls below it.',
-        example: 'New Content',
+        usage: 'Name a workspace region, such as New Draft or Content, so its purpose is clear before the controls below it.',
+        example: 'New Draft',
         styles: [{ token: 'semantic.typography.panel-heading', label: 'All screens' }],
       },
       {
@@ -137,8 +137,8 @@ export const typographyRoleGroups = [
       },
       {
         name: 'Primary button label',
-        usage: 'Name the main action, such as Add or Adapt Content. Use a short verb or verb phrase.',
-        example: 'Add',
+        usage: 'Name the main action, such as Add to List or Draft. Use a short verb or verb phrase.',
+        example: 'Add to List',
         styles: [{ token: 'semantic.typography.button', label: 'All screens' }],
       },
       {

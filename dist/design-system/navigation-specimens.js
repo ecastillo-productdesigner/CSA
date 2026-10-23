@@ -1,5 +1,7 @@
 import { createIcon } from '../icons.js?v=20261022-toast-copy';
 import { tokenNumber } from './runtime.js?v=20261022-toast-copy';
+import { draftOptions, populateDraftOptions } from '../draft-options.js?v=20261022-draft-workflow';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-draft-workflow';
 
 const navigationMounts = new WeakMap();
 const stateMounts = new WeakMap();
@@ -165,17 +167,29 @@ export function mountStateSpecimens(root) {
   const header = element('div', 'composer-tools-header');
   const heading = element('h2');
   heading.setAttribute('aria-level', '4');
-  const toggle = button('composer-tools-toggle', 'Collapse New Content');
+  const toggle = button('composer-tools-toggle', 'Collapse New Draft');
   toggle.setAttribute('aria-expanded', 'true');
   toggle.setAttribute('aria-controls', 'ds-disclosure-body');
   const chevron = createIcon('keyboard_arrow_up');
   chevron.dataset.collapseChevron = '';
-  toggle.append(createIcon('post_add'), element('span', '', 'New Content'), chevron);
+  toggle.append(createIcon('post_add'), element('span', '', 'New Draft'), chevron);
   heading.append(toggle);
   header.append(heading);
   const body = element('div', 'ds-disclosure-body');
   body.id = 'ds-disclosure-body';
-  body.append(element('p', 'ds-caption', 'Add creates content with the selected Format, Audience, and Voice.'));
+  body.append(element('p', 'ds-caption', 'Add to List queues a draft with the selected Format, Audience, and Voice.'));
+  const fields = element('div', 'composer-fields');
+  for (const { label, key } of draftOptions) {
+    const field = element('div', 'composer-field');
+    field.dataset.label = label;
+    const select = element('select');
+    select.id = `ds-new-draft-${key}`;
+    select.hidden = true;
+    select.setAttribute('aria-label', label);
+    field.append(select);
+    fields.append(field);
+  }
+  body.append(fields);
   const direction = element('div', 'composer-direction');
   const directionLabel = element('label', '', 'Editorial Direction ');
   directionLabel.htmlFor = 'ds-editorial-direction';
@@ -187,19 +201,14 @@ export function mountStateSpecimens(root) {
   directionField.placeholder = 'Example: “Focus on the economy” or “Use a conversational tone.”';
   direction.append(directionLabel, directionField);
   body.append(direction);
-  const add = button('create-variant', 'Add example content');
-  add.textContent = 'Add';
+  const add = button('create-variant', 'Add to List example');
+  add.textContent = 'Add to List';
   body.append(add);
   panel.append(header, body);
   const empty = element('div', 'composer-empty ds-empty-specimen');
   empty.setAttribute('role', 'status');
   const emptyCopy = element('div', 'composer-empty-copy');
-  const emptyAction = button('output-empty-action', 'Create new content example');
-  emptyAction.textContent = 'new content';
-  emptyAction.setAttribute('aria-controls', 'ds-disclosure-body');
-  const create = element('p', 'output-empty-create');
-  create.append(document.createTextNode('Create '), emptyAction);
-  emptyCopy.append(element('p', '', 'Your adapted content will appear here.'), create);
+  emptyCopy.append(element('p', '', 'Your drafted content will appear here.'));
   empty.append(emptyCopy);
   const loading = element('div', 'ds-loading-specimen');
   loading.setAttribute('role', 'status');
@@ -210,21 +219,21 @@ export function mountStateSpecimens(root) {
   loading.append(adding);
   const status = element('p', 'ds-specimen-status');
   status.setAttribute('role', 'status');
+  let dropdowns;
   function setExpanded(expanded) {
+    dropdowns?.close();
     panel.dataset.collapsed = String(!expanded);
     body.hidden = !expanded;
     toggle.setAttribute('aria-expanded', String(expanded));
-    toggle.setAttribute('aria-label', `${expanded ? 'Collapse' : 'Expand'} New Content`);
+    toggle.setAttribute('aria-label', `${expanded ? 'Collapse' : 'Expand'} New Draft`);
     chevron.textContent = expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
   }
   setExpanded(true);
   toggle.addEventListener('click', () => setExpanded(toggle.getAttribute('aria-expanded') !== 'true'));
-  emptyAction.addEventListener('click', () => {
-    setExpanded(true);
-    toggle.focus({ preventScroll: true });
-  });
   add.addEventListener('click', () => { status.textContent = 'Content Added'; });
   root.append(panel, empty, loading, status);
+  populateDraftOptions(panel);
+  dropdowns = createToolDropdowns({ root: panel });
   const mounted = { setExpanded };
   stateMounts.set(root, mounted);
   return mounted;

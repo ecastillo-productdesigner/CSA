@@ -1,5 +1,8 @@
 import { documentStyles } from './design-system/export-styles.js?v=20261022-toast-copy';
 import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261022-toast-copy';
+import { initializeOutputShareText } from './outputs.js?v=20261022-draft-workflow';
+import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261022-draft-workflow';
+import { draftPreferenceValue } from './draft-options.js?v=20261022-draft-workflow';
 import './vendor/quill-2.0.3.js';
 
 const Quill = window.Quill;
@@ -44,6 +47,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   const shareText = $('#editor-share-text');
   const status = $('#editor-save-status');
   const linkDialog = $('#editor-link-dialog');
+  const directionMetadata = createEditorialDirectionMetadata();
   let quill = null;
   let project = null;
   let loading = false;
@@ -68,7 +72,8 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   }
 
   function resizeTitle() { title.style.height = 'auto'; title.style.height = `${Math.max(tokenNumber('foundation.space.44'), title.scrollHeight)}px`; }
-  function syncShareText() { $('#editor-share-text-print').textContent = shareText.value.trim(); }
+  function resizeShareText() { shareText.style.height = 'auto'; shareText.style.height = `${Math.max(tokenNumber('foundation.line.height.24'), shareText.scrollHeight)}px`; }
+  function syncShareText() { $('#editor-share-text-print').textContent = shareText.value.trim(); resizeShareText(); }
 
   function contentSignature() {
     const ops = quill.getContents().ops.map(op => ({
@@ -105,7 +110,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     clearTimeout(saveTimer);
     if (!project || !quill || !dirty) return;
     const snapshot = {
-      id: project.id, title: title.value.trim() || 'Untitled story', shareText: shareText.value, kind: 'draft',
+      id: project.id, title: title.value.trim() || 'Untitled story', shareText: shareText.value, shareTextEdited: project.shareTextEdited === true, kind: 'draft',
       document: quill.getContents(), draftText: quill.getText().replace(/\n$/, ''),
       sources: project.sources,
       metadata: { ...project.metadata },
@@ -195,11 +200,11 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   $('#editor-align').addEventListener('change', () => format('align', $('#editor-align').value || false));
   $('#editor-color').addEventListener('input', () => format('color', $('#editor-color').value));
   title.addEventListener('input', () => { resizeTitle(); scheduleSave(); });
-  shareText.addEventListener('input', () => { syncShareText(); scheduleSave(); });
+  shareText.addEventListener('input', () => { if (project && !loading) project.shareTextEdited = true; syncShareText(); scheduleSave(); });
   let previousWidth = 0;
   new ResizeObserver(entries => {
     const width = entries[0].contentRect.width;
-    if (width > 0 && width !== previousWidth) { previousWidth = width; resizeTitle(); }
+    if (width > 0 && width !== previousWidth) { previousWidth = width; resizeTitle(); resizeShareText(); }
   }).observe(root);
   for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).addEventListener('change', scheduleSave);
 
@@ -207,7 +212,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     const active = name === 'find' && open;
     $('#editor-find').hidden = !active;
     $('#editor-find-button').setAttribute('aria-expanded', String(active));
-    if (active) $('#editor-find-text').focus();
+    if (active) { directionMetadata.close(); $('#editor-find-text').focus(); }
   }
   $('#editor-find-button').addEventListener('click', () => setPanel('find', $('#editor-find').hidden));
   for (const button of root.querySelectorAll('[data-editor-close]')) button.addEventListener('click', () => { setPanel(button.dataset.editorClose, false); $(`#editor-${button.dataset.editorClose}-button`).focus(); });
@@ -321,13 +326,15 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   return {
     open(next) {
       flush(); project = next; loading = true; root.hidden = false;
+      directionMetadata.update(next.editorialDirection);
       initialize();
       revisionBusy = false;
       quill.enable(true);
       title.disabled = false;
       shareText.disabled = false;
       title.value = next.title === 'Untitled story' ? '' : next.title;
-      shareText.value = typeof next.shareText === 'string' ? next.shareText : '';
+      const initializedShareText = initializeOutputShareText(next);
+      shareText.value = next.shareText;
       syncShareText();
       const created = new Date(next.createdAt);
       const hasCreatedAt = next.createdAt != null && next.createdAt !== '' && Number.isFinite(created.getTime());
@@ -347,13 +354,14 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       quill.history.clear(); selection = { index: 0, length: 0 }; findIndex = -1;
       $('#editor-find-text').value = ''; $('#editor-replace-text').value = '';
       status.textContent = ''; status.hidden = true; status.classList.remove('editor-save-error');
-      for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = next.toolPreferences?.[key] || '';
+      for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = draftPreferenceValue(key, next.toolPreferences?.[key]);
       setPanel('', false); resizeTitle(); updateCounts(); updateToolbar(); updateFind();
       quill.root.scrollTop = 0;
       loading = false; dirty = false;
+      if (initializedShareText) scheduleSave();
       if (!next.draftText) title.focus(); else quill.setSelection(0, 0, 'silent');
     },
-    close() { flush(); revisionBusy = false; title.disabled = false; quill?.enable(true); project = null; root.hidden = true; setPanel('', false); if (linkDialog.open) linkDialog.close(); $('#editor-download').open = false; },
+    close() { flush(); directionMetadata.close(); revisionBusy = false; title.disabled = false; quill?.enable(true); project = null; root.hidden = true; setPanel('', false); if (linkDialog.open) linkDialog.close(); $('#editor-download').open = false; },
     setRevisionBusy(value) {
       revisionBusy = value;
       quill?.enable(!value);
@@ -363,7 +371,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       onToolbarChange();
       updateSendButton();
     },
-    closePanels() { setPanel('', false); },
+    closePanels() { setPanel('', false); directionMetadata.close(); },
     hasContent() { return Boolean(project && quill && quill.getText().replace(/[\s\u200B-\u200D\uFEFF]/gu, '')); },
     canSend,
     markSent() {

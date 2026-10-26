@@ -89,7 +89,6 @@ test('approved palette keeps readable text, action, and selection roles accessib
     'semantic.color.navigation.selected': 'f0fdfaff',
     'semantic.color.navigation.selected-hover': 'f0fdfaff',
     'semantic.color.navigation.selected-foreground': '00786fff',
-    'semantic.color.favorite.active': '00786fff',
     'semantic.color.text.heading': '060606ff',
     'semantic.color.text.secondary': '737373ff',
     'semantic.color.text.canvas-secondary': '404040ff',

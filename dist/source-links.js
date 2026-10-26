@@ -1,4 +1,4 @@
-import { fictionalTopicParagraphs } from './topic-draft.js?v=20261026-design-refresh';
+import { fictionalTopicParagraphs } from './topic-draft.js?v=20261026-ds-consolidation';
 
 function safeUrl(value) {
   try {

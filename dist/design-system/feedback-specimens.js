@@ -1,5 +1,5 @@
-import { createFeedbackPill, createVariantFeedback } from '../variant-feedback.js?v=20261026-design-refresh';
-import { sendDestinations } from '../send-destination.js?v=20261026-design-refresh';
+import { createFeedbackPill, createVariantFeedback } from '../variant-feedback.js?v=20261026-ds-consolidation';
+import { sendDestinations } from '../send-destination.js?v=20261026-ds-consolidation';
 
 // The app controller operates on one in-memory draft here. No project storage,
 // content editor, server submission, or prototype controllers are mounted.

@@ -110,23 +110,17 @@
 .ds-icon-state [data-icon-fill="1"] { font-variation-settings: "FILL" var(--csa-component-icon-fill), "wght" var(--csa-foundation-font-weight-400), "GRAD" var(--csa-component-icon-grade), "opsz" var(--csa-component-icon-optical-size); }
 .ds-stack { display: grid; gap: var(--csa-foundation-space-24); }
 .ds-inline { display: flex; align-items: center; flex-wrap: wrap; gap: var(--csa-foundation-space-8); }
-.ds-specimen-actions { display: flex; align-items: center; flex-wrap: wrap; gap: var(--csa-foundation-space-14); }
 .ds-state-switch { display: flex; gap: var(--csa-foundation-space-3); padding: var(--csa-foundation-space-3); background: var(--csa-semantic-color-background-canvas); border-radius: var(--csa-foundation-radius-8); }
 .ds-state-switch button { padding: var(--csa-foundation-space-7) var(--csa-foundation-space-10); border: 0; border-radius: var(--csa-foundation-radius-4); background: transparent; font-size: var(--csa-foundation-font-size-12); }
 .ds-state-switch [aria-pressed="true"] { background: var(--csa-semantic-color-surface-selected); color: var(--csa-semantic-color-action-primary); box-shadow: none; }
 .ds-card-stage { max-width: var(--csa-foundation-size-320); }
-.ds-editor-tabs { --editor-frame-inset: var(--csa-foundation-space-0); --editor-tabs-height: var(--csa-foundation-space-48); max-width: 100%; }
 .ds-selection-fields .composer-fields { margin-top: 0; }
-.ds-source-preview.result-card { background: var(--csa-semantic-color-background-canvas); }
-.ds-source-preview input[type="checkbox"], .ds-boundary-checkbox input { appearance: none; flex-shrink: 0; width: var(--csa-component-checkbox-size); height: var(--csa-component-checkbox-size); margin: 0; padding: 0; border: var(--csa-foundation-border-width-1) solid var(--csa-component-checkbox-border); border-radius: var(--csa-component-checkbox-radius); background: var(--csa-semantic-color-surface-default); }
-.ds-source-preview input[type="checkbox"] { top: var(--csa-foundation-space-16); left: var(--csa-foundation-space-16); }
-.ds-source-preview input[type="checkbox"]:checked, .ds-boundary-checkbox input:checked { border-color: var(--csa-semantic-color-border-selected); background: var(--csa-component-checkbox-selected-background); background-image: url("../assets/material-check.svg"); background-position: center; background-repeat: no-repeat; background-size: var(--csa-foundation-space-16) var(--csa-foundation-space-16); }
+.ds-boundary-checkbox input { appearance: none; flex-shrink: 0; width: var(--csa-component-checkbox-size); height: var(--csa-component-checkbox-size); margin: 0; padding: 0; border: var(--csa-foundation-border-width-1) solid var(--csa-component-checkbox-border); border-radius: var(--csa-component-checkbox-radius); background: var(--csa-semantic-color-surface-default); }
+.ds-boundary-checkbox input:checked { border-color: var(--csa-semantic-color-border-selected); background: var(--csa-component-checkbox-selected-background); background-image: url("../assets/material-check.svg"); background-position: center; background-repeat: no-repeat; background-size: var(--csa-foundation-space-16) var(--csa-foundation-space-16); }
 .ds-boundary-controls { display: flex; align-items: end; flex-wrap: wrap; gap: var(--csa-foundation-space-24); }
 .ds-boundary-field { display: grid; gap: var(--csa-foundation-space-8); width: var(--csa-foundation-size-280); max-width: 100%; font-size: var(--csa-foundation-font-size-14); line-height: var(--csa-foundation-line-height-20); }
 .ds-boundary-field input { width: 100%; min-height: var(--csa-component-field-height-desktop); border: var(--csa-foundation-border-width-1) solid var(--csa-component-field-border); border-radius: var(--csa-component-field-radius); padding: var(--csa-foundation-space-7) var(--csa-foundation-space-12); background: var(--csa-component-field-background); color: var(--csa-semantic-color-text-primary); font: inherit; }
 .ds-boundary-checkbox { display: flex; align-items: center; gap: var(--csa-foundation-space-8); min-height: var(--csa-foundation-space-44); font-size: var(--csa-foundation-font-size-14); line-height: var(--csa-foundation-line-height-20); }
-.ds-source-preview .result-title { padding-right: 0; }
-.ds-footer { padding-left: 0; padding-right: 0; margin-top: var(--csa-foundation-space-24); }
 .ds-alias-chain { display: flex; align-items: center; gap: var(--csa-foundation-space-20); margin-bottom: var(--csa-foundation-space-20); }
 .ds-alias-chain > div { display: grid; gap: var(--csa-foundation-space-12); min-width: 0; flex: 1; padding: var(--csa-foundation-space-22); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-8); }
 .ds-alias-chain small { font-size: var(--csa-foundation-font-size-12); letter-spacing: var(--csa-foundation-font-tracking-1-3); }
@@ -206,8 +200,6 @@
   .ds-end a { margin-left: 0; }
 }
 
-.ds-toolbar { margin: 0; max-width: 100%; }
-
 .ds-text-link .material-symbols-outlined, .ds-downloads .material-symbols-outlined, .ds-end .material-symbols-outlined { width: var(--csa-foundation-icon-size-16); height: var(--csa-foundation-icon-size-16); font-size: var(--csa-foundation-icon-size-16); vertical-align: middle; }
 
 @media (max-width: token(foundation.breakpoint.mobile)) {
@@ -222,9 +214,6 @@
 .ds-button-example { margin-top: var(--csa-foundation-space-24); padding-top: var(--csa-foundation-space-24); border-top: var(--csa-foundation-border-width-1) solid var(--line); }
 .ds-button-example-title { margin: 0 0 var(--csa-foundation-space-12); font-size: var(--csa-foundation-font-size-14); line-height: var(--csa-foundation-line-height-20); font-weight: var(--csa-foundation-font-weight-600); }
 .ds-button-status-segments { width: min(100%, calc(var(--csa-component-navigation-drawer-width) - 2 * var(--csa-foundation-space-15) - 2 * var(--csa-foundation-border-width-1))); margin-top: 0; }
-
-/* Shared floating-menu shape applies only to the reference specimens. */
-.ds-page .output-edit-menu { border-radius: var(--csa-component-dropdown-radius); }
 
 /* Layout containers for isolated examples; component appearance comes from app.css. */
 .ds-project-specimens { min-width: 0; }
@@ -253,20 +242,9 @@
 .ds-loading-specimen { padding: var(--csa-foundation-space-12) 0; }
 body.ds-page:has(dialog[open]) { overflow: hidden; }
 
-/* Mirror homepage responsive context without mounting the homepage controller. */
 @media (max-width: token(foundation.breakpoint.mobile)) {
   .ds-navigation-profile-menu { left: auto; right: 0; }
-  .ds-project-specimens .new-project-tile { flex-direction: row; gap: var(--csa-foundation-space-12); height: var(--csa-foundation-space-64); min-height: var(--csa-foundation-space-64); border-radius: var(--csa-component-project-card-radius-mobile); font-size: var(--csa-foundation-font-size-16); line-height: var(--csa-foundation-line-height-24); }
-  .ds-project-specimens .new-project-tile .material-symbols-outlined { font-size: var(--csa-foundation-icon-size-24); width: var(--csa-foundation-icon-size-24); height: var(--csa-foundation-icon-size-24); }
-  .ds-project-specimens .dashboard-project { --project-card-radius: var(--csa-component-project-card-radius-mobile); justify-content: center; gap: var(--csa-foundation-space-8); min-height: var(--csa-component-project-card-height-mobile); padding: var(--csa-foundation-space-16) var(--csa-foundation-space-60) var(--csa-foundation-space-16) var(--csa-foundation-space-16); border-radius: var(--project-card-radius); }
-  .ds-project-specimens .dashboard-project:has(.project-card-menu:not([hidden])) { z-index: var(--csa-foundation-layer-4); }
-  .ds-project-specimens .dashboard-project h2 { padding-right: 0; min-height: calc(2 * var(--csa-foundation-line-height-20)); margin: 0; font-size: var(--csa-semantic-typography-project-title-mobile-font-size); line-height: var(--csa-foundation-line-height-20); }
-  .ds-project-specimens .project-meta { gap: var(--csa-foundation-space-6); font-size: var(--csa-semantic-typography-project-meta-mobile-font-size); line-height: var(--csa-semantic-typography-project-meta-mobile-line-height); }
-  .ds-project-specimens .project-meta .material-symbols-outlined { font-size: var(--csa-foundation-icon-size-16); width: var(--csa-foundation-icon-size-16); height: var(--csa-foundation-icon-size-16); }
-  .ds-project-specimens .project-card-menu-button { top: var(--csa-foundation-space-4); right: var(--csa-foundation-space-8); }
-  .ds-project-specimens .project-card-menu { top: var(--csa-foundation-space-44); right: var(--csa-foundation-space-8); }
 }
-
 
 .ds-drafting-previews { display: grid; gap: var(--csa-component-composer-panel-gap); }
 .ds-drafting-specimen { width: 100%; max-width: var(--csa-component-navigation-drawer-width); }

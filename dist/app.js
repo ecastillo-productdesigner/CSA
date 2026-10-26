@@ -1,29 +1,30 @@
-import { updatePresetPreferences } from './preset-settings.js?v=20261026-design-refresh';
-import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261026-design-refresh';
-import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261026-design-refresh';
-import { createIcon as icon } from './icons.js?v=20261026-design-refresh';
-import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261026-design-refresh';
-import { resolveArticleMetadata } from './article-metadata.js?v=20261026-design-refresh';
-import { createPanelDisclosure } from './panel-disclosure.js?v=20261026-design-refresh';
-import { createTabPanelTransition } from './tab-panel-transition.js?v=20261026-design-refresh';
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261026-design-refresh';
-import { createProfile } from './profile.js?v=20261026-design-refresh';
-import { createSearchExperience } from './search.js?v=20261026-design-refresh';
-import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261026-design-refresh';
-import { createMaterialEditor } from './editor.js?v=20261026-design-refresh';
-import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-design-refresh';
-import { removeProjectContent } from './project-deletion.js?v=20261026-design-refresh';
-import { createContentPreview } from './content-preview.js?v=20261026-design-refresh';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261026-design-refresh';
-import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261026-design-refresh';
-import { createNewProjectUpload } from './new-project-upload.js?v=20261026-design-refresh';
-import { createRailNavigation } from './navigation.js?v=20261026-design-refresh';
-import { createProjectSources } from './sources.js?v=20261026-design-refresh';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261026-design-refresh';
-import { createEditorTabs } from './editor-tabs.js?v=20261026-design-refresh';
-import { createContentCardEditing } from './content-card-editing.js?v=20261026-design-refresh';
-import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-design-refresh';
-import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261026-design-refresh';
+import { updatePresetPreferences } from './preset-settings.js?v=20261026-ds-consolidation';
+import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261026-ds-consolidation';
+import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261026-ds-consolidation';
+import { createIcon as icon } from './icons.js?v=20261026-ds-consolidation';
+import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261026-ds-consolidation';
+import { resolveArticleMetadata } from './article-metadata.js?v=20261026-ds-consolidation';
+import { createPanelDisclosure } from './panel-disclosure.js?v=20261026-ds-consolidation';
+import { createTabPanelTransition } from './tab-panel-transition.js?v=20261026-ds-consolidation';
+import { bindTabSelection } from './selection-controls.js?v=20261026-ds-consolidation';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261026-ds-consolidation';
+import { createProfile } from './profile.js?v=20261026-ds-consolidation';
+import { createSearchExperience } from './search.js?v=20261026-ds-consolidation';
+import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261026-ds-consolidation';
+import { createMaterialEditor } from './editor.js?v=20261026-ds-consolidation';
+import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-ds-consolidation';
+import { removeProjectContent } from './project-deletion.js?v=20261026-ds-consolidation';
+import { createContentPreview } from './content-preview.js?v=20261026-ds-consolidation';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261026-ds-consolidation';
+import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261026-ds-consolidation';
+import { createNewProjectUpload } from './new-project-upload.js?v=20261026-ds-consolidation';
+import { createRailNavigation } from './navigation.js?v=20261026-ds-consolidation';
+import { createProjectSources } from './sources.js?v=20261026-ds-consolidation';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261026-ds-consolidation';
+import { createEditorTabs } from './editor-tabs.js?v=20261026-ds-consolidation';
+import { createContentCardEditing } from './content-card-editing.js?v=20261026-ds-consolidation';
+import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-ds-consolidation';
+import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261026-ds-consolidation';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -219,18 +220,12 @@ function selectOutputView(view) {
     $('#output-list').scrollTop = 0;
   });
 }
-$('.output-status-tabs').addEventListener('click', event => {
-  const tab = event.target.closest('[data-output-view]');
-  if (tab) selectOutputView(tab.dataset.outputView);
-});
-$('.output-status-tabs').addEventListener('keydown', event => {
-  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-  const tab = event.target.closest('[data-output-view]');
-  if (!tab) return;
-  event.preventDefault();
-  const view = event.key === 'Home' ? 'pending' : event.key === 'End' ? 'created' : tab.dataset.outputView === 'pending' ? 'created' : 'pending';
-  selectOutputView(view);
-  $(`[data-output-view="${view}"]`).focus({ preventScroll: true });
+bindTabSelection({
+  root: $('.output-status-tabs'),
+  items: document.querySelectorAll('[data-output-view]'),
+  getValue: tab => tab.dataset.outputView,
+  panel: $('#output-status-content'),
+  onSelect: selectOutputView,
 });
 
 function renderProjectSources(project) {

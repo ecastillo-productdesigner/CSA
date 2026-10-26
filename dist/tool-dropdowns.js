@@ -1,7 +1,7 @@
-import { createDropdownTransition } from './dropdown-transition.js?v=20261026-design-refresh';
-import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261026-design-refresh';
-import { createIcon } from './icons.js?v=20261026-design-refresh';
-import { bindTapActivation } from './tap-activation.js?v=20261026-design-refresh';
+import { createDropdownTransition } from './dropdown-transition.js?v=20261026-ds-consolidation';
+import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261026-ds-consolidation';
+import { createIcon } from './icons.js?v=20261026-ds-consolidation';
+import { bindTapActivation } from './tap-activation.js?v=20261026-ds-consolidation';
 
 export function createToolDropdowns({ root = document } = {}) {
   const controls = [...root.querySelectorAll('.composer-field, .results-sort-field, .feedback-select-field, .editor-style-field, .word-count-field')].map(field => {
@@ -26,7 +26,7 @@ export function createToolDropdowns({ root = document } = {}) {
       return { connected: () => field.isConnected, contains: target => field.contains(target), close() {}, refresh };
     }
     const editorStyle = field.matches('.editor-style-field');
-    const floating = Boolean(field.closest('#output-edit-menu')) || field.matches('.feedback-select-field') || editorStyle;
+    const floating = field.matches('.feedback-select-field') || editorStyle;
     const inWorkspacePanel = Boolean(field.closest('#composer-tools, .composer-tools'));
     const mobileWorkspacePanel = () => inWorkspacePanel && window.matchMedia(breakpointQuery()).matches;
     const placeholder = draftSetting ? label : field.dataset.placeholder || (['format', 'audience', 'voice'].includes(key) ? `Select ${label}` : label);

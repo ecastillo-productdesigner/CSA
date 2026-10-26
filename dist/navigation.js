@@ -1,4 +1,4 @@
-import { tokenValue, tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261026-design-refresh';
+import { tokenValue, tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261026-ds-consolidation';
 
 function milliseconds(value) {
   const amount = Number.parseFloat(value);
@@ -198,7 +198,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
   document.addEventListener('pointerdown', event => {
     if (document.querySelector('dialog[open]')) return;
     if (active === 'profile' && floatingProfile() && !panels.profile.panel.contains(event.target) && !panels.profile.trigger.contains(event.target)) { close(); return; }
-    if (active !== 'sources' && mobileTopBar() && !sidebar.contains(event.target) && !panels[active]?.panel.contains(event.target) && !event.target.closest('.output-edit-menu, .output-card-menu, .editor-flyover, [data-variant-sources], [data-workspace-dropdown]')) close();
+    if (active !== 'sources' && mobileTopBar() && !sidebar.contains(event.target) && !panels[active]?.panel.contains(event.target) && !event.target.closest('.output-card-menu, .editor-flyover, [data-variant-sources], [data-workspace-dropdown]')) close();
   });
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape' || event.defaultPrevented || document.querySelector('dialog[open]')) return;

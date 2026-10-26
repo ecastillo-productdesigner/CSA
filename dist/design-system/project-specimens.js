@@ -1,5 +1,6 @@
-import { createIcon } from '../icons.js?v=20261026-design-refresh';
-import { projectUpdatedDate, projectContentCountLabel } from '../dashboard.js?v=20261026-design-refresh';
+import { createIcon } from '../icons.js?v=20261026-ds-consolidation';
+import { bindRovingSelection } from '../selection-controls.js?v=20261026-ds-consolidation';
+import { projectUpdatedDate, projectContentCountLabel } from '../dashboard.js?v=20261026-ds-consolidation';
 
 // Isolated documentation data. This specimen never mounts the app dashboard
 // controller, reads browser storage, or changes a saved project.
@@ -27,7 +28,7 @@ export function mountProjectSpecimens(root) {
     if (text !== undefined) element.textContent = text;
     return element;
   }
-  root.classList.add('ds-project-specimens');
+  root.classList.add('ds-project-specimens', 'project-browser');
   const toolbar = node('div', 'dashboard-layout-tools ds-project-toolbar');
   const viewSwitch = node('div', 'dashboard-layout-switch');
   viewSwitch.setAttribute('role', 'group');
@@ -71,12 +72,21 @@ export function mountProjectSpecimens(root) {
     button.setAttribute('aria-label', button.title);
     button.setAttribute('aria-controls', content.id);
     button.append(createIcon(view === 'grid' ? 'view_module' : 'menu'));
-    button.addEventListener('click', () => { layout = view; render(); });
     viewSwitch.append(button);
     return button;
   });
   toolbar.append(viewSwitch, undo);
   root.replaceChildren(toolbar, content, status, deleteDialog);
+  const layoutSelection = bindRovingSelection({
+    root: viewSwitch, items: viewButtons,
+    getValue: button => button.dataset.dashboardLayout,
+    selectedAttribute: 'aria-pressed', roving: false,
+    onSelect: view => {
+      if (layout === view) return;
+      layout = view;
+      render();
+    },
+  });
 
   function closeMenu(restoreFocus = false) {
     if (!openMenu) return;
@@ -200,9 +210,12 @@ export function mountProjectSpecimens(root) {
   function render() {
     closeMenu();
     root.dataset.layout = layout;
-    for (const button of viewButtons) button.setAttribute('aria-pressed', String(button.dataset.dashboardLayout === layout));
+    layoutSelection.sync(layout);
     undo.hidden = !deleted;
-    content.replaceChildren(...(layout === 'list' ? [projectTable()] : deleted ? [newProjectTile()] : [newProjectTile(), projectCard()]));
+    toolbar.querySelector('.new-project-tile')?.remove();
+    const create = newProjectTile();
+    if (layout === 'list') toolbar.append(create);
+    content.replaceChildren(...(layout === 'list' ? [projectTable()] : deleted ? [create] : [create, projectCard()]));
   }
   dismissDelete.addEventListener('click', () => deleteDialog.close());
   cancelDelete.addEventListener('click', () => deleteDialog.close());

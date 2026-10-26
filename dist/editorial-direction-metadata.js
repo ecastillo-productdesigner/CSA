@@ -1,4 +1,4 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261026-design-refresh';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-ds-consolidation';
 
 // Receives the direction captured on this draft, never the current composer value.
 export function createEditorialDirectionMetadata() {

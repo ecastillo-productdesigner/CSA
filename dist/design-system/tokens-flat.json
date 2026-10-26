@@ -142,7 +142,7 @@
       "category": "color",
       "value": "#060606",
       "reference": "",
-      "description": "Approved headings, selected borders, checkbox fill, and keyboard focus.",
+      "description": "Approved near-black headings and strong interface labels; selection and focus use the teal accent.",
       "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
@@ -876,18 +876,6 @@
       "status": "observed"
     },
     {
-      "name": "foundation.space.34",
-      "designName": "foundation/space/34",
-      "cssVariable": "--csa-foundation-space-34",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "space",
-      "value": "34px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
       "name": "foundation.space.35",
       "designName": "foundation/space/35",
       "cssVariable": "--csa-foundation-space-35",
@@ -1044,18 +1032,6 @@
       "status": "observed"
     },
     {
-      "name": "foundation.space.78",
-      "designName": "foundation/space/78",
-      "cssVariable": "--csa-foundation-space-78",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "space",
-      "value": "78px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
       "name": "foundation.space.80",
       "designName": "foundation/space/80",
       "cssVariable": "--csa-foundation-space-80",
@@ -1068,30 +1044,6 @@
       "status": "observed"
     },
     {
-      "name": "foundation.space.82",
-      "designName": "foundation/space/82",
-      "cssVariable": "--csa-foundation-space-82",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "space",
-      "value": "82px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.space.84",
-      "designName": "foundation/space/84",
-      "cssVariable": "--csa-foundation-space-84",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "space",
-      "value": "84px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
       "name": "foundation.space.88",
       "designName": "foundation/space/88",
       "cssVariable": "--csa-foundation-space-88",
@@ -1099,18 +1051,6 @@
       "layer": "foundation",
       "category": "space",
       "value": "88px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.space.90",
-      "designName": "foundation/space/90",
-      "cssVariable": "--csa-foundation-space-90",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "space",
-      "value": "90px",
       "reference": "",
       "description": "Preserved implementation dimension; shared through the design system.",
       "status": "observed"
@@ -1596,18 +1536,6 @@
       "status": "observed"
     },
     {
-      "name": "foundation.font.leading.1-3",
-      "designName": "foundation/font/leading/1-3",
-      "cssVariable": "--csa-foundation-font-leading-1-3",
-      "type": "number",
-      "layer": "foundation",
-      "category": "font",
-      "value": "1.3",
-      "reference": "",
-      "description": "Unitless line-height ratio.",
-      "status": "observed"
-    },
-    {
       "name": "foundation.font.leading.1-7",
       "designName": "foundation/font/leading/1-7",
       "cssVariable": "--csa-foundation-font-leading-1-7",
@@ -1632,42 +1560,6 @@
       "status": "observed"
     },
     {
-      "name": "foundation.font.leading.1-5",
-      "designName": "foundation/font/leading/1-5",
-      "cssVariable": "--csa-foundation-font-leading-1-5",
-      "type": "number",
-      "layer": "foundation",
-      "category": "font",
-      "value": "1.5",
-      "reference": "",
-      "description": "Unitless line-height ratio.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.font.leading.1-35",
-      "designName": "foundation/font/leading/1-35",
-      "cssVariable": "--csa-foundation-font-leading-1-35",
-      "type": "number",
-      "layer": "foundation",
-      "category": "font",
-      "value": "1.35",
-      "reference": "",
-      "description": "Unitless line-height ratio.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.font.leading.1-65",
-      "designName": "foundation/font/leading/1-65",
-      "cssVariable": "--csa-foundation-font-leading-1-65",
-      "type": "number",
-      "layer": "foundation",
-      "category": "font",
-      "value": "1.65",
-      "reference": "",
-      "description": "Unitless line-height ratio.",
-      "status": "observed"
-    },
-    {
       "name": "foundation.font.leading.1-8",
       "designName": "foundation/font/leading/1-8",
       "cssVariable": "--csa-foundation-font-leading-1-8",
@@ -1680,78 +1572,6 @@
       "status": "observed"
     },
     {
-      "name": "foundation.font.leading.1-45",
-      "designName": "foundation/font/leading/1-45",
-      "cssVariable": "--csa-foundation-font-leading-1-45",
-      "type": "number",
-      "layer": "foundation",
-      "category": "font",
-      "value": "1.45",
-      "reference": "",
-      "description": "Unitless line-height ratio.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.font.leading.1-08",
-      "designName": "foundation/font/leading/1-08",
-      "cssVariable": "--csa-foundation-font-leading-1-08",
-      "type": "number",
-      "layer": "foundation",
-      "category": "font",
-      "value": "1.08",
-      "reference": "",
-      "description": "Unitless line-height ratio.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.font.leading.1-2",
-      "designName": "foundation/font/leading/1-2",
-      "cssVariable": "--csa-foundation-font-leading-1-2",
-      "type": "number",
-      "layer": "foundation",
-      "category": "font",
-      "value": "1.2",
-      "reference": "",
-      "description": "Unitless line-height ratio.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.font.scale.3",
-      "designName": "foundation/font/scale/3",
-      "cssVariable": "--csa-foundation-font-scale-3",
-      "type": "number",
-      "layer": "foundation",
-      "category": "font",
-      "value": "3",
-      "reference": "",
-      "description": "Preserved shared design value.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.font.scale.3-2",
-      "designName": "foundation/font/scale/3-2",
-      "cssVariable": "--csa-foundation-font-scale-3-2",
-      "type": "number",
-      "layer": "foundation",
-      "category": "font",
-      "value": "3.2",
-      "reference": "",
-      "description": "Preserved shared design value.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.line.height.15",
-      "designName": "foundation/line/height/15",
-      "cssVariable": "--csa-foundation-line-height-15",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "line",
-      "value": "15px",
-      "reference": "",
-      "description": "Observed fixed line height.",
-      "status": "observed"
-    },
-    {
       "name": "foundation.line.height.16",
       "designName": "foundation/line/height/16",
       "cssVariable": "--csa-foundation-line-height-16",
@@ -1759,42 +1579,6 @@
       "layer": "foundation",
       "category": "line",
       "value": "16px",
-      "reference": "",
-      "description": "Observed fixed line height.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.line.height.17",
-      "designName": "foundation/line/height/17",
-      "cssVariable": "--csa-foundation-line-height-17",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "line",
-      "value": "17px",
-      "reference": "",
-      "description": "Observed fixed line height.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.line.height.18",
-      "designName": "foundation/line/height/18",
-      "cssVariable": "--csa-foundation-line-height-18",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "line",
-      "value": "18px",
-      "reference": "",
-      "description": "Observed fixed line height.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.line.height.19",
-      "designName": "foundation/line/height/19",
-      "cssVariable": "--csa-foundation-line-height-19",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "line",
-      "value": "19px",
       "reference": "",
       "description": "Observed fixed line height.",
       "status": "observed"
@@ -1836,18 +1620,6 @@
       "status": "observed"
     },
     {
-      "name": "foundation.line.height.25",
-      "designName": "foundation/line/height/25",
-      "cssVariable": "--csa-foundation-line-height-25",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "line",
-      "value": "25px",
-      "reference": "",
-      "description": "Observed fixed line height.",
-      "status": "observed"
-    },
-    {
       "name": "foundation.line.height.28",
       "designName": "foundation/line/height/28",
       "cssVariable": "--csa-foundation-line-height-28",
@@ -1855,18 +1627,6 @@
       "layer": "foundation",
       "category": "line",
       "value": "28px",
-      "reference": "",
-      "description": "Observed fixed line height.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.line.height.30",
-      "designName": "foundation/line/height/30",
-      "cssVariable": "--csa-foundation-line-height-30",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "line",
-      "value": "30px",
       "reference": "",
       "description": "Observed fixed line height.",
       "status": "observed"
@@ -1992,18 +1752,6 @@
       "status": "observed"
     },
     {
-      "name": "foundation.motion.duration.45",
-      "designName": "foundation/motion/duration/45",
-      "cssVariable": "--csa-foundation-motion-duration-45",
-      "type": "duration",
-      "layer": "foundation",
-      "category": "motion",
-      "value": "45ms",
-      "reference": "",
-      "description": "Preserved interface animation timing.",
-      "status": "observed"
-    },
-    {
       "name": "foundation.motion.duration.120",
       "designName": "foundation/motion/duration/120",
       "cssVariable": "--csa-foundation-motion-duration-120",
@@ -2028,30 +1776,6 @@
       "status": "observed"
     },
     {
-      "name": "foundation.motion.duration.160",
-      "designName": "foundation/motion/duration/160",
-      "cssVariable": "--csa-foundation-motion-duration-160",
-      "type": "duration",
-      "layer": "foundation",
-      "category": "motion",
-      "value": "160ms",
-      "reference": "",
-      "description": "Observed animation or transition duration.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.motion.duration.180",
-      "designName": "foundation/motion/duration/180",
-      "cssVariable": "--csa-foundation-motion-duration-180",
-      "type": "duration",
-      "layer": "foundation",
-      "category": "motion",
-      "value": "180ms",
-      "reference": "",
-      "description": "Observed animation or transition duration.",
-      "status": "observed"
-    },
-    {
       "name": "foundation.motion.duration.200",
       "designName": "foundation/motion/duration/200",
       "cssVariable": "--csa-foundation-motion-duration-200",
@@ -2059,42 +1783,6 @@
       "layer": "foundation",
       "category": "motion",
       "value": "200ms",
-      "reference": "",
-      "description": "Observed animation or transition duration.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.motion.duration.420",
-      "designName": "foundation/motion/duration/420",
-      "cssVariable": "--csa-foundation-motion-duration-420",
-      "type": "duration",
-      "layer": "foundation",
-      "category": "motion",
-      "value": "420ms",
-      "reference": "",
-      "description": "Preserved interface animation timing.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.motion.duration.450",
-      "designName": "foundation/motion/duration/450",
-      "cssVariable": "--csa-foundation-motion-duration-450",
-      "type": "duration",
-      "layer": "foundation",
-      "category": "motion",
-      "value": "450ms",
-      "reference": "",
-      "description": "Observed animation or transition duration.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.motion.duration.520",
-      "designName": "foundation/motion/duration/520",
-      "cssVariable": "--csa-foundation-motion-duration-520",
-      "type": "duration",
-      "layer": "foundation",
-      "category": "motion",
-      "value": "520ms",
       "reference": "",
       "description": "Observed animation or transition duration.",
       "status": "observed"
@@ -2244,18 +1932,6 @@
       "status": "observed"
     },
     {
-      "name": "foundation.layer.18",
-      "designName": "foundation/layer/18",
-      "cssVariable": "--csa-foundation-layer-18",
-      "type": "number",
-      "layer": "foundation",
-      "category": "layer",
-      "value": "18",
-      "reference": "",
-      "description": "Existing stacking level; native dialogs use the browser top layer.",
-      "status": "observed"
-    },
-    {
       "name": "foundation.layer.20",
       "designName": "foundation/layer/20",
       "cssVariable": "--csa-foundation-layer-20",
@@ -2275,18 +1951,6 @@
       "layer": "foundation",
       "category": "layer",
       "value": "30",
-      "reference": "",
-      "description": "Existing stacking level; native dialogs use the browser top layer.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.layer.40",
-      "designName": "foundation/layer/40",
-      "cssVariable": "--csa-foundation-layer-40",
-      "type": "number",
-      "layer": "foundation",
-      "category": "layer",
-      "value": "40",
       "reference": "",
       "description": "Existing stacking level; native dialogs use the browser top layer.",
       "status": "observed"
@@ -2472,54 +2136,6 @@
       "status": "observed"
     },
     {
-      "name": "foundation.size.15",
-      "designName": "foundation/size/15",
-      "cssVariable": "--csa-foundation-size-15",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "size",
-      "value": "15px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.size.17",
-      "designName": "foundation/size/17",
-      "cssVariable": "--csa-foundation-size-17",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "size",
-      "value": "17px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.size.22",
-      "designName": "foundation/size/22",
-      "cssVariable": "--csa-foundation-size-22",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "size",
-      "value": "22px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.size.27",
-      "designName": "foundation/size/27",
-      "cssVariable": "--csa-foundation-size-27",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "size",
-      "value": "27px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
       "name": "foundation.size.31",
       "designName": "foundation/size/31",
       "cssVariable": "--csa-foundation-size-31",
@@ -2527,18 +2143,6 @@
       "layer": "foundation",
       "category": "size",
       "value": "31px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.size.38",
-      "designName": "foundation/size/38",
-      "cssVariable": "--csa-foundation-size-38",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "size",
-      "value": "38px",
       "reference": "",
       "description": "Preserved implementation dimension; shared through the design system.",
       "status": "observed"
@@ -2587,18 +2191,6 @@
       "layer": "foundation",
       "category": "size",
       "value": "62px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.size.68",
-      "designName": "foundation/size/68",
-      "cssVariable": "--csa-foundation-size-68",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "size",
-      "value": "68px",
       "reference": "",
       "description": "Preserved implementation dimension; shared through the design system.",
       "status": "observed"
@@ -2748,18 +2340,6 @@
       "status": "observed"
     },
     {
-      "name": "foundation.size.122",
-      "designName": "foundation/size/122",
-      "cssVariable": "--csa-foundation-size-122",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "size",
-      "value": "122px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
       "name": "foundation.size.125",
       "designName": "foundation/size/125",
       "cssVariable": "--csa-foundation-size-125",
@@ -2791,18 +2371,6 @@
       "layer": "foundation",
       "category": "size",
       "value": "140px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.size.144",
-      "designName": "foundation/size/144",
-      "cssVariable": "--csa-foundation-size-144",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "size",
-      "value": "144px",
       "reference": "",
       "description": "Preserved implementation dimension; shared through the design system.",
       "status": "observed"
@@ -2935,18 +2503,6 @@
       "layer": "foundation",
       "category": "size",
       "value": "320px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.size.340",
-      "designName": "foundation/size/340",
-      "cssVariable": "--csa-foundation-size-340",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "size",
-      "value": "340px",
       "reference": "",
       "description": "Preserved implementation dimension; shared through the design system.",
       "status": "observed"
@@ -3264,30 +2820,6 @@
       "status": "observed"
     },
     {
-      "name": "foundation.layout.ratio.3",
-      "designName": "foundation/layout/ratio/3",
-      "cssVariable": "--csa-foundation-layout-ratio-3",
-      "type": "number",
-      "layer": "foundation",
-      "category": "layout",
-      "value": "3",
-      "reference": "",
-      "description": "Preserved responsive layout or effect ratio.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.layout.ratio.5",
-      "designName": "foundation/layout/ratio/5",
-      "cssVariable": "--csa-foundation-layout-ratio-5",
-      "type": "number",
-      "layer": "foundation",
-      "category": "layout",
-      "value": "5",
-      "reference": "",
-      "description": "Preserved responsive layout or effect ratio.",
-      "status": "observed"
-    },
-    {
       "name": "foundation.layout.ratio.10",
       "designName": "foundation/layout/ratio/10",
       "cssVariable": "--csa-foundation-layout-ratio-10",
@@ -3415,18 +2947,6 @@
       "layer": "foundation",
       "category": "layout",
       "value": "75",
-      "reference": "",
-      "description": "Preserved responsive layout or effect ratio.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.layout.ratio.2-4",
-      "designName": "foundation/layout/ratio/2-4",
-      "cssVariable": "--csa-foundation-layout-ratio-2-4",
-      "type": "number",
-      "layer": "foundation",
-      "category": "layout",
-      "value": "2.4",
       "reference": "",
       "description": "Preserved responsive layout or effect ratio.",
       "status": "observed"
@@ -3898,28 +3418,6 @@
       }
     },
     {
-      "name": "semantic.color.favorite.active",
-      "designName": "semantic/color/favorite/active",
-      "cssVariable": "--csa-semantic-color-favorite-active",
-      "type": "color",
-      "layer": "semantic",
-      "category": "color",
-      "value": "#00786f",
-      "reference": "semantic.color.action.primary",
-      "description": "Deep teal filled heart identifying a saved draft or preset.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0,
-          0.47058823529411764,
-          0.43529411764705883
-        ],
-        "alpha": 1,
-        "hex": "#00786f"
-      }
-    },
-    {
       "name": "semantic.color.danger.default",
       "designName": "semantic/color/danger/default",
       "cssVariable": "--csa-semantic-color-danger-default",
@@ -4381,8 +3879,8 @@
       "layer": "semantic",
       "category": "typography",
       "value": "600 16px/1.25 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
+      "reference": "semantic.typography.project-title.desktop",
+      "description": "Project titles retain the same typography on desktop and mobile.",
       "status": "approved-update",
       "properties": {
         "fontFamily": [
@@ -4477,8 +3975,8 @@
       "layer": "semantic",
       "category": "typography",
       "value": "600 14px/1.4285714285714286 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
+      "reference": "semantic.typography.label",
+      "description": "Source titles share the compact semibold label typography.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4509,8 +4007,8 @@
       "layer": "semantic",
       "category": "typography",
       "value": "400 14px/1.4285714285714286 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
+      "reference": "semantic.typography.field-value",
+      "description": "Content-card titles share the compact regular field-value typography.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4573,8 +4071,8 @@
       "layer": "semantic",
       "category": "typography",
       "value": "600 14px/1.4285714285714286 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
+      "reference": "semantic.typography.label",
+      "description": "Project list titles share the compact semibold label typography.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4604,9 +4102,9 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "600 16px/1.25 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "value": "600 16px/1.5 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
+      "description": "Supporting action labels use Inter Semibold at 16 px / 24 px.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4622,7 +4120,7 @@
           "unit": "px"
         },
         "fontWeight": 600,
-        "lineHeight": 1.25,
+        "lineHeight": 1.5,
         "letterSpacing": {
           "value": 0,
           "unit": "px"
@@ -4765,8 +4263,8 @@
       "layer": "semantic",
       "category": "typography",
       "value": "650 24px/1.3333333333333333 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
+      "reference": "semantic.typography.dialog-heading",
+      "description": "Article section headings share the 24 px / 32 px dialog-heading typography.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4829,8 +4327,8 @@
       "layer": "semantic",
       "category": "typography",
       "value": "400 12px/1.3333333333333333 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
+      "reference": "semantic.typography.metadata",
+      "description": "Helper text shares the compact regular metadata typography.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4861,8 +4359,8 @@
       "layer": "semantic",
       "category": "typography",
       "value": "400 14px/1.4285714285714286 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
+      "reference": "semantic.typography.field-value",
+      "description": "Desktop project metadata shares the compact regular field-value typography.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4893,8 +4391,8 @@
       "layer": "semantic",
       "category": "typography",
       "value": "400 12px/1.3333333333333333 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
+      "reference": "semantic.typography.metadata",
+      "description": "Mobile project metadata shares the compact regular metadata typography.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -5352,28 +4850,6 @@
       }
     },
     {
-      "name": "component.button.secondary.pressed",
-      "designName": "component/button/secondary/pressed",
-      "cssVariable": "--csa-component-button-secondary-pressed",
-      "type": "color",
-      "layer": "component",
-      "category": "button",
-      "value": "#ffffff",
-      "reference": "semantic.color.surface.default",
-      "description": "Outlined secondary button pressed background.",
-      "status": "approved-update",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          1,
-          1,
-          1
-        ],
-        "alpha": 1,
-        "hex": "#ffffff"
-      }
-    },
-    {
       "name": "component.button.tertiary.radius",
       "designName": "component/button/tertiary/radius",
       "cssVariable": "--csa-component-button-tertiary-radius",
@@ -5549,28 +5025,6 @@
         ],
         "alpha": 1,
         "hex": "#737373"
-      }
-    },
-    {
-      "name": "component.button.border",
-      "designName": "component/button/border",
-      "cssVariable": "--csa-component-button-border",
-      "type": "color",
-      "layer": "component",
-      "category": "button",
-      "value": "#e5e5e5",
-      "reference": "semantic.color.border.default",
-      "description": "Button border.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.8980392156862745,
-          0.8980392156862745,
-          0.8980392156862745
-        ],
-        "alpha": 1,
-        "hex": "#e5e5e5"
       }
     },
     {
@@ -5844,54 +5298,6 @@
         "alpha": 1,
         "hex": "#e5e5e5"
       }
-    },
-    {
-      "name": "component.status.creating-shimmer-duration",
-      "designName": "component/status/creating-shimmer-duration",
-      "cssVariable": "--csa-component-status-creating-shimmer-duration",
-      "type": "duration",
-      "layer": "component",
-      "category": "status",
-      "value": "1600ms",
-      "reference": "",
-      "description": "Time for a complete edge-to-edge accessible blue text shimmer sweep.",
-      "status": "observed"
-    },
-    {
-      "name": "component.status.creating-shimmer-width",
-      "designName": "component/status/creating-shimmer-width",
-      "cssVariable": "--csa-component-status-creating-shimmer-width",
-      "type": "number",
-      "layer": "component",
-      "category": "status",
-      "value": "200",
-      "reference": "",
-      "description": "Percentage width of the moving creation-label gradient.",
-      "status": "observed"
-    },
-    {
-      "name": "component.status.font-size",
-      "designName": "component/status/font-size",
-      "cssVariable": "--csa-component-status-font-size",
-      "type": "dimension",
-      "layer": "component",
-      "category": "status",
-      "value": "12px",
-      "reference": "foundation.font.size.12",
-      "description": "Sent and Draft labels match the 12px settings-chip size.",
-      "status": "observed"
-    },
-    {
-      "name": "component.status.creating-shimmer-band-half-width",
-      "designName": "component/status/creating-shimmer-band-half-width",
-      "cssVariable": "--csa-component-status-creating-shimmer-band-half-width",
-      "type": "number",
-      "layer": "component",
-      "category": "status",
-      "value": "8",
-      "reference": "",
-      "description": "Half-width in percentage points of the narrow Blue 600 highlight within the Blue 700 text shimmer.",
-      "status": "observed"
     },
     {
       "name": "component.chip.height",
@@ -6440,9 +5846,9 @@
       "type": "dimension",
       "layer": "component",
       "category": "navigation",
-      "value": "8px",
-      "reference": "foundation.radius.8",
-      "description": "Corner radius shared by the navigation panel and homepage layout switch.",
+      "value": "16px",
+      "reference": "foundation.radius.16",
+      "description": "16 px corners for the navigation rail and expanded panel; the homepage layout switch keeps its separate 8 px radius.",
       "status": "observed"
     },
     {
@@ -6555,20 +5961,8 @@
       "layer": "component",
       "category": "layout",
       "value": "300ms",
-      "reference": "",
-      "description": "Homepage entrance timing; all items finish in 300 ms without staggering.",
-      "status": "observed"
-    },
-    {
-      "name": "component.layout.max-entry-order",
-      "designName": "component/layout/max-entry-order",
-      "cssVariable": "--csa-component-layout-max-entry-order",
-      "type": "number",
-      "layer": "component",
-      "category": "layout",
-      "value": "7",
-      "reference": "",
-      "description": "Last staggered card in the entrance sequence.",
+      "reference": "component.layout.home-enter-duration",
+      "description": "Homepage entrance cleanup follows the shared entrance duration so all items finish together.",
       "status": "observed"
     },
     {
@@ -6605,30 +5999,6 @@
       "value": "cubic-bezier(0.42, 0, 0.58, 1)",
       "reference": "",
       "description": "Symmetric ease-in-out for homepage greeting and project-card entrances.",
-      "status": "observed"
-    },
-    {
-      "name": "component.layout.home-enter-delay",
-      "designName": "component/layout/home-enter-delay",
-      "cssVariable": "--csa-component-layout-home-enter-delay",
-      "type": "duration",
-      "layer": "component",
-      "category": "layout",
-      "value": "0ms",
-      "reference": "",
-      "description": "Homepage entrance timing; all items finish in 300 ms without staggering.",
-      "status": "observed"
-    },
-    {
-      "name": "component.layout.home-enter-stagger",
-      "designName": "component/layout/home-enter-stagger",
-      "cssVariable": "--csa-component-layout-home-enter-stagger",
-      "type": "duration",
-      "layer": "component",
-      "category": "layout",
-      "value": "0ms",
-      "reference": "",
-      "description": "Homepage entrance timing; all items finish in 300 ms without staggering.",
       "status": "observed"
     },
     {
@@ -6810,42 +6180,6 @@
       "status": "approved-update"
     },
     {
-      "name": "component.export.scale-small",
-      "designName": "component/export/scale-small",
-      "cssVariable": "--csa-component-export-scale-small",
-      "type": "number",
-      "layer": "component",
-      "category": "export",
-      "value": "0.8",
-      "reference": "",
-      "description": "Relative rich-text size in document exports.",
-      "status": "observed"
-    },
-    {
-      "name": "component.export.scale-large",
-      "designName": "component/export/scale-large",
-      "cssVariable": "--csa-component-export-scale-large",
-      "type": "number",
-      "layer": "component",
-      "category": "export",
-      "value": "1.5",
-      "reference": "",
-      "description": "Relative rich-text size in document exports.",
-      "status": "observed"
-    },
-    {
-      "name": "component.export.scale-huge",
-      "designName": "component/export/scale-huge",
-      "cssVariable": "--csa-component-export-scale-huge",
-      "type": "number",
-      "layer": "component",
-      "category": "export",
-      "value": "2",
-      "reference": "",
-      "description": "Relative rich-text size in document exports.",
-      "status": "observed"
-    },
-    {
       "name": "component.export.text",
       "designName": "component/export/text",
       "cssVariable": "--csa-component-export-text",
@@ -6967,8 +6301,8 @@
       "layer": "component",
       "category": "layout-switch",
       "value": "8px",
-      "reference": "component.navigation.radius",
-      "description": "Matches the navigation panel corner radius.",
+      "reference": "foundation.radius.8",
+      "description": "Compact corners for the homepage grid/list view switch.",
       "status": "observed"
     },
     {
@@ -7037,50 +6371,6 @@
         ],
         "alpha": 1,
         "hex": "#ffffff"
-      }
-    },
-    {
-      "name": "component.favorite.unsaved-color",
-      "designName": "component/favorite/unsaved-color",
-      "cssVariable": "--csa-component-favorite-unsaved-color",
-      "type": "color",
-      "layer": "component",
-      "category": "favorite",
-      "value": "#404040",
-      "reference": "semantic.color.text.primary",
-      "description": "Unsaved favorites and inactive saved-only filters match the chevron color.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.25098039215686274,
-          0.25098039215686274,
-          0.25098039215686274
-        ],
-        "alpha": 1,
-        "hex": "#404040"
-      }
-    },
-    {
-      "name": "component.favorite.saved-color",
-      "designName": "component/favorite/saved-color",
-      "cssVariable": "--csa-component-favorite-saved-color",
-      "type": "color",
-      "layer": "component",
-      "category": "favorite",
-      "value": "#00786f",
-      "reference": "semantic.color.favorite.active",
-      "description": "Saved favorites and active saved-only filters use filled neutral-700 hearts.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0,
-          0.47058823529411764,
-          0.43529411764705883
-        ],
-        "alpha": 1,
-        "hex": "#00786f"
       }
     },
     {
@@ -7238,7 +6528,7 @@
       "category": "toast",
       "value": "14px",
       "reference": "foundation.space.14",
-      "description": "Space between toast icon, message, and action.",
+      "description": "Space between the toast message and Undo action.",
       "status": "observed"
     },
     {
@@ -7302,74 +6592,6 @@
       "status": "observed"
     },
     {
-      "name": "component.toast.icon-size",
-      "designName": "component/toast/icon-size",
-      "cssVariable": "--csa-component-toast-icon-size",
-      "type": "dimension",
-      "layer": "component",
-      "category": "toast",
-      "value": "36px",
-      "reference": "foundation.space.36",
-      "description": "Circular deletion status badge size.",
-      "status": "observed"
-    },
-    {
-      "name": "component.toast.icon-glyph-size",
-      "designName": "component/toast/icon-glyph-size",
-      "cssVariable": "--csa-component-toast-icon-glyph-size",
-      "type": "dimension",
-      "layer": "component",
-      "category": "toast",
-      "value": "20px",
-      "reference": "foundation.icon.size.20",
-      "description": "Deletion status symbol size.",
-      "status": "observed"
-    },
-    {
-      "name": "component.toast.icon-background",
-      "designName": "component/toast/icon-background",
-      "cssVariable": "--csa-component-toast-icon-background",
-      "type": "color",
-      "layer": "component",
-      "category": "toast",
-      "value": "#f5f5f5",
-      "reference": "semantic.color.surface.hover",
-      "description": "Quiet neutral deletion status badge surface.",
-      "status": "approved-update",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.9607843137254902,
-          0.9607843137254902,
-          0.9607843137254902
-        ],
-        "alpha": 1,
-        "hex": "#f5f5f5"
-      }
-    },
-    {
-      "name": "component.toast.icon-foreground",
-      "designName": "component/toast/icon-foreground",
-      "cssVariable": "--csa-component-toast-icon-foreground",
-      "type": "color",
-      "layer": "component",
-      "category": "toast",
-      "value": "#00786f",
-      "reference": "semantic.color.action.primary",
-      "description": "Black deletion status symbol.",
-      "status": "approved-update",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0,
-          0.47058823529411764,
-          0.43529411764705883
-        ],
-        "alpha": 1,
-        "hex": "#00786f"
-      }
-    },
-    {
       "name": "component.toast.action-height",
       "designName": "component/toast/action-height",
       "cssVariable": "--csa-component-toast-action-height",
@@ -7402,7 +6624,7 @@
       "category": "toast",
       "value": "#00786f",
       "reference": "semantic.color.action.primary",
-      "description": "Black Compact toast Undo text.",
+      "description": "Deep teal Compact toast Undo icon.",
       "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
@@ -7446,7 +6668,7 @@
       "category": "drafting",
       "value": "5000ms",
       "reference": "",
-      "description": "Time each drafting message remains before the next sheet comes to the front.",
+      "description": "Time each visual paper/color phase holds before the next sheet moves to the front; the Drafting Content label stays fixed.",
       "status": "observed"
     },
     {
@@ -7518,7 +6740,7 @@
       "category": "drafting",
       "value": "#fecdd3",
       "reference": "component.chip.format.background",
-      "description": "Fixed format chip-color shimmer for a white loading card; retained as its messages change.",
+      "description": "Format chip-color shimmer for its selected-category phase on a white drafting card.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
@@ -7540,7 +6762,7 @@
       "category": "drafting",
       "value": "#e0e7ff",
       "reference": "component.chip.audience.background",
-      "description": "Fixed audience chip-color shimmer for a white loading card; retained as its messages change.",
+      "description": "Audience chip-color shimmer for its selected-category phase on a white drafting card.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
@@ -7562,7 +6784,7 @@
       "category": "drafting",
       "value": "#fed7aa",
       "reference": "component.chip.voice.background",
-      "description": "Fixed voice chip-color shimmer for a white loading card; retained as its messages change.",
+      "description": "Voice chip-color shimmer for its selected-category phase on a white drafting card.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",

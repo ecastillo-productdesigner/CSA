@@ -1,7 +1,8 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261026-design-refresh';
-import { createIcon as icon } from './icons.js?v=20261026-design-refresh';
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261026-design-refresh';
-import { sourceLinkArticles } from './source-links.js?v=20261026-design-refresh';
+import { bindRovingSelection } from './selection-controls.js?v=20261026-ds-consolidation';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-ds-consolidation';
+import { createIcon as icon } from './icons.js?v=20261026-ds-consolidation';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261026-ds-consolidation';
+import { sourceLinkArticles } from './source-links.js?v=20261026-ds-consolidation';
 
 const layoutKey = 'csa.dashboard.layout.v1';
 function readLayout() {
@@ -74,6 +75,7 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
   let revealTimer;
   let layoutAnimation;
   const home = document.querySelector('#home');
+  home.classList.add('project-browser');
   const grid = document.querySelector('#dashboard-grid');
   const loadMore = document.querySelector('#dashboard-load-more');
   const status = document.querySelector('#dashboard-load-status');
@@ -192,15 +194,11 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
       }).catch(() => { /* A newer layout choice cancelled this transition. */ });
     }
   }
-  for (const button of layoutButtons) button.addEventListener('click', () => setLayout(button.dataset.dashboardLayout));
-  layoutSwitch.addEventListener('keydown', event => {
-    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-    const current = layoutButtons.indexOf(event.target.closest('button'));
-    if (current < 0) return;
-    event.preventDefault();
-    const next = event.key === 'Home' ? 0 : event.key === 'End' ? layoutButtons.length - 1 : (current + (event.key === 'ArrowRight' ? 1 : -1) + layoutButtons.length) % layoutButtons.length;
-    setLayout(layoutButtons[next].dataset.dashboardLayout);
-    layoutButtons[next].focus();
+  const layoutSelection = bindRovingSelection({
+    root: layoutSwitch,
+    items: layoutButtons,
+    getValue: button => button.dataset.dashboardLayout,
+    onSelect: setLayout,
   });
   new ResizeObserver(() => updateVisible()).observe(home);
   window.addEventListener('scroll', () => {
@@ -311,7 +309,7 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
     currentProjects = projects;
     projectItems = [];
     home.dataset.layout = layout;
-    for (const button of layoutButtons) button.setAttribute('aria-pressed', String(button.dataset.dashboardLayout === layout));
+    layoutSelection.sync(layout);
     const dashboardProjects = projects.filter(project => project.dashboard === true && !project.archivedAt && !project.deletedAt);
     grid.replaceChildren();
     layoutTools.querySelector('#dashboard-new-project')?.remove();
@@ -349,7 +347,6 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
       projectItems.push(card);
     }
     updateVisible();
-    for (const [index, card] of [...grid.children].entries()) card.style.setProperty('--reveal-order', Math.min(index, tokenNumber('component.layout.max-entry-order')));
   }
 
   return { render, reveal };

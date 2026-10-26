@@ -1,5 +1,5 @@
-import { savedVariantName } from './outputs.js?v=20261026-design-refresh';
-import { normalizeWordCount } from './variant-word-count.js?v=20261026-design-refresh';
+import { savedVariantName } from './outputs.js?v=20261026-ds-consolidation';
+import { normalizeWordCount } from './variant-word-count.js?v=20261026-ds-consolidation';
 const keys = ['format', 'audience', 'voice'];
 export function presetConfiguration(output) {
   const saved = output?.presetSettings;

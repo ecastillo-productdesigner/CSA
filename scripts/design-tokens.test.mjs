@@ -101,9 +101,10 @@ test('responsive CSS compilation follows token changes and rejects missing query
 test('runtime layout and offline export styles reference existing design tokens',async()=>{
   const {readdir}=await import('node:fs/promises');
   const source=JSON.parse(await readFile(new URL('../dist/design-system/tokens.json',import.meta.url),'utf8'));
-  const tokens=compileTokens(source).flat;
+  const compiled=compileTokens(source);
+  const tokens=compiled.flat;
   const names=new Set(tokens.map(t=>t.name));
-  const vars=new Set(tokens.map(t=>t.cssVariable));
+  const vars=new Set([...compiled.css.matchAll(/(--csa-[\w-]+):/g)].map(match=>match[1]));
   const css=await readFile(new URL('../styles/export.css',import.meta.url),'utf8');
   for(const match of css.matchAll(/var\((--csa-[\w-]+)/g)) assert.ok(vars.has(match[1]),`Export references missing ${match[1]}`);
   for (const file of await readdir(new URL('../dist/',import.meta.url))) {
@@ -114,14 +115,11 @@ test('runtime layout and offline export styles reference existing design tokens'
   }
 });
 
-test('homepage entrance cleanup covers the final staggered card', async () => {
+test('homepage entrance cleanup covers the shared 300 ms animation', async () => {
   const source = JSON.parse(await readFile(new URL('../dist/design-system/tokens.json', import.meta.url), 'utf8'));
   const tokens = new Map(compileTokens(source).flat.map(token => [token.name, token.value]));
   const ms = name => { const value = tokens.get(name); return Number.parseFloat(value) * (value.endsWith('ms') ? 1 : 1000); };
   const duration = ms('component.layout.home-enter-duration');
-  const finalCardEnd = ms('component.layout.home-enter-delay')
-    + tokens.get('component.layout.max-entry-order') * ms('component.layout.home-enter-stagger')
-    + duration;
   assert.equal(duration, 300, 'homepage entrance uses the approved 300 ms duration');
-  assert.ok(ms('component.layout.enter-cleanup') >= finalCardEnd, 'entrance class must remain until the last card completes');
+  assert.ok(ms('component.layout.enter-cleanup') >= duration, 'entrance class must remain until the greeting and all projects complete together');
 });

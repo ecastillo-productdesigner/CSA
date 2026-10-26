@@ -200,7 +200,7 @@ test('fresh embedded links use the one-page source animation and complete indepe
     assert.equal(papers.length, 1);
     assert.equal(papers[0].dataset.depth, 'front');
     assert.equal(papers[0].children.length, 7);
-    assert.equal(animation.querySelector('.output-creating-label').textContent, 'Adding your Source');
+    assert.equal(animation.querySelector('.drafting-message').textContent, 'Adding your Source');
     assert.equal(ui.addition(id).getAttribute('aria-live'), 'polite');
     assert.equal(ui.addition(id).parentElement.querySelector('.result-add-button').getAttribute('aria-busy'), 'true');
   }

@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261026-design-refresh';
+import { createIcon } from './icons.js?v=20261026-ds-consolidation';
 
 export function createFeedbackPill(output, disabled = false) {
   const pill = document.createElement('span');

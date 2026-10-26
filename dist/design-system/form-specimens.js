@@ -1,4 +1,4 @@
-import { parseSourceLinks, formatSourceLinks } from '../source-links.js?v=20261026-design-refresh';
+import { parseSourceLinks, formatSourceLinks } from '../source-links.js?v=20261026-ds-consolidation';
 
 const mounted = new WeakMap();
 

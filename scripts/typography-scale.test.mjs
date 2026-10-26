@@ -25,6 +25,7 @@ test('consolidation preserves the approved card, dropdown, and status typography
     ['semantic.typography.project-title.desktop', 16, 600],
     ['semantic.typography.project-title.mobile', 16, 600],
     ['semantic.typography.field-value', 14, 400],
+    ['semantic.typography.variant-title', 14, 400],
     ['semantic.typography.status', 12, 500],
   ]) {
     const token = tokens.get(name);
@@ -35,6 +36,42 @@ test('consolidation preserves the approved card, dropdown, and status typography
   const status = tokens.get('semantic.typography.status').properties;
   assert.equal(status.lineHeight * status.fontSize.value, 20, 'Status labels use the chip line height');
   assert.deepEqual(status, tokens.get('semantic.typography.chip').properties, 'Status labels and chips share typography');
+});
+
+test('shared reading, action, and dialog roles preserve their approved metrics', () => {
+  for (const [name, size, height, weight] of [
+    ['body', 16, 28, 400],
+    ['secondary-button', 16, 24, 600],
+    ['dialog-heading', 24, 32, 650],
+  ]) {
+    const token = tokens.get(`semantic.typography.${name}`);
+    assert.equal(token.properties.fontSize.value, size, `${name} size`);
+    assert.equal(token.properties.fontSize.value * token.properties.lineHeight, height, `${name} line height`);
+    assert.equal(token.properties.fontWeight, weight, `${name} weight`);
+    assert.deepEqual(token.properties.letterSpacing, { value: 0, unit: 'px' }, `${name} tracking`);
+  }
+});
+
+test('offline exports preserve shared reading metrics instead of browser-default heading weights', async () => {
+  const css = await readFile(new URL('../styles/export.css', import.meta.url), 'utf8');
+  const values = new Map([...compileTokens(source).css.matchAll(/(--csa-[\w-]+):\s*([^;]+);/g)].map(match => [match[1], match[2]]));
+  const resolve = name => {
+    const value = values.get(name);
+    const alias = value?.match(/^var\((--[\w-]+)\)$/)?.[1];
+    return alias ? resolve(alias) : Number.parseFloat(value);
+  };
+  for (const [selector, role] of [['body', 'body'], ['h1', 'article-h1'], ['h2', 'article-h2'], ['h3', 'article-h3']]) {
+    const declarations = css.match(new RegExp(`(?:^|\\n)${selector} \\{([^}]+)\\}`))[1];
+    const metric = property => {
+      const name = declarations.match(new RegExp(`(?:^|;)\\s*${property}:\\s*var\\((--[\\w-]+)\\)`))?.[1];
+      return resolve(name);
+    };
+    const expected = tokens.get(`semantic.typography.${role}`).properties;
+    assert.equal(metric('font-size'), expected.fontSize.value, `${selector} size`);
+    assert.equal(metric('line-height') * metric('font-size'), expected.lineHeight * expected.fontSize.value, `${selector} line height`);
+    assert.equal(metric('font-weight'), expected.fontWeight, `${selector} weight`);
+    assert.equal(metric('letter-spacing'), expected.letterSpacing.value, `${selector} tracking`);
+  }
 });
 
 test('interface text uses Inter while greetings retain Newsreader', () => {

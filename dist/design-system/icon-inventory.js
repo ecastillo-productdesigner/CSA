@@ -1,6 +1,7 @@
-// App icon inventory audited 2026-10-22 against reachable interface controls,
-// app module imports, and existing-project flows. Hidden toolbar glyphs and
-// dormant feature modules are excluded; both entry-page font subsets match.
+// DS catalog of current controls and supported legacy app flows. Hidden toolbar
+// glyphs and dormant feature modules are excluded. The DS font subset matches
+// this catalog; the app additionally loads the legacy result-thumbnail photo_camera.
+// Both panel disclosure arrows remain active through shared runtime state.
 export const iconInventory = [
   ['add_circle', 'Add'],
   ['arrow_forward', 'Continue'],

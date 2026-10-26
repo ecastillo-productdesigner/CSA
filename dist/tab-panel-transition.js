@@ -1,4 +1,4 @@
-import { tokenValue } from './design-system/runtime.js?v=20261026-design-refresh';
+import { tokenValue } from './design-system/runtime.js?v=20261026-ds-consolidation';
 
 function milliseconds(value) {
   const amount = Number.parseFloat(value);

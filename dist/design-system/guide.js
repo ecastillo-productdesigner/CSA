@@ -1,15 +1,16 @@
-import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-design-refresh';
-import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261026-design-refresh';
-import { mountProjectSpecimens } from './project-specimens.js?v=20261026-design-refresh';
-import { mountFormSpecimens } from './form-specimens.js?v=20261026-design-refresh';
-import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261026-design-refresh';
-import { colorRoleGroups } from './color-roles.js?v=20261026-design-refresh';
-import { typographyRoleGroups } from './typography-roles.js?v=20261026-design-refresh';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-design-refresh';
-import { populateDraftOptions } from '../draft-options.js?v=20261026-design-refresh';
-import { iconInventory } from './icon-inventory.js?v=20261026-design-refresh';
-import { tokenNumber } from './runtime.js?v=20261026-design-refresh';
-import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261026-design-refresh';
+import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-ds-consolidation';
+import { bindTabSelection } from '../selection-controls.js?v=20261026-ds-consolidation';
+import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261026-ds-consolidation';
+import { mountProjectSpecimens } from './project-specimens.js?v=20261026-ds-consolidation';
+import { mountFormSpecimens } from './form-specimens.js?v=20261026-ds-consolidation';
+import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261026-ds-consolidation';
+import { colorRoleGroups } from './color-roles.js?v=20261026-ds-consolidation';
+import { typographyRoleGroups } from './typography-roles.js?v=20261026-ds-consolidation';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-ds-consolidation';
+import { populateDraftOptions } from '../draft-options.js?v=20261026-ds-consolidation';
+import { iconInventory } from './icon-inventory.js?v=20261026-ds-consolidation';
+import { tokenNumber } from './runtime.js?v=20261026-ds-consolidation';
+import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261026-ds-consolidation';
 const $ = selector => document.querySelector(selector);
 populateDraftOptions(document);
 const toolDropdowns = createToolDropdowns();
@@ -349,12 +350,19 @@ try {
 
 const segmentPreview = $('#ds-segment-content');
 const segmentTransition = createTabPanelTransition(segmentPreview);
-for (const button of document.querySelectorAll('[data-segment-specimen]')) {
-  button.addEventListener('click', () => {
-    if (button.getAttribute('aria-pressed') === 'true') return;
+let segmentView = 'drafted';
+const segmentSelection = bindTabSelection({
+  root: $('#ds-status-tabs'),
+  items: [...document.querySelectorAll('[data-segment-specimen]')],
+  getValue: button => button.dataset.segmentSpecimen,
+  panel: segmentPreview,
+  onSelect: view => {
+    if (view === segmentView) return;
     segmentTransition.run(() => {
-      for (const peer of button.parentElement.querySelectorAll('button')) peer.setAttribute('aria-pressed', String(peer === button));
-      segmentPreview.textContent = button.dataset.segmentSpecimen === 'drafted' ? 'Your draft requests will appear here.' : 'Your draft recipes will appear here.';
+      segmentView = view;
+      segmentSelection.sync(view);
+      segmentPreview.textContent = view === 'drafted' ? 'Your draft requests will appear here.' : 'Your draft recipes will appear here.';
     });
-  });
-}
+  },
+});
+segmentSelection.sync(segmentView);

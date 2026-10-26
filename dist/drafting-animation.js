@@ -1,13 +1,4 @@
-import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-design-refresh';
-
-export const draftingMessages = Object.freeze([
-  'Checking for AI patterns, ensuring variety and authentic voice',
-  "Matching the publication's editorial voice and style",
-  'Understanding reader interests, concerns, and language',
-  'Preparing a polished draft for your editorial review and approval',
-  'Identifying key facts, quotes, and narrative structure',
-  'Every fact traced to your source material, every quote preserved in full',
-]);
+import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-ds-consolidation';
 
 function durationMilliseconds(path) {
   const value = tokenValue(path);
@@ -16,17 +7,16 @@ function durationMilliseconds(path) {
   return duration * (value.endsWith('ms') ? 1 : 1000);
 }
 
-export function createDraftingAnimation({ compact = true, messageLimit = 3, selectionKeys = [], variant = 'drafting' } = {}) {
+export function createDraftingAnimation({ compact = true, selectionKeys = [], variant = 'drafting' } = {}) {
   const addingSource = variant === 'source';
-  const count = Number.isFinite(messageLimit) ? Math.max(1, Math.min(draftingMessages.length, Math.floor(messageLimit))) : 3;
-  const messages = addingSource ? ['Adding your Source'] : draftingMessages.slice(0, count);
+  const depths = addingSource ? ['front'] : ['back', 'middle', 'front'];
   const element = document.createElement('div');
   element.className = 'drafting-animation';
   element.dataset.compact = String(compact);
   element.dataset.variant = addingSource ? 'source' : 'drafting';
   element.dataset.playing = 'false';
-  element.dataset.messageIndex = '0';
-  element.dataset.messageCount = String(messages.length);
+  element.dataset.phaseIndex = '0';
+  element.dataset.phaseCount = String(depths.length);
   const selectedKeys = Array.isArray(selectionKeys) ? selectionKeys : [];
   const shimmerColors = ['format', 'audience', 'voice'].filter(key => selectedKeys.includes(key));
   element.dataset.shimmerColors = addingSource ? 'source' : shimmerColors.join(' ');
@@ -42,7 +32,7 @@ export function createDraftingAnimation({ compact = true, messageLimit = 3, sele
   const stack = document.createElement('div');
   stack.className = 'drafting-paper-stack';
   stack.setAttribute('aria-hidden', 'true');
-  const papers = (addingSource ? ['front'] : ['back', 'middle', 'front']).map(depth => {
+  const papers = depths.map(depth => {
     const paper = document.createElement('div');
     paper.className = 'drafting-paper';
     paper.dataset.depth = depth;
@@ -56,11 +46,11 @@ export function createDraftingAnimation({ compact = true, messageLimit = 3, sele
     return paper;
   });
   const message = document.createElement('p');
-  message.className = 'drafting-message output-creating-label';
+  message.className = 'drafting-message';
   message.setAttribute('role', 'status');
   message.setAttribute('aria-live', 'polite');
   message.setAttribute('aria-atomic', 'true');
-  message.textContent = messages[0];
+  message.textContent = addingSource ? 'Adding your Source' : 'Drafting Content';
   element.append(stack, message);
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -81,7 +71,7 @@ export function createDraftingAnimation({ compact = true, messageLimit = 3, sele
     back: pose(tokenNumber('foundation.space.6'), -tokenNumber('foundation.space.4'), rotationStep * 2, 1 - scaleStep * 2),
     lift: pose(tokenNumber('foundation.space.12'), -tokenNumber('foundation.space.14'), rotationStep * 3, 1 - scaleStep),
   };
-  let index = 0;
+  let phaseIndex = 0;
   let timer = null;
   let moving = false;
   let playing = false;
@@ -129,11 +119,10 @@ export function createDraftingAnimation({ compact = true, messageLimit = 3, sele
     setDepth(incoming, 'front');
     setDepth(front, 'middle');
     setDepth(middle, 'back');
-    index = (index + 1) % messages.length;
+    phaseIndex = (phaseIndex + 1) % papers.length;
     if (shimmerColors.length > 1) shimmerIndex = (shimmerIndex + 1) % shimmerColors.length;
     updateShimmerColor();
-    message.textContent = messages[index];
-    element.dataset.messageIndex = String(index);
+    element.dataset.phaseIndex = String(phaseIndex);
     if (typeof incoming.animate !== 'function') {
       moving = true;
       timer = setTimeout(() => { timer = null; moving = false; schedule(); }, timing.duration);

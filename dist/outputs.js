@@ -1,9 +1,10 @@
-import { createIcon } from './icons.js?v=20261026-design-refresh';
-import { normalizeWordCount } from './variant-word-count.js?v=20261026-design-refresh';
-import { countPreviewWords } from './content-preview.js?v=20261026-design-refresh';
-import { createContentCardActions } from './content-card-editing.js?v=20261026-design-refresh';
-import { createDraftingAnimation } from './drafting-animation.js?v=20261026-design-refresh';
-import { topicDraftContent } from './topic-draft.js?v=20261026-design-refresh';
+import { syncSelection } from './selection-controls.js?v=20261026-ds-consolidation';
+import { createIcon } from './icons.js?v=20261026-ds-consolidation';
+import { normalizeWordCount } from './variant-word-count.js?v=20261026-ds-consolidation';
+import { countPreviewWords } from './content-preview.js?v=20261026-ds-consolidation';
+import { createContentCardActions } from './content-card-editing.js?v=20261026-ds-consolidation';
+import { createDraftingAnimation } from './drafting-animation.js?v=20261026-ds-consolidation';
+import { topicDraftContent } from './topic-draft.js?v=20261026-ds-consolidation';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',
@@ -389,13 +390,12 @@ export function renderOutputs(project, requestedView) {
   for (const animation of draftingAnimations) animation.destroy();
   draftingAnimations.clear();
   const state = variantPanelState(project, requestedView);
-  for (const tab of document.querySelectorAll('[data-output-view]')) {
-    const selected = tab.dataset.outputView === state.view;
+  const tabs = document.querySelectorAll('[data-output-view]');
+  for (const tab of tabs) {
     tab.textContent = tab.dataset.outputView === 'pending' ? state.pendingLabel : state.createdLabel;
     tab.dataset.empty = String(tab.dataset.outputView === 'pending' ? state.pendingLabel === 'To Draft' : !projectOutputs(project).some(outputIsReady));
-    tab.setAttribute('aria-selected', String(selected));
-    tab.tabIndex = selected ? 0 : -1;
   }
+  syncSelection(tabs, state.view, { getValue: tab => tab.dataset.outputView });
   document.querySelector('#output-status-content').setAttribute('aria-labelledby', `output-${state.view}-tab`);
   document.querySelector('.outputs-footer').hidden = state.view !== 'pending';
   const processing = Boolean(project?.outputProcessing);

@@ -1,8 +1,8 @@
-/* Export layout and colors are self-contained. Newsreader loads from the export font link, with generic serif fallback when unavailable. */
-body { max-width: var(--csa-foundation-size-760); margin: var(--csa-foundation-space-60) auto; padding: var(--csa-foundation-space-24); font: var(--csa-foundation-font-size-16) / var(--csa-foundation-line-height-28) var(--csa-foundation-font-family-export); color: var(--csa-component-export-text); }
-h1 { font-size: var(--csa-foundation-font-size-30); line-height: var(--csa-foundation-line-height-36); }
-h2 { font-size: var(--csa-foundation-font-size-24); line-height: var(--csa-foundation-line-height-32); }
-h3 { font-size: var(--csa-foundation-font-size-20); line-height: var(--csa-foundation-line-height-28); }
+/* Export reading metrics share the app roles; the default font stays offline-safe. Optional serif text uses Newsreader with a generic serif fallback. */
+body { max-width: var(--csa-foundation-size-760); margin: var(--csa-foundation-space-60) auto; padding: var(--csa-foundation-space-24); font-family: var(--csa-foundation-font-family-export); font-size: var(--csa-semantic-typography-body-font-size); line-height: var(--csa-semantic-typography-body-line-height); font-weight: var(--csa-semantic-typography-body-font-weight); letter-spacing: var(--csa-semantic-typography-body-letter-spacing); color: var(--csa-component-export-text); }
+h1 { font-size: var(--csa-semantic-typography-article-h1-font-size); line-height: var(--csa-semantic-typography-article-h1-line-height); font-weight: var(--csa-semantic-typography-article-h1-font-weight); letter-spacing: var(--csa-semantic-typography-article-h1-letter-spacing); }
+h2 { font-size: var(--csa-semantic-typography-article-h2-font-size); line-height: var(--csa-semantic-typography-article-h2-line-height); font-weight: var(--csa-semantic-typography-article-h2-font-weight); letter-spacing: var(--csa-semantic-typography-article-h2-letter-spacing); }
+h3 { font-size: var(--csa-semantic-typography-article-h3-font-size); line-height: var(--csa-semantic-typography-article-h3-line-height); font-weight: var(--csa-semantic-typography-article-h3-font-weight); letter-spacing: var(--csa-semantic-typography-article-h3-letter-spacing); }
 blockquote { border-left: var(--csa-foundation-border-width-3) solid var(--csa-component-export-quote-border); padding-left: var(--csa-foundation-space-20); }
 .ql-align-center { text-align: center; }
 .ql-align-right { text-align: right; }

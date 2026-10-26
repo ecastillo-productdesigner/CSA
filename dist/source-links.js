@@ -1,4 +1,4 @@
-import { fictionalTopicParagraphs } from './topic-draft.js?v=20261022-linked-stories-motion';
+import { fictionalTopicParagraphs } from './topic-draft.js?v=20261026-design-refresh';
 
 function safeUrl(value) {
   try {

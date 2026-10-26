@@ -134,201 +134,69 @@
       }
     },
     {
-      "name": "foundation.color.blue.50",
-      "designName": "foundation/color/blue/50",
-      "cssVariable": "--csa-foundation-color-blue-50",
+      "name": "foundation.color.neutral.950",
+      "designName": "foundation/color/neutral/950",
+      "cssVariable": "--csa-foundation-color-neutral-950",
       "type": "color",
       "layer": "foundation",
       "category": "color",
-      "value": "#eff6ff",
+      "value": "#060606",
       "reference": "",
-      "description": "Tailwind classic blue-50 for inactive primary buttons.",
+      "description": "Approved headings, selected borders, checkbox fill, and keyboard focus.",
+      "status": "approved-update",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.023529411764705882,
+          0.023529411764705882,
+          0.023529411764705882
+        ],
+        "alpha": 1,
+        "hex": "#060606"
+      }
+    },
+    {
+      "name": "foundation.color.rose.200",
+      "designName": "foundation/color/rose/200",
+      "cssVariable": "--csa-foundation-color-rose-200",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#fecdd3",
+      "reference": "",
+      "description": "Approved next darker chip color stop.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.9372549019607843,
-          0.9647058823529412,
+          0.996078431372549,
+          0.803921568627451,
+          0.8274509803921568
+        ],
+        "alpha": 1,
+        "hex": "#fecdd3"
+      }
+    },
+    {
+      "name": "foundation.color.indigo.100",
+      "designName": "foundation/color/indigo/100",
+      "cssVariable": "--csa-foundation-color-indigo-100",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#e0e7ff",
+      "reference": "",
+      "description": "Approved next darker chip color stop.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8784313725490196,
+          0.9058823529411765,
           1
         ],
         "alpha": 1,
-        "hex": "#eff6ff"
-      }
-    },
-    {
-      "name": "foundation.color.blue.200",
-      "designName": "foundation/color/blue/200",
-      "cssVariable": "--csa-foundation-color-blue-200",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#bfdbfe",
-      "reference": "",
-      "description": "Tailwind classic blue-200 for disabled actions and tertiary hover.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.7490196078431373,
-          0.8588235294117647,
-          0.996078431372549
-        ],
-        "alpha": 1,
-        "hex": "#bfdbfe"
-      }
-    },
-    {
-      "name": "foundation.color.blue.500",
-      "designName": "foundation/color/blue/500",
-      "cssVariable": "--csa-foundation-color-blue-500",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#3b82f6",
-      "reference": "",
-      "description": "Implemented palette value.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.23137254901960785,
-          0.5098039215686274,
-          0.9647058823529412
-        ],
-        "alpha": 1,
-        "hex": "#3b82f6"
-      }
-    },
-    {
-      "name": "foundation.color.blue.600",
-      "designName": "foundation/color/blue/600",
-      "cssVariable": "--csa-foundation-color-blue-600",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#2563eb",
-      "reference": "",
-      "description": "Implemented palette value.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1450980392156863,
-          0.38823529411764707,
-          0.9215686274509803
-        ],
-        "alpha": 1,
-        "hex": "#2563eb"
-      }
-    },
-    {
-      "name": "foundation.color.blue.700",
-      "designName": "foundation/color/blue/700",
-      "cssVariable": "--csa-foundation-color-blue-700",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#1d4ed8",
-      "reference": "",
-      "description": "Tailwind classic blue-700 for button hover and pressed states.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.11372549019607843,
-          0.3058823529411765,
-          0.8470588235294118
-        ],
-        "alpha": 1,
-        "hex": "#1d4ed8"
-      }
-    },
-    {
-      "name": "foundation.color.blue.focus",
-      "designName": "foundation/color/blue/focus",
-      "cssVariable": "--csa-foundation-color-blue-focus",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#3b82f6",
-      "reference": "foundation.color.blue.500",
-      "description": "Keyboard focus outline color, shared with blue-500.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.23137254901960785,
-          0.5098039215686274,
-          0.9647058823529412
-        ],
-        "alpha": 1,
-        "hex": "#3b82f6"
-      }
-    },
-    {
-      "name": "foundation.color.rose.100",
-      "designName": "foundation/color/rose/100",
-      "cssVariable": "--csa-foundation-color-rose-100",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#ffe4e6",
-      "reference": "",
-      "description": "Implemented palette value.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          1,
-          0.8941176470588236,
-          0.9019607843137255
-        ],
-        "alpha": 1,
-        "hex": "#ffe4e6"
-      }
-    },
-    {
-      "name": "foundation.color.indigo.50",
-      "designName": "foundation/color/indigo/50",
-      "cssVariable": "--csa-foundation-color-indigo-50",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#eef2ff",
-      "reference": "",
-      "description": "Implemented palette value.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.9333333333333333,
-          0.9490196078431372,
-          1
-        ],
-        "alpha": 1,
-        "hex": "#eef2ff"
-      }
-    },
-    {
-      "name": "foundation.color.orange.50",
-      "designName": "foundation/color/orange/50",
-      "cssVariable": "--csa-foundation-color-orange-50",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#fff7ed",
-      "reference": "",
-      "description": "Tailwind classic orange-50, the base color for the approved page canvas.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          1,
-          0.9686274509803922,
-          0.9294117647058824
-        ],
-        "alpha": 1,
-        "hex": "#fff7ed"
+        "hex": "#e0e7ff"
       }
     },
     {
@@ -351,6 +219,28 @@
         ],
         "alpha": 1,
         "hex": "#ffedd5"
+      }
+    },
+    {
+      "name": "foundation.color.orange.200",
+      "designName": "foundation/color/orange/200",
+      "cssVariable": "--csa-foundation-color-orange-200",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#fed7aa",
+      "reference": "",
+      "description": "Approved next darker chip color stop.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.996078431372549,
+          0.8431372549019608,
+          0.6666666666666666
+        ],
+        "alpha": 1,
+        "hex": "#fed7aa"
       }
     },
     {
@@ -441,27 +331,6 @@
       }
     },
     {
-      "name": "foundation.color.overlay.canvas-fade",
-      "designName": "foundation/color/overlay/canvas-fade",
-      "cssVariable": "--csa-foundation-color-overlay-canvas-fade",
-      "type": "color",
-      "layer": "foundation",
-      "category": "color",
-      "value": "#fffbf6e6",
-      "reference": "",
-      "description": "Fade matching the Orange 50 at 50% over white canvas, preserving the existing fade opacity.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          1,
-          0.984313725490196,
-          0.9647058823529412
-        ],
-        "alpha": 0.9019607843137255
-      }
-    },
-    {
       "name": "foundation.color.overlay.scrim",
       "designName": "foundation/color/overlay/scrim",
       "cssVariable": "--csa-foundation-color-overlay-scrim",
@@ -480,6 +349,28 @@
           0.3137254901960784
         ],
         "alpha": 0.16
+      }
+    },
+    {
+      "name": "foundation.color.overlay.amber-canvas-fade",
+      "designName": "foundation/color/overlay/amber-canvas-fade",
+      "cssVariable": "--csa-foundation-color-overlay-amber-canvas-fade",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#fffdf5e6",
+      "reference": "",
+      "description": "The 50%-strength Amber 50 canvas at 90.2% opacity for page and navigation fades.",
+      "status": "approved-update",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          0.9921568627450981,
+          0.9607843137254902
+        ],
+        "alpha": 0.9019607843137255,
+        "hex": "#fffdf5"
       }
     },
     {
@@ -525,47 +416,91 @@
       }
     },
     {
-      "name": "foundation.color.canvas.orange-50-half",
-      "designName": "foundation/color/canvas/orange-50-half",
-      "cssVariable": "--csa-foundation-color-canvas-orange-50-half",
+      "name": "foundation.color.canvas.amber-50-half",
+      "designName": "foundation/color/canvas/amber-50-half",
+      "cssVariable": "--csa-foundation-color-canvas-amber-50-half",
       "type": "color",
       "layer": "foundation",
       "category": "color",
-      "value": "#fffbf6",
+      "value": "#fffdf5",
       "reference": "",
-      "description": "Tailwind orange-50 at 50% opacity over white, composited to an opaque canvas so overlapping surfaces do not compound the tint.",
-      "status": "approved-update",
+      "description": "Tailwind Amber 50 (#FFFBEB) at 50% over white, flattened to opaque #FFFDF5 so overlapping canvas surfaces stay consistent.",
+      "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
           1,
-          0.984313725490196,
-          0.9647058823529412
+          0.9921568627450981,
+          0.9607843137254902
         ],
         "alpha": 1,
-        "hex": "#fffbf6"
+        "hex": "#fffdf5"
       }
     },
     {
-      "name": "foundation.color.legacy.editor-text",
-      "designName": "foundation/color/legacy/editor-text",
-      "cssVariable": "--csa-foundation-color-legacy-editor-text",
+      "name": "foundation.color.teal.50",
+      "designName": "foundation/color/teal/50",
+      "cssVariable": "--csa-foundation-color-teal-50",
       "type": "color",
       "layer": "foundation",
       "category": "color",
-      "value": "#26344a",
+      "value": "#f0fdfa",
       "reference": "",
-      "description": "Legacy default for the hidden editor color input; this is not the visible article text color.",
-      "status": "legacy",
+      "description": "Tailwind Teal 50; subtle selected-control surface.",
+      "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.14901960784313725,
-          0.20392156862745098,
-          0.2901960784313726
+          0.9411764705882353,
+          0.9921568627450981,
+          0.9803921568627451
         ],
         "alpha": 1,
-        "hex": "#26344a"
+        "hex": "#f0fdfa"
+      }
+    },
+    {
+      "name": "foundation.color.teal.700",
+      "designName": "foundation/color/teal/700",
+      "cssVariable": "--csa-foundation-color-teal-700",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#00786f",
+      "reference": "",
+      "description": "Tailwind Teal 700; approved interface accent.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0,
+          0.47058823529411764,
+          0.43529411764705883
+        ],
+        "alpha": 1,
+        "hex": "#00786f"
+      }
+    },
+    {
+      "name": "foundation.color.teal.800",
+      "designName": "foundation/color/teal/800",
+      "cssVariable": "--csa-foundation-color-teal-800",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#005f5a",
+      "reference": "",
+      "description": "Tailwind Teal 800; approved interface accent.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0,
+          0.37254901960784315,
+          0.35294117647058826
+        ],
+        "alpha": 1,
+        "hex": "#005f5a"
       }
     },
     {
@@ -1265,30 +1200,6 @@
       "status": "observed"
     },
     {
-      "name": "foundation.font.size.10",
-      "designName": "foundation/font/size/10",
-      "cssVariable": "--csa-foundation-font-size-10",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "font",
-      "value": "10px",
-      "reference": "",
-      "description": "Observed type size.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.font.size.11",
-      "designName": "foundation/font/size/11",
-      "cssVariable": "--csa-foundation-font-size-11",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "font",
-      "value": "11px",
-      "reference": "",
-      "description": "Observed type size.",
-      "status": "observed"
-    },
-    {
       "name": "foundation.font.size.12",
       "designName": "foundation/font/size/12",
       "cssVariable": "--csa-foundation-font-size-12",
@@ -1297,20 +1208,8 @@
       "category": "font",
       "value": "12px",
       "reference": "",
-      "description": "Observed type size.",
+      "description": "Approved compact text scale.",
       "status": "observed"
-    },
-    {
-      "name": "foundation.font.size.13",
-      "designName": "foundation/font/size/13",
-      "cssVariable": "--csa-foundation-font-size-13",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "font",
-      "value": "13px",
-      "reference": "",
-      "description": "Observed type size.",
-      "status": "observed-exception"
     },
     {
       "name": "foundation.font.size.14",
@@ -1321,20 +1220,8 @@
       "category": "font",
       "value": "14px",
       "reference": "",
-      "description": "Observed type size.",
+      "description": "Approved compact text scale.",
       "status": "observed"
-    },
-    {
-      "name": "foundation.font.size.15",
-      "designName": "foundation/font/size/15",
-      "cssVariable": "--csa-foundation-font-size-15",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "font",
-      "value": "15px",
-      "reference": "",
-      "description": "Observed type size.",
-      "status": "observed-exception"
     },
     {
       "name": "foundation.font.size.16",
@@ -1345,44 +1232,8 @@
       "category": "font",
       "value": "16px",
       "reference": "",
-      "description": "Observed type size.",
+      "description": "Approved compact text scale.",
       "status": "observed"
-    },
-    {
-      "name": "foundation.font.size.17",
-      "designName": "foundation/font/size/17",
-      "cssVariable": "--csa-foundation-font-size-17",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "font",
-      "value": "17px",
-      "reference": "",
-      "description": "Observed type size.",
-      "status": "observed-exception"
-    },
-    {
-      "name": "foundation.font.size.18",
-      "designName": "foundation/font/size/18",
-      "cssVariable": "--csa-foundation-font-size-18",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "font",
-      "value": "18px",
-      "reference": "",
-      "description": "Observed type size.",
-      "status": "observed"
-    },
-    {
-      "name": "foundation.font.size.19",
-      "designName": "foundation/font/size/19",
-      "cssVariable": "--csa-foundation-font-size-19",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "font",
-      "value": "19px",
-      "reference": "",
-      "description": "Observed type size.",
-      "status": "observed-exception"
     },
     {
       "name": "foundation.font.size.20",
@@ -1393,32 +1244,8 @@
       "category": "font",
       "value": "20px",
       "reference": "",
-      "description": "Observed type size.",
+      "description": "Approved compact text scale.",
       "status": "observed"
-    },
-    {
-      "name": "foundation.font.size.22",
-      "designName": "foundation/font/size/22",
-      "cssVariable": "--csa-foundation-font-size-22",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "font",
-      "value": "22px",
-      "reference": "",
-      "description": "Observed type size.",
-      "status": "observed-exception"
-    },
-    {
-      "name": "foundation.font.size.23",
-      "designName": "foundation/font/size/23",
-      "cssVariable": "--csa-foundation-font-size-23",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "font",
-      "value": "23px",
-      "reference": "",
-      "description": "Observed type size.",
-      "status": "observed-exception"
     },
     {
       "name": "foundation.font.size.24",
@@ -1429,67 +1256,19 @@
       "category": "font",
       "value": "24px",
       "reference": "",
-      "description": "Observed type size.",
+      "description": "Approved compact text scale.",
       "status": "observed"
     },
     {
-      "name": "foundation.font.size.25",
-      "designName": "foundation/font/size/25",
-      "cssVariable": "--csa-foundation-font-size-25",
+      "name": "foundation.font.size.30",
+      "designName": "foundation/font/size/30",
+      "cssVariable": "--csa-foundation-font-size-30",
       "type": "dimension",
       "layer": "foundation",
       "category": "font",
-      "value": "25px",
+      "value": "30px",
       "reference": "",
-      "description": "Observed type size.",
-      "status": "observed-exception"
-    },
-    {
-      "name": "foundation.font.size.27",
-      "designName": "foundation/font/size/27",
-      "cssVariable": "--csa-foundation-font-size-27",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "font",
-      "value": "27px",
-      "reference": "",
-      "description": "Observed type size.",
-      "status": "observed-exception"
-    },
-    {
-      "name": "foundation.font.size.28",
-      "designName": "foundation/font/size/28",
-      "cssVariable": "--csa-foundation-font-size-28",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "font",
-      "value": "28px",
-      "reference": "",
-      "description": "Observed type size.",
-      "status": "observed-exception"
-    },
-    {
-      "name": "foundation.font.size.29",
-      "designName": "foundation/font/size/29",
-      "cssVariable": "--csa-foundation-font-size-29",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "font",
-      "value": "29px",
-      "reference": "",
-      "description": "Observed type size.",
-      "status": "observed-exception"
-    },
-    {
-      "name": "foundation.font.size.32",
-      "designName": "foundation/font/size/32",
-      "cssVariable": "--csa-foundation-font-size-32",
-      "type": "dimension",
-      "layer": "foundation",
-      "category": "font",
-      "value": "32px",
-      "reference": "",
-      "description": "Observed type size.",
+      "description": "Approved compact text scale.",
       "status": "observed"
     },
     {
@@ -2090,6 +1869,30 @@
       "value": "30px",
       "reference": "",
       "description": "Observed fixed line height.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.line.height.32",
+      "designName": "foundation/line/height/32",
+      "cssVariable": "--csa-foundation-line-height-32",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "line",
+      "value": "32px",
+      "reference": "",
+      "description": "Heading line height.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.line.height.36",
+      "designName": "foundation/line/height/36",
+      "cssVariable": "--csa-foundation-line-height-36",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "line",
+      "value": "36px",
+      "reference": "",
+      "description": "Heading line height.",
       "status": "observed"
     },
     {
@@ -3629,25 +3432,73 @@
       "status": "observed"
     },
     {
+      "name": "foundation.icon.size.16",
+      "designName": "foundation/icon/size/16",
+      "cssVariable": "--csa-foundation-icon-size-16",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "icon",
+      "value": "16px",
+      "reference": "",
+      "description": "Material Symbols size, separate from the text scale.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.icon.size.20",
+      "designName": "foundation/icon/size/20",
+      "cssVariable": "--csa-foundation-icon-size-20",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "icon",
+      "value": "20px",
+      "reference": "",
+      "description": "Material Symbols size, separate from the text scale.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.icon.size.24",
+      "designName": "foundation/icon/size/24",
+      "cssVariable": "--csa-foundation-icon-size-24",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "icon",
+      "value": "24px",
+      "reference": "",
+      "description": "Material Symbols size, separate from the text scale.",
+      "status": "observed"
+    },
+    {
+      "name": "foundation.icon.size.40",
+      "designName": "foundation/icon/size/40",
+      "cssVariable": "--csa-foundation-icon-size-40",
+      "type": "dimension",
+      "layer": "foundation",
+      "category": "icon",
+      "value": "40px",
+      "reference": "",
+      "description": "Material Symbols size, separate from the text scale.",
+      "status": "observed"
+    },
+    {
       "name": "semantic.color.background.canvas",
       "designName": "semantic/color/background/canvas",
       "cssVariable": "--csa-semantic-color-background-canvas",
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#fffbf6",
-      "reference": "foundation.color.canvas.orange-50-half",
-      "description": "Page background: Tailwind orange-50 at 50% opacity over white, resolved to #FFFBF6.",
-      "status": "observed",
+      "value": "#fffdf5",
+      "reference": "foundation.color.canvas.amber-50-half",
+      "description": "Tailwind Amber 50 at 50% over white (#FFFDF5), rendered opaque for a consistent page canvas; cards and panels use white.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
           1,
-          0.984313725490196,
-          0.9647058823529412
+          0.9921568627450981,
+          0.9607843137254902
         ],
         "alpha": 1,
-        "hex": "#fffbf6"
+        "hex": "#fffdf5"
       }
     },
     {
@@ -3659,7 +3510,7 @@
       "category": "color",
       "value": "#ffffff",
       "reference": "foundation.color.neutral.0",
-      "description": "Default white cards, panels, and dialogs.",
+      "description": "White cards, fields, menus, and dialogs.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
@@ -3717,6 +3568,50 @@
       }
     },
     {
+      "name": "semantic.color.surface.selected",
+      "designName": "semantic/color/surface/selected",
+      "cssVariable": "--csa-semantic-color-surface-selected",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#f0fdfa",
+      "reference": "foundation.color.teal.50",
+      "description": "Soft teal selected-control surface; pair with an accent checkmark, border, icon, or label.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9411764705882353,
+          0.9921568627450981,
+          0.9803921568627451
+        ],
+        "alpha": 1,
+        "hex": "#f0fdfa"
+      }
+    },
+    {
+      "name": "semantic.color.surface.panel",
+      "designName": "semantic/color/surface/panel",
+      "cssVariable": "--csa-semantic-color-surface-panel",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#ffffff",
+      "reference": "foundation.color.neutral.0",
+      "description": "White navigation, composer, editor, and source canvas panels.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      }
+    },
+    {
       "name": "semantic.color.text.primary",
       "designName": "semantic/color/text/primary",
       "cssVariable": "--csa-semantic-color-text-primary",
@@ -3745,19 +3640,19 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#404040",
-      "reference": "foundation.color.neutral.700",
-      "description": "Headings and variant article titles.",
-      "status": "observed",
+      "value": "#060606",
+      "reference": "foundation.color.neutral.950",
+      "description": "Approved near-black headings and strong interface labels.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.25098039215686274,
-          0.25098039215686274,
-          0.25098039215686274
+          0.023529411764705882,
+          0.023529411764705882,
+          0.023529411764705882
         ],
         "alpha": 1,
-        "hex": "#404040"
+        "hex": "#060606"
       }
     },
     {
@@ -3813,7 +3708,7 @@
       "category": "color",
       "value": "#737373",
       "reference": "foundation.color.neutral.500",
-      "description": "Readable supporting text, metadata, counts, optional labels, and placeholders on white or the page canvas.",
+      "description": "Readable supporting text, project metadata, placeholders and menu icons on white surfaces. Canvas supporting text uses canvas-secondary.",
       "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
@@ -3824,6 +3719,28 @@
         ],
         "alpha": 1,
         "hex": "#737373"
+      }
+    },
+    {
+      "name": "semantic.color.text.canvas-secondary",
+      "designName": "semantic/color/text/canvas-secondary",
+      "cssVariable": "--csa-semantic-color-text-canvas-secondary",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#404040",
+      "reference": "semantic.color.text.primary",
+      "description": "Readable supporting text directly on the 50%-strength Amber 50 canvas, including list metadata and the editor footer.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.25098039215686274,
+          0.25098039215686274,
+          0.25098039215686274
+        ],
+        "alpha": 1,
+        "hex": "#404040"
       }
     },
     {
@@ -3855,19 +3772,19 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#3b82f6",
-      "reference": "foundation.color.blue.500",
-      "description": "Blue outline identifying the active selection.",
-      "status": "observed",
+      "value": "#00786f",
+      "reference": "semantic.color.action.primary",
+      "description": "Deep teal outline identifying the active selection.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.23137254901960785,
-          0.5098039215686274,
-          0.9647058823529412
+          0,
+          0.47058823529411764,
+          0.43529411764705883
         ],
         "alpha": 1,
-        "hex": "#3b82f6"
+        "hex": "#00786f"
       }
     },
     {
@@ -3893,25 +3810,47 @@
       }
     },
     {
+      "name": "semantic.color.border.focus",
+      "designName": "semantic/color/border/focus",
+      "cssVariable": "--csa-semantic-color-border-focus",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#00786f",
+      "reference": "semantic.color.action.primary",
+      "description": "Deep teal keyboard-focus outline, distinct on white and the cream canvas.",
+      "status": "approved-update",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0,
+          0.47058823529411764,
+          0.43529411764705883
+        ],
+        "alpha": 1,
+        "hex": "#00786f"
+      }
+    },
+    {
       "name": "semantic.color.action.primary",
       "designName": "semantic/color/action/primary",
       "cssVariable": "--csa-semantic-color-action-primary",
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#2563eb",
-      "reference": "foundation.color.blue.600",
-      "description": "Default filled primary action background.",
-      "status": "observed",
+      "value": "#00786f",
+      "reference": "foundation.color.teal.700",
+      "description": "Deep teal primary action, interactive link, and accent foreground.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.1450980392156863,
-          0.38823529411764707,
-          0.9215686274509803
+          0,
+          0.47058823529411764,
+          0.43529411764705883
         ],
         "alpha": 1,
-        "hex": "#2563eb"
+        "hex": "#00786f"
       }
     },
     {
@@ -3921,19 +3860,19 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#1d4ed8",
-      "reference": "foundation.color.blue.700",
-      "description": "Primary action background on hover or press.",
-      "status": "observed",
+      "value": "#005f5a",
+      "reference": "foundation.color.teal.800",
+      "description": "Darker teal primary action and link hover or pressed foreground.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.11372549019607843,
-          0.3058823529411765,
-          0.8470588235294118
+          0,
+          0.37254901960784315,
+          0.35294117647058826
         ],
         "alpha": 1,
-        "hex": "#1d4ed8"
+        "hex": "#005f5a"
       }
     },
     {
@@ -3943,19 +3882,19 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#a3a3a3",
-      "reference": "foundation.color.neutral.400",
-      "description": "Label on a disabled action.",
-      "status": "observed",
+      "value": "#737373",
+      "reference": "semantic.color.text.secondary",
+      "description": "Secondary-gray label on an unavailable action.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.6392156862745098,
-          0.6392156862745098,
-          0.6392156862745098
+          0.45098039215686275,
+          0.45098039215686275,
+          0.45098039215686275
         ],
         "alpha": 1,
-        "hex": "#a3a3a3"
+        "hex": "#737373"
       }
     },
     {
@@ -3965,19 +3904,19 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#404040",
-      "reference": "foundation.color.neutral.700",
-      "description": "Heart color for a saved variant.",
+      "value": "#00786f",
+      "reference": "semantic.color.action.primary",
+      "description": "Deep teal filled heart identifying a saved draft or preset.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.25098039215686274,
-          0.25098039215686274,
-          0.25098039215686274
+          0,
+          0.47058823529411764,
+          0.43529411764705883
         ],
         "alpha": 1,
-        "hex": "#404040"
+        "hex": "#00786f"
       }
     },
     {
@@ -4031,19 +3970,19 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#f5f5f5",
-      "reference": "foundation.color.neutral.100",
-      "description": "Neutral gray navigation selected surface, matching hover.",
+      "value": "#f0fdfa",
+      "reference": "semantic.color.surface.selected",
+      "description": "Soft teal active navigation surface, paired with a teal label and filled icon.",
       "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.9607843137254902,
-          0.9607843137254902,
-          0.9607843137254902
+          0.9411764705882353,
+          0.9921568627450981,
+          0.9803921568627451
         ],
         "alpha": 1,
-        "hex": "#f5f5f5"
+        "hex": "#f0fdfa"
       }
     },
     {
@@ -4053,19 +3992,19 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#f5f5f5",
-      "reference": "foundation.color.neutral.100",
-      "description": "Neutral gray navigation selected hover surface, matching hover.",
+      "value": "#f0fdfa",
+      "reference": "semantic.color.surface.selected",
+      "description": "Soft teal active navigation hover surface; the label and icon retain the accent.",
       "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.9607843137254902,
-          0.9607843137254902,
-          0.9607843137254902
+          0.9411764705882353,
+          0.9921568627450981,
+          0.9803921568627451
         ],
         "alpha": 1,
-        "hex": "#f5f5f5"
+        "hex": "#f0fdfa"
       }
     },
     {
@@ -4075,19 +4014,19 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#404040",
-      "reference": "foundation.color.neutral.700",
-      "description": "Selected navigation label and icon retain the standard dark gray, matching the reference.",
+      "value": "#00786f",
+      "reference": "semantic.color.action.primary",
+      "description": "Deep teal selected navigation label and icon.",
       "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.25098039215686274,
-          0.25098039215686274,
-          0.25098039215686274
+          0,
+          0.47058823529411764,
+          0.43529411764705883
         ],
         "alpha": 1,
-        "hex": "#404040"
+        "hex": "#00786f"
       }
     },
     {
@@ -4118,18 +4057,19 @@
       "type": "color",
       "layer": "semantic",
       "category": "color",
-      "value": "#fffbf6e6",
-      "reference": "foundation.color.overlay.canvas-fade",
-      "description": "Canvas-colored navigation and page fade.",
-      "status": "observed",
+      "value": "#fffdf5e6",
+      "reference": "foundation.color.overlay.amber-canvas-fade",
+      "description": "Fade matching the 50%-strength Amber 50 canvas.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
           1,
-          0.984313725490196,
-          0.9647058823529412
+          0.9921568627450981,
+          0.9607843137254902
         ],
-        "alpha": 0.9019607843137255
+        "alpha": 0.9019607843137255,
+        "hex": "#fffdf5"
       }
     },
     {
@@ -4160,9 +4100,9 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "700 32px/1.4 Newsreader, serif",
+      "value": "700 30px/1.2 Newsreader, serif",
       "reference": "",
-      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4170,11 +4110,11 @@
           "serif"
         ],
         "fontSize": {
-          "value": 32,
+          "value": 30,
           "unit": "px"
         },
         "fontWeight": 700,
-        "lineHeight": 1.4,
+        "lineHeight": 1.2,
         "letterSpacing": {
           "value": -0.35,
           "unit": "px"
@@ -4188,9 +4128,9 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "700 24px/1.25 Newsreader, serif",
+      "value": "700 24px/1.3333333333333333 Newsreader, serif",
       "reference": "",
-      "description": "Homepage greeting on mobile.",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4202,7 +4142,7 @@
           "unit": "px"
         },
         "fontWeight": 700,
-        "lineHeight": 1.25,
+        "lineHeight": 1.3333333333333333,
         "letterSpacing": {
           "value": -0.4,
           "unit": "px"
@@ -4216,9 +4156,9 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "650 29px/1.35 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "value": "650 30px/1.2 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4230,11 +4170,11 @@
           "sans-serif"
         ],
         "fontSize": {
-          "value": 29,
+          "value": 30,
           "unit": "px"
         },
         "fontWeight": 650,
-        "lineHeight": 1.35,
+        "lineHeight": 1.2,
         "letterSpacing": {
           "value": -0.7,
           "unit": "px"
@@ -4248,9 +4188,9 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "650 24px/1.35 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "value": "650 24px/1.3333333333333333 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Editor page title at compact and mobile breakpoints.",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4266,7 +4206,7 @@
           "unit": "px"
         },
         "fontWeight": 650,
-        "lineHeight": 1.35,
+        "lineHeight": 1.3333333333333333,
         "letterSpacing": {
           "value": -0.7,
           "unit": "px"
@@ -4280,9 +4220,9 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "400 16px/1.7 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "value": "400 16px/1.75 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4298,7 +4238,7 @@
           "unit": "px"
         },
         "fontWeight": 400,
-        "lineHeight": 1.7,
+        "lineHeight": 1.75,
         "letterSpacing": {
           "value": 0,
           "unit": "px"
@@ -4314,7 +4254,7 @@
       "category": "typography",
       "value": "700 16px/1.25 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4344,9 +4284,9 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "600 14px/1.4 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "value": "600 14px/1.4285714285714286 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4362,7 +4302,7 @@
           "unit": "px"
         },
         "fontWeight": 600,
-        "lineHeight": 1.4,
+        "lineHeight": 1.4285714285714286,
         "letterSpacing": {
           "value": 0,
           "unit": "px"
@@ -4376,9 +4316,9 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "400 11px/1.6363636363636365 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "value": "400 12px/1.3333333333333333 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Implemented text role; sizes in CSS pixels. Composite CSS is exported as individual properties.",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4390,11 +4330,11 @@
           "sans-serif"
         ],
         "fontSize": {
-          "value": 11,
+          "value": 12,
           "unit": "px"
         },
         "fontWeight": 400,
-        "lineHeight": 1.6363636363636365,
+        "lineHeight": 1.3333333333333333,
         "letterSpacing": {
           "value": 0,
           "unit": "px"
@@ -4408,10 +4348,10 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "700 18px/1.3888888888888888 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "value": "600 16px/1.25 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Homepage grid-card title: 18px / 25px, bold.",
-      "status": "observed",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
+      "status": "approved-update",
       "properties": {
         "fontFamily": [
           "Inter",
@@ -4422,11 +4362,11 @@
           "sans-serif"
         ],
         "fontSize": {
-          "value": 18,
+          "value": 16,
           "unit": "px"
         },
-        "fontWeight": 700,
-        "lineHeight": 1.3888888888888888,
+        "fontWeight": 600,
+        "lineHeight": 1.25,
         "letterSpacing": {
           "value": 0,
           "unit": "px"
@@ -4440,9 +4380,169 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "700 16px/1.375 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "value": "600 16px/1.25 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Homepage grid-card title on mobile: 16px / 22px, bold.",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
+      "status": "approved-update",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 16,
+          "unit": "px"
+        },
+        "fontWeight": 600,
+        "lineHeight": 1.25,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.panel-heading",
+      "designName": "semantic/typography/panel-heading",
+      "cssVariable": "--csa-semantic-typography-panel-heading",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "700 20px/1.4 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "General panel heading role. New Draft and Content use the compact composer-panel component typography.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 20,
+          "unit": "px"
+        },
+        "fontWeight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.dialog-heading",
+      "designName": "semantic/typography/dialog-heading",
+      "cssVariable": "--csa-semantic-typography-dialog-heading",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "650 24px/1.3333333333333333 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 24,
+          "unit": "px"
+        },
+        "fontWeight": 650,
+        "lineHeight": 1.3333333333333333,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.source-title",
+      "designName": "semantic/typography/source-title",
+      "cssVariable": "--csa-semantic-typography-source-title",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "600 14px/1.4285714285714286 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 14,
+          "unit": "px"
+        },
+        "fontWeight": 600,
+        "lineHeight": 1.4285714285714286,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.variant-title",
+      "designName": "semantic/typography/variant-title",
+      "cssVariable": "--csa-semantic-typography-variant-title",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "400 14px/1.4285714285714286 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 14,
+          "unit": "px"
+        },
+        "fontWeight": 400,
+        "lineHeight": 1.4285714285714286,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.result-title",
+      "designName": "semantic/typography/result-title",
+      "cssVariable": "--csa-semantic-typography-result-title",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "700 16px/1.5 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4458,167 +4558,7 @@
           "unit": "px"
         },
         "fontWeight": 700,
-        "lineHeight": 1.375,
-        "letterSpacing": {
-          "value": 0,
-          "unit": "px"
-        }
-      }
-    },
-    {
-      "name": "semantic.typography.panel-heading",
-      "designName": "semantic/typography/panel-heading",
-      "cssVariable": "--csa-semantic-typography-panel-heading",
-      "type": "typography",
-      "layer": "semantic",
-      "category": "typography",
-      "value": "700 18px/1.3333333333333333 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Implemented interface text role.",
-      "status": "observed",
-      "properties": {
-        "fontFamily": [
-          "Inter",
-          "system-ui",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "sans-serif"
-        ],
-        "fontSize": {
-          "value": 18,
-          "unit": "px"
-        },
-        "fontWeight": 700,
-        "lineHeight": 1.3333333333333333,
-        "letterSpacing": {
-          "value": 0,
-          "unit": "px"
-        }
-      }
-    },
-    {
-      "name": "semantic.typography.dialog-heading",
-      "designName": "semantic/typography/dialog-heading",
-      "cssVariable": "--csa-semantic-typography-dialog-heading",
-      "type": "typography",
-      "layer": "semantic",
-      "category": "typography",
-      "value": "650 25px/1.3 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Implemented interface text role.",
-      "status": "observed",
-      "properties": {
-        "fontFamily": [
-          "Inter",
-          "system-ui",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "sans-serif"
-        ],
-        "fontSize": {
-          "value": 25,
-          "unit": "px"
-        },
-        "fontWeight": 650,
-        "lineHeight": 1.3,
-        "letterSpacing": {
-          "value": 0,
-          "unit": "px"
-        }
-      }
-    },
-    {
-      "name": "semantic.typography.source-title",
-      "designName": "semantic/typography/source-title",
-      "cssVariable": "--csa-semantic-typography-source-title",
-      "type": "typography",
-      "layer": "semantic",
-      "category": "typography",
-      "value": "600 14px/1.5 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Implemented interface text role.",
-      "status": "observed",
-      "properties": {
-        "fontFamily": [
-          "Inter",
-          "system-ui",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "sans-serif"
-        ],
-        "fontSize": {
-          "value": 14,
-          "unit": "px"
-        },
-        "fontWeight": 600,
         "lineHeight": 1.5,
-        "letterSpacing": {
-          "value": 0,
-          "unit": "px"
-        }
-      }
-    },
-    {
-      "name": "semantic.typography.variant-title",
-      "designName": "semantic/typography/variant-title",
-      "cssVariable": "--csa-semantic-typography-variant-title",
-      "type": "typography",
-      "layer": "semantic",
-      "category": "typography",
-      "value": "400 14px/1.5 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Implemented interface text role.",
-      "status": "observed",
-      "properties": {
-        "fontFamily": [
-          "Inter",
-          "system-ui",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "sans-serif"
-        ],
-        "fontSize": {
-          "value": 14,
-          "unit": "px"
-        },
-        "fontWeight": 400,
-        "lineHeight": 1.5,
-        "letterSpacing": {
-          "value": 0,
-          "unit": "px"
-        }
-      }
-    },
-    {
-      "name": "semantic.typography.result-title",
-      "designName": "semantic/typography/result-title",
-      "cssVariable": "--csa-semantic-typography-result-title",
-      "type": "typography",
-      "layer": "semantic",
-      "category": "typography",
-      "value": "700 14px/1.3571428571428572 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Implemented interface text role.",
-      "status": "observed",
-      "properties": {
-        "fontFamily": [
-          "Inter",
-          "system-ui",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "sans-serif"
-        ],
-        "fontSize": {
-          "value": 14,
-          "unit": "px"
-        },
-        "fontWeight": 700,
-        "lineHeight": 1.3571428571428572,
         "letterSpacing": {
           "value": 0,
           "unit": "px"
@@ -4634,7 +4574,7 @@
       "category": "typography",
       "value": "600 14px/1.4285714285714286 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Implemented interface text role.",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4666,7 +4606,7 @@
       "category": "typography",
       "value": "600 16px/1.25 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Implemented interface text role.",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4696,10 +4636,10 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "650 16px/1.25 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "value": "400 14px/1.4285714285714286 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Implemented interface text role.",
-      "status": "observed",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
+      "status": "approved-update",
       "properties": {
         "fontFamily": [
           "Inter",
@@ -4710,11 +4650,11 @@
           "sans-serif"
         ],
         "fontSize": {
-          "value": 16,
+          "value": 14,
           "unit": "px"
         },
-        "fontWeight": 650,
-        "lineHeight": 1.25,
+        "fontWeight": 400,
+        "lineHeight": 1.4285714285714286,
         "letterSpacing": {
           "value": 0,
           "unit": "px"
@@ -4728,9 +4668,9 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "400 12px/1.6666666666666667 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "value": "500 12px/1.6666666666666667 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Implemented interface text role.",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4745,7 +4685,7 @@
           "value": 12,
           "unit": "px"
         },
-        "fontWeight": 400,
+        "fontWeight": 500,
         "lineHeight": 1.6666666666666667,
         "letterSpacing": {
           "value": 0,
@@ -4760,9 +4700,9 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "700 12px/1.3333333333333333 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "",
-      "description": "Implemented interface text role.",
+      "value": "500 12px/1.6666666666666667 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "semantic.typography.chip",
+      "description": "Status labels share the same Inter typography as chips.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4777,8 +4717,8 @@
           "value": 12,
           "unit": "px"
         },
-        "fontWeight": 700,
-        "lineHeight": 1.3333333333333333,
+        "fontWeight": 500,
+        "lineHeight": 1.6666666666666667,
         "letterSpacing": {
           "value": 0,
           "unit": "px"
@@ -4794,7 +4734,7 @@
       "category": "typography",
       "value": "550 14px/1.4285714285714286 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Implemented interface text role.",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4824,9 +4764,9 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "650 23px/1.4 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "value": "650 24px/1.3333333333333333 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Implemented interface text role.",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4838,11 +4778,11 @@
           "sans-serif"
         ],
         "fontSize": {
-          "value": 23,
+          "value": 24,
           "unit": "px"
         },
         "fontWeight": 650,
-        "lineHeight": 1.4,
+        "lineHeight": 1.3333333333333333,
         "letterSpacing": {
           "value": 0,
           "unit": "px"
@@ -4856,9 +4796,9 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "650 19px/1.4 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "value": "650 20px/1.4 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Implemented interface text role.",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4870,7 +4810,7 @@
           "sans-serif"
         ],
         "fontSize": {
-          "value": 19,
+          "value": 20,
           "unit": "px"
         },
         "fontWeight": 650,
@@ -4888,9 +4828,9 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "400 12px/1.6666666666666667 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "value": "400 12px/1.3333333333333333 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Implemented interface text role.",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4906,7 +4846,7 @@
           "unit": "px"
         },
         "fontWeight": 400,
-        "lineHeight": 1.6666666666666667,
+        "lineHeight": 1.3333333333333333,
         "letterSpacing": {
           "value": 0,
           "unit": "px"
@@ -4922,7 +4862,7 @@
       "category": "typography",
       "value": "400 14px/1.4285714285714286 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Implemented interface text role.",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4952,9 +4892,9 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "400 12px/1.5 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "value": "400 12px/1.3333333333333333 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       "reference": "",
-      "description": "Implemented interface text role.",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -4970,7 +4910,71 @@
           "unit": "px"
         },
         "fontWeight": 400,
+        "lineHeight": 1.3333333333333333,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.input-value",
+      "designName": "semantic/typography/input-value",
+      "cssVariable": "--csa-semantic-typography-input-value",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "400 16px/1.5 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 16,
+          "unit": "px"
+        },
+        "fontWeight": 400,
         "lineHeight": 1.5,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    {
+      "name": "semantic.typography.article-h1",
+      "designName": "semantic/typography/article-h1",
+      "cssVariable": "--csa-semantic-typography-article-h1",
+      "type": "typography",
+      "layer": "semantic",
+      "category": "typography",
+      "value": "650 30px/1.2 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "",
+      "description": "Approved shared text role; text sizes follow the compact six-size scale.",
+      "status": "observed",
+      "properties": {
+        "fontFamily": [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "fontSize": {
+          "value": 30,
+          "unit": "px"
+        },
+        "fontWeight": 650,
+        "lineHeight": 1.2,
         "letterSpacing": {
           "value": 0,
           "unit": "px"
@@ -5000,6 +5004,18 @@
       "reference": "",
       "description": "Mobile dropdown elevation; preserves the shared offset and blur with 16% neutral opacity.",
       "status": "observed"
+    },
+    {
+      "name": "semantic.shadow.project-hover",
+      "designName": "semantic/shadow/project-hover",
+      "cssVariable": "--csa-semantic-shadow-project-hover",
+      "type": "shadow",
+      "layer": "semantic",
+      "category": "shadow",
+      "value": "0px 3px 10px 0px #00000012",
+      "reference": "",
+      "description": "Subtle elevation used only while hovering homepage project cards and list rows.",
+      "status": "approved-update"
     },
     {
       "name": "component.button.height",
@@ -5044,19 +5060,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#bfdbfe",
-      "reference": "foundation.color.blue.200",
-      "description": "Inactive primary action surface at 100% opacity.",
-      "status": "observed",
+      "value": "#e5e5e5",
+      "reference": "foundation.color.neutral.200",
+      "description": "Neutral gray unavailable primary action fill at full opacity.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.7490196078431373,
-          0.8588235294117647,
-          0.996078431372549
+          0.8980392156862745,
+          0.8980392156862745,
+          0.8980392156862745
         ],
         "alpha": 1,
-        "hex": "#bfdbfe"
+        "hex": "#e5e5e5"
       }
     },
     {
@@ -5066,19 +5082,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#ffffff",
-      "reference": "semantic.color.text.inverse",
-      "description": "White label on disabled primary actions.",
-      "status": "observed",
+      "value": "#737373",
+      "reference": "semantic.color.text.secondary",
+      "description": "Secondary-gray label on an unavailable primary action.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          1,
-          1,
-          1
+          0.45098039215686275,
+          0.45098039215686275,
+          0.45098039215686275
         ],
         "alpha": 1,
-        "hex": "#ffffff"
+        "hex": "#737373"
       }
     },
     {
@@ -5088,19 +5104,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#2563eb",
+      "value": "#00786f",
       "reference": "semantic.color.action.primary",
       "description": "Button primary background.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.1450980392156863,
-          0.38823529411764707,
-          0.9215686274509803
+          0,
+          0.47058823529411764,
+          0.43529411764705883
         ],
         "alpha": 1,
-        "hex": "#2563eb"
+        "hex": "#00786f"
       }
     },
     {
@@ -5110,19 +5126,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#1d4ed8",
+      "value": "#005f5a",
       "reference": "semantic.color.action.primary-hover",
       "description": "Button primary hover.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.11372549019607843,
-          0.3058823529411765,
-          0.8470588235294118
+          0,
+          0.37254901960784315,
+          0.35294117647058826
         ],
         "alpha": 1,
-        "hex": "#1d4ed8"
+        "hex": "#005f5a"
       }
     },
     {
@@ -5188,19 +5204,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#2563eb",
-      "reference": "foundation.color.blue.600",
+      "value": "#00786f",
+      "reference": "semantic.color.action.primary",
       "description": "Enabled secondary button label.",
-      "status": "observed",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.1450980392156863,
-          0.38823529411764707,
-          0.9215686274509803
+          0,
+          0.47058823529411764,
+          0.43529411764705883
         ],
         "alpha": 1,
-        "hex": "#2563eb"
+        "hex": "#00786f"
       }
     },
     {
@@ -5210,19 +5226,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#2563eb",
-      "reference": "foundation.color.blue.600",
+      "value": "#00786f",
+      "reference": "semantic.color.action.primary",
       "description": "Enabled secondary button border.",
-      "status": "observed",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.1450980392156863,
-          0.38823529411764707,
-          0.9215686274509803
+          0,
+          0.47058823529411764,
+          0.43529411764705883
         ],
         "alpha": 1,
-        "hex": "#2563eb"
+        "hex": "#00786f"
       }
     },
     {
@@ -5232,19 +5248,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#1d4ed8",
-      "reference": "foundation.color.blue.700",
+      "value": "#005f5a",
+      "reference": "semantic.color.action.primary-hover",
       "description": "Secondary hover and pressed label.",
-      "status": "observed",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.11372549019607843,
-          0.3058823529411765,
-          0.8470588235294118
+          0,
+          0.37254901960784315,
+          0.35294117647058826
         ],
         "alpha": 1,
-        "hex": "#1d4ed8"
+        "hex": "#005f5a"
       }
     },
     {
@@ -5254,19 +5270,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#1d4ed8",
-      "reference": "foundation.color.blue.700",
+      "value": "#005f5a",
+      "reference": "semantic.color.action.primary-hover",
       "description": "Secondary hover and pressed border.",
-      "status": "observed",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.11372549019607843,
-          0.3058823529411765,
-          0.8470588235294118
+          0,
+          0.37254901960784315,
+          0.35294117647058826
         ],
         "alpha": 1,
-        "hex": "#1d4ed8"
+        "hex": "#005f5a"
       }
     },
     {
@@ -5276,19 +5292,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#bfdbfe",
-      "reference": "foundation.color.blue.200",
+      "value": "#737373",
+      "reference": "semantic.color.text.secondary",
       "description": "Disabled secondary label.",
-      "status": "observed",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.7490196078431373,
-          0.8588235294117647,
-          0.996078431372549
+          0.45098039215686275,
+          0.45098039215686275,
+          0.45098039215686275
         ],
         "alpha": 1,
-        "hex": "#bfdbfe"
+        "hex": "#737373"
       }
     },
     {
@@ -5298,19 +5314,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#bfdbfe",
-      "reference": "foundation.color.blue.200",
+      "value": "#e5e5e5",
+      "reference": "semantic.color.border.default",
       "description": "Disabled secondary border.",
-      "status": "observed",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.7490196078431373,
-          0.8588235294117647,
-          0.996078431372549
+          0.8980392156862745,
+          0.8980392156862745,
+          0.8980392156862745
         ],
         "alpha": 1,
-        "hex": "#bfdbfe"
+        "hex": "#e5e5e5"
       }
     },
     {
@@ -5323,7 +5339,7 @@
       "value": "#ffffff",
       "reference": "semantic.color.surface.default",
       "description": "Secondary hover keeps the white surface.",
-      "status": "observed",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
@@ -5345,7 +5361,7 @@
       "value": "#ffffff",
       "reference": "semantic.color.surface.default",
       "description": "Outlined secondary button pressed background.",
-      "status": "observed",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
@@ -5388,19 +5404,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#2563eb",
-      "reference": "foundation.color.blue.600",
+      "value": "#00786f",
+      "reference": "semantic.color.action.primary",
       "description": "Tertiary text action label.",
-      "status": "observed",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.1450980392156863,
-          0.38823529411764707,
-          0.9215686274509803
+          0,
+          0.47058823529411764,
+          0.43529411764705883
         ],
         "alpha": 1,
-        "hex": "#2563eb"
+        "hex": "#00786f"
       }
     },
     {
@@ -5410,19 +5426,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#1d4ed8",
-      "reference": "foundation.color.blue.700",
+      "value": "#005f5a",
+      "reference": "semantic.color.action.primary-hover",
       "description": "Tertiary hover and pressed label.",
-      "status": "observed",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.11372549019607843,
-          0.3058823529411765,
-          0.8470588235294118
+          0,
+          0.37254901960784315,
+          0.35294117647058826
         ],
         "alpha": 1,
-        "hex": "#1d4ed8"
+        "hex": "#005f5a"
       }
     },
     {
@@ -5432,19 +5448,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#1d4ed8",
-      "reference": "foundation.color.blue.700",
-      "description": "Tertiary hover and pressed outline.",
-      "status": "observed",
+      "value": "#e5e5e5",
+      "reference": "component.button.primary.disabled-background",
+      "description": "Matches the tertiary hover fill so no separate border is visible.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.11372549019607843,
-          0.3058823529411765,
-          0.8470588235294118
+          0.8980392156862745,
+          0.8980392156862745,
+          0.8980392156862745
         ],
         "alpha": 1,
-        "hex": "#1d4ed8"
+        "hex": "#e5e5e5"
       }
     },
     {
@@ -5454,19 +5470,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#ffffff",
-      "reference": "semantic.color.surface.default",
-      "description": "White surface inside the tertiary hover outline.",
-      "status": "observed",
+      "value": "#e5e5e5",
+      "reference": "component.button.primary.disabled-background",
+      "description": "Tertiary hover uses the disabled primary fill with no distinct outline.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          1,
-          1,
-          1
+          0.8980392156862745,
+          0.8980392156862745,
+          0.8980392156862745
         ],
         "alpha": 1,
-        "hex": "#ffffff"
+        "hex": "#e5e5e5"
       }
     },
     {
@@ -5476,19 +5492,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#ffffff",
-      "reference": "semantic.color.surface.default",
-      "description": "Tertiary pressed surface.",
-      "status": "observed",
+      "value": "#e5e5e5",
+      "reference": "component.button.primary.disabled-background",
+      "description": "Tertiary press uses the same neutral fill as hover.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          1,
-          1,
-          1
+          0.8980392156862745,
+          0.8980392156862745,
+          0.8980392156862745
         ],
         "alpha": 1,
-        "hex": "#ffffff"
+        "hex": "#e5e5e5"
       }
     },
     {
@@ -5498,19 +5514,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#bfdbfe",
-      "reference": "foundation.color.blue.200",
+      "value": "#737373",
+      "reference": "semantic.color.text.secondary",
       "description": "Inactive tertiary action label.",
-      "status": "observed",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.7490196078431373,
-          0.8588235294117647,
-          0.996078431372549
+          0.45098039215686275,
+          0.45098039215686275,
+          0.45098039215686275
         ],
         "alpha": 1,
-        "hex": "#bfdbfe"
+        "hex": "#737373"
       }
     },
     {
@@ -5520,19 +5536,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#a3a3a3",
+      "value": "#737373",
       "reference": "semantic.color.action.disabled-label",
       "description": "Button disabled label.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.6392156862745098,
-          0.6392156862745098,
-          0.6392156862745098
+          0.45098039215686275,
+          0.45098039215686275,
+          0.45098039215686275
         ],
         "alpha": 1,
-        "hex": "#a3a3a3"
+        "hex": "#737373"
       }
     },
     {
@@ -5652,19 +5668,19 @@
       "type": "color",
       "layer": "component",
       "category": "button",
-      "value": "#a3a3a3",
+      "value": "#737373",
       "reference": "component.button.disabled.label",
       "description": "Inactive destructive confirmation label.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.6392156862745098,
-          0.6392156862745098,
-          0.6392156862745098
+          0.45098039215686275,
+          0.45098039215686275,
+          0.45098039215686275
         ],
         "alpha": 1,
-        "hex": "#a3a3a3"
+        "hex": "#737373"
       }
     },
     {
@@ -5908,19 +5924,19 @@
       "type": "color",
       "layer": "component",
       "category": "chip",
-      "value": "#ffe4e6",
-      "reference": "foundation.color.rose.100",
+      "value": "#fecdd3",
+      "reference": "foundation.color.rose.200",
       "description": "Chip format background.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          1,
-          0.8941176470588236,
-          0.9019607843137255
+          0.996078431372549,
+          0.803921568627451,
+          0.8274509803921568
         ],
         "alpha": 1,
-        "hex": "#ffe4e6"
+        "hex": "#fecdd3"
       }
     },
     {
@@ -5930,19 +5946,19 @@
       "type": "color",
       "layer": "component",
       "category": "chip",
-      "value": "#eef2ff",
-      "reference": "foundation.color.indigo.50",
+      "value": "#e0e7ff",
+      "reference": "foundation.color.indigo.100",
       "description": "Chip audience background.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.9333333333333333,
-          0.9490196078431372,
+          0.8784313725490196,
+          0.9058823529411765,
           1
         ],
         "alpha": 1,
-        "hex": "#eef2ff"
+        "hex": "#e0e7ff"
       }
     },
     {
@@ -5952,19 +5968,19 @@
       "type": "color",
       "layer": "component",
       "category": "chip",
-      "value": "#ffedd5",
-      "reference": "foundation.color.orange.100",
+      "value": "#fed7aa",
+      "reference": "foundation.color.orange.200",
       "description": "Chip voice background.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          1,
-          0.9294117647058824,
-          0.8352941176470589
+          0.996078431372549,
+          0.8431372549019608,
+          0.6666666666666666
         ],
         "alpha": 1,
-        "hex": "#ffedd5"
+        "hex": "#fed7aa"
       }
     },
     {
@@ -5998,19 +6014,19 @@
       "type": "color",
       "layer": "component",
       "category": "project-row",
-      "value": "#1d4ed8",
-      "reference": "foundation.color.blue.700",
-      "description": "Homepage list row hover and focus surface.",
-      "status": "observed",
+      "value": "#ffffff",
+      "reference": "semantic.color.surface.default",
+      "description": "Homepage list rows retain white on hover and focus.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.11372549019607843,
-          0.3058823529411765,
-          0.8470588235294118
+          1,
+          1,
+          1
         ],
         "alpha": 1,
-        "hex": "#1d4ed8"
+        "hex": "#ffffff"
       }
     },
     {
@@ -6020,19 +6036,19 @@
       "type": "color",
       "layer": "component",
       "category": "project-row",
-      "value": "#ffffff",
-      "reference": "semantic.color.text.inverse",
-      "description": "White title, metadata, and controls on active homepage list rows.",
-      "status": "observed",
+      "value": "#404040",
+      "reference": "semantic.color.text.primary",
+      "description": "Readable dark-gray title, metadata, and controls on active homepage list rows.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          1,
-          1,
-          1
+          0.25098039215686274,
+          0.25098039215686274,
+          0.25098039215686274
         ],
         "alpha": 1,
-        "hex": "#ffffff"
+        "hex": "#404040"
       }
     },
     {
@@ -6042,32 +6058,10 @@
       "type": "color",
       "layer": "component",
       "category": "project-card",
-      "value": "#2563eb",
-      "reference": "foundation.color.blue.600",
-      "description": "Homepage card hover fill: Tailwind Blue 600.",
-      "status": "observed",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1450980392156863,
-          0.38823529411764707,
-          0.9215686274509803
-        ],
-        "alpha": 1,
-        "hex": "#2563eb"
-      }
-    },
-    {
-      "name": "component.project-card.hover-label",
-      "designName": "component/project-card/hover-label",
-      "cssVariable": "--csa-component-project-card-hover-label",
-      "type": "color",
-      "layer": "component",
-      "category": "project-card",
       "value": "#ffffff",
-      "reference": "semantic.color.text.inverse",
-      "description": "White title, metadata, and menu icon on hovered homepage cards.",
-      "status": "observed",
+      "reference": "semantic.color.surface.default",
+      "description": "Homepage cards retain white on hover.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
@@ -6080,25 +6074,47 @@
       }
     },
     {
+      "name": "component.project-card.hover-label",
+      "designName": "component/project-card/hover-label",
+      "cssVariable": "--csa-component-project-card-hover-label",
+      "type": "color",
+      "layer": "component",
+      "category": "project-card",
+      "value": "#060606",
+      "reference": "semantic.color.text.heading",
+      "description": "Near-black title, metadata, and menu icon on hovered homepage cards.",
+      "status": "approved-update",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.023529411764705882,
+          0.023529411764705882,
+          0.023529411764705882
+        ],
+        "alpha": 1,
+        "hex": "#060606"
+      }
+    },
+    {
       "name": "component.project-card.hover-border",
       "designName": "component/project-card/hover-border",
       "cssVariable": "--csa-component-project-card-hover-border",
       "type": "color",
       "layer": "component",
       "category": "project-card",
-      "value": "#2563eb",
-      "reference": "foundation.color.blue.600",
-      "description": "Project card hover border: Tailwind Blue 600.",
-      "status": "observed",
+      "value": "#00786f",
+      "reference": "semantic.color.border.selected",
+      "description": "Teal accent border on hovered homepage cards.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.1450980392156863,
-          0.38823529411764707,
-          0.9215686274509803
+          0,
+          0.47058823529411764,
+          0.43529411764705883
         ],
         "alpha": 1,
-        "hex": "#2563eb"
+        "hex": "#00786f"
       }
     },
     {
@@ -6162,6 +6178,18 @@
       "status": "approved-update"
     },
     {
+      "name": "component.project-card.hover-shadow",
+      "designName": "component/project-card/hover-shadow",
+      "cssVariable": "--csa-component-project-card-hover-shadow",
+      "type": "shadow",
+      "layer": "component",
+      "category": "project-card",
+      "value": "0px 3px 10px 0px #00000012",
+      "reference": "semantic.shadow.project-hover",
+      "description": "Homepage project hover elevation.",
+      "status": "approved-update"
+    },
+    {
       "name": "component.variant-card.radius",
       "designName": "component/variant-card/radius",
       "cssVariable": "--csa-component-variant-card-radius",
@@ -6202,19 +6230,19 @@
       "type": "color",
       "layer": "component",
       "category": "variant-card",
-      "value": "#3b82f6",
+      "value": "#00786f",
       "reference": "semantic.color.border.selected",
       "description": "Variant card selected border.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.23137254901960785,
-          0.5098039215686274,
-          0.9647058823529412
+          0,
+          0.47058823529411764,
+          0.43529411764705883
         ],
         "alpha": 1,
-        "hex": "#3b82f6"
+        "hex": "#00786f"
       }
     },
     {
@@ -6272,19 +6300,19 @@
       "type": "color",
       "layer": "component",
       "category": "checkbox",
-      "value": "#2563eb",
-      "reference": "semantic.color.action.primary",
-      "description": "Checkbox selected background.",
-      "status": "observed",
+      "value": "#00786f",
+      "reference": "semantic.color.border.selected",
+      "description": "Deep teal selected checkbox fill with a white checkmark.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.1450980392156863,
-          0.38823529411764707,
-          0.9215686274509803
+          0,
+          0.47058823529411764,
+          0.43529411764705883
         ],
         "alpha": 1,
-        "hex": "#2563eb"
+        "hex": "#00786f"
       }
     },
     {
@@ -6296,7 +6324,7 @@
       "category": "checkbox",
       "value": "#737373",
       "reference": "semantic.color.border.control",
-      "description": "Visible unchecked-checkbox outline. Selected controls retain their blue fill.",
+      "description": "Visible unchecked-checkbox outline. Selected controls use the teal selected fill.",
       "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
@@ -6376,9 +6404,9 @@
       "type": "dimension",
       "layer": "component",
       "category": "navigation",
-      "value": "10px",
-      "reference": "",
-      "description": "Implemented component measurement.",
+      "value": "16px",
+      "reference": "component.layout.outer-inset",
+      "description": "Navigation shares the 16 px workspace outer inset.",
       "status": "observed"
     },
     {
@@ -6526,9 +6554,9 @@
       "type": "duration",
       "layer": "component",
       "category": "layout",
-      "value": "1800ms",
+      "value": "300ms",
       "reference": "",
-      "description": "Homepage entrance lifecycle duration, covering the last staggered project card.",
+      "description": "Homepage entrance timing; all items finish in 300 ms without staggering.",
       "status": "observed"
     },
     {
@@ -6550,9 +6578,9 @@
       "type": "duration",
       "layer": "component",
       "category": "layout",
-      "value": "1000ms",
+      "value": "300ms",
       "reference": "",
-      "description": "Shared homepage greeting and project-card fade and upward entrance duration.",
+      "description": "Homepage entrance timing; all items finish in 300 ms without staggering.",
       "status": "observed"
     },
     {
@@ -6577,6 +6605,42 @@
       "value": "cubic-bezier(0.42, 0, 0.58, 1)",
       "reference": "",
       "description": "Symmetric ease-in-out for homepage greeting and project-card entrances.",
+      "status": "observed"
+    },
+    {
+      "name": "component.layout.home-enter-delay",
+      "designName": "component/layout/home-enter-delay",
+      "cssVariable": "--csa-component-layout-home-enter-delay",
+      "type": "duration",
+      "layer": "component",
+      "category": "layout",
+      "value": "0ms",
+      "reference": "",
+      "description": "Homepage entrance timing; all items finish in 300 ms without staggering.",
+      "status": "observed"
+    },
+    {
+      "name": "component.layout.home-enter-stagger",
+      "designName": "component/layout/home-enter-stagger",
+      "cssVariable": "--csa-component-layout-home-enter-stagger",
+      "type": "duration",
+      "layer": "component",
+      "category": "layout",
+      "value": "0ms",
+      "reference": "",
+      "description": "Homepage entrance timing; all items finish in 300 ms without staggering.",
+      "status": "observed"
+    },
+    {
+      "name": "component.layout.outer-inset",
+      "designName": "component/layout/outer-inset",
+      "cssVariable": "--csa-component-layout-outer-inset",
+      "type": "dimension",
+      "layer": "component",
+      "category": "layout",
+      "value": "16px",
+      "reference": "foundation.space.16",
+      "description": "Shared window-edge inset for navigation and workspace panels.",
       "status": "observed"
     },
     {
@@ -6744,90 +6808,6 @@
       "reference": "",
       "description": "Maximum width of the sign-in form, information panel, and footer.",
       "status": "approved-update"
-    },
-    {
-      "name": "component.typography.observed-size-38",
-      "designName": "component/typography/observed-size-38",
-      "cssVariable": "--csa-component-typography-observed-size-38",
-      "type": "dimension",
-      "layer": "component",
-      "category": "typography",
-      "value": "38px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
-      "name": "component.typography.observed-size-30",
-      "designName": "component/typography/observed-size-30",
-      "cssVariable": "--csa-component-typography-observed-size-30",
-      "type": "dimension",
-      "layer": "component",
-      "category": "typography",
-      "value": "30px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
-      "name": "component.reference.font-size-30",
-      "designName": "component/reference/font-size-30",
-      "cssVariable": "--csa-component-reference-font-size-30",
-      "type": "dimension",
-      "layer": "component",
-      "category": "reference",
-      "value": "30px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
-      "name": "component.reference.font-size-9",
-      "designName": "component/reference/font-size-9",
-      "cssVariable": "--csa-component-reference-font-size-9",
-      "type": "dimension",
-      "layer": "component",
-      "category": "reference",
-      "value": "9px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
-      "name": "component.reference.font-size-8",
-      "designName": "component/reference/font-size-8",
-      "cssVariable": "--csa-component-reference-font-size-8",
-      "type": "dimension",
-      "layer": "component",
-      "category": "reference",
-      "value": "8px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
-      "name": "component.reference.font-size-40",
-      "designName": "component/reference/font-size-40",
-      "cssVariable": "--csa-component-reference-font-size-40",
-      "type": "dimension",
-      "layer": "component",
-      "category": "reference",
-      "value": "40px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
-    },
-    {
-      "name": "component.reference.font-size-26",
-      "designName": "component/reference/font-size-26",
-      "cssVariable": "--csa-component-reference-font-size-26",
-      "type": "dimension",
-      "layer": "component",
-      "category": "reference",
-      "value": "26px",
-      "reference": "",
-      "description": "Preserved implementation dimension; shared through the design system.",
-      "status": "observed"
     },
     {
       "name": "component.export.scale-small",
@@ -7016,6 +6996,50 @@
       "status": "observed"
     },
     {
+      "name": "component.layout-switch.selected-background",
+      "designName": "component/layout-switch/selected-background",
+      "cssVariable": "--csa-component-layout-switch-selected-background",
+      "type": "color",
+      "layer": "component",
+      "category": "layout-switch",
+      "value": "#00786f",
+      "reference": "semantic.color.border.selected",
+      "description": "Deep teal layout selection surface, distinct against the white switch.",
+      "status": "approved-update",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0,
+          0.47058823529411764,
+          0.43529411764705883
+        ],
+        "alpha": 1,
+        "hex": "#00786f"
+      }
+    },
+    {
+      "name": "component.layout-switch.selected-label",
+      "designName": "component/layout-switch/selected-label",
+      "cssVariable": "--csa-component-layout-switch-selected-label",
+      "type": "color",
+      "layer": "component",
+      "category": "layout-switch",
+      "value": "#ffffff",
+      "reference": "semantic.color.text.inverse",
+      "description": "White selected layout icon on the deep teal surface.",
+      "status": "approved-update",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      }
+    },
+    {
       "name": "component.favorite.unsaved-color",
       "designName": "component/favorite/unsaved-color",
       "cssVariable": "--csa-component-favorite-unsaved-color",
@@ -7044,19 +7068,19 @@
       "type": "color",
       "layer": "component",
       "category": "favorite",
-      "value": "#404040",
+      "value": "#00786f",
       "reference": "semantic.color.favorite.active",
       "description": "Saved favorites and active saved-only filters use filled neutral-700 hearts.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.25098039215686274,
-          0.25098039215686274,
-          0.25098039215686274
+          0,
+          0.47058823529411764,
+          0.43529411764705883
         ],
         "alpha": 1,
-        "hex": "#404040"
+        "hex": "#00786f"
       }
     },
     {
@@ -7296,8 +7320,8 @@
       "type": "dimension",
       "layer": "component",
       "category": "toast",
-      "value": "18px",
-      "reference": "foundation.font.size.18",
+      "value": "20px",
+      "reference": "foundation.icon.size.20",
       "description": "Deletion status symbol size.",
       "status": "observed"
     },
@@ -7308,19 +7332,19 @@
       "type": "color",
       "layer": "component",
       "category": "toast",
-      "value": "#eff6ff",
-      "reference": "foundation.color.blue.50",
-      "description": "Pale blue deletion status badge surface.",
-      "status": "observed",
+      "value": "#f5f5f5",
+      "reference": "semantic.color.surface.hover",
+      "description": "Quiet neutral deletion status badge surface.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.9372549019607843,
-          0.9647058823529412,
-          1
+          0.9607843137254902,
+          0.9607843137254902,
+          0.9607843137254902
         ],
         "alpha": 1,
-        "hex": "#eff6ff"
+        "hex": "#f5f5f5"
       }
     },
     {
@@ -7330,19 +7354,19 @@
       "type": "color",
       "layer": "component",
       "category": "toast",
-      "value": "#2563eb",
-      "reference": "foundation.color.blue.600",
-      "description": "Blue deletion status symbol.",
-      "status": "observed",
+      "value": "#00786f",
+      "reference": "semantic.color.action.primary",
+      "description": "Black deletion status symbol.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.1450980392156863,
-          0.38823529411764707,
-          0.9215686274509803
+          0,
+          0.47058823529411764,
+          0.43529411764705883
         ],
         "alpha": 1,
-        "hex": "#2563eb"
+        "hex": "#00786f"
       }
     },
     {
@@ -7376,19 +7400,19 @@
       "type": "color",
       "layer": "component",
       "category": "toast",
-      "value": "#2563eb",
-      "reference": "foundation.color.blue.600",
-      "description": "Compact toast Undo text.",
-      "status": "observed",
+      "value": "#00786f",
+      "reference": "semantic.color.action.primary",
+      "description": "Black Compact toast Undo text.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.1450980392156863,
-          0.38823529411764707,
-          0.9215686274509803
+          0,
+          0.47058823529411764,
+          0.43529411764705883
         ],
         "alpha": 1,
-        "hex": "#2563eb"
+        "hex": "#00786f"
       }
     },
     {
@@ -7398,41 +7422,19 @@
       "type": "color",
       "layer": "component",
       "category": "toast",
-      "value": "#eff6ff",
-      "reference": "foundation.color.blue.50",
-      "description": "Subtle Undo hover and pressed surface.",
-      "status": "observed",
+      "value": "#f5f5f5",
+      "reference": "semantic.color.surface.hover",
+      "description": "Neutral Undo hover and pressed surface.",
+      "status": "approved-update",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.9372549019607843,
-          0.9647058823529412,
-          1
+          0.9607843137254902,
+          0.9607843137254902,
+          0.9607843137254902
         ],
         "alpha": 1,
-        "hex": "#eff6ff"
-      }
-    },
-    {
-      "name": "component.editor.color-input-default",
-      "designName": "component/editor/color-input-default",
-      "cssVariable": "--csa-component-editor-color-input-default",
-      "type": "color",
-      "layer": "component",
-      "category": "editor",
-      "value": "#26344a",
-      "reference": "foundation.color.legacy.editor-text",
-      "description": "Preserves the hidden editor color input default without changing visible article text or saved formatting.",
-      "status": "legacy",
-      "color": {
-        "colorSpace": "srgb",
-        "components": [
-          0.14901960784313725,
-          0.20392156862745098,
-          0.2901960784313726
-        ],
-        "alpha": 1,
-        "hex": "#26344a"
+        "hex": "#f5f5f5"
       }
     },
     {
@@ -7505,6 +7507,142 @@
       "value": "15000ms",
       "reference": "",
       "description": "Prototype draft-generation duration, expressed in milliseconds for the processing timer.",
+      "status": "observed"
+    },
+    {
+      "name": "component.drafting.shimmer.format",
+      "designName": "component/drafting/shimmer/format",
+      "cssVariable": "--csa-component-drafting-shimmer-format",
+      "type": "color",
+      "layer": "component",
+      "category": "drafting",
+      "value": "#fecdd3",
+      "reference": "component.chip.format.background",
+      "description": "Fixed format chip-color shimmer for a white loading card; retained as its messages change.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.996078431372549,
+          0.803921568627451,
+          0.8274509803921568
+        ],
+        "alpha": 1,
+        "hex": "#fecdd3"
+      }
+    },
+    {
+      "name": "component.drafting.shimmer.audience",
+      "designName": "component/drafting/shimmer/audience",
+      "cssVariable": "--csa-component-drafting-shimmer-audience",
+      "type": "color",
+      "layer": "component",
+      "category": "drafting",
+      "value": "#e0e7ff",
+      "reference": "component.chip.audience.background",
+      "description": "Fixed audience chip-color shimmer for a white loading card; retained as its messages change.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8784313725490196,
+          0.9058823529411765,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#e0e7ff"
+      }
+    },
+    {
+      "name": "component.drafting.shimmer.voice",
+      "designName": "component/drafting/shimmer/voice",
+      "cssVariable": "--csa-component-drafting-shimmer-voice",
+      "type": "color",
+      "layer": "component",
+      "category": "drafting",
+      "value": "#fed7aa",
+      "reference": "component.chip.voice.background",
+      "description": "Fixed voice chip-color shimmer for a white loading card; retained as its messages change.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.996078431372549,
+          0.8431372549019608,
+          0.6666666666666666
+        ],
+        "alpha": 1,
+        "hex": "#fed7aa"
+      }
+    },
+    {
+      "name": "component.drafting.shimmer.source",
+      "designName": "component/drafting/shimmer/source",
+      "cssVariable": "--csa-component-drafting-shimmer-source",
+      "type": "color",
+      "layer": "component",
+      "category": "drafting",
+      "value": "#f0fdfa",
+      "reference": "foundation.color.teal.50",
+      "description": "Teal 50 (#F0FDFA) shimmer for the single-page source-adding card.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9411764705882353,
+          0.9921568627450981,
+          0.9803921568627451
+        ],
+        "alpha": 1,
+        "hex": "#f0fdfa"
+      }
+    },
+    {
+      "name": "component.drafting.shimmer-duration",
+      "designName": "component/drafting/shimmer-duration",
+      "cssVariable": "--csa-component-drafting-shimmer-duration",
+      "type": "duration",
+      "layer": "component",
+      "category": "drafting",
+      "value": "2400ms",
+      "reference": "",
+      "description": "Duration of one gentle colored shimmer sweep across a white drafting card.",
+      "status": "observed"
+    },
+    {
+      "name": "component.composer-panel.heading-font-size",
+      "designName": "component/composer-panel/heading-font-size",
+      "cssVariable": "--csa-component-composer-panel-heading-font-size",
+      "type": "dimension",
+      "layer": "component",
+      "category": "composer-panel",
+      "value": "16px",
+      "reference": "foundation.font.size.16",
+      "description": "New Draft and Content panel headings use 16 px on desktop and mobile.",
+      "status": "observed"
+    },
+    {
+      "name": "component.composer-panel.heading-line-height",
+      "designName": "component/composer-panel/heading-line-height",
+      "cssVariable": "--csa-component-composer-panel-heading-line-height",
+      "type": "dimension",
+      "layer": "component",
+      "category": "composer-panel",
+      "value": "24px",
+      "reference": "foundation.line.height.24",
+      "description": "Line height for the compact New Draft and Content panel headings.",
+      "status": "observed"
+    },
+    {
+      "name": "component.composer-panel.gap",
+      "designName": "component/composer-panel/gap",
+      "cssVariable": "--csa-component-composer-panel-gap",
+      "type": "dimension",
+      "layer": "component",
+      "category": "composer-panel",
+      "value": "16px",
+      "reference": "foundation.space.16",
+      "description": "Gap between New Draft and Content panels and between mobile navigation and open panels.",
       "status": "observed"
     }
   ]

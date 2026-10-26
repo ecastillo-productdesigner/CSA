@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261022-linked-stories-motion';
+import { createIcon } from './icons.js?v=20261026-design-refresh';
 
 export function createRevisionButton(output, disabled = false) {
   const button = document.createElement('button');

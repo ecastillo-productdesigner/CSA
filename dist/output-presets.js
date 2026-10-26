@@ -1,7 +1,7 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261022-linked-stories-motion';
-import { projectOutputs, createOutputBadges } from './outputs.js?v=20261022-linked-stories-motion';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-design-refresh';
+import { projectOutputs, createOutputBadges } from './outputs.js?v=20261026-design-refresh';
 
-import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261022-linked-stories-motion';
+import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261026-design-refresh';
 
 export function createOutputPresets({ onSelect, onDelete, onEdit }) {
   const root = document.querySelector('#output-presets');

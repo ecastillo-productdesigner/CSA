@@ -1,4 +1,4 @@
-import { tokenValue, tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261022-linked-stories-motion';
+import { tokenValue, tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261026-design-refresh';
 
 function milliseconds(value) {
   const amount = Number.parseFloat(value);

@@ -3,16 +3,16 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
-    <meta name="theme-color" content="#fffbf6">
+    <meta name="theme-color" content="#fffdf5">
     <meta name="description" content="Your next idea starts here. Paste source links to create a CSA workspace.">
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,chevron_forward,close,delete,description,draw,edit,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,upload,view_module,visibility&amp;display=block">
+    <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css?v=20261026-design-refresh">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=add_circle,arrow_forward,article,check,chevron_forward,close,delete,description,draw,edit,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,unfold_less,upload,view_module,visibility&amp;display=block">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
-    <link rel="stylesheet" href="./design-system/tokens.css?v=20261023-control-borders">
-    <link rel="stylesheet" href="./styles.css?v=20261023-control-borders">
-    <script src="./demo-access.js?v=20261022-linked-stories-motion" type="module"></script>
+    <link rel="stylesheet" href="./design-system/tokens.css?v=20261026-design-refresh">
+    <link rel="stylesheet" href="./styles.css?v=20261026-design-refresh">
+    <script src="./demo-access.js?v=20261026-design-refresh" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -122,7 +122,7 @@
                 <div class="editor-toolbar-group"><button type="button" data-editor-action="link" aria-pressed="false" aria-haspopup="dialog" aria-controls="editor-link-dialog" aria-label="Add or Edit Link" title="Add or Edit Link"><span class="material-symbols-outlined" aria-hidden="true">link_2</span></button></div>
                 <div class="editor-toolbar-group"><button type="button" data-editor-action="undo" aria-label="Undo" title="Undo"><span class="material-symbols-outlined" aria-hidden="true">undo</span></button><button type="button" data-editor-action="redo" aria-label="Redo" title="Redo"><span class="material-symbols-outlined" aria-hidden="true">redo</span></button></div>
                 <div hidden><select id="editor-block" aria-label="Text style" hidden><option value="">Normal text</option><option value="1">Heading 1</option><option value="2">Heading 2</option><option value="3">Heading 3</option><option value="quote">Quote</option></select></div>
-                <div class="editor-toolbar-group" hidden><label class="editor-color-control" title="Text color"><input id="editor-color" type="color" value="#26344a" aria-label="Text color"></label><button type="button" data-editor-action="highlight" aria-label="Highlight Text" aria-pressed="false" title="Highlight Text"></button><button type="button" data-editor-action="clear" aria-label="Clear Formatting" title="Clear Formatting"></button></div><div class="editor-toolbar-group" hidden><button type="button" data-editor-action="outdent" aria-label="Decrease Indent" title="Decrease Indent"></button><button type="button" data-editor-action="indent" aria-label="Increase Indent" title="Increase Indent"></button><select id="editor-align" aria-label="Text alignment"><option value="">Align left</option><option value="center">Center</option><option value="right">Align right</option><option value="justify">Justify</option></select></div>
+                <div class="editor-toolbar-group" hidden><label class="editor-color-control" title="Text color"><input id="editor-color" type="color" value="#404040" aria-label="Text color"></label><button type="button" data-editor-action="highlight" aria-label="Highlight Text" aria-pressed="false" title="Highlight Text"></button><button type="button" data-editor-action="clear" aria-label="Clear Formatting" title="Clear Formatting"></button></div><div class="editor-toolbar-group" hidden><button type="button" data-editor-action="outdent" aria-label="Decrease Indent" title="Decrease Indent"></button><button type="button" data-editor-action="indent" aria-label="Increase Indent" title="Increase Indent"></button><select id="editor-align" aria-label="Text alignment"><option value="">Align left</option><option value="center">Center</option><option value="right">Align right</option><option value="justify">Justify</option></select></div>
               </div>
               <div id="rich-text-editor"></div>
               <div class="editor-publish-actions"><button class="editor-wordpress-button" id="editor-wordpress" type="button">Send to WordPress</button></div>
@@ -152,7 +152,7 @@
             </div>
             <div class="composer-direction">
               <label for="composer-editorial-direction">Editorial Direction <span>(optional)</span></label>
-              <textarea id="composer-editorial-direction" rows="2" maxlength="8000" placeholder="Example: “Focus on the economy” or “Use a conversational tone.”"></textarea>
+              <textarea id="composer-editorial-direction" rows="2" maxlength="8000" placeholder="Add more facts or give directions on framing (for example, &quot;focus on the economy&quot;)"></textarea>
             </div>
             <input id="composer-target-word-count" type="hidden" value="short">
             <div class="composer-actions">
@@ -168,7 +168,7 @@
               <button id="output-created-tab" type="button" role="tab" aria-selected="false" aria-controls="output-status-content" tabindex="-1" data-output-view="created">Drafted</button>
             </div>
             <div class="output-status-content" id="output-status-content" role="tabpanel" aria-labelledby="output-pending-tab">
-            <div class="composer-empty" id="outputs-empty" role="status"><div class="composer-empty-copy"><p>Your drafted content will appear here.</p></div></div>
+            <div class="composer-empty" id="outputs-empty" role="status"><div class="composer-empty-copy"><p>Your draft recipes will appear here.</p></div></div>
             <ul class="output-list" id="output-list" aria-label="Content" hidden></ul>
             <div class="outputs-footer"><button class="create-output" id="create-output" type="button" disabled><span id="create-output-label">Draft</span></button></div>
             <p class="visually-hidden" id="output-processing-status" role="status" aria-live="polite"></p>
@@ -214,7 +214,7 @@
         <button class="tertiary-button load-more" id="load-more" type="button">Load More</button>
         <div class="results-direction">
           <label for="results-editorial-direction">Editorial Direction <span>(optional)</span></label>
-          <textarea id="results-editorial-direction" rows="2" maxlength="8000" placeholder="Example: “Focus on the economy” or “Use a conversational tone.”"></textarea>
+          <textarea id="results-editorial-direction" rows="2" maxlength="8000" placeholder="Add more facts or give directions on framing (for example, &quot;focus on the economy&quot;)"></textarea>
         </div>
         <div class="results-actions">
           <button class="draft-button" id="create-draft" type="button" disabled>Draft</button>
@@ -240,10 +240,9 @@
 
 
 
-    <dialog class="delete-project-dialog" id="delete-project-dialog" role="alertdialog" aria-labelledby="delete-project-heading" aria-describedby="delete-project-name delete-project-warning">
+    <dialog class="delete-project-dialog" id="delete-project-dialog" role="alertdialog" aria-labelledby="delete-project-heading" aria-describedby="delete-project-name">
       <div class="panel-heading"><h2 id="delete-project-heading">Delete Project?</h2><button class="icon-button" type="button" data-close="delete-project-dialog" aria-label="Close Delete Project Dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
       <p class="delete-project-name" id="delete-project-name"></p>
-      <p class="delete-project-warning" id="delete-project-warning">This will permanently delete this project, its sources, and all outputs. This action cannot be undone.</p>
       <p class="form-error" id="delete-project-error" role="alert" hidden></p>
       <div class="dialog-footer confirmation-actions"><button class="secondary-button" id="delete-project-cancel" type="button" autofocus>Cancel</button><button class="danger-button" id="delete-project-confirm" type="button"><span>Delete</span></button></div>
     </dialog>
@@ -321,7 +320,7 @@
           <select id="send-destination-site" aria-label="Destination" hidden><option value="us-weekly" selected>Us Weekly WordPress</option></select>
           <button class="send-destination-trigger" id="send-destination-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="send-destination-options" aria-labelledby="send-destination-label send-destination-name" aria-describedby="send-destination-url">
             <span class="send-destination-site-preview"><span class="send-destination-name-row"><span class="send-destination-site-name" id="send-destination-name">Us Weekly WordPress</span><span class="send-destination-admin" id="send-destination-admin">ADMIN VIEW</span></span><span class="send-destination-site-url" id="send-destination-url">https://www.usmagazine.com</span></span>
-            <span class="material-symbols-outlined send-destination-chevron" aria-hidden="true">keyboard_arrow_down</span>
+            <span class="material-symbols-outlined send-destination-chevron" aria-hidden="true">unfold_less</span>
           </button>
           <div class="send-destination-options" id="send-destination-options" role="listbox" aria-label="Destination" hidden></div>
         </div>
@@ -349,7 +348,7 @@
       <p class="form-error" id="material-error" role="alert" hidden></p>
       <div class="dialog-footer"><button class="secondary-button" id="material-cancel" type="button" data-close="material-dialog">Cancel</button><button class="primary-button" id="use-material" type="button" disabled>Start Creating</button></div>
     </dialog>
-    <div class="toast" id="toast" role="status" hidden><span class="toast-message" id="toast-message"></span><button class="toast-action" id="toast-undo" type="button" hidden>Undo</button></div>
+    <div class="toast" id="toast" role="status" hidden><span class="toast-message" id="toast-message"></span><button class="toast-action" id="toast-undo" type="button" aria-label="Undo" title="Undo" hidden><span class="material-symbols-outlined" aria-hidden="true">undo</span></button></div>
     </div>
   </body>
 </html>

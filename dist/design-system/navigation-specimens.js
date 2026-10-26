@@ -1,10 +1,11 @@
-import { createRailPanelTransition } from '../navigation.js?v=20261022-linked-stories-motion';
-import { createPanelDisclosure } from '../panel-disclosure.js?v=20261022-linked-stories-motion';
-import { createDraftingAnimation } from '../drafting-animation.js?v=20261022-linked-stories-motion';
-import { createIcon } from '../icons.js?v=20261022-linked-stories-motion';
-import { tokenNumber } from './runtime.js?v=20261022-linked-stories-motion';
-import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261022-linked-stories-motion';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-linked-stories-motion';
+import { createRailPanelTransition } from '../navigation.js?v=20261026-design-refresh';
+import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-design-refresh';
+import { createPanelDisclosure } from '../panel-disclosure.js?v=20261026-design-refresh';
+import { createDraftingAnimation, createSourceAddingAnimation } from '../drafting-animation.js?v=20261026-design-refresh';
+import { createIcon } from '../icons.js?v=20261026-design-refresh';
+import { tokenNumber } from './runtime.js?v=20261026-design-refresh';
+import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261026-design-refresh';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-design-refresh';
 
 const navigationMounts = new WeakMap();
 const stateMounts = new WeakMap();
@@ -67,6 +68,18 @@ export function mountNavigationSpecimens(root) {
   profileStage.append(profile, menu);
   const status = element('p', 'ds-specimen-status');
   status.setAttribute('role', 'status');
+  const sourceList = element('ul');
+  sourceList.id = 'editor-source-list';
+  const sourceRow = element('li');
+  const sourceContent = element('div', 'editor-source-content');
+  const sourceTitle = 'A Local Business Finds a Fresh Way to Connect';
+  const sourceOpen = button('editor-source-open', `Preview example source: ${sourceTitle}`);
+  sourceOpen.append(element('strong', '', sourceTitle));
+  sourceOpen.addEventListener('click', () => { status.textContent = 'Source preview action selected'; });
+  sourceContent.append(sourceOpen);
+  sourceRow.append(sourceContent);
+  sourceList.append(sourceRow);
+  selectedPreview.append(sourceList, element('p', 'ds-caption', 'Source title hover uses the shared light-gray surface, 8 px corners matching New Project navigation, and near-black text without an underline. Keyboard focus keeps the shared visible outline.'));
   const tooltips = [];
 
   function hideTooltips() {
@@ -205,29 +218,71 @@ export function mountStateSpecimens(root) {
   directionField.id = 'ds-editorial-direction';
   directionField.rows = 2;
   directionField.maxLength = 8000;
-  directionField.placeholder = 'Example: “Focus on the economy” or “Use a conversational tone.”';
+  directionField.placeholder = 'Add more facts or give directions on framing (for example, "focus on the economy").';
   direction.append(directionLabel, directionField);
   body.append(direction);
   const add = button('create-variant', 'Add to List example');
   add.textContent = 'Add to List';
   body.append(add);
   panel.append(header, body);
+  const emptyPreview = element('section', 'composer-panel composer-outputs ds-disclosure-panel');
+  const emptyHeading = element('h2');
+  emptyHeading.setAttribute('aria-level', '4');
+  emptyHeading.append(createIcon('article'), element('span', '', 'Content'));
+  const emptyTabs = element('div', 'output-status-tabs');
+  emptyTabs.setAttribute('role', 'group');
+  emptyTabs.setAttribute('aria-label', 'Empty content state');
   const empty = element('div', 'composer-empty ds-empty-specimen');
+  empty.id = 'ds-empty-content';
   empty.setAttribute('role', 'status');
   const emptyCopy = element('div', 'composer-empty-copy');
-  emptyCopy.append(element('p', '', 'Your drafted content will appear here.'));
+  const emptyMessage = element('p', '', 'Your draft recipes will appear here.');
+  emptyCopy.append(emptyMessage);
   empty.append(emptyCopy);
+  const emptyTransition = createTabPanelTransition(empty);
+  for (const [value, label, message] of [
+    ['pending', 'Content to Draft', 'Your draft recipes will appear here.'],
+    ['drafted', 'Drafted', 'Your draft requests will appear here.'],
+  ]) {
+    const tab = button('', label);
+    tab.textContent = label;
+    tab.dataset.emptyView = value;
+    tab.setAttribute('aria-controls', empty.id);
+    tab.setAttribute('aria-pressed', String(value === 'pending'));
+    tab.addEventListener('click', () => {
+      if (tab.getAttribute('aria-pressed') === 'true') return;
+      emptyTransition.run(() => {
+        for (const peer of emptyTabs.querySelectorAll('button')) peer.setAttribute('aria-pressed', String(peer === tab));
+        emptyMessage.textContent = message;
+      });
+    });
+    emptyTabs.append(tab);
+  }
+  emptyPreview.append(emptyHeading, emptyTabs, empty);
   const loading = element('div', 'ds-loading-specimen');
   loading.append(element('h4', '', 'Drafting content'));
-  const drafting = createDraftingAnimation({ compact: true });
-  const draftingStage = element('div', 'ds-drafting-specimen');
-  draftingStage.append(drafting.element);
-  loading.append(draftingStage, element('p', 'ds-caption', 'The app shows 3 messages over 15 seconds. Each message holds for 5 seconds, with an 800 ms paper handoff between messages: the first starts at 0 seconds, the second at 5 seconds, and the third at 10.8 seconds. The reference preview repeats the 3-message sequence. Reduced motion keeps a static sheet and message.'));
-  const adding = element('span', 'result-adding');
-  const spinner = element('span', 'output-processing-spinner');
-  spinner.setAttribute('aria-hidden', 'true');
-  adding.append(spinner, element('span', 'output-creating-label', 'Adding'));
-  loading.append(element('h4', '', 'Adding a source'), adding);
+  const draftingPreviews = element('div', 'ds-drafting-previews');
+  const draftingExamples = [
+    { label: '1 category: Format — pink', selectionKeys: ['format'] },
+    { label: '2 categories: Audience + Voice — lavender and peach', selectionKeys: ['audience', 'voice'] },
+    { label: '3 categories: Format + Audience + Voice — pink, lavender, and peach', selectionKeys: ['format', 'audience', 'voice'] },
+  ];
+  const draftingAnimations = draftingExamples.map(({ label, selectionKeys }, index) => {
+    const drafting = createDraftingAnimation({ compact: true, messageLimit: 3, selectionKeys });
+    const draftingStage = element('div', 'ds-drafting-specimen');
+    draftingStage.setAttribute('role', 'group');
+    draftingStage.setAttribute('aria-label', label);
+    // Only the first repeated specimen announces the shared message sequence.
+    if (index > 0) drafting.element.querySelector('.drafting-message').setAttribute('aria-live', 'off');
+    draftingStage.append(drafting.element, element('p', 'ds-specimen-status', label));
+    draftingPreviews.append(draftingStage);
+    return drafting;
+  });
+  loading.append(draftingPreviews, element('p', 'ds-caption', 'These white cards demonstrate one selected category (Format), two (Audience + Voice), and all three. Each new sentence uses one matching selected-category color: pink for Format, lavender for Audience, or peach for Voice. Colors cycle in Format/Audience/Voice order, skipping unselected categories. One selection keeps its color, Audience + Voice alternates lavender and peach, and all three cycle pink, lavender, then peach. With no choices, legacy content uses a neutral shimmer. Each sweep lasts 2.4 seconds. Paper sheets stay white, paper lines use Neutral 500 (#737373), and message text stays dark. The app shows 3 messages over 15 seconds. Each message holds for 5 seconds, with an 800 ms paper handoff between messages: the first starts at 0 seconds, the second at 5 seconds, and the third at 10.8 seconds. The reference previews repeat the 3-message sequence. Reduced motion hides the shimmer sweep and keeps a static sheet and message.'));
+  const sourceAdding = createSourceAddingAnimation();
+  const addingStage = element('div', 'ds-drafting-specimen');
+  addingStage.append(sourceAdding.element);
+  loading.append(element('h4', '', 'Adding a source'), addingStage, element('p', 'ds-caption', 'A white card centers one paper above the text “Adding your Source”. A fixed Teal 50 (#F0FDFA) shimmer sweeps every 2.4 seconds. The page and text stay centered, with no message cycle or paper handoff. Reduced motion hides the shimmer sweep and keeps the paper and text static.'));
   const status = element('p', 'ds-specimen-status');
   status.setAttribute('role', 'status');
   let dropdowns;
@@ -247,13 +302,13 @@ export function mountStateSpecimens(root) {
     status.textContent = '';
     fields.querySelector('.tool-dropdown-trigger')?.focus({ preventScroll: true });
   });
-  root.append(panel, guidance, empty, loading, status);
+  root.append(panel, guidance, emptyPreview, loading, status);
   populateDraftOptions(panel);
   dropdowns = createToolDropdowns({ root: panel });
   const updateAdd = () => { add.disabled = !hasDraftSelection(Object.fromEntries([...fields.querySelectorAll('select')].map(select => [select.closest('.composer-field').dataset.label.toLowerCase(), select.value]))); };
   fields.addEventListener('change', updateAdd);
   updateAdd();
-  const mounted = { setExpanded, destroy() { disclosure.destroy(); drafting.destroy(); dropdowns.close(); stateMounts.delete(root); } };
+  const mounted = { setExpanded, destroy() { disclosure.destroy(); emptyTransition.destroy(); draftingAnimations.forEach(drafting => drafting.destroy()); sourceAdding.destroy(); dropdowns.close(); stateMounts.delete(root); } };
   stateMounts.set(root, mounted);
   return mounted;
 }

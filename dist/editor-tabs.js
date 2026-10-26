@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261022-linked-stories-motion';
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261022-linked-stories-motion';
+import { createIcon } from './icons.js?v=20261026-design-refresh';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261026-design-refresh';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');

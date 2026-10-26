@@ -1,9 +1,9 @@
-import { createIcon } from './icons.js?v=20261022-linked-stories-motion';
-import { normalizeWordCount } from './variant-word-count.js?v=20261022-linked-stories-motion';
-import { countPreviewWords } from './content-preview.js?v=20261022-linked-stories-motion';
-import { createContentCardActions } from './content-card-editing.js?v=20261022-linked-stories-motion';
-import { createDraftingAnimation } from './drafting-animation.js?v=20261022-linked-stories-motion';
-import { topicDraftContent } from './topic-draft.js?v=20261022-linked-stories-motion';
+import { createIcon } from './icons.js?v=20261026-design-refresh';
+import { normalizeWordCount } from './variant-word-count.js?v=20261026-design-refresh';
+import { countPreviewWords } from './content-preview.js?v=20261026-design-refresh';
+import { createContentCardActions } from './content-card-editing.js?v=20261026-design-refresh';
+import { createDraftingAnimation } from './drafting-animation.js?v=20261026-design-refresh';
+import { topicDraftContent } from './topic-draft.js?v=20261026-design-refresh';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',
@@ -74,6 +74,18 @@ export function outputIsReady(output) {
 
 export function outputIsSent(output) {
   return Number.isFinite(output?.cmsSentAt) && output.cmsSentAt > 0;
+}
+
+export function outputLoadingSelectionKeys(output) {
+  const keys = ['format', 'audience', 'voice'];
+  const preferences = output?.toolPreferences;
+  // A saved recipe can intentionally clear a setting; stale labels must not
+  // restore it. Label-only records remain supported for older drafts.
+  if (preferences && typeof preferences === 'object' && !Array.isArray(preferences)) {
+    return keys.filter(key => typeof preferences[key] === 'string' && preferences[key].trim());
+  }
+  const labels = Array.isArray(output?.labels) ? output.labels : [];
+  return keys.filter(key => labels.some(label => label?.key === key && typeof label.label === 'string' && label.label.trim()));
 }
 
 export function outputSourceCount(output) {
@@ -398,7 +410,7 @@ export function renderOutputs(project, requestedView) {
   document.querySelector('#output-processing-status').textContent = project?.outputProcessing?.kind === 'revision' ? 'Revising your variant. This takes about four seconds.' : processing ? 'Drafting your selected content. This takes about 15 seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
   const empty = document.querySelector('#outputs-empty');
   empty.hidden = state.outputs.length > 0;
-  empty.querySelector('p').textContent = state.view === 'pending' ? 'Your drafted content will appear here.' : 'No drafted content yet.';
+  empty.querySelector('p').textContent = state.view === 'pending' ? 'Your draft recipes will appear here.' : 'Your draft requests will appear here.';
   list.hidden = state.outputs.length === 0;
   list.setAttribute('aria-label', state.view === 'pending' ? 'Content to Draft' : 'Drafted Content');
   list.replaceChildren(...state.outputs.map(output => {
@@ -433,6 +445,7 @@ export function renderOutputs(project, requestedView) {
     open.dataset.outputId = output.id;
     open.disabled = revising || (!ready && processing);
     open.setAttribute('aria-label', `${!ready ? 'Select variant' : 'Open variant'}: ${output.title}`);
+    if (!ready) open.setAttribute('aria-pressed', String(selected));
     if (active) open.setAttribute('aria-current', 'true');
     open.title = !ready ? 'Select this variant to create' : active ? 'This variant is open in the editor' : 'Open this variant in the editor';
     const top = document.createElement('span');
@@ -443,9 +456,11 @@ export function renderOutputs(project, requestedView) {
     badges.setAttribute('aria-label', 'Variant settings');
     badges.addEventListener('scroll', () => updateBadgeOverflow(badges), { passive: true });
     let drag = null;
+    let draggedBadges = false;
     badges.addEventListener('pointerdown', event => {
       if (event.target.closest('[data-variant-sources]')) return;
       if (event.pointerType !== 'mouse' || event.button !== 0 || badges.scrollWidth <= badges.clientWidth + 1) return;
+      draggedBadges = false;
       drag = { pointerId: event.pointerId, x: event.clientX, scrollLeft: badges.scrollLeft };
       badges.setPointerCapture(event.pointerId);
       badges.dataset.dragging = 'true';
@@ -453,7 +468,13 @@ export function renderOutputs(project, requestedView) {
       event.preventDefault();
     });
     badges.addEventListener('pointermove', event => {
-      if (drag?.pointerId === event.pointerId) badges.scrollLeft = drag.scrollLeft + drag.x - event.clientX;
+      if (drag?.pointerId !== event.pointerId) return;
+      badges.scrollLeft = drag.scrollLeft + drag.x - event.clientX;
+      draggedBadges ||= badges.scrollLeft !== drag.scrollLeft;
+    });
+    badges.addEventListener('click', event => {
+      if (draggedBadges) event.stopPropagation();
+      draggedBadges = false;
     });
     for (const eventName of ['pointerup', 'pointercancel', 'lostpointercapture']) badges.addEventListener(eventName, () => {
       drag = null;
@@ -466,25 +487,10 @@ export function renderOutputs(project, requestedView) {
     heading.title = output.title;
     open.append(top, heading);
     card.append(open);
-    if (!ready) {
-      const selection = document.createElement('button');
-      selection.type = 'button';
-      selection.className = 'output-selection-button';
-      selection.dataset.selectOutput = output.id;
-      selection.disabled = processing;
-      selection.setAttribute('role', 'checkbox');
-      selection.setAttribute('aria-label', `${selected ? 'Deselect' : 'Select'} variant: ${output.title}`);
-      selection.setAttribute('aria-checked', String(selected));
-      const indicator = document.createElement('span');
-      indicator.className = 'output-selection-indicator';
-      indicator.setAttribute('aria-hidden', 'true');
-      selection.append(indicator);
-      card.append(selection);
-    }
     badges.inert = revising;
     card.append(badges);
     if (revising) {
-      const animation = createDraftingAnimation();
+      const animation = createDraftingAnimation({ selectionKeys: outputLoadingSelectionKeys(output) });
       animation.element.classList.add('output-revision-overlay');
       draftingAnimations.add(animation);
       card.append(animation.element);

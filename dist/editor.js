@@ -1,9 +1,9 @@
-import { documentStyles } from './design-system/export-styles.js?v=20261022-linked-stories-motion';
-import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261022-linked-stories-motion';
-import { initializeOutputShareText } from './outputs.js?v=20261022-linked-stories-motion';
-import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261022-linked-stories-motion';
-import { draftPreferenceValue } from './draft-options.js?v=20261022-linked-stories-motion';
-import './vendor/quill-2.0.3.js';
+import { documentStyles } from './design-system/export-styles.js?v=20261026-design-refresh';
+import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-design-refresh';
+import { initializeOutputShareText } from './outputs.js?v=20261026-design-refresh';
+import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261026-design-refresh';
+import { draftPreferenceValue } from './draft-options.js?v=20261026-design-refresh';
+import './vendor/quill-2.0.3.js?v=20261026-design-refresh';
 
 const Quill = window.Quill;
 const Delta = Quill.import('delta');

@@ -1,12 +1,14 @@
 /* Export layout and colors are self-contained. Newsreader loads from the export font link, with generic serif fallback when unavailable. */
-body { max-width: var(--csa-foundation-size-760); margin: var(--csa-foundation-space-60) auto; padding: var(--csa-foundation-space-24); font: var(--csa-foundation-font-size-17) / var(--csa-foundation-font-leading-1-8) var(--csa-foundation-font-family-export); color: var(--csa-component-export-text); }
-h1, h2, h3 { line-height: var(--csa-foundation-font-leading-1-3); }
+body { max-width: var(--csa-foundation-size-760); margin: var(--csa-foundation-space-60) auto; padding: var(--csa-foundation-space-24); font: var(--csa-foundation-font-size-16) / var(--csa-foundation-line-height-28) var(--csa-foundation-font-family-export); color: var(--csa-component-export-text); }
+h1 { font-size: var(--csa-foundation-font-size-30); line-height: var(--csa-foundation-line-height-36); }
+h2 { font-size: var(--csa-foundation-font-size-24); line-height: var(--csa-foundation-line-height-32); }
+h3 { font-size: var(--csa-foundation-font-size-20); line-height: var(--csa-foundation-line-height-28); }
 blockquote { border-left: var(--csa-foundation-border-width-3) solid var(--csa-component-export-quote-border); padding-left: var(--csa-foundation-space-20); }
 .ql-align-center { text-align: center; }
 .ql-align-right { text-align: right; }
 .ql-align-justify { text-align: justify; }
 .ql-font-serif { font-family: var(--csa-component-export-serif-family); }
 .ql-font-monospace { font-family: var(--csa-foundation-font-family-monospace); }
-.ql-size-small { font-size: calc(var(--csa-component-export-scale-small) * 1em); }
-.ql-size-large { font-size: calc(var(--csa-component-export-scale-large) * 1em); }
-.ql-size-huge { font-size: calc(var(--csa-component-export-scale-huge) * 1em); }
+.ql-size-small { font-size: var(--csa-foundation-font-size-12); }
+.ql-size-large { font-size: var(--csa-foundation-font-size-20); }
+.ql-size-huge { font-size: var(--csa-foundation-font-size-24); }

@@ -1,5 +1,5 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261022-linked-stories-motion';
-import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261022-linked-stories-motion';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-design-refresh';
+import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-design-refresh';
 export function sourceSelectionFor(project, variant = null) {
   const available = project?.sources || [];
   if (!variant) return { sources: available, selectedSources: new Set(available.filter(source => source.selected !== false)) };
@@ -191,7 +191,7 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onRe
   function updateSelectionStatus() {
     const sources = visibleSources;
     status.hidden = Boolean(sourceVariant);
-    status.textContent = !sourceVariant && sources.length ? `${selectedSources.size} of ${sources.length} selected for new variants` : '';
+    status.textContent = !sourceVariant && sources.length ? `${selectedSources.size} of ${sources.length} selected for new drafts` : '';
   }
 
 

@@ -1,29 +1,29 @@
-import { updatePresetPreferences } from './preset-settings.js?v=20261022-linked-stories-motion';
-import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261022-linked-stories-motion';
-import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261022-linked-stories-motion';
-import { createIcon as icon } from './icons.js?v=20261022-linked-stories-motion';
-import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261022-linked-stories-motion';
-import { resolveArticleMetadata } from './article-metadata.js?v=20261022-linked-stories-motion';
-import { createPanelDisclosure } from './panel-disclosure.js?v=20261022-linked-stories-motion';
-import { createTabPanelTransition } from './tab-panel-transition.js?v=20261022-linked-stories-motion';
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261022-linked-stories-motion';
-import { createProfile } from './profile.js?v=20261022-linked-stories-motion';
-import { createSearchExperience } from './search.js?v=20261022-linked-stories-motion';
-import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261022-linked-stories-motion';
-import { createMaterialEditor } from './editor.js?v=20261022-linked-stories-motion';
-import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261022-linked-stories-motion';
-import { removeProjectContent } from './project-deletion.js?v=20261022-linked-stories-motion';
-import { createContentPreview } from './content-preview.js?v=20261022-linked-stories-motion';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261022-linked-stories-motion';
-import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261022-linked-stories-motion';
-import { createNewProjectUpload } from './new-project-upload.js?v=20261022-linked-stories-motion';
-import { createRailNavigation } from './navigation.js?v=20261022-linked-stories-motion';
-import { createProjectSources } from './sources.js?v=20261022-linked-stories-motion';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261022-linked-stories-motion';
-import { createEditorTabs } from './editor-tabs.js?v=20261022-linked-stories-motion';
-import { createContentCardEditing } from './content-card-editing.js?v=20261022-linked-stories-motion';
-import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261022-linked-stories-motion';
-import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261022-linked-stories-motion';
+import { updatePresetPreferences } from './preset-settings.js?v=20261026-design-refresh';
+import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261026-design-refresh';
+import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261026-design-refresh';
+import { createIcon as icon } from './icons.js?v=20261026-design-refresh';
+import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261026-design-refresh';
+import { resolveArticleMetadata } from './article-metadata.js?v=20261026-design-refresh';
+import { createPanelDisclosure } from './panel-disclosure.js?v=20261026-design-refresh';
+import { createTabPanelTransition } from './tab-panel-transition.js?v=20261026-design-refresh';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261026-design-refresh';
+import { createProfile } from './profile.js?v=20261026-design-refresh';
+import { createSearchExperience } from './search.js?v=20261026-design-refresh';
+import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261026-design-refresh';
+import { createMaterialEditor } from './editor.js?v=20261026-design-refresh';
+import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-design-refresh';
+import { removeProjectContent } from './project-deletion.js?v=20261026-design-refresh';
+import { createContentPreview } from './content-preview.js?v=20261026-design-refresh';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261026-design-refresh';
+import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261026-design-refresh';
+import { createNewProjectUpload } from './new-project-upload.js?v=20261026-design-refresh';
+import { createRailNavigation } from './navigation.js?v=20261026-design-refresh';
+import { createProjectSources } from './sources.js?v=20261026-design-refresh';
+import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261026-design-refresh';
+import { createEditorTabs } from './editor-tabs.js?v=20261026-design-refresh';
+import { createContentCardEditing } from './content-card-editing.js?v=20261026-design-refresh';
+import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-design-refresh';
+import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261026-design-refresh';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -315,7 +315,7 @@ function deleteVariant({ projectId, outputId }) {
   if (!deletion) return false;
   projects = deletion.projects;
   refresh();
-  notify('Variant deleted.', () => {
+  notify('Draft deleted', () => {
     richEditor.flush();
     let restored;
     try { restored = restoreVariant(projects, deletion.undo, persist); }
@@ -786,10 +786,10 @@ $('#output-list').addEventListener('click', event => {
   if (!project) return;
   const sources = event.target.closest('[data-variant-sources]');
   if (sources) { openVariantSources(sources); return; }
-  const selection = event.target.closest('[data-select-output]');
-  const card = selection || event.target.closest('[data-output-id]');
-  if (!card) return;
-  const output = projectOutputs(project).find(entry => entry.id === (selection ? card.dataset.selectOutput : card.dataset.outputId));
+  if (event.target.closest('.output-card-actions')) return;
+  const card = event.target.closest('.output-card')?.querySelector('.output-open');
+  if (!card || card.disabled) return;
+  const output = projectOutputs(project).find(entry => entry.id === card.dataset.outputId);
   if (!output || project.outputProcessing) return;
   if (!outputIsReady(output)) {
     richEditor.flush();
@@ -797,7 +797,9 @@ $('#output-list').addEventListener('click', event => {
     if (ids.has(output.id)) ids.delete(output.id); else ids.add(output.id);
     project.selectedOutputIds = [...ids];
     saveProjects();
+    const restoreFocus = document.activeElement === card;
     renderOutputs(project);
+    if (restoreFocus) [...$('#output-list').querySelectorAll('.output-open')].find(button => button.dataset.outputId === output.id)?.focus({ preventScroll: true });
     return;
   }
   railNavigation.closeTransient();

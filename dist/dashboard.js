@@ -1,7 +1,7 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261022-linked-stories-motion';
-import { createIcon as icon } from './icons.js?v=20261022-linked-stories-motion';
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261022-linked-stories-motion';
-import { sourceLinkArticles } from './source-links.js?v=20261022-linked-stories-motion';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-design-refresh';
+import { createIcon as icon } from './icons.js?v=20261026-design-refresh';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261026-design-refresh';
+import { sourceLinkArticles } from './source-links.js?v=20261026-design-refresh';
 
 const layoutKey = 'csa.dashboard.layout.v1';
 function readLayout() {

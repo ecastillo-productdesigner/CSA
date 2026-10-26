@@ -1,5 +1,5 @@
 // Purpose-led roles follow Material 3's applying-type guidance and Carbon's
-// typography style strategies. CSA's existing token values stay unchanged.
+// typography style strategies. Six text sizes serve the app and documentation.
 export const typographyRoleGroups = [
   {
     id: 'page-hierarchy',
@@ -8,7 +8,7 @@ export const typographyRoleGroups = [
     roles: [
       {
         name: 'Homepage greeting',
-        usage: 'Welcome the user at the start of the homepage. Reserve the serif style for a short greeting.',
+        usage: 'Welcome the user at the start of the homepage. Use Newsreader for the short greeting.',
         example: 'Hello,',
         styles: [
           { token: 'semantic.typography.greeting.desktop', label: 'Desktop' },
@@ -26,32 +26,23 @@ export const typographyRoleGroups = [
       },
       {
         name: 'Panel heading',
-        usage: 'Name a workspace region, such as New Draft or Content, so its purpose is clear before the controls below it.',
+        usage: 'Name a panel so its purpose is clear before the controls below it. New Draft and Content use a compact 16 px heading on every screen; other panels keep the 20 px role.',
         example: 'New Draft',
-        styles: [{ token: 'semantic.typography.panel-heading', label: 'All screens' }],
+        styles: [
+          {
+            token: 'semantic.typography.panel-heading',
+            label: 'New Draft / Content',
+            overrides: { fontSize: 'foundation.font.size.16', lineHeight: 'foundation.line.height.24' },
+            note: 'Composer panel component tokens set 16 px / 24 px while retaining Bold (700).',
+          },
+          { token: 'semantic.typography.panel-heading', label: 'Other panels' },
+        ],
       },
       {
         name: 'Dialog heading',
         usage: 'State the task in a popup, such as creating a project or choosing where to send a draft. Keep the heading direct.',
         example: 'New Project',
-        styles: [
-          {
-            token: 'semantic.typography.dialog-heading',
-            label: 'Desktop — New Project',
-            overrides: { letterSpacing: 'foundation.font.tracking.negative-0-6' },
-            note: 'New Project uses its existing component-specific letter spacing.',
-          },
-          {
-            token: 'semantic.typography.dialog-heading',
-            label: 'Mobile — New Project',
-            overrides: {
-              fontSize: 'foundation.font.size.22',
-              lineHeight: 'foundation.line.height.28',
-              letterSpacing: 'foundation.font.tracking.negative-0-6',
-            },
-            note: 'The mobile New Project dialog uses its existing 22 px size and 28 px line height.',
-          },
-        ],
+        styles: [{ token: 'semantic.typography.dialog-heading', label: 'All screens' }],
       },
     ],
   },
@@ -62,7 +53,7 @@ export const typographyRoleGroups = [
     roles: [
       {
         name: 'Project card title',
-        usage: 'Identify a project in the homepage grid. The bold title comes before its date and content count.',
+        usage: 'Identify a project in the homepage grid. The semibold title comes before its date and content count.',
         example: 'A creative chapter begins',
         styles: [
           { token: 'semantic.typography.project-title.desktop', label: 'Desktop' },
@@ -71,7 +62,7 @@ export const typographyRoleGroups = [
       },
       {
         name: 'Project list title',
-        usage: 'Identify a project in the homepage list, using a more compact style than the grid card title.',
+        usage: 'Identify a project in the homepage list with compact semibold text for easy scanning.',
         example: 'A creative chapter begins',
         styles: [{ token: 'semantic.typography.project-list-title', label: 'All screens' }],
       },
@@ -91,12 +82,13 @@ export const typographyRoleGroups = [
         name: 'Article card title',
         usage: 'Identify an article in a source result card. Use the bold title to lead into its short preview.',
         example: 'A creative project brings neighbors together',
-        styles: [{
-          token: 'semantic.typography.result-title',
-          label: 'Link card — all screens',
-          overrides: { fontSize: 'foundation.font.size.16', lineHeight: 'foundation.line.height.22' },
-          note: 'Current link cards use the existing component-specific 16 px size and 22 px line height.',
-        }],
+        styles: [{ token: 'semantic.typography.result-title', label: 'All screens' }],
+      },
+      {
+        name: 'Article heading',
+        usage: 'Name the article at its highest heading level in the editor or exported document. Use one main heading before its sections.',
+        example: 'A local idea brings the community together',
+        styles: [{ token: 'semantic.typography.article-h1', label: 'Heading 1' }],
       },
       {
         name: 'Article section heading',
@@ -130,10 +122,16 @@ export const typographyRoleGroups = [
         styles: [{ token: 'semantic.typography.label', label: 'All screens' }],
       },
       {
-        name: 'Field value',
-        usage: 'Show the selected value inside an input or dropdown. Let the value answer the field label.',
+        name: 'Dropdown value',
+        usage: 'Show the selected value inside a dropdown. Use regular weight so the value answers the field label.',
         example: 'General Audience',
         styles: [{ token: 'semantic.typography.field-value', label: 'All screens' }],
+      },
+      {
+        name: 'Text input value',
+        usage: 'Use regular text for editable input and textarea values. Editorial Direction uses its compact component style: 14 px Regular with a 20 px line height.',
+        example: 'Focus on the local economy',
+        styles: [{ token: 'semantic.typography.input-value', label: 'All screens' }],
       },
       {
         name: 'Primary button label',
@@ -157,12 +155,7 @@ export const typographyRoleGroups = [
         name: 'Settings chip',
         usage: 'Summarize a draft setting in a compact chip, such as its format, audience, or voice.',
         example: 'General Audience',
-        styles: [{
-          token: 'semantic.typography.chip',
-          label: 'All screens',
-          overrides: { fontWeight: 'foundation.font.weight.500' },
-          note: 'Settings chips use the existing component-specific medium weight.',
-        }],
+        styles: [{ token: 'semantic.typography.chip', label: 'All screens' }],
       },
     ],
   },
@@ -182,7 +175,7 @@ export const typographyRoleGroups = [
       },
       {
         name: 'Status badge',
-        usage: 'Show a short state, such as Draft or Sent, alongside the content it describes.',
+        usage: 'Show a short state, such as Draft or Sent, alongside the content it describes. Match the settings-chip typography.',
         example: 'Draft',
         styles: [{ token: 'semantic.typography.status', label: 'All screens' }],
       },

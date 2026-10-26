@@ -118,8 +118,10 @@ test('homepage entrance cleanup covers the final staggered card', async () => {
   const source = JSON.parse(await readFile(new URL('../dist/design-system/tokens.json', import.meta.url), 'utf8'));
   const tokens = new Map(compileTokens(source).flat.map(token => [token.name, token.value]));
   const ms = name => { const value = tokens.get(name); return Number.parseFloat(value) * (value.endsWith('ms') ? 1 : 1000); };
-  const finalCardEnd = ms('foundation.motion.duration.420')
-    + tokens.get('component.layout.max-entry-order') * ms('foundation.motion.duration.45')
-    + ms('component.layout.home-enter-duration');
+  const duration = ms('component.layout.home-enter-duration');
+  const finalCardEnd = ms('component.layout.home-enter-delay')
+    + tokens.get('component.layout.max-entry-order') * ms('component.layout.home-enter-stagger')
+    + duration;
+  assert.equal(duration, 300, 'homepage entrance uses the approved 300 ms duration');
   assert.ok(ms('component.layout.enter-cleanup') >= finalCardEnd, 'entrance class must remain until the last card completes');
 });

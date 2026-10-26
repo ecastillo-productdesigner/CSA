@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createDraftingAnimation, draftingMessages } from '../dist/drafting-animation.js';
+import { createDraftingAnimation, createSourceAddingAnimation, draftingMessages } from '../dist/drafting-animation.js';
 
 class Events {
   constructor() { this.listeners = new Map(); }
@@ -100,8 +100,8 @@ function setup(t, { reduced = false, observers = true } = {}) {
     }
     now = until;
   }
-  const create = options => {
-    const controller = createDraftingAnimation(options);
+  const create = (options, factory = createDraftingAnimation) => {
+    const controller = factory(options);
     const stack = controller.element.children[0];
     const message = controller.element.children[1];
     const mount = () => { controller.element.isConnected = true; mutations[0]?.change(); intersections[0]?.visible(true); if (!observers) document.fire('visibilitychange'); };
@@ -113,12 +113,29 @@ function setup(t, { reduced = false, observers = true } = {}) {
 const flush = async () => { await Promise.resolve(); await Promise.resolve(); };
 const allAnimations = ui => ui.papers.flatMap(paper => paper.animations);
 
+function assertActiveShimmer(ui, key) {
+  assert.equal(ui.root.dataset.shimmerColor, key);
+  const expected = ['neutral', 'source'].includes(key) ? undefined : `var(--csa-component-drafting-shimmer-${key})`;
+  assert.equal(ui.root.style['--drafting-shimmer-color'], expected, 'only the active selected color is applied');
+  assert.equal(ui.root.style['--drafting-shimmer-stops'], undefined, 'selected colors are not mixed into simultaneous stops');
+}
+
+function provideGeometry(env, ui) {
+  Object.assign(env.document.documentElement, { clientWidth: 600, clientHeight: 600 });
+  Object.assign(env.window, { innerWidth: 600, innerHeight: 600 });
+  const bounds = { left: 20, top: 20, width: 300, height: 120 };
+  ui.root.getBoundingClientRect = () => ({ ...bounds, x: bounds.left, y: bounds.top, right: bounds.left + bounds.width, bottom: bounds.top + bounds.height });
+  return update => Object.assign(bounds, update);
+}
+
  test('the shared component has three decorative white-sheet layers, seven lines each and exact requested messages', t => {
   const env = setup(t);
   const ui = env.create();
   assert.equal(ui.root.className, 'drafting-animation');
   assert.equal(ui.root.dataset.compact, 'true');
   assert.equal(ui.root.dataset.messageCount, '3');
+  assert.equal(ui.root.dataset.shimmerColors, '');
+  assertActiveShimmer(ui, 'neutral');
   assert.equal(ui.stack.getAttribute('aria-hidden'), 'true');
   assert.deepEqual(ui.papers.map(paper => paper.dataset.depth), ['back', 'middle', 'front']);
   assert.equal(ui.papers.every(paper => paper.children.length === 7), true);
@@ -136,6 +153,113 @@ const allAnimations = ui => ui.papers.flatMap(paper => paper.animations);
   ]);
   assert.equal(env.timers.size, 0, 'a detached component must not start a loop');
   ui.controller.destroy();
+});
+
+test('draft shimmer includes exactly the selected categories in canonical order', t => {
+  const env = setup(t);
+  const combinations = [
+    [['format'], ['format']],
+    [['audience'], ['audience']],
+    [['voice'], ['voice']],
+    [['audience', 'format'], ['format', 'audience']],
+    [['voice', 'format'], ['format', 'voice']],
+    [['voice', 'audience'], ['audience', 'voice']],
+    [['voice', 'format', 'audience'], ['format', 'audience', 'voice']],
+    [['voice', 'format', 'invalid', 'voice', 'audience', 'format'], ['format', 'audience', 'voice']],
+  ];
+  for (const [selectionKeys, expected] of combinations) {
+    const ui = env.create({ selectionKeys });
+    assert.equal(ui.root.dataset.shimmerColors, expected.join(' '));
+    assertActiveShimmer(ui, expected[0]);
+    assert.equal(ui.root.children.length, 2, 'selected shimmer colors do not change the paper/message structure');
+    ui.controller.destroy();
+  }
+  for (const selectionKeys of [[], ['invalid', null, undefined]]) {
+    const ui = env.create({ selectionKeys });
+    assert.equal(ui.root.dataset.shimmerColors, '');
+    assertActiveShimmer(ui, 'neutral');
+    ui.controller.destroy();
+  }
+});
+
+test('selected shimmer colors advance separately from the three-message loop and pause safely', async t => {
+  const env = setup(t, { observers: false });
+  const sequences = [
+    [[], ['neutral', 'neutral', 'neutral', 'neutral', 'neutral', 'neutral']],
+    [['voice'], ['voice', 'voice', 'voice', 'voice', 'voice', 'voice']],
+    [['voice', 'format'], ['format', 'voice', 'format', 'voice', 'format', 'voice']],
+    [['voice', 'audience'], ['audience', 'voice', 'audience', 'voice', 'audience', 'voice']],
+    [['voice', 'audience', 'format'], ['format', 'audience', 'voice', 'format', 'audience', 'voice']],
+  ];
+  for (const [selectionKeys, expected] of sequences) {
+    const ui = env.create({ selectionKeys });
+    ui.mount();
+    assertActiveShimmer(ui, expected[0]);
+    for (let step = 1; step < expected.length; step += 1) {
+      env.tick(5000);
+      assert.equal(ui.root.dataset.messageIndex, String(step % 3));
+      assertActiveShimmer(ui, expected[step]);
+      env.tick(800);
+      allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
+      await flush();
+    }
+    env.document.hidden = true;
+    env.document.fire('visibilitychange');
+    env.tick(60000);
+    assert.equal(ui.root.dataset.playing, 'false');
+    assert.equal(ui.root.dataset.messageIndex, '2');
+    assertActiveShimmer(ui, expected.at(-1));
+    env.document.hidden = false;
+    env.document.fire('visibilitychange');
+    env.tick(5000);
+    assert.equal(ui.root.dataset.messageIndex, '0');
+    assertActiveShimmer(ui, expected[0]);
+    allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
+    await flush();
+    ui.controller.destroy();
+  }
+});
+
+test('source adding keeps one page and a fixed message without scheduling handoffs', t => {
+  const env = setup(t);
+  const ui = env.create(undefined, createSourceAddingAnimation);
+  assert.equal(ui.root.dataset.variant, 'source');
+  assert.equal(ui.root.dataset.shimmerColors, 'source');
+  assertActiveShimmer(ui, 'source');
+  assert.equal(ui.root.dataset.compact, 'true');
+  assert.equal(ui.root.dataset.messageCount, '1');
+  assert.equal(ui.papers.length, 1);
+  assert.equal(ui.papers[0].dataset.depth, 'front');
+  assert.equal(ui.papers[0].children.length, 7);
+  assert.equal(ui.message.textContent, 'Adding your Source');
+  assert.equal(ui.message.getAttribute('role'), 'status');
+  assert.equal(ui.message.getAttribute('aria-live'), 'polite');
+  ui.mount();
+  assert.equal(ui.root.dataset.playing, 'true', 'the CSS shimmer can play without a message timer');
+  assert.equal(env.timers.size, 0);
+  env.tick(60000);
+  assert.equal(ui.message.textContent, 'Adding your Source');
+  assert.equal(ui.root.dataset.messageIndex, '0');
+  assert.equal(ui.root.dataset.shimmerColors, 'source');
+  assertActiveShimmer(ui, 'source');
+  assert.equal(allAnimations(ui).length, 0, 'one page must not schedule a WAAPI paper handoff');
+  assert.equal(env.timers.size, 0);
+
+  env.motion.matches = true;
+  env.motion.fire('change');
+  assert.equal(ui.root.dataset.reducedMotion, 'true');
+  assert.equal(ui.root.dataset.playing, 'false');
+  env.motion.matches = false;
+  env.motion.fire('change');
+  assert.equal(ui.root.dataset.playing, 'true');
+  assert.equal(env.timers.size, 0, 'resuming source shimmer must not introduce a message timer');
+  ui.controller.destroy();
+  assert.equal(env.timers.size, 0);
+  assert.equal(env.document.listenerCount(), 0);
+  assert.equal(env.window.listenerCount(), 0);
+  assert.equal(env.motion.listenerCount(), 0);
+  assert.equal(env.intersections[0].disconnected, true);
+  assert.equal(env.mutations[0].disconnected, true);
 });
 
 test('each message change brings the back sheet to the front with token-driven motion and no text opacity animation', async t => {
@@ -176,14 +300,18 @@ test('a 15-second drafting job shows exactly the first three messages at 0, 5, a
   assert.deepEqual(tokens.component.drafting['message-hold-duration'].$value, { value: 5000, unit: 'ms' });
   assert.deepEqual(tokens.component.drafting['processing-duration'].$value, { value: 15000, unit: 'ms' });
   const env = setup(t);
-  const ui = env.create();
+  const ui = env.create({ selectionKeys: ['voice', 'format'] });
   ui.mount();
   const seen = [ui.message.textContent];
+  assert.equal(ui.root.dataset.shimmerColors, 'format voice');
+  assertActiveShimmer(ui, 'format');
   env.tick(4999);
   assert.equal(ui.root.dataset.messageIndex, '0');
   env.tick(1);
   seen.push(ui.message.textContent);
   assert.equal(ui.root.dataset.messageIndex, '1');
+  assert.equal(ui.root.dataset.shimmerColors, 'format voice');
+  assertActiveShimmer(ui, 'voice');
   env.tick(800);
   allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
   await flush();
@@ -192,6 +320,8 @@ test('a 15-second drafting job shows exactly the first three messages at 0, 5, a
   env.tick(1);
   seen.push(ui.message.textContent);
   assert.equal(ui.root.dataset.messageIndex, '2');
+  assert.equal(ui.root.dataset.shimmerColors, 'format voice');
+  assertActiveShimmer(ui, 'format');
   env.tick(800);
   allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
   await flush();
@@ -259,6 +389,98 @@ test('offscreen or hidden animation cancels current motion and resumes without a
   env.document.fire('visibilitychange');
   env.document.fire('visibilitychange');
   assert.equal(env.timers.size, 1);
+  ui.controller.destroy();
+});
+
+test('fresh geometry recovers missing or stale intersection delivery while preserving playback guards', t => {
+  const env = setup(t);
+  const ui = env.create();
+  const move = provideGeometry(env, ui);
+  ui.root.isConnected = true;
+  env.mutations[0].change();
+  assert.equal(ui.root.dataset.playing, 'true', 'a visible mounted card must not wait indefinitely for IntersectionObserver');
+  assert.equal(env.timers.size, 1);
+  env.intersections[0].visible(false);
+  assert.equal(ui.root.dataset.playing, 'true', 'a stale negative observer entry cannot override current visible geometry');
+
+  move({ top: 700 });
+  env.document.fire('scroll');
+  assert.equal(ui.root.dataset.playing, 'false');
+  assert.equal(env.timers.size, 0);
+  env.intersections[0].visible(true);
+  assert.equal(ui.root.dataset.playing, 'false', 'a stale positive observer entry cannot override an offscreen rectangle');
+  move({ top: 40 });
+  env.document.fire('scroll');
+  assert.equal(ui.root.dataset.playing, 'true', 'scrolling into view resumes without a new observer entry');
+  move({ left: 700 });
+  env.window.fire('resize');
+  assert.equal(ui.root.dataset.playing, 'false');
+  move({ left: 20 });
+  env.window.fire('resize');
+  assert.equal(ui.root.dataset.playing, 'true', 'resizing into view resumes without a new observer entry');
+
+  env.document.hidden = true;
+  env.document.fire('visibilitychange');
+  env.document.fire('scroll');
+  env.window.fire('resize');
+  assert.equal(ui.root.dataset.playing, 'false', 'visible geometry cannot restart a hidden document');
+  env.document.hidden = false;
+  env.document.fire('visibilitychange');
+  assert.equal(ui.root.dataset.playing, 'true');
+  env.motion.matches = true;
+  env.motion.fire('change');
+  env.document.fire('scroll');
+  env.window.fire('resize');
+  assert.equal(ui.root.dataset.playing, 'false', 'visible geometry cannot override reduced motion');
+  assert.equal(env.timers.size, 0);
+  env.motion.matches = false;
+  env.motion.fire('change');
+  assert.equal(ui.root.dataset.playing, 'true');
+
+  ui.controller.destroy();
+  env.document.fire('scroll');
+  env.window.fire('resize');
+  env.window.fire('pageshow');
+  env.motion.fire('change');
+  assert.equal(ui.root.dataset.playing, 'false');
+  assert.equal(env.timers.size, 0);
+  assert.equal(env.document.listenerCount(), 0);
+  assert.equal(env.window.listenerCount(), 0);
+  assert.equal(env.motion.listenerCount(), 0);
+  assert.equal(env.intersections[0].disconnected, true);
+  assert.equal(env.mutations[0].disconnected, true);
+});
+
+test('fresh geometry respects scrollable and hidden ancestor clipping', t => {
+  const env = setup(t);
+  const ui = env.create();
+  const move = provideGeometry(env, ui);
+  const clip = new Element();
+  Object.assign(clip, { clientLeft: 0, clientTop: 0, clientWidth: 300, clientHeight: 100 });
+  clip.getBoundingClientRect = () => ({ left: 20, top: 20, right: 320, bottom: 120, width: 300, height: 100 });
+  clip.parentElement = env.document.documentElement;
+  ui.root.parentElement = clip;
+  const overflow = { overflowX: 'hidden', overflowY: 'auto' };
+  const previousStyle = globalThis.getComputedStyle;
+  globalThis.getComputedStyle = element => {
+    const base = previousStyle(element);
+    const style = { overflowX: 'visible', overflowY: 'visible', display: 'block', visibility: 'visible', ...(element === clip ? overflow : {}) };
+    return { ...base, ...style, getPropertyValue(name) { return style[name.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())] ?? base.getPropertyValue(name); } };
+  };
+  move({ left: 40, top: 220, width: 200 });
+  ui.root.isConnected = true;
+  env.mutations[0].change();
+  env.intersections[0].visible(true);
+  assert.equal(ui.root.dataset.playing, 'false', 'a card below its scroll container is clipped even inside the page viewport');
+  move({ top: 40 });
+  env.document.fire('scroll', { target: clip });
+  assert.equal(ui.root.dataset.playing, 'true');
+  move({ left: 350 });
+  env.document.fire('scroll', { target: clip });
+  assert.equal(ui.root.dataset.playing, 'false', 'hidden horizontal overflow also clips playback');
+  Object.assign(overflow, { overflowX: 'visible', overflowY: 'visible' });
+  env.window.fire('resize');
+  assert.equal(ui.root.dataset.playing, 'true', 'an ancestor with visible overflow does not clip the card');
   ui.controller.destroy();
 });
 

@@ -1,4 +1,4 @@
-import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261022-linked-stories-motion';
+import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-design-refresh';
 
 export const draftingMessages = Object.freeze([
   'Checking for AI patterns, ensuring variety and authentic voice',
@@ -16,19 +16,33 @@ function durationMilliseconds(path) {
   return duration * (value.endsWith('ms') ? 1 : 1000);
 }
 
-export function createDraftingAnimation({ compact = true, messageLimit = 3 } = {}) {
+export function createDraftingAnimation({ compact = true, messageLimit = 3, selectionKeys = [], variant = 'drafting' } = {}) {
+  const addingSource = variant === 'source';
   const count = Number.isFinite(messageLimit) ? Math.max(1, Math.min(draftingMessages.length, Math.floor(messageLimit))) : 3;
-  const messages = draftingMessages.slice(0, count);
+  const messages = addingSource ? ['Adding your Source'] : draftingMessages.slice(0, count);
   const element = document.createElement('div');
   element.className = 'drafting-animation';
   element.dataset.compact = String(compact);
+  element.dataset.variant = addingSource ? 'source' : 'drafting';
   element.dataset.playing = 'false';
   element.dataset.messageIndex = '0';
   element.dataset.messageCount = String(messages.length);
+  const selectedKeys = Array.isArray(selectionKeys) ? selectionKeys : [];
+  const shimmerColors = ['format', 'audience', 'voice'].filter(key => selectedKeys.includes(key));
+  element.dataset.shimmerColors = addingSource ? 'source' : shimmerColors.join(' ');
+  let shimmerIndex = 0;
+  function updateShimmerColor() {
+    const color = addingSource ? 'source' : shimmerColors[shimmerIndex];
+    element.dataset.shimmerColor = color || 'neutral';
+    if (!addingSource && color) {
+      element.style.setProperty('--drafting-shimmer-color', `var(--csa-component-drafting-shimmer-${color})`);
+    }
+  }
+  updateShimmerColor();
   const stack = document.createElement('div');
   stack.className = 'drafting-paper-stack';
   stack.setAttribute('aria-hidden', 'true');
-  const papers = ['back', 'middle', 'front'].map(depth => {
+  const papers = (addingSource ? ['front'] : ['back', 'middle', 'front']).map(depth => {
     const paper = document.createElement('div');
     paper.className = 'drafting-paper';
     paper.dataset.depth = depth;
@@ -99,7 +113,7 @@ export function createDraftingAnimation({ compact = true, messageLimit = 3 } = {
   }
 
   function schedule() {
-    if (destroyed || !playing || moving || timer !== null) return;
+    if (addingSource || destroyed || !playing || moving || timer !== null) return;
     timer = setTimeout(() => {
       timer = null;
       updateVisibility();
@@ -108,7 +122,7 @@ export function createDraftingAnimation({ compact = true, messageLimit = 3 } = {
   }
 
   function advance() {
-    if (destroyed || moving || !playing) return;
+    if (addingSource || destroyed || moving || !playing) return;
     const front = papers.find(paper => paper.dataset.depth === 'front');
     const middle = papers.find(paper => paper.dataset.depth === 'middle');
     const incoming = papers.find(paper => paper.dataset.depth === 'back');
@@ -116,6 +130,8 @@ export function createDraftingAnimation({ compact = true, messageLimit = 3 } = {
     setDepth(front, 'middle');
     setDepth(middle, 'back');
     index = (index + 1) % messages.length;
+    if (shimmerColors.length > 1) shimmerIndex = (shimmerIndex + 1) % shimmerColors.length;
+    updateShimmerColor();
     message.textContent = messages[index];
     element.dataset.messageIndex = String(index);
     if (typeof incoming.animate !== 'function') {
@@ -155,13 +171,38 @@ export function createDraftingAnimation({ compact = true, messageLimit = 3 } = {
     });
   }
 
+  function isInViewport() {
+    if (typeof element.getBoundingClientRect !== 'function') return inViewport;
+    const width = document.documentElement.clientWidth || window.innerWidth;
+    const height = document.documentElement.clientHeight || window.innerHeight;
+    if (!(width > 0 && height > 0)) return inViewport;
+    const rect = element.getBoundingClientRect();
+    if (!(rect.width > 0 && rect.height > 0)) return false;
+    let left = 0;
+    let top = 0;
+    let right = width;
+    let bottom = height;
+    for (let parent = element.parentElement; parent && parent !== document.documentElement; parent = parent.parentElement) {
+      const style = getComputedStyle(parent);
+      const clipsX = /^(auto|scroll|hidden|clip)$/.test(style.overflowX);
+      const clipsY = /^(auto|scroll|hidden|clip)$/.test(style.overflowY);
+      if (!clipsX && !clipsY) continue;
+      const bounds = parent.getBoundingClientRect();
+      if (clipsX) { left = Math.max(left, bounds.left); right = Math.min(right, bounds.right); }
+      if (clipsY) { top = Math.max(top, bounds.top); bottom = Math.min(bottom, bounds.bottom); }
+    }
+    return right > left && bottom > top && rect.right > left && rect.left < right && rect.bottom > top && rect.top < bottom;
+  }
+
   function updateVisibility() {
     if (destroyed) return;
     const connected = element.isConnected;
     if (connected) connectedOnce = true;
     else if (connectedOnce) { destroy(); return; }
     const hasLayout = connected && element.getClientRects().length > 0;
-    const next = Boolean(connected && hasLayout && inViewport && pageActive && !document.hidden && !reducedMotion.matches);
+    const visible = hasLayout && isInViewport();
+    const next = Boolean(connected && visible && pageActive && !document.hidden && !reducedMotion.matches);
+    element.dataset.playbackState = !connected ? 'detached' : !hasLayout ? 'hidden-layout' : !visible ? 'offscreen' : !pageActive ? 'inactive-page' : document.hidden ? 'hidden-document' : reducedMotion.matches ? 'reduced-motion' : 'playing';
     element.dataset.reducedMotion = String(reducedMotion.matches);
     if (next === playing) { if (next) schedule(); return; }
     playing = next;
@@ -180,6 +221,8 @@ export function createDraftingAnimation({ compact = true, messageLimit = 3 } = {
   const mutations = typeof MutationObserver === 'undefined' ? null : new MutationObserver(updateVisibility);
   mutations?.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'class', 'style'] });
   document.addEventListener('visibilitychange', updateVisibility);
+  document.addEventListener('scroll', updateVisibility, { capture: true, passive: true });
+  window.addEventListener('resize', updateVisibility);
   reducedMotion.addEventListener('change', updateVisibility);
   function onPageHide(event) {
     if (!event.persisted) { destroy(); return; }
@@ -193,6 +236,7 @@ export function createDraftingAnimation({ compact = true, messageLimit = 3 } = {
   function destroy() {
     if (destroyed) return;
     destroyed = true;
+    element.dataset.playbackState = 'destroyed';
     playing = false;
     element.dataset.playing = 'false';
     clearTimer();
@@ -200,6 +244,8 @@ export function createDraftingAnimation({ compact = true, messageLimit = 3 } = {
     intersection?.disconnect();
     mutations?.disconnect();
     document.removeEventListener('visibilitychange', updateVisibility);
+    document.removeEventListener('scroll', updateVisibility, true);
+    window.removeEventListener('resize', updateVisibility);
     reducedMotion.removeEventListener('change', updateVisibility);
     window.removeEventListener('pagehide', onPageHide);
     window.removeEventListener('pageshow', onPageShow);
@@ -207,4 +253,8 @@ export function createDraftingAnimation({ compact = true, messageLimit = 3 } = {
 
   updateVisibility();
   return { element, destroy };
+}
+
+export function createSourceAddingAnimation() {
+  return createDraftingAnimation({ compact: true, variant: 'source' });
 }

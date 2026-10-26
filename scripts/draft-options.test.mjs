@@ -112,7 +112,7 @@ test('populating replaces fixed fields with options, retains valid selections, a
   assert.equal(format.select.options.length, 5);
 });
 
-test('all three new draft fields start with None Selected and retain their empty selection on refresh', t => {
+test('empty draft fields show their purpose while retaining the None Selected reset choice', t => {
   const ui = setup(t);
   const entries = draftOptions.map(({ label }) => ui.field(label));
   populateDraftOptions();
@@ -125,12 +125,16 @@ test('all three new draft fields start with None Selected and retain their empty
     assert.equal('fixedValue' in field.dataset, false);
     assert.equal(field.dataset.hasValue, 'false');
     const trigger = field.querySelector('.tool-dropdown-trigger');
-    assert.equal(trigger.children[0].textContent, 'None Selected');
-    assert.equal(trigger.getAttribute('aria-label'), `${field.dataset.label}: None Selected`);
+    assert.equal(trigger.children[0].textContent, field.dataset.label);
+    assert.equal(trigger.getAttribute('aria-label'), field.dataset.label);
+    assert.equal(field.querySelector('.tool-dropdown-option').textContent, 'None Selected');
   }
   populateDraftOptions();
   controller.refresh();
-  for (const { select } of entries) assert.equal(select.value, '');
+  for (const { field, select } of entries) {
+    assert.equal(select.value, '');
+    assert.equal(field.querySelector('.tool-dropdown-trigger').children[0].textContent, field.dataset.label);
+  }
 });
 
 test('populating a scope leaves other composer fields and unrelated selects unchanged', t => {
@@ -177,12 +181,13 @@ test('scoped dropdowns create only their panel controls and selecting a choice u
   assert.equal(menu.hidden, true);
   assert.equal(document.activeElement, trigger);
   trigger.emit('click');
+  assert.equal(options[0].textContent, 'None Selected');
   options[0].emit('click');
   assert.equal(inside.select.value, '');
   assert.equal(changes, 2);
   assert.equal(inside.field.dataset.hasValue, 'false');
-  assert.equal(trigger.children[0].textContent, 'None Selected');
-  assert.equal(trigger.getAttribute('aria-label'), 'Format: None Selected');
+  assert.equal(trigger.children[0].textContent, 'Format');
+  assert.equal(trigger.getAttribute('aria-label'), 'Format');
   assert.equal(options[0].getAttribute('aria-selected'), 'true');
   assert.equal(options[3].getAttribute('aria-selected'), 'false');
   assert.equal(menu.hidden, true);

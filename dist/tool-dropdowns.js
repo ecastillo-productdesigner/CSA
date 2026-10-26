@@ -1,7 +1,7 @@
-import { createDropdownTransition } from './dropdown-transition.js?v=20261022-linked-stories-motion';
-import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261022-linked-stories-motion';
-import { createIcon } from './icons.js?v=20261022-linked-stories-motion';
-import { bindTapActivation } from './tap-activation.js?v=20261022-linked-stories-motion';
+import { createDropdownTransition } from './dropdown-transition.js?v=20261026-design-refresh';
+import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261026-design-refresh';
+import { createIcon } from './icons.js?v=20261026-design-refresh';
+import { bindTapActivation } from './tap-activation.js?v=20261026-design-refresh';
 
 export function createToolDropdowns({ root = document } = {}) {
   const controls = [...root.querySelectorAll('.composer-field, .results-sort-field, .feedback-select-field, .editor-style-field, .word-count-field')].map(field => {
@@ -29,7 +29,7 @@ export function createToolDropdowns({ root = document } = {}) {
     const floating = Boolean(field.closest('#output-edit-menu')) || field.matches('.feedback-select-field') || editorStyle;
     const inWorkspacePanel = Boolean(field.closest('#composer-tools, .composer-tools'));
     const mobileWorkspacePanel = () => inWorkspacePanel && window.matchMedia(breakpointQuery()).matches;
-    const placeholder = draftSetting ? 'None Selected' : field.dataset.placeholder || (['format', 'audience', 'voice'].includes(key) ? `Select ${label}` : label);
+    const placeholder = draftSetting ? label : field.dataset.placeholder || (['format', 'audience', 'voice'].includes(key) ? `Select ${label}` : label);
     const trigger = document.createElement('button');
     trigger.type = 'button';
     trigger.id = `${select.id}-trigger`;
@@ -38,7 +38,7 @@ export function createToolDropdowns({ root = document } = {}) {
     trigger.setAttribute('aria-expanded', 'false');
     trigger.setAttribute('aria-controls', `${select.id}-options`);
     const text = document.createElement('span');
-    const chevron = createIcon('keyboard_arrow_down', 'tool-dropdown-chevron');
+    const chevron = createIcon('unfold_less', 'tool-dropdown-chevron');
     trigger.append(text, chevron);
 
     const menu = document.createElement('div');
@@ -87,7 +87,7 @@ export function createToolDropdowns({ root = document } = {}) {
       const selected = select.options[select.selectedIndex];
       const selectedLabel = select.value ? selected.textContent : placeholder;
       text.textContent = selectedLabel;
-      trigger.setAttribute('aria-label', select.value || draftSetting ? `${label}: ${selectedLabel}` : selectedLabel);
+      trigger.setAttribute('aria-label', select.value ? `${label}: ${selectedLabel}` : selectedLabel);
       rows.forEach(({ row, button, option }) => {
         row.dataset.selected = String(option.selected);
         button.setAttribute('aria-selected', String(option.selected));

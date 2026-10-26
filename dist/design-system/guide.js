@@ -1,15 +1,15 @@
-import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261022-linked-stories-motion';
-import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261022-linked-stories-motion';
-import { mountProjectSpecimens } from './project-specimens.js?v=20261022-linked-stories-motion';
-import { mountFormSpecimens } from './form-specimens.js?v=20261022-linked-stories-motion';
-import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261022-linked-stories-motion';
-import { colorRoleGroups } from './color-roles.js?v=20261023-control-borders';
-import { typographyRoleGroups } from './typography-roles.js?v=20261022-linked-stories-motion';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261022-linked-stories-motion';
-import { populateDraftOptions } from '../draft-options.js?v=20261022-linked-stories-motion';
-import { iconInventory } from './icon-inventory.js?v=20261022-linked-stories-motion';
-import { tokenNumber } from './runtime.js?v=20261022-linked-stories-motion';
-import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261022-linked-stories-motion';
+import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-design-refresh';
+import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261026-design-refresh';
+import { mountProjectSpecimens } from './project-specimens.js?v=20261026-design-refresh';
+import { mountFormSpecimens } from './form-specimens.js?v=20261026-design-refresh';
+import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261026-design-refresh';
+import { colorRoleGroups } from './color-roles.js?v=20261026-design-refresh';
+import { typographyRoleGroups } from './typography-roles.js?v=20261026-design-refresh';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-design-refresh';
+import { populateDraftOptions } from '../draft-options.js?v=20261026-design-refresh';
+import { iconInventory } from './icon-inventory.js?v=20261026-design-refresh';
+import { tokenNumber } from './runtime.js?v=20261026-design-refresh';
+import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261026-design-refresh';
 const $ = selector => document.querySelector(selector);
 populateDraftOptions(document);
 const toolDropdowns = createToolDropdowns();
@@ -79,7 +79,6 @@ $('#ds-toast-action').addEventListener('click', () => {
 });
 for (const button of document.querySelectorAll('[data-specimen-action]')) button.addEventListener('click', () => notify('Component preview · no project changes'));
 const contentCard = $('#ds-variant');
-const contentSelection = $('#ds-content-select');
 const contentOpen = $('#ds-content-open');
 const contentBadges = contentCard.querySelector('.output-badges');
 const contentEdit = $('#ds-content-edit');
@@ -119,12 +118,11 @@ function renderContentCard() {
   const heading = contentCard.querySelector('.output-card-title');
   heading.textContent = output.title;
   heading.title = output.title;
-  contentSelection.hidden = !pending;
-  contentSelection.setAttribute('aria-checked', String(pending && selected));
-  contentSelection.setAttribute('aria-label', `${selected ? 'Deselect' : 'Select'} content: ${output.title}`);
+  if (pending) contentOpen.setAttribute('aria-pressed', String(selected));
+  else contentOpen.removeAttribute('aria-pressed');
   contentOpen.setAttribute('aria-label', `${pending ? 'Select' : 'Open'} content: ${output.title}`);
   contentOpen.title = pending ? 'Select this content to draft' : selected ? 'This content is open in the editor' : 'Open this content in the editor';
-  if (selected) contentOpen.setAttribute('aria-current', 'true');
+  if (!pending && selected) contentOpen.setAttribute('aria-current', 'true');
   else contentOpen.removeAttribute('aria-current');
   contentContext.textContent = pending ? (contentDeleted ? 'To Draft' : 'Content to Draft') : 'Drafted';
   contentAdaptFooter.hidden = !pending || contentDeleted;
@@ -146,8 +144,11 @@ function togglePendingContentSelection() {
   renderContentCard();
 }
 for (const button of document.querySelectorAll('[data-card-state]')) button.addEventListener('click', () => { closeContentMenu(false); setContentCardState(button.dataset.cardState); });
-contentSelection.addEventListener('click', togglePendingContentSelection);
 contentOpen.addEventListener('click', togglePendingContentSelection);
+contentCard.addEventListener('click', event => {
+  if (event.target.closest('.output-open, .output-card-actions, .variant-source')) return;
+  togglePendingContentSelection();
+});
 contentAdapt.addEventListener('click', () => {
   if (contentState !== 'pending' || !pendingContentSelected || contentDeleted) return;
   setContentCardState('selected');
@@ -209,7 +210,7 @@ contentDelete.addEventListener('click', () => {
   contentDeleted = true;
   renderContentCard();
   contentRestore.focus();
-  notify('Content deleted');
+  notify('Draft deleted');
 });
 contentRestore.addEventListener('click', () => {
   contentDeleted = false;
@@ -353,7 +354,7 @@ for (const button of document.querySelectorAll('[data-segment-specimen]')) {
     if (button.getAttribute('aria-pressed') === 'true') return;
     segmentTransition.run(() => {
       for (const peer of button.parentElement.querySelectorAll('button')) peer.setAttribute('aria-pressed', String(peer === button));
-      segmentPreview.textContent = button.dataset.segmentSpecimen === 'drafted' ? 'Completed drafts are shown here.' : 'Drafts waiting to be created are shown here.';
+      segmentPreview.textContent = button.dataset.segmentSpecimen === 'drafted' ? 'Your draft requests will appear here.' : 'Your draft recipes will appear here.';
     });
   });
 }

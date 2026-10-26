@@ -1,5 +1,5 @@
-import { savedVariantName } from './outputs.js?v=20261022-linked-stories-motion';
-import { normalizeWordCount } from './variant-word-count.js?v=20261022-linked-stories-motion';
+import { savedVariantName } from './outputs.js?v=20261026-design-refresh';
+import { normalizeWordCount } from './variant-word-count.js?v=20261026-design-refresh';
 const keys = ['format', 'audience', 'voice'];
 export function presetConfiguration(output) {
   const saved = output?.presetSettings;

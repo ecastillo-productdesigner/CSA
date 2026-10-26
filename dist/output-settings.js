@@ -1,7 +1,7 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261022-linked-stories-motion';
-import { normalizeWordCount } from './variant-word-count.js?v=20261022-linked-stories-motion';
-import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261022-linked-stories-motion';
-import { customVariantName, savedVariantName } from './outputs.js?v=20261022-linked-stories-motion';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-design-refresh';
+import { normalizeWordCount } from './variant-word-count.js?v=20261026-design-refresh';
+import { presetConfiguration, savedPresetName } from './preset-settings.js?v=20261026-design-refresh';
+import { customVariantName, savedVariantName } from './outputs.js?v=20261026-design-refresh';
 
 export function createOutputSettings({ onSave, onDelete, onSavePreset, onDeletePreset, closeDropdowns }) {
   const menu = document.querySelector('#output-edit-menu');

@@ -1,5 +1,5 @@
-import { createIcon } from '../icons.js?v=20261022-linked-stories-motion';
-import { projectUpdatedDate, projectContentCountLabel } from '../dashboard.js?v=20261022-linked-stories-motion';
+import { createIcon } from '../icons.js?v=20261026-design-refresh';
+import { projectUpdatedDate, projectContentCountLabel } from '../dashboard.js?v=20261026-design-refresh';
 
 // Isolated documentation data. This specimen never mounts the app dashboard
 // controller, reads browser storage, or changes a saved project.
@@ -43,7 +43,7 @@ export function mountProjectSpecimens(root) {
   deleteDialog.id = `${prefix}-delete-dialog`;
   deleteDialog.setAttribute('role', 'alertdialog');
   deleteDialog.setAttribute('aria-labelledby', `${prefix}-delete-heading`);
-  deleteDialog.setAttribute('aria-describedby', `${prefix}-delete-name ${prefix}-delete-warning`);
+  deleteDialog.setAttribute('aria-describedby', `${prefix}-delete-name`);
   const deleteHeading = node('div', 'panel-heading');
   const deleteTitle = node('h2', '', 'Delete Project?');
   deleteTitle.id = `${prefix}-delete-heading`;
@@ -54,8 +54,6 @@ export function mountProjectSpecimens(root) {
   deleteHeading.append(deleteTitle, dismissDelete);
   const deleteName = node('p', 'delete-project-name', project.title);
   deleteName.id = `${prefix}-delete-name`;
-  const deleteWarning = node('p', 'delete-project-warning', 'This will permanently delete this project, its sources, and all outputs. This action cannot be undone.');
-  deleteWarning.id = `${prefix}-delete-warning`;
   const deleteActions = node('div', 'dialog-footer confirmation-actions');
   const cancelDelete = node('button', 'secondary-button', 'Cancel');
   cancelDelete.type = 'button';
@@ -64,7 +62,7 @@ export function mountProjectSpecimens(root) {
   confirmDelete.type = 'button';
   confirmDelete.append(node('span', '', 'Delete'));
   deleteActions.append(cancelDelete, confirmDelete);
-  deleteDialog.append(deleteHeading, deleteName, deleteWarning, deleteActions);
+  deleteDialog.append(deleteHeading, deleteName, deleteActions);
   const viewButtons = ['grid', 'list'].map(view => {
     const button = node('button');
     button.type = 'button';

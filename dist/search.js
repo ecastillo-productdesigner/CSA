@@ -1,5 +1,6 @@
-import { createIcon } from './icons.js?v=20261022-linked-stories-motion';
-import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261022-linked-stories-motion';
+import { createIcon } from './icons.js?v=20261026-design-refresh';
+import { createSourceAddingAnimation } from './drafting-animation.js?v=20261026-design-refresh';
+import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-design-refresh';
 // Sample content for the results-screen prototype. No live news requests are made.
 function sampleArticles(query) {
   const isKelly = /^kelly\s+clarkson$/i.test(query.trim());
@@ -60,14 +61,23 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
   let state = null;
   let previewArticle = null;
   const additionTimers = new Map();
+  const additionAnimations = new Map();
   const preview = $('#article-preview-dialog');
+
+  function clearAdditionAnimations() {
+    for (const animation of additionAnimations.values()) animation.destroy();
+    additionAnimations.clear();
+  }
 
   function clearAdditionTimers() {
     for (const timer of additionTimers.values()) clearTimeout(timer);
     additionTimers.clear();
+    clearAdditionAnimations();
   }
 
   function renderAddition(container, article) {
+    additionAnimations.get(article.id)?.destroy();
+    additionAnimations.delete(article.id);
     container.replaceChildren();
     const selected = state.selected.has(article.id);
     const ready = state.readyArticleIds.has(article.id);
@@ -85,11 +95,12 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     item.querySelector('.result-add-button')?.setAttribute('aria-busy', String(loading));
     if (ready) container.append(node('span', 'visually-hidden', article.url ? 'Link selected.' : 'Added to CSA. Inspect article is ready.'));
     else if (selected) {
-      const adding = node('span', 'result-adding');
-      const spinner = node('span', 'output-processing-spinner');
-      spinner.setAttribute('aria-hidden', 'true');
-      adding.append(spinner, node('span', 'output-creating-label', 'Adding'));
-      container.append(adding);
+      const animation = createSourceAddingAnimation();
+      // The existing addition container owns the live announcement.
+      const message = animation.element.querySelector('.drafting-message');
+      for (const attribute of ['role', 'aria-live', 'aria-atomic']) message.removeAttribute(attribute);
+      additionAnimations.set(article.id, animation);
+      container.append(animation.element);
     }
   }
 
@@ -188,6 +199,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       ? `${filtered.length.toLocaleString()} ${filtered.length === 1 ? 'link' : 'links'}`
       : `${filtered.length.toLocaleString()} ${filtered.length === 1 ? 'story' : 'stories'} found`;
     const list = $('#result-list');
+    clearAdditionAnimations();
     list.replaceChildren(...visible.map((article) => {
       const item = node('li', 'result-item');
       const card = node('div', `result-card${article.url ? ' result-card--link' : ''}`);

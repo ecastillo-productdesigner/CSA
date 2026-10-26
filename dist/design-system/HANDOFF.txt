@@ -64,3 +64,5 @@ Current approved behavior · 2026-10-26
 2026-10-26: Content status tabs and project layout switches use the same selection controllers in the app and DS. Content status uses tablist/tab/tabpanel semantics, aria-selected, roving tabindex, and Arrow/Home/End navigation; project layout retains grouped aria-pressed buttons with its existing Tab stops and the same arrow navigation. The DS list toolbar includes the shared New Project action. Specimens use isolated data and callbacks without reading saved projects.
 
 2026-10-26: Source media and container queries use token(foundation.breakpoint.name). The design-system build resolves those thresholds to literals in generated CSS; generated exports remain read-only.
+
+2026-10-26: The editor footer separates visible word count, save status, Created timestamp, and Editorial Direction metadata with decorative dots. Hidden fields do not leave extra separators; each dot stays attached to the following item when metadata wraps. The cream footer surface and top divider remain shared.

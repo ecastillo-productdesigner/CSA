@@ -1,4 +1,4 @@
-import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-draft-source-popover-2';
+import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-source-selection-follow';
 
 function durationMilliseconds(path) {
   const value = tokenValue(path);

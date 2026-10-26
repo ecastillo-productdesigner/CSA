@@ -1,31 +1,31 @@
-import { updatePresetPreferences } from './preset-settings.js?v=20261026-draft-source-popover-2';
-import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261026-draft-source-popover-2';
-import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261026-draft-source-popover-2';
-import { createIcon as icon } from './icons.js?v=20261026-draft-source-popover-2';
-import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261026-draft-source-popover-2';
-import { resolveArticleMetadata } from './article-metadata.js?v=20261026-draft-source-popover-2';
-import { createPanelDisclosure } from './panel-disclosure.js?v=20261026-draft-source-popover-2';
-import { createTabPanelTransition } from './tab-panel-transition.js?v=20261026-draft-source-popover-2';
-import { bindTabSelection } from './selection-controls.js?v=20261026-draft-source-popover-2';
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261026-draft-source-popover-2';
-import { createProfile } from './profile.js?v=20261026-draft-source-popover-2';
-import { createSearchExperience } from './search.js?v=20261026-draft-source-popover-2';
-import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261026-draft-source-popover-2';
-import { createMaterialEditor } from './editor.js?v=20261026-draft-source-popover-2';
-import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-draft-source-popover-2';
-import { removeProjectContent } from './project-deletion.js?v=20261026-draft-source-popover-2';
-import { createContentPreview } from './content-preview.js?v=20261026-draft-source-popover-2';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261026-draft-source-popover-2';
-import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261026-draft-source-popover-2';
-import { createNewProjectUpload } from './new-project-upload.js?v=20261026-draft-source-popover-2';
-import { createRailNavigation } from './navigation.js?v=20261026-draft-source-popover-2';
-import { createProjectSources } from './sources.js?v=20261026-draft-source-popover-2';
-import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261026-draft-source-popover-2';
-import { projectOutputs, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261026-draft-source-popover-2';
-import { createEditorTabs } from './editor-tabs.js?v=20261026-draft-source-popover-2';
-import { createContentCardEditing } from './content-card-editing.js?v=20261026-draft-source-popover-2';
-import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-draft-source-popover-2';
-import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261026-draft-source-popover-2';
+import { updatePresetPreferences } from './preset-settings.js?v=20261026-source-selection-follow';
+import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261026-source-selection-follow';
+import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261026-source-selection-follow';
+import { createIcon as icon } from './icons.js?v=20261026-source-selection-follow';
+import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261026-source-selection-follow';
+import { resolveArticleMetadata } from './article-metadata.js?v=20261026-source-selection-follow';
+import { createPanelDisclosure } from './panel-disclosure.js?v=20261026-source-selection-follow';
+import { createTabPanelTransition } from './tab-panel-transition.js?v=20261026-source-selection-follow';
+import { bindTabSelection } from './selection-controls.js?v=20261026-source-selection-follow';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261026-source-selection-follow';
+import { createProfile } from './profile.js?v=20261026-source-selection-follow';
+import { createSearchExperience } from './search.js?v=20261026-source-selection-follow';
+import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261026-source-selection-follow';
+import { createMaterialEditor } from './editor.js?v=20261026-source-selection-follow';
+import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-source-selection-follow';
+import { removeProjectContent } from './project-deletion.js?v=20261026-source-selection-follow';
+import { createContentPreview } from './content-preview.js?v=20261026-source-selection-follow';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261026-source-selection-follow';
+import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261026-source-selection-follow';
+import { createNewProjectUpload } from './new-project-upload.js?v=20261026-source-selection-follow';
+import { createRailNavigation } from './navigation.js?v=20261026-source-selection-follow';
+import { createProjectSources } from './sources.js?v=20261026-source-selection-follow';
+import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261026-source-selection-follow';
+import { projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261026-source-selection-follow';
+import { createEditorTabs } from './editor-tabs.js?v=20261026-source-selection-follow';
+import { createContentCardEditing } from './content-card-editing.js?v=20261026-source-selection-follow';
+import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-source-selection-follow';
+import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261026-source-selection-follow';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -125,10 +125,16 @@ const editorTabs = createEditorTabs({ onSelect: openEditorTab });
 const projectSourcesPanel = createProjectSources({
   onRemoveSource: removeProjectSource,
   onDownloadSource: downloadSource,
+  onBeforeSelectionChange() { richEditor.flush(); },
   onSelectionChange(projectId) {
-    richEditor.flush();
     const project = projects.find(entry => entry.id === projectId);
-    if (project) { project.updatedAt = Date.now(); saveProjects(); }
+    if (!project) return;
+    project.updatedAt = Date.now();
+    saveProjects();
+    if (activeProjectId === project.id) {
+      if ($('#composer').classList.contains('has-link-cards')) searchExperience.show(project, { embedded: true });
+      updateComposerActions();
+    }
   },
 });
 const draftSourcesPopover = createDraftSourcesPopover({
@@ -136,7 +142,7 @@ const draftSourcesPopover = createDraftSourcesPopover({
   onOpenSource: (source, trigger) => projectSourcesPanel.openPreview(source, trigger),
 });
 const railNavigation = createRailNavigation({
-  onSourcesOpen() { projectSourcesPanel.render(projects.find(project => project.id === activeProjectId && project.kind === 'draft') || null); },
+  onSourcesOpen() { renderProjectSources(projects.find(project => project.id === activeProjectId && project.kind === 'draft') || null); },
   onNewVariantOpen() { setNewVariantCollapsed(false); },
   onOpen: () => { toolDropdowns.close(); richEditor.closePanels(); draftSourcesPopover.close(); },
 });
@@ -231,7 +237,12 @@ bindTabSelection({
 });
 
 function renderProjectSources(project) {
-  projectSourcesPanel.render(project);
+  const variant = project?.viewOriginalDraft ? null : projectOutputs(project).find(output => output.id === project?.selectedOutputId) || null;
+  const result = projectSourcesPanel.render(project, { variant });
+  if (result?.selectionChanged) {
+    saveProjects();
+    updateComposerActions();
+  }
 }
 
 function removeProjectSource(projectId, source) {
@@ -698,7 +709,8 @@ function closeProfile() {
 
 function updateComposerActions() {
   const project = projects.find(project => project.id === activeProjectId);
-  const hasContent = $('#composer').classList.contains('has-link-cards') ? project?.sources.some(source => source.selected !== false) : !$('#material-editor').hidden ? richEditor.hasContent() : !$('#output-placeholder').hidden && ($('#content-preview').hidden || contentPreview.hasContent());
+  const hasSources = hasSelectedSources(project);
+  const hasContent = $('#composer').classList.contains('has-link-cards') ? hasSources : !$('#material-editor').hidden ? richEditor.hasContent() : !$('#output-placeholder').hidden && ($('#content-preview').hidden || contentPreview.hasContent());
   const processing = Boolean(projects.find(project => project.id === activeProjectId)?.outputProcessing);
   const canConfigure = hasContent && !processing;
   let changed = false;
@@ -710,9 +722,9 @@ function updateComposerActions() {
   }
   if (changed) toolDropdowns.refresh();
   const hasSelection = hasDraftSelection(Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, $(`#composer-${key}`).value])));
-  const enabled = hasContent && hasSelection && !processing;
+  const enabled = hasSources && hasContent && hasSelection && !processing;
   $('.create-variant').disabled = !enabled;
-  $('.create-variant').title = processing ? 'Drafting content…' : !hasContent ? 'Select a source first' : !hasSelection ? 'Select a setting first' : 'Add to List';
+  $('.create-variant').title = processing ? 'Drafting content…' : !hasSources || !hasContent ? 'Select a source first' : !hasSelection ? 'Select a setting first' : 'Add to List';
 }
 
 function ensureComposerProject(allowEmpty = false) {
@@ -749,7 +761,7 @@ $('.create-variant').addEventListener('click', () => {
   });
   richEditor.flush();
   const project = projects.find(entry => entry.id === activeProjectId);
-  if (!project || project.outputProcessing || !hasDraftSelection(Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, $(`#composer-${key}`).value])))) return;
+  if (!project || project.outputProcessing || !hasSelectedSources(project) || !hasDraftSelection(Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, $(`#composer-${key}`).value])))) return;
   project.editorialDirection = $('#composer-editorial-direction').value;
   setProjectWordCount(project, $('#composer-target-word-count').value);
   const output = sampleVariant(project, selections);

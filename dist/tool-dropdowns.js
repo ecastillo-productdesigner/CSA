@@ -1,7 +1,7 @@
-import { createDropdownTransition } from './dropdown-transition.js?v=20261026-draft-source-popover-2';
-import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261026-draft-source-popover-2';
-import { createIcon } from './icons.js?v=20261026-draft-source-popover-2';
-import { bindTapActivation } from './tap-activation.js?v=20261026-draft-source-popover-2';
+import { createDropdownTransition } from './dropdown-transition.js?v=20261026-source-selection-follow';
+import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261026-source-selection-follow';
+import { createIcon } from './icons.js?v=20261026-source-selection-follow';
+import { bindTapActivation } from './tap-activation.js?v=20261026-source-selection-follow';
 
 export function createToolDropdowns({ root = document } = {}) {
   const controls = [...root.querySelectorAll('.composer-field, .results-sort-field, .feedback-select-field, .editor-style-field, .word-count-field')].map(field => {

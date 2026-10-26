@@ -1,5 +1,5 @@
-import { createFeedbackPill, createVariantFeedback } from '../variant-feedback.js?v=20261026-draft-source-popover-2';
-import { sendDestinations } from '../send-destination.js?v=20261026-draft-source-popover-2';
+import { createFeedbackPill, createVariantFeedback } from '../variant-feedback.js?v=20261026-source-selection-follow';
+import { sendDestinations } from '../send-destination.js?v=20261026-source-selection-follow';
 
 // The app controller operates on one in-memory draft here. No project storage,
 // content editor, server submission, or prototype controllers are mounted.

@@ -1,8 +1,8 @@
-import { bindRovingSelection } from './selection-controls.js?v=20261026-draft-source-popover-2';
-import { tokenNumber } from './design-system/runtime.js?v=20261026-draft-source-popover-2';
-import { createIcon as icon } from './icons.js?v=20261026-draft-source-popover-2';
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261026-draft-source-popover-2';
-import { sourceLinkArticles } from './source-links.js?v=20261026-draft-source-popover-2';
+import { bindRovingSelection } from './selection-controls.js?v=20261026-source-selection-follow';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-source-selection-follow';
+import { createIcon as icon } from './icons.js?v=20261026-source-selection-follow';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261026-source-selection-follow';
+import { sourceLinkArticles } from './source-links.js?v=20261026-source-selection-follow';
 
 const layoutKey = 'csa.dashboard.layout.v1';
 function readLayout() {

@@ -1,4 +1,4 @@
-import { parseSourceLinks, formatSourceLinks } from '../source-links.js?v=20261026-draft-source-popover-2';
+import { parseSourceLinks, formatSourceLinks } from '../source-links.js?v=20261026-source-selection-follow';
 
 const mounted = new WeakMap();
 

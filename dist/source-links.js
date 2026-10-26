@@ -1,4 +1,4 @@
-import { fictionalTopicParagraphs } from './topic-draft.js?v=20261026-draft-source-popover-2';
+import { fictionalTopicParagraphs } from './topic-draft.js?v=20261026-source-selection-follow';
 
 function safeUrl(value) {
   try {

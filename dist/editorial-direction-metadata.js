@@ -1,4 +1,4 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261026-draft-source-popover-2';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-source-selection-follow';
 
 // Receives the direction captured on this draft, never the current composer value.
 export function createEditorialDirectionMetadata() {

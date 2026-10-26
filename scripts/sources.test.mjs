@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { sourceSelectionFor } from '../dist/sources.js';
+import { draftSourcesFor } from '../dist/source-model.js';
 
 const source = title => ({ type: 'text', title, text: `${title} material`, selected: true });
 
@@ -40,4 +41,35 @@ test('duplicate source entries match separate saved sources and legacy indexes r
   assert.equal(result.selectedSources.size, 2);
   assert.deepEqual([...sourceSelectionFor({ sources: originals }, { selectedSourceIndexes: [1] }).selectedSources], [originals[1]]);
   assert.equal(sourceSelectionFor({ sources: originals }, { sourceSnapshots: [] }).selectedSources.size, 0);
+});
+
+
+test('sidebar and used-source popup resolve the same authoritative empty and valid unique legacy subset', () => {
+  const project = { sources: [source('First'), source('Second'), source('Third')] };
+  const legacy = { selectedSourceIndexes: [2, 0, 2, -1, 1.5, '1', 99] };
+  const saved = draftSourcesFor(project, legacy);
+  const selection = sourceSelectionFor(project, legacy);
+  assert.deepEqual(saved, [project.sources[2], project.sources[0]]);
+  assert.deepEqual([...selection.selectedSources], saved);
+  assert.deepEqual(selection.sources, project.sources, 'duplicate legacy indexes must not append duplicate historical rows');
+  for (const variant of [{ sourceSnapshots: [], selectedSourceIndexes: [0, 1], sourceCount: 2 }, { sourceCount: 3 }, { selectedSourceIndexes: 'invalid' }]) {
+    assert.deepEqual(draftSourcesFor(project, variant), []);
+    assert.equal(sourceSelectionFor(project, variant).selectedSources.size, 0);
+  }
+});
+
+test('captured file identity survives a rename while changed text remains a checked historical version', () => {
+  const capturedFile = { type: 'file', title: 'Original file.pdf', attachmentId: 'same-document' };
+  const liveFile = { ...capturedFile, title: 'Renamed file.pdf', selected: false };
+  const capturedText = source('Reporting notes');
+  const liveText = { ...capturedText, text: 'New edited notes', selected: true };
+  const variant = { sourceSnapshots: [capturedFile, capturedText, null, 'invalid'] };
+  const project = { sources: [liveFile, liveText] };
+  const before = structuredClone({ project, variant });
+  const result = sourceSelectionFor(project, variant);
+  assert.deepEqual(draftSourcesFor(project, variant), [capturedFile, capturedText]);
+  assert.deepEqual(result.sources, [liveFile, liveText, capturedText]);
+  assert.deepEqual([...result.selectedSources], [liveFile, capturedText]);
+  assert.equal(result.selectedSources.has(liveText), false);
+  assert.deepEqual({ project, variant }, before);
 });

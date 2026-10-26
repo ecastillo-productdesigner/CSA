@@ -1,11 +1,11 @@
-import { syncSelection } from './selection-controls.js?v=20261026-draft-source-popover-2';
-import { createIcon } from './icons.js?v=20261026-draft-source-popover-2';
-import { normalizeWordCount } from './variant-word-count.js?v=20261026-draft-source-popover-2';
-import { countPreviewWords } from './content-preview.js?v=20261026-draft-source-popover-2';
-import { createContentCardActions } from './content-card-editing.js?v=20261026-draft-source-popover-2';
-import { createDraftingAnimation } from './drafting-animation.js?v=20261026-draft-source-popover-2';
-import { topicDraftContent } from './topic-draft.js?v=20261026-draft-source-popover-2';
-import { formatDraftContent } from './draft-format.js?v=20261026-draft-source-popover-2';
+import { syncSelection } from './selection-controls.js?v=20261026-source-selection-follow';
+import { createIcon } from './icons.js?v=20261026-source-selection-follow';
+import { normalizeWordCount } from './variant-word-count.js?v=20261026-source-selection-follow';
+import { countPreviewWords } from './content-preview.js?v=20261026-source-selection-follow';
+import { createContentCardActions } from './content-card-editing.js?v=20261026-source-selection-follow';
+import { createDraftingAnimation } from './drafting-animation.js?v=20261026-source-selection-follow';
+import { topicDraftContent } from './topic-draft.js?v=20261026-source-selection-follow';
+import { formatDraftContent } from './draft-format.js?v=20261026-source-selection-follow';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',
@@ -47,6 +47,10 @@ export function initializeOutputShareText(output) {
 
 export function projectOutputs(project) {
   return Array.isArray(project?.outputs) ? project.outputs.filter(output => output && typeof output.id === 'string' && typeof output.title === 'string') : [];
+}
+
+export function hasSelectedSources(project) {
+  return Array.isArray(project?.sources) && project.sources.some(source => source && typeof source === 'object' && !Array.isArray(source) && source.selected !== false);
 }
 
 export function customVariantName(output) {

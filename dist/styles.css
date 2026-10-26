@@ -557,6 +557,11 @@ body:has(.send-destination-dialog[open]) { overflow: hidden; }
 #editor-source-list { display: grid; gap: var(--csa-foundation-space-15); max-height: var(--csa-foundation-size-300); overflow-y: auto; margin: 0 0 var(--csa-foundation-space-20); padding: 0; list-style: none; }
 #editor-source-list li { display: flex; align-items: flex-start; gap: var(--csa-foundation-space-12); min-width: 0; padding-bottom: var(--csa-foundation-space-12); border-bottom: var(--csa-foundation-border-width-1) solid var(--line); }
 .editor-source-content { flex: 1; min-width: 0; }
+.editor-source-selection { display: flex; flex: 0 0 var(--csa-foundation-space-44); align-items: center; justify-content: center; width: var(--csa-foundation-space-44); height: var(--csa-foundation-space-44); margin: calc(-1 * var(--csa-foundation-space-10)) calc(-1 * var(--csa-foundation-space-10)) 0; padding: 0; cursor: pointer; }
+.editor-source-checkbox { appearance: none; flex-shrink: 0; width: var(--csa-component-checkbox-size); height: var(--csa-component-checkbox-size); min-height: 0; margin: 0; padding: 0; border: var(--csa-foundation-border-width-1) solid var(--csa-component-checkbox-border); border-radius: var(--csa-component-checkbox-radius); background: var(--csa-semantic-color-surface-default); cursor: pointer; }
+.editor-source-checkbox:checked { border-color: var(--csa-semantic-color-border-selected); background: var(--csa-component-checkbox-selected-background) url("./assets/material-check.svg") center / var(--csa-foundation-icon-size-16) var(--csa-foundation-icon-size-16) no-repeat; }
+.editor-source-checkbox:focus-visible { outline: var(--csa-foundation-border-width-2) solid var(--csa-semantic-color-border-focus); outline-offset: var(--csa-foundation-space-2); }
+
 .editor-source-selection-status { flex-shrink: 0; margin: 0 0 var(--csa-foundation-space-16); color: var(--csa-semantic-color-text-secondary); font-size: var(--csa-foundation-font-size-12); line-height: var(--csa-foundation-line-height-16); }
 .editor-source-selection-status:empty { display: none; }
 #editor-source-list strong, #editor-source-list a { overflow-wrap: anywhere; font-family: var(--csa-semantic-typography-source-title-font-family); font-size: var(--csa-semantic-typography-source-title-font-size); line-height: var(--csa-semantic-typography-source-title-line-height); font-weight: var(--csa-semantic-typography-source-title-font-weight); letter-spacing: var(--csa-semantic-typography-source-title-letter-spacing); }
@@ -1032,7 +1037,7 @@ button:disabled:not(.output-open):not(.icon-button):not(.tertiary-button) { colo
 .ql-snow .ql-tooltip input[type="text"] { border-color: var(--csa-component-field-border); }
 
 /* Source actions stay aligned with each source title. */
-#editor-source-list { overflow-x: hidden; padding-top: var(--csa-foundation-space-8); }
+#editor-source-list { overflow-x: hidden; padding-top: var(--csa-foundation-space-12); }
 #editor-source-list li:not(.editor-sources-empty) { position: relative; }
 #editor-source-list .editor-source-content { padding-right: var(--csa-foundation-space-30); }
 #editor-source-list .editor-source-more { position: absolute; top: calc(-1 * var(--csa-foundation-space-10)); right: 0; color: var(--color-neutral-400); }

@@ -1,6 +1,6 @@
-import { createIcon } from './icons.js?v=20261026-draft-source-popover-2';
-import { createSourceAddingAnimation } from './drafting-animation.js?v=20261026-draft-source-popover-2';
-import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-draft-source-popover-2';
+import { createIcon } from './icons.js?v=20261026-source-selection-follow';
+import { createSourceAddingAnimation } from './drafting-animation.js?v=20261026-source-selection-follow';
+import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-source-selection-follow';
 // Sample content for the results-screen prototype. No live news requests are made.
 function sampleArticles(query) {
   const isKelly = /^kelly\s+clarkson$/i.test(query.trim());

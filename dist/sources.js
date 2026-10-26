@@ -1,10 +1,10 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261026-draft-source-popover-2';
-import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-draft-source-popover-2';
+import { draftSourcesFor } from './source-model.js?v=20261026-source-selection-follow';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-source-selection-follow';
+import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-source-selection-follow';
 export function sourceSelectionFor(project, variant = null) {
   const available = project?.sources || [];
   if (!variant) return { sources: available, selectedSources: new Set(available.filter(source => source.selected !== false)) };
-  const saved = Array.isArray(variant.sourceSnapshots) ? variant.sourceSnapshots
-    : (variant.selectedSourceIndexes || []).map(index => available[index]).filter(Boolean);
+  const saved = draftSourcesFor(project, variant);
   const selectedSources = new Set();
   const historical = [];
   for (const snapshot of saved) {
@@ -98,7 +98,7 @@ export function createSourcePreview() {
   return { open: openPreview, close };
 }
 
-export function createProjectSources({ onSelectionChange, onDownloadSource, onRemoveSource, onVariantContextChange = () => {} }) {
+export function createProjectSources({ onBeforeSelectionChange = () => {}, onSelectionChange = () => {}, onDownloadSource, onRemoveSource, onVariantContextChange = () => {} }) {
   const list = document.querySelector('#editor-source-list');
   const status = document.querySelector('#editor-source-selection-status');
   const sourcePanel = document.createElement('div');
@@ -150,6 +150,7 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onRe
   let visibleSources = [];
   let selectedSources = new Set();
   let sourceVariant = null;
+  let editingNextDraft = false;
   let project = null;
   let menuTarget = null;
   const menu = document.createElement('div');
@@ -202,22 +203,39 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onRe
 
   function updateSelectionStatus() {
     const sources = visibleSources;
-    status.hidden = Boolean(sourceVariant);
-    status.textContent = !sourceVariant && sources.length ? `${selectedSources.size} of ${sources.length} selected for new drafts` : '';
+    status.hidden = false;
+    const usage = sourceVariant && !editingNextDraft ? 'used in this draft' : 'selected for new drafts';
+    status.textContent = sources.length ? `${selectedSources.size} of ${sources.length} ${usage}` : '';
+    if (sourceVariant && !editingNextDraft && !selectedSources.size
+      && !Array.isArray(sourceVariant.sourceSnapshots) && sourceVariant.sourceCount > 0) {
+      status.textContent = 'Source details were not saved for this draft.';
+    }
   }
-
 
 
   function render(next, { variant = null } = {}) {
     closeMenu();
     hideTitleTooltip();
+    const contextChanged = project !== next || sourceVariant?.id !== variant?.id || Boolean(sourceVariant) !== Boolean(variant);
     project = next;
     sourceVariant = variant;
+    if (contextChanged) editingNextDraft = false;
     onVariantContextChange(variant?.id || null);
     const allSources = project?.sources || [];
     const selection = sourceSelectionFor(project, variant);
     visibleSources = selection.sources;
-    selectedSources = new Set(allSources.filter(source => source.selected !== false));
+    let selectionChanged = false;
+    if (contextChanged && sourceVariant) {
+      for (const source of allSources) {
+        const selected = selection.selectedSources.has(source);
+        if ((source.selected !== false) !== selected) {
+          source.selected = selected;
+          selectionChanged = true;
+        }
+      }
+    }
+    selectedSources = sourceVariant && !editingNextDraft ? selection.selectedSources
+      : new Set(allSources.filter(source => source.selected !== false));
     list.replaceChildren();
     updateSelectionStatus();
     const sources = visibleSources;
@@ -230,6 +248,32 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onRe
       const title = sourceDisplayTitle(source);
       const row = document.createElement('li');
       const available = allSources.includes(source);
+      {
+        const selectionControl = document.createElement('label');
+        selectionControl.className = 'editor-source-selection';
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'editor-source-checkbox';
+        checkbox.checked = selectedSources.has(source);
+        checkbox.disabled = !available;
+        checkbox.setAttribute('aria-label', `Use source for new drafts: ${title}`);
+        checkbox.addEventListener('change', () => {
+          closeMenu();
+          hideTitleTooltip();
+          onBeforeSelectionChange();
+          if (!available || !project?.sources.includes(source)) {
+            checkbox.checked = source.selected !== false;
+            return;
+          }
+          editingNextDraft = true;
+          source.selected = checkbox.checked;
+          selectedSources = new Set(project.sources.filter(entry => entry.selected !== false));
+          updateSelectionStatus();
+          onSelectionChange(project.id);
+        });
+        selectionControl.append(checkbox);
+        row.append(selectionControl);
+      }
       const content = document.createElement('div');
       content.className = 'editor-source-content';
       const open = document.createElement('button');
@@ -274,6 +318,7 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onRe
       sourceRows.push({ source, row });
     }
     applySourceView();
+    return { selectionChanged };
   }
   return { render, openPreview };
 }

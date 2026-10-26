@@ -1,12 +1,12 @@
-import { createRailPanelTransition } from '../navigation.js?v=20261026-draft-source-popover-2';
-import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-draft-source-popover-2';
-import { bindTabSelection } from '../selection-controls.js?v=20261026-draft-source-popover-2';
-import { createPanelDisclosure } from '../panel-disclosure.js?v=20261026-draft-source-popover-2';
-import { createDraftingAnimation, createSourceAddingAnimation } from '../drafting-animation.js?v=20261026-draft-source-popover-2';
-import { createIcon } from '../icons.js?v=20261026-draft-source-popover-2';
-import { tokenNumber } from './runtime.js?v=20261026-draft-source-popover-2';
-import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261026-draft-source-popover-2';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-draft-source-popover-2';
+import { createRailPanelTransition } from '../navigation.js?v=20261026-source-selection-follow';
+import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-source-selection-follow';
+import { bindTabSelection, bindRovingSelection } from '../selection-controls.js?v=20261026-source-selection-follow';
+import { createPanelDisclosure } from '../panel-disclosure.js?v=20261026-source-selection-follow';
+import { createDraftingAnimation, createSourceAddingAnimation } from '../drafting-animation.js?v=20261026-source-selection-follow';
+import { createIcon } from '../icons.js?v=20261026-source-selection-follow';
+import { tokenNumber } from './runtime.js?v=20261026-source-selection-follow';
+import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261026-source-selection-follow';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-source-selection-follow';
 
 const navigationMounts = new WeakMap();
 const stateMounts = new WeakMap();
@@ -30,7 +30,7 @@ function setSelectionIcon(icon, selected) {
   icon.style.fontVariationSettings = `"FILL" var(--csa-component-icon-${selected ? 'fill' : 'outline-fill'}), "wght" var(--csa-foundation-font-weight-400), "GRAD" var(--csa-component-icon-grade), "opsz" var(--csa-component-icon-optical-size)`;
 }
 
-export function mountNavigationSpecimens(root) {
+export function mountNavigationSpecimens(root, { onOpenSource } = {}) {
   if (!root) return;
   if (navigationMounts.has(root)) return navigationMounts.get(root);
   root.classList.add('ds-navigation-specimens');
@@ -44,7 +44,9 @@ export function mountNavigationSpecimens(root) {
   const sourceIcon = sources.querySelector('.material-symbols-outlined');
   setSelectionIcon(sourceIcon, false);
   const selectedPreview = element('section', 'recents-panel sources-panel ds-navigation-panel-preview');
-  selectedPreview.append(element('p', 'ds-specimen-status', 'Project Sources navigation selected'));
+  const selectionStatus = element('p', 'editor-source-selection-status');
+  selectionStatus.setAttribute('role', 'status');
+  selectedPreview.append(selectionStatus);
   selectedPreview.id = 'ds-navigation-selection-preview';
   selectedPreview.hidden = true;
   selectedPreview.setAttribute('role', 'region');
@@ -71,16 +73,79 @@ export function mountNavigationSpecimens(root) {
   status.setAttribute('role', 'status');
   const sourceList = element('ul');
   sourceList.id = 'editor-source-list';
-  const sourceRow = element('li');
-  const sourceContent = element('div', 'editor-source-content');
-  const sourceTitle = 'A Local Business Finds a Fresh Way to Connect';
-  const sourceOpen = button('editor-source-open', `Preview example source: ${sourceTitle}`);
-  sourceOpen.append(element('strong', '', sourceTitle));
-  sourceOpen.addEventListener('click', () => { status.textContent = 'Source preview action selected'; });
-  sourceContent.append(sourceOpen);
-  sourceRow.append(sourceContent);
-  sourceList.append(sourceRow);
-  selectedPreview.append(sourceList, element('p', 'ds-caption', 'Source title hover uses the shared light-gray surface, 8 px corners, and near-black text without an underline. Keyboard focus keeps the shared visible outline.'));
+  const exampleSources = [
+    { type: 'text', title: 'A Local Business Finds a Fresh Way to Connect', text: 'This example source describes a local business gathering ideas from its community. Its captured text stays available for a read-only preview.', selected: true },
+    { type: 'text', title: 'Community background notes', text: 'These example notes record the community’s suggestions and the questions still to discuss. Choosing sources for a future draft does not edit this source text.', selected: true },
+  ];
+  const exampleDrafts = [
+    { id: 'two-sources', label: '2 Sources', savedSourceIndexes: [0, 1] },
+    { id: 'one-source', label: '1 Source', savedSourceIndexes: [1] },
+  ];
+  let activeDraft = exampleDrafts[0].id;
+  let selectionEdited = false;
+  const sourceCheckboxes = [];
+  const draftSwitch = element('div', 'ds-state-switch');
+  draftSwitch.setAttribute('role', 'group');
+  draftSwitch.setAttribute('aria-label', 'Example active draft');
+  const draftButtons = exampleDrafts.map(draft => {
+    const control = button('', draft.label);
+    control.textContent = draft.label;
+    control.dataset.exampleDraft = draft.id;
+    control.setAttribute('aria-controls', sourceList.id);
+    draftSwitch.append(control);
+    return control;
+  });
+  selectedPreview.prepend(draftSwitch);
+  function updateSelectionStatus() {
+    const selected = exampleSources.filter(source => source.selected).length;
+    selectionStatus.textContent = `${selected} of ${exampleSources.length} ${selectionEdited ? 'selected for new drafts' : 'used in this draft'}`;
+  }
+  for (const source of exampleSources) {
+    const sourceRow = element('li');
+    const selection = element('label', 'editor-source-selection');
+    const checkbox = element('input', 'editor-source-checkbox');
+    checkbox.type = 'checkbox';
+    checkbox.checked = source.selected;
+    checkbox.setAttribute('aria-label', `Use source for new drafts: ${source.title}`);
+    checkbox.addEventListener('change', () => {
+      source.selected = checkbox.checked;
+      selectionEdited = true;
+      updateSelectionStatus();
+    });
+    selection.append(checkbox);
+    sourceCheckboxes.push(checkbox);
+    const sourceContent = element('div', 'editor-source-content');
+    const sourceOpen = button('editor-source-open', `Preview source: ${source.title}`);
+    sourceOpen.setAttribute('aria-haspopup', 'dialog');
+    sourceOpen.setAttribute('aria-controls', 'article-preview-dialog');
+    sourceOpen.append(element('strong', '', source.title));
+    sourceOpen.addEventListener('click', () => {
+      if (onOpenSource) onOpenSource(source, sourceOpen);
+      else status.textContent = 'Source preview action selected';
+    });
+    sourceContent.append(sourceOpen);
+    sourceRow.append(selection, sourceContent);
+    sourceList.append(sourceRow);
+  }
+  const draftSelection = bindRovingSelection({
+    root: draftSwitch, items: draftButtons,
+    getValue: control => control.dataset.exampleDraft,
+    onSelect: value => {
+      if (value === activeDraft) return;
+      activeDraft = value;
+      selectionEdited = false;
+      const saved = exampleDrafts.find(draft => draft.id === value).savedSourceIndexes;
+      exampleSources.forEach((source, index) => {
+        source.selected = saved.includes(index);
+        sourceCheckboxes[index].checked = source.selected;
+      });
+      draftSelection.sync(value);
+      updateSelectionStatus();
+    },
+  });
+  draftSelection.sync(activeDraft);
+  updateSelectionStatus();
+  selectedPreview.append(sourceList, element('p', 'ds-caption', 'Switch between the 2 Sources and 1 Source examples to show the sources captured by each active draft. Its exact saved set becomes checked and the counter says used in this draft. Editing a checkbox chooses sources for the next draft and changes the counter to selected for new drafts; it does not rewrite the current article or saved snapshots. Switching drafts restores that draft’s captured set. Source titles open the shared read-only preview independently of their checkbox. Their hover uses the shared light-gray surface, 8 px corners, and near-black text without an underline; keyboard focus keeps its visible outline.'));
   const tooltips = [];
 
   function hideTooltips() {

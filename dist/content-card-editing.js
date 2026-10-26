@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261026-draft-source-popover-2';
-import { tokenNumber } from './design-system/runtime.js?v=20261026-draft-source-popover-2';
+import { createIcon } from './icons.js?v=20261026-source-selection-follow';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-source-selection-follow';
 
 const contentOutputs = project => (Array.isArray(project?.outputs) ? project.outputs : [])
   .filter(output => output && typeof output.id === 'string');

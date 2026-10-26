@@ -1,5 +1,5 @@
-import { savedVariantName } from './outputs.js?v=20261026-draft-source-popover-2';
-import { normalizeWordCount } from './variant-word-count.js?v=20261026-draft-source-popover-2';
+import { savedVariantName } from './outputs.js?v=20261026-source-selection-follow';
+import { normalizeWordCount } from './variant-word-count.js?v=20261026-source-selection-follow';
 const keys = ['format', 'audience', 'voice'];
 export function presetConfiguration(output) {
   const saved = output?.presetSettings;

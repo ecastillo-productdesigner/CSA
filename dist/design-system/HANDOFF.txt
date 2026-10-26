@@ -55,7 +55,7 @@ Current approved behavior · 2026-10-26
 
 2026-10-25: Source headline hover uses the shared gray surface with 8 px corners; keyboard focus keeps its outline. Selected recipe dropdown options and WordPress destinations keep neutral text and row backgrounds, with a teal checkmark indicating selection. Pointer hover remains gray and keyboard-focus outlines remain visible.
 
-2026-10-25: Homepage list rows share the grid-card entrance: 300 ms, ease-in-out, 40 px upward glide, with no delay or stagger and immediate display for reduced motion. Hover or focus within a list row adds 1 px inset top and bottom rules using component.project-card.hover-border, matching the grid-card teal hover color without side strokes while retaining white fill, hover elevation, and unchanged row geometry. Project deletion dialogs in the app and DS omit the extra warning paragraph.
+2026-10-25: Homepage list rows share the grid-card entrance: 300 ms, ease-in-out, 40 px upward glide, with no delay or stagger and immediate display for reduced motion. List rows retain their ordinary neutral dividers, white fill, dark text, and unchanged geometry. Hover adds subtle elevation; row controls keep visible keyboard-focus outlines. Project deletion dialogs in the app and DS omit the extra warning paragraph.
 
 2026-10-25: Editor tab titles use Inter at 14 px with a 24 px line height; active titles remain Semibold (600), and inactive titles remain Regular (400).
 

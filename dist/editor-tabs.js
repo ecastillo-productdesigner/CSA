@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261026-listicle-format';
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261026-listicle-format';
+import { createIcon } from './icons.js?v=20261026-draft-source-popover-2';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261026-draft-source-popover-2';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');

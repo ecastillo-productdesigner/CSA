@@ -1,5 +1,5 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261026-listicle-format';
-import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-listicle-format';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-draft-source-popover-2';
+import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-draft-source-popover-2';
 export function sourceSelectionFor(project, variant = null) {
   const available = project?.sources || [];
   if (!variant) return { sources: available, selectedSources: new Set(available.filter(source => source.selected !== false)) };
@@ -20,7 +20,7 @@ export function sourceSelectionFor(project, variant = null) {
 function sourceUrl(value) {
   try {
     const url = new URL(value);
-    return ['http:', 'https:'].includes(url.protocol) ? url.href : null;
+    return ['http:', 'https:'].includes(url.protocol) && !url.username && !url.password ? url.href : null;
   } catch { return null; }
 }
 
@@ -43,6 +43,59 @@ function sourceMetadata(label, value) {
   heading.textContent = `${label}: `;
   line.append(heading, document.createTextNode(value));
   return line;
+}
+
+export function createSourcePreview() {
+  const previewDialog = document.querySelector('#article-preview-dialog');
+  let previewTrigger = null;
+  previewDialog.addEventListener('close', () => {
+    if (previewTrigger?.isConnected && !previewTrigger.closest('[hidden], [inert]')) previewTrigger.focus({ preventScroll: true });
+    previewTrigger = null;
+  });
+
+  function openPreview(source, button) {
+    previewTrigger = button;
+    const text = source.text || '';
+    const linkOnly = source.type === 'link' && sourceUrl(source.url) && !text.trim();
+    const fictional = Boolean(linkOnly) || text.startsWith('Fictional ');
+    const meta = document.querySelector('#article-preview-meta');
+    meta.replaceChildren();
+    meta.hidden = false;
+    if (linkOnly) {
+      const date = sourceLinkArticles([source])[0].date;
+      const published = date ? new Date(`${date}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : 'Not available';
+      meta.append(sourceMetadata('Publish Date', published), sourceMetadata('URL', sourceUrl(source.url)));
+    } else if (text.startsWith('Fictional sample article · ') && text.includes('\n\n')) {
+      const divider = text.indexOf('\n\n');
+      const parts = text.slice(0, divider).split('·').map(part => part.trim());
+      const date = /^\d{4}-\d{2}-\d{2}$/.test(parts[2] || '') ? new Date(`${parts[2]}T12:00:00`) : null;
+      meta.textContent = [parts[1], date ? date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : parts[2]].filter(Boolean).join(' · ');
+    } else if (sourceUrl(source.url || '')) {
+      const link = document.createElement('a');
+      link.href = sourceUrl(source.url);
+      link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = source.url;
+      meta.append(link);
+    } else meta.textContent = source.type === 'file' ? 'Document source' : 'Project source';
+    document.querySelector('#article-preview-title').textContent = sourceDisplayTitle(source);
+    document.querySelector('.article-preview-badge').textContent = fictional ? 'Fictional article preview' : 'Source preview';
+    document.querySelector('#article-preview-notice').hidden = !fictional;
+    const paragraphs = sourcePreviewParagraphs(source);
+    if (!paragraphs.length) paragraphs.push(source.attachmentId ? 'Download this document from Project Sources to read the original.' : 'No preview text is available for this source.');
+    document.querySelector('#article-preview-body').replaceChildren(...paragraphs.map(value => {
+      const paragraph = document.createElement('p'); paragraph.textContent = value; return paragraph;
+    }));
+    previewDialog.showModal();
+    document.querySelector('#article-preview-body').scrollTop = 0;
+  }
+
+  const close = () => previewDialog.close();
+  previewDialog.querySelector('[aria-label="Close article preview"]').addEventListener('click', close);
+  previewDialog.addEventListener('click', event => {
+    if (event.target !== previewDialog) return;
+    const bounds = previewDialog.getBoundingClientRect();
+    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) close();
+  });
+  return { open: openPreview, close };
 }
 
 export function createProjectSources({ onSelectionChange, onDownloadSource, onRemoveSource, onVariantContextChange = () => {} }) {
@@ -89,7 +142,7 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onRe
     hideTitleTooltip();
     emptyRow.hidden = sourceRows.length > 0;
     emptyRow.textContent = project ? 'No sources yet. Add a new source to this project.' : 'Open a project to view its sources.';
-    list.setAttribute('aria-label', 'Sources');
+    list.setAttribute('aria-label', 'Project Sources');
     updateSelectionStatus();
   }
   document.addEventListener('scroll', hideTitleTooltip, true);
@@ -145,48 +198,7 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onRe
   document.addEventListener('pointerdown', event => { if (menuTarget && !menu.contains(event.target) && !menuTarget.button.contains(event.target)) closeMenu(); });
   document.addEventListener('scroll', event => { if (menuTarget && !menu.contains(event.target)) closeMenu(); }, true);
   window.addEventListener('resize', () => closeMenu());
-  const previewDialog = document.querySelector('#article-preview-dialog');
-  let previewTrigger = null;
-  previewDialog.addEventListener('close', () => {
-    previewTrigger?.focus({ preventScroll: true });
-    previewTrigger = null;
-  });
-
-  function openPreview(source, button) {
-    previewTrigger = button;
-    const text = source.text || '';
-    const linkOnly = source.type === 'link' && sourceUrl(source.url) && !text.trim();
-    const fictional = Boolean(linkOnly) || text.startsWith('Fictional ');
-    const meta = document.querySelector('#article-preview-meta');
-    meta.replaceChildren();
-    meta.hidden = false;
-    if (linkOnly) {
-      const date = sourceLinkArticles([source])[0].date;
-      const published = date ? new Date(`${date}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : 'Not available';
-      meta.append(sourceMetadata('Publish Date', published), sourceMetadata('URL', sourceUrl(source.url)));
-    } else if (text.startsWith('Fictional sample article · ') && text.includes('\n\n')) {
-      const divider = text.indexOf('\n\n');
-      const parts = text.slice(0, divider).split('·').map(part => part.trim());
-      const date = /^\d{4}-\d{2}-\d{2}$/.test(parts[2] || '') ? new Date(`${parts[2]}T12:00:00`) : null;
-      meta.textContent = [parts[1], date ? date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : parts[2]].filter(Boolean).join(' · ');
-    } else if (sourceUrl(source.url || '')) {
-      const link = document.createElement('a');
-      link.href = sourceUrl(source.url);
-      link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = source.url;
-      meta.append(link);
-    } else meta.textContent = source.type === 'file' ? 'Document source' : 'Project source';
-    document.querySelector('#article-preview-title').textContent = sourceDisplayTitle(source);
-    document.querySelector('.article-preview-badge').textContent = fictional ? 'Fictional article preview' : 'Source preview';
-    document.querySelector('#article-preview-notice').hidden = !fictional;
-    const paragraphs = sourcePreviewParagraphs(source);
-    if (!paragraphs.length) paragraphs.push(source.attachmentId ? 'Download this document from Sources to read the original.' : 'No preview text is available for this source.');
-    document.querySelector('#article-preview-body').replaceChildren(...paragraphs.map(value => {
-      const paragraph = document.createElement('p'); paragraph.textContent = value; return paragraph;
-    }));
-    previewDialog.showModal();
-    document.querySelector('#article-preview-body').scrollTop = 0;
-  }
-
+  const { open: openPreview } = createSourcePreview();
 
   function updateSelectionStatus() {
     const sources = visibleSources;
@@ -263,5 +275,5 @@ export function createProjectSources({ onSelectionChange, onDownloadSource, onRe
     }
     applySourceView();
   }
-  return { render };
+  return { render, openPreview };
 }

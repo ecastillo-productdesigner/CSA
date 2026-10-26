@@ -68,7 +68,7 @@ export const typographyRoleGroups = [
       },
       {
         name: 'Source title',
-        usage: 'Name an article in the Sources panel. Keep it distinct from the source details below it.',
+        usage: 'Name an article in the Project Sources panel using Regular (400) weight at 14 px with a 20 px line height. Keep it distinct from the source details below it.',
         example: 'A Local Business Finds a Fresh Way to Connect',
         styles: [{ token: 'semantic.typography.source-title', label: 'All screens' }],
       },
@@ -148,7 +148,7 @@ export const typographyRoleGroups = [
       {
         name: 'Navigation label',
         usage: 'Name a destination in the workspace navigation. Use the same wording wherever that destination appears.',
-        example: 'Sources',
+        example: 'Project Sources',
         styles: [{ token: 'semantic.typography.navigation', label: 'All screens' }],
       },
       {

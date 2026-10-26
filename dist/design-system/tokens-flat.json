@@ -3974,9 +3974,9 @@
       "type": "typography",
       "layer": "semantic",
       "category": "typography",
-      "value": "600 14px/1.4285714285714286 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-      "reference": "semantic.typography.label",
-      "description": "Source titles share the compact semibold label typography.",
+      "value": "400 14px/1.4285714285714286 Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "reference": "semantic.typography.field-value",
+      "description": "Source titles share the compact regular field-value typography.",
       "status": "observed",
       "properties": {
         "fontFamily": [
@@ -3991,7 +3991,7 @@
           "value": 14,
           "unit": "px"
         },
-        "fontWeight": 600,
+        "fontWeight": 400,
         "lineHeight": 1.4285714285714286,
         "letterSpacing": {
           "value": 0,

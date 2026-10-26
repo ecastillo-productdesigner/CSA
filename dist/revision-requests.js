@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261026-listicle-format';
+import { createIcon } from './icons.js?v=20261026-draft-source-popover-2';
 
 export function createRevisionButton(output, disabled = false) {
   const button = document.createElement('button');

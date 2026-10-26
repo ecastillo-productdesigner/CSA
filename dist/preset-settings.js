@@ -1,5 +1,5 @@
-import { savedVariantName } from './outputs.js?v=20261026-listicle-format';
-import { normalizeWordCount } from './variant-word-count.js?v=20261026-listicle-format';
+import { savedVariantName } from './outputs.js?v=20261026-draft-source-popover-2';
+import { normalizeWordCount } from './variant-word-count.js?v=20261026-draft-source-popover-2';
 const keys = ['format', 'audience', 'voice'];
 export function presetConfiguration(output) {
   const saved = output?.presetSettings;

@@ -1,5 +1,5 @@
-import { saveDocuments, deleteDocuments } from './documents.js?v=20261026-listicle-format';
-import { createIcon } from './icons.js?v=20261026-listicle-format';
+import { saveDocuments, deleteDocuments } from './documents.js?v=20261026-draft-source-popover-2';
+import { createIcon } from './icons.js?v=20261026-draft-source-popover-2';
 
 const supportedExtensions = new Set(['pdf', 'docx', 'pptx', 'txt', 'md']);
 const maximumFileSize = 10 * 1024 * 1024;

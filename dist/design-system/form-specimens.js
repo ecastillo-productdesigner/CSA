@@ -1,4 +1,4 @@
-import { parseSourceLinks, formatSourceLinks } from '../source-links.js?v=20261026-listicle-format';
+import { parseSourceLinks, formatSourceLinks } from '../source-links.js?v=20261026-draft-source-popover-2';
 
 const mounted = new WeakMap();
 

@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261026-listicle-format');
+  await import('./app.js?v=20261026-draft-source-popover-2');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

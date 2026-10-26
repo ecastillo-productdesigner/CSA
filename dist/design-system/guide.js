@@ -1,19 +1,22 @@
-import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-listicle-format';
-import { bindTabSelection } from '../selection-controls.js?v=20261026-listicle-format';
-import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261026-listicle-format';
-import { mountProjectSpecimens } from './project-specimens.js?v=20261026-listicle-format';
-import { mountFormSpecimens } from './form-specimens.js?v=20261026-listicle-format';
-import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261026-listicle-format';
-import { colorRoleGroups } from './color-roles.js?v=20261026-listicle-format';
-import { typographyRoleGroups } from './typography-roles.js?v=20261026-listicle-format';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-listicle-format';
-import { populateDraftOptions } from '../draft-options.js?v=20261026-listicle-format';
-import { iconInventory } from './icon-inventory.js?v=20261026-listicle-format';
-import { tokenNumber } from './runtime.js?v=20261026-listicle-format';
-import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261026-listicle-format';
+import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-draft-source-popover-2';
+import { bindTabSelection } from '../selection-controls.js?v=20261026-draft-source-popover-2';
+import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261026-draft-source-popover-2';
+import { mountProjectSpecimens } from './project-specimens.js?v=20261026-draft-source-popover-2';
+import { mountFormSpecimens } from './form-specimens.js?v=20261026-draft-source-popover-2';
+import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261026-draft-source-popover-2';
+import { colorRoleGroups } from './color-roles.js?v=20261026-draft-source-popover-2';
+import { typographyRoleGroups } from './typography-roles.js?v=20261026-draft-source-popover-2';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-draft-source-popover-2';
+import { populateDraftOptions } from '../draft-options.js?v=20261026-draft-source-popover-2';
+import { iconInventory } from './icon-inventory.js?v=20261026-draft-source-popover-2';
+import { tokenNumber } from './runtime.js?v=20261026-draft-source-popover-2';
+import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261026-draft-source-popover-2';
+import { createDraftSourcesPopover } from '../draft-sources-popover.js?v=20261026-draft-source-popover-2';
+import { createSourcePreview } from '../sources.js?v=20261026-draft-source-popover-2';
 const $ = selector => document.querySelector(selector);
 populateDraftOptions(document);
 const toolDropdowns = createToolDropdowns();
+const sourcePreview = createSourcePreview();
 let toastTimer;
 let toastAction = null;
 function notify(message, action = null) {
@@ -56,6 +59,39 @@ mountFormSpecimens($('#ds-form-sample-root'));
 mountNavigationSpecimens($('#ds-navigation-sample-root'));
 mountStateSpecimens($('#ds-state-sample-root'));
 mountFeedbackSpecimens($('#ds-feedback-sample-root'), toolDropdowns);
+function mountDraftSourcesSpecimen(root) {
+  if (!root) return;
+  const usedSources = [
+    {
+      type: 'link', title: 'A Neighborhood Project Brings a Community Together', url: 'https://news.example.com/community-project',
+      text: 'This sample source captures a neighborhood group’s plans for a shared community space. Residents discussed possible activities and how the space could be maintained.\n\nThe group collected suggestions for seating, planting, and regular volunteer sessions. These captured paragraphs remain attached to the example draft.',
+    },
+    {
+      type: 'text', title: 'Community planning notes',
+      text: 'The sample planning notes record three discussion topics: access to the space, shared maintenance, and activities for different age groups.\n\nThe next step in these example notes is to gather ideas before choosing a schedule. This is isolated DS content rather than a saved browser document.',
+    },
+  ];
+  const project = { id: 'ds-draft-source-project', sources: [
+    ...structuredClone(usedSources),
+    { type: 'link', title: 'Unused project source', url: 'https://news.example.com/unused-source' },
+  ] };
+  const output = {
+    id: 'ds-draft-source-output', sourceCount: usedSources.length,
+    selectedSourceIndexes: [0, 1], sourceSnapshots: structuredClone(usedSources), labels: [],
+  };
+  const popover = createDraftSourcesPopover({ onOpenSource: (source, opener) => sourcePreview.open(source, opener) });
+  const badges = element('div', 'ds-inline');
+  badges.setAttribute('role', 'group');
+  badges.setAttribute('aria-label', 'Sources used by the example draft');
+  badges.append(...createOutputBadges(output, { includeWordCount: false }));
+  badges.addEventListener('click', event => {
+    const trigger = event.target.closest('[data-variant-sources]');
+    if (trigger) popover.toggle(trigger, { project, output });
+  });
+  root.replaceChildren(badges);
+}
+mountDraftSourcesSpecimen($('#ds-draft-sources-sample'));
+
 function showToastSpecimen(restored = false) {
   const toast = $('#ds-toast-specimen');
   toast.querySelector('.toast-message').textContent = restored ? 'Source restored' : 'Source deleted';

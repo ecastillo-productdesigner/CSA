@@ -1,8 +1,8 @@
-import { bindRovingSelection } from './selection-controls.js?v=20261026-listicle-format';
-import { tokenNumber } from './design-system/runtime.js?v=20261026-listicle-format';
-import { createIcon as icon } from './icons.js?v=20261026-listicle-format';
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261026-listicle-format';
-import { sourceLinkArticles } from './source-links.js?v=20261026-listicle-format';
+import { bindRovingSelection } from './selection-controls.js?v=20261026-draft-source-popover-2';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-draft-source-popover-2';
+import { createIcon as icon } from './icons.js?v=20261026-draft-source-popover-2';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261026-draft-source-popover-2';
+import { sourceLinkArticles } from './source-links.js?v=20261026-draft-source-popover-2';
 
 const layoutKey = 'csa.dashboard.layout.v1';
 function readLayout() {

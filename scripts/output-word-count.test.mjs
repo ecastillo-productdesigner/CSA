@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { outputWordCount, createOutputBadges, createOutputWordCountBadge } from '../dist/outputs.js';
+import { outputWordCount, outputSourceCount, createOutputBadges, createOutputWordCountBadge } from '../dist/outputs.js';
 import { createEditorTabs } from '../dist/editor-tabs.js';
 
 class Element {
@@ -64,7 +64,25 @@ test('legacy drafts fall back to plain body text and handle empty or malformed c
   assert.equal(outputWordCount(), 0);
 });
 
-test('shared badges show capitalized actual words before the unchanged source-count action', t => {
+test('source counts use captured history before stale cached counts or current indexes', () => {
+  const first = { type: 'text', title: 'First saved source' };
+  const second = { type: 'link', title: 'Second saved source', url: 'https://example.com/story' };
+  assert.equal(outputSourceCount({ sourceSnapshots: [first], sourceCount: 3, selectedSourceIndexes: [0, 1, 2] }), 1);
+  assert.equal(outputSourceCount({ sourceSnapshots: [], sourceCount: 3, selectedSourceIndexes: [0] }), 0);
+  assert.equal(outputSourceCount({ sourceSnapshots: [first, null, undefined, [], 'invalid', 7, second] }), 2);
+  assert.equal(outputSourceCount({ sourceSnapshots: [first, first] }), 2, 'Separate captured source entries retain their historical count');
+});
+
+test('legacy source counts preserve saved totals when details are unavailable and otherwise use valid unique indexes', () => {
+  assert.equal(outputSourceCount({ sourceCount: 3 }), 3);
+  assert.equal(outputSourceCount({ sourceSnapshots: null, sourceCount: 2, selectedSourceIndexes: [0] }), 2);
+  assert.equal(outputSourceCount({ sourceCount: 0, selectedSourceIndexes: [0] }), 0);
+  assert.equal(outputSourceCount({ sourceCount: -1, selectedSourceIndexes: [0, 0, 2, -1, 1.5, '2', null] }), 2);
+  assert.equal(outputSourceCount({ sourceCount: '3', selectedSourceIndexes: [1, 1] }), 1);
+  assert.equal(outputSourceCount(), 0);
+});
+
+test('shared badges show capitalized actual words before the source-count popover action', t => {
   documentFor(t);
   const output = { id: 'draft', title: 'Article', status: 'ready', labels: [{ key: 'format', label: 'Standard Format' }], draftText: 'actual '.repeat(642), sourceCount: 3 };
   const badges = createOutputBadges(output);
@@ -73,15 +91,16 @@ test('shared badges show capitalized actual words before the unchanged source-co
   const sources = badges.at(-1);
   assert.equal(sources.tagName, 'BUTTON');
   assert.equal(sources.dataset.variantSources, 'draft');
-  assert.equal(sources.attributes['aria-controls'], 'editor-sources');
-  assert.equal(sources.children.at(-1).textContent, '3 sources');
+  assert.equal(sources.attributes['aria-controls'], undefined);
+  assert.equal(sources.attributes['aria-haspopup'], 'dialog');
+  assert.equal(sources.children.at(-1).textContent, '3 Sources');
   assert.equal(createOutputWordCountBadge({ ...output, draftText: 'one' }).textContent, '1 Word');
   assert.equal(createOutputBadges(output, { includeSourceCount: false }).at(-1).textContent, '642 Words');
   const headerBadges = createOutputBadges(output, { includeWordCount: false });
   assert.equal(headerBadges.some(hasWords), false);
   assert.equal(headerBadges[0].textContent, 'Standard Format');
   assert.equal(headerBadges.at(-1).dataset.variantSources, 'draft');
-  assert.equal(headerBadges.at(-1).children.at(-1).textContent, '3 sources');
+  assert.equal(headerBadges.at(-1).children.at(-1).textContent, '3 Sources');
 });
 
 test('pending, regenerating, and blank drafts omit word pills instead of displaying zero', t => {

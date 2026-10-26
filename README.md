@@ -23,7 +23,8 @@ Open http://localhost:4173. Set `PORT` to change the port.
 
 - A responsive project dashboard with grid and list views, update dates, content counts, and a New Project action in both layouts. Project grid titles use 16 px Semibold; compact list titles use 14 px. Project menus offer Delete with a confirmation naming the project. The greeting, grid cards, and list rows enter together over 300 ms; reduced motion shows them immediately.
 - New Project accepts article URLs and document uploads. The upload flow supports PDF, DOCX, PPTX, TXT, and Markdown, with a 10 MB per-file limit and at most 20 files. Validation and upload progress stay inside the modal.
-- Sources retain their individual selection state. Source cards have white title/snippet areas and cream Publish Date/URL footers with a thin divider. Source headlines support preview, while original links open separately. Adding a source uses one centered paper, a Teal 50 shimmer, and the fixed label **Adding your Source**.
+- The **Project Sources** navigation item opens the project source panel; sources retain their individual selection state. Source cards have white title/snippet areas and cream Publish Date/URL footers with a thin divider. Source headlines support preview, while original links open separately. Adding a source uses one centered paper, a Teal 50 shimmer, and the fixed label **Adding your Source**.
+- A draft’s source-count chip opens an anchored **Sources Used** popover (**Source Used** for one source) showing only its saved source snapshots as full, regular-weight titles, with a folder heading and close button. Selecting a title opens the same source-preview modal used by the sidebar, using captured source text. The separate **Project Sources** sidebar stays closed and its selections remain unchanged.
 - The **New Draft** panel contains Format, Audience, Voice, and optional Editorial Direction. Empty triggers show their purpose; **None Selected** clears a value. Choosing any recipe setting enables **Add to List**. Custom dropdowns use regular labels, a teal selected checkmark, neutral rows, visible keyboard focus, and arrow/Home/End navigation.
 - The **Content** panel separates pending recipes and drafted content with text tabs. Pending cards use dashed outlines and whole-card selection without separate checkboxes. Multiple pending recipes can be selected and drafted together; completed cards open their saved article in the editor. Content tabs and dashboard view switches share keyboard-selection helpers with the DS examples.
 - Drafting cards keep the fixed label **Drafting Content** while paper phases and selected recipe-category shimmer colors cycle. Format uses Rose 200, Audience Indigo 100, and Voice Orange 200. One category keeps its color; multiple categories cycle in Format/Audience/Voice order, skipping unselected categories. The shimmer sweeps over 2.4 seconds, with 5-second paper phases and 800 ms handoffs. Reduced motion keeps a static paper and label.
@@ -52,7 +53,8 @@ The result portrait uses the user's supplied `Frame 109.png` as a local CSS imag
 - `dist/outputs.js` — content cards, selected-option badges, drafting states, and rendering
 - `dist/variant-feedback.js` — per-variant feedback form, validation, and submission
 - `dist/content-card-editing.js` — content-card actions and deletion
-- `dist/sources.js` — sidebar source list, selection, and source actions
+- `dist/sources.js` — Project Sources panel, selection, and source actions
+- `dist/draft-sources-popover.js` — anchored, read-only source snapshots for one draft
 - `dist/tool-dropdowns.js` — recipe menus, keyboard interaction, and native-value synchronization
 - `dist/selection-controls.js` — shared tab semantics, selection state, and arrow/Home/End navigation
 - `dist/drafting-animation.js` — shared drafting and source-adding paper/shimmer animations

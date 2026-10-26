@@ -977,6 +977,25 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
 
+/* The draft source chip opens this anchored popup without changing navigation. */
+.draft-sources-popover { position: fixed; z-index: var(--csa-foundation-layer-45); display: flex; flex-direction: column; min-width: 0; overflow: hidden; margin: 0; padding: 0; border: var(--csa-foundation-border-width-1) solid var(--csa-semantic-color-border-default); border-radius: var(--csa-component-dropdown-radius); background: var(--csa-semantic-color-surface-default); color: var(--csa-semantic-color-text-primary); box-shadow: var(--csa-semantic-shadow-dropdown); }
+.draft-sources-popover[hidden] { display: none; }
+.draft-sources-popover:focus { outline: none; }
+.draft-sources-heading { display: flex; flex: 0 0 auto; align-items: center; gap: var(--csa-foundation-space-6); padding: var(--csa-foundation-space-4) var(--csa-foundation-space-4) 0 var(--csa-foundation-space-16); }
+.draft-sources-folder { flex: 0 0 auto; width: var(--csa-foundation-icon-size-16); height: var(--csa-foundation-icon-size-16); font-size: var(--csa-foundation-icon-size-16); line-height: var(--csa-foundation-font-leading-1); font-variation-settings: "FILL" 0, "wght" var(--csa-foundation-font-weight-400), "GRAD" var(--csa-component-icon-grade), "opsz" var(--csa-component-icon-optical-size); }
+.draft-sources-title { flex: 1; min-width: 0; margin: 0; font-family: var(--csa-semantic-typography-label-font-family); font-size: var(--csa-semantic-typography-label-font-size); font-weight: var(--csa-semantic-typography-label-font-weight); line-height: var(--csa-semantic-typography-label-line-height); letter-spacing: var(--csa-semantic-typography-label-letter-spacing); }
+.draft-sources-close { flex: 0 0 auto; width: var(--csa-foundation-space-44); height: var(--csa-foundation-space-44); }
+.draft-sources-close .material-symbols-outlined { font-size: var(--csa-foundation-icon-size-20); }
+.draft-sources-list { min-height: 0; margin: 0; padding: var(--csa-foundation-space-4) var(--csa-foundation-space-20) var(--csa-foundation-space-12); overflow-y: auto; overscroll-behavior: contain; list-style: none; }
+.draft-sources-list[hidden] { display: none; }
+.draft-sources-item { margin: 0; padding: var(--csa-foundation-space-4) 0; }
+.draft-sources-item + .draft-sources-item { margin-top: var(--csa-foundation-space-8); padding-top: var(--csa-foundation-space-12); border-top: var(--csa-foundation-border-width-1) solid var(--csa-semantic-color-border-default); }
+.draft-sources-source-title { display: block; width: 100%; margin: 0; padding: 0; border: 0; background: transparent; text-align: left; color: inherit; overflow-wrap: anywhere; text-decoration: none; font-family: var(--csa-semantic-typography-source-title-font-family); font-size: var(--csa-semantic-typography-source-title-font-size); font-weight: var(--csa-semantic-typography-source-title-font-weight); line-height: var(--csa-semantic-typography-source-title-line-height); letter-spacing: var(--csa-semantic-typography-source-title-letter-spacing); }
+.draft-sources-source-title:hover { text-decoration: underline; }
+.draft-sources-download { display: inline-flex; align-items: center; min-height: var(--csa-foundation-space-44); margin-top: var(--csa-foundation-space-4); padding: 0; color: var(--csa-semantic-color-action-primary); font-size: var(--csa-semantic-typography-label-font-size); font-weight: var(--csa-semantic-typography-label-font-weight); line-height: var(--csa-semantic-typography-label-line-height); }
+.draft-sources-empty { margin: 0; padding: var(--csa-foundation-space-4) var(--csa-foundation-space-20) var(--csa-foundation-space-16); font-size: var(--csa-semantic-typography-field-value-font-size); font-weight: var(--csa-semantic-typography-field-value-font-weight); line-height: var(--csa-semantic-typography-field-value-line-height); }
+.draft-sources-empty[hidden] { display: none; }
+
 .editor-source-open { display: block; width: 100%; padding: 0; border: 0; border-radius: var(--csa-foundation-radius-8); background: transparent; color: inherit; text-align: left; }
 .editor-source-open strong { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; color: var(--heading); }
 .editor-source-open:hover { background: var(--csa-semantic-color-surface-hover); color: var(--csa-semantic-color-text-heading); }

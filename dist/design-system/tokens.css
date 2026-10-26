@@ -318,11 +318,11 @@
   --csa-semantic-typography-dialog-heading-font-weight: var(--csa-foundation-font-weight-650);
   --csa-semantic-typography-dialog-heading-letter-spacing: 0px;
   --csa-semantic-typography-dialog-heading-line-height: 1.3333333333333333;
-  --csa-semantic-typography-source-title-font-family: var(--csa-semantic-typography-label-font-family);
-  --csa-semantic-typography-source-title-font-size: var(--csa-semantic-typography-label-font-size);
-  --csa-semantic-typography-source-title-font-weight: var(--csa-semantic-typography-label-font-weight);
-  --csa-semantic-typography-source-title-letter-spacing: var(--csa-semantic-typography-label-letter-spacing);
-  --csa-semantic-typography-source-title-line-height: var(--csa-semantic-typography-label-line-height);
+  --csa-semantic-typography-source-title-font-family: var(--csa-semantic-typography-field-value-font-family);
+  --csa-semantic-typography-source-title-font-size: var(--csa-semantic-typography-field-value-font-size);
+  --csa-semantic-typography-source-title-font-weight: var(--csa-semantic-typography-field-value-font-weight);
+  --csa-semantic-typography-source-title-letter-spacing: var(--csa-semantic-typography-field-value-letter-spacing);
+  --csa-semantic-typography-source-title-line-height: var(--csa-semantic-typography-field-value-line-height);
   --csa-semantic-typography-variant-title-font-family: var(--csa-semantic-typography-field-value-font-family);
   --csa-semantic-typography-variant-title-font-size: var(--csa-semantic-typography-field-value-font-size);
   --csa-semantic-typography-variant-title-font-weight: var(--csa-semantic-typography-field-value-font-weight);

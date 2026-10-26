@@ -1,11 +1,11 @@
-import { syncSelection } from './selection-controls.js?v=20261026-listicle-format';
-import { createIcon } from './icons.js?v=20261026-listicle-format';
-import { normalizeWordCount } from './variant-word-count.js?v=20261026-listicle-format';
-import { countPreviewWords } from './content-preview.js?v=20261026-listicle-format';
-import { createContentCardActions } from './content-card-editing.js?v=20261026-listicle-format';
-import { createDraftingAnimation } from './drafting-animation.js?v=20261026-listicle-format';
-import { topicDraftContent } from './topic-draft.js?v=20261026-listicle-format';
-import { formatDraftContent } from './draft-format.js?v=20261026-listicle-format';
+import { syncSelection } from './selection-controls.js?v=20261026-draft-source-popover-2';
+import { createIcon } from './icons.js?v=20261026-draft-source-popover-2';
+import { normalizeWordCount } from './variant-word-count.js?v=20261026-draft-source-popover-2';
+import { countPreviewWords } from './content-preview.js?v=20261026-draft-source-popover-2';
+import { createContentCardActions } from './content-card-editing.js?v=20261026-draft-source-popover-2';
+import { createDraftingAnimation } from './drafting-animation.js?v=20261026-draft-source-popover-2';
+import { topicDraftContent } from './topic-draft.js?v=20261026-draft-source-popover-2';
+import { formatDraftContent } from './draft-format.js?v=20261026-draft-source-popover-2';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',
@@ -91,6 +91,9 @@ export function outputLoadingSelectionKeys(output) {
 }
 
 export function outputSourceCount(output) {
+  if (Array.isArray(output?.sourceSnapshots)) {
+    return output.sourceSnapshots.filter(source => source && typeof source === 'object' && !Array.isArray(source)).length;
+  }
   if (Number.isInteger(output?.sourceCount) && output.sourceCount >= 0) return output.sourceCount;
   return new Set((Array.isArray(output?.selectedSourceIndexes) ? output.selectedSourceIndexes : []).filter(index => Number.isInteger(index) && index >= 0)).size;
 }
@@ -134,15 +137,15 @@ export function createOutputBadges(output, { maxLabelLength = 20, includeSourceC
   }
   if (output && includeSourceCount) {
     const count = outputSourceCount(output);
-    const label = `${count} ${count === 1 ? 'source' : 'sources'}`;
+    const label = `${count} ${count === 1 ? 'Source' : 'Sources'}`;
     const badge = document.createElement('button');
     badge.type = 'button';
     badge.className = 'output-badge output-badge--sources';
     badge.dataset.variantSources = output.id;
-    badge.setAttribute('aria-controls', 'editor-sources');
+    badge.setAttribute('aria-haspopup', 'dialog');
     badge.setAttribute('aria-expanded', 'false');
     badge.title = label;
-    badge.setAttribute('aria-label', `View ${label} used for this variant`);
+    badge.setAttribute('aria-label', `View ${label} used for this draft`);
     const icon = document.createElement('span');
     icon.className = 'material-symbols-outlined';
     icon.setAttribute('aria-hidden', 'true');

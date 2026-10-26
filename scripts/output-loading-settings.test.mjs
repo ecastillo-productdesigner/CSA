@@ -31,7 +31,7 @@ test('authoritative preferences preserve cleared settings instead of reviving st
 
 test('legacy label-only recipes ignore blank, duplicate, and unknown labels', () => {
   const labels = [
-    { key: 'voice', label: 'US Weekly' },
+    { key: 'voice', label: 'Us Weekly' },
     { key: 'audience', label: '   ' },
     { key: 'format', label: 'Listicle' },
     { key: 'format', label: 'Duplicate' },

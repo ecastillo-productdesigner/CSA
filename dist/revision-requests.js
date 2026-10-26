@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261026-source-selection-follow';
+import { createIcon } from './icons.js?v=20261026-us-weekly-case';
 
 export function createRevisionButton(output, disabled = false) {
   const button = document.createElement('button');

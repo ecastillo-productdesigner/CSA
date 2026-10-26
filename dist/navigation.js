@@ -1,4 +1,4 @@
-import { tokenValue, tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261026-source-selection-follow';
+import { tokenValue, tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261026-us-weekly-case';
 
 function milliseconds(value) {
   const amount = Number.parseFloat(value);

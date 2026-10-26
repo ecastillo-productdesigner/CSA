@@ -1,4 +1,4 @@
-import { parseSourceLinks, formatSourceLinks } from '../source-links.js?v=20261026-source-selection-follow';
+import { parseSourceLinks, formatSourceLinks } from '../source-links.js?v=20261026-us-weekly-case';
 
 const mounted = new WeakMap();
 

@@ -92,7 +92,7 @@ test('draft option labels and values match the requested Format, Audience, and V
   assert.deepEqual(draftOptions.map(({ label, key, options }) => [label, key, options.map(({ value, label }) => [value, label])]), [
     ['Format', 'format', [['', 'None Selected'], ['standard', 'Standard Format'], ['celebrity-relationship-timeline', 'Celebrity Relationship Timeline'], ['listicle', 'Listicle'], ['whos-returning-to-show', 'Who’s Returning to the Show?']]],
     ['Audience', 'audience', [['', 'None Selected'], ['general', 'General Audience'], ['millennial-pop-culture', 'Millennial Pop-Culture Fan'], ['wellness-enthusiast', 'Wellness Enthusiast'], ['trend-chasing-fashion-shopper', 'Trend-Chasing Fashion Shopper']]],
-    ['Voice', 'voice', [['', 'None Selected'], ['us-weekly', 'US Weekly'], ['womans-world', "Woman's World"]]],
+    ['Voice', 'voice', [['', 'None Selected'], ['us-weekly', 'Us Weekly'], ['womans-world', "Woman's World"]]],
   ]);
 });
 

@@ -26,7 +26,7 @@ export const draftOptions = [
     key: 'voice',
     options: [
       { value: '', label: 'None Selected' },
-      { value: 'us-weekly', label: 'US Weekly' },
+      { value: 'us-weekly', label: 'Us Weekly' },
       { value: 'womans-world', label: "Woman's World" },
     ],
   },

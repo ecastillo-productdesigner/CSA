@@ -1,8 +1,8 @@
-import { bindRovingSelection } from './selection-controls.js?v=20261026-source-selection-follow';
-import { tokenNumber } from './design-system/runtime.js?v=20261026-source-selection-follow';
-import { createIcon as icon } from './icons.js?v=20261026-source-selection-follow';
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261026-source-selection-follow';
-import { sourceLinkArticles } from './source-links.js?v=20261026-source-selection-follow';
+import { bindRovingSelection } from './selection-controls.js?v=20261026-us-weekly-case';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-us-weekly-case';
+import { createIcon as icon } from './icons.js?v=20261026-us-weekly-case';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261026-us-weekly-case';
+import { sourceLinkArticles } from './source-links.js?v=20261026-us-weekly-case';
 
 const layoutKey = 'csa.dashboard.layout.v1';
 function readLayout() {

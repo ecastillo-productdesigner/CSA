@@ -1,12 +1,12 @@
-import { createRailPanelTransition } from '../navigation.js?v=20261026-source-selection-follow';
-import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-source-selection-follow';
-import { bindTabSelection, bindRovingSelection } from '../selection-controls.js?v=20261026-source-selection-follow';
-import { createPanelDisclosure } from '../panel-disclosure.js?v=20261026-source-selection-follow';
-import { createDraftingAnimation, createSourceAddingAnimation } from '../drafting-animation.js?v=20261026-source-selection-follow';
-import { createIcon } from '../icons.js?v=20261026-source-selection-follow';
-import { tokenNumber } from './runtime.js?v=20261026-source-selection-follow';
-import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261026-source-selection-follow';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-source-selection-follow';
+import { createRailPanelTransition } from '../navigation.js?v=20261026-us-weekly-case';
+import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-us-weekly-case';
+import { bindTabSelection, bindRovingSelection } from '../selection-controls.js?v=20261026-us-weekly-case';
+import { createPanelDisclosure } from '../panel-disclosure.js?v=20261026-us-weekly-case';
+import { createDraftingAnimation, createSourceAddingAnimation } from '../drafting-animation.js?v=20261026-us-weekly-case';
+import { createIcon } from '../icons.js?v=20261026-us-weekly-case';
+import { tokenNumber } from './runtime.js?v=20261026-us-weekly-case';
+import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261026-us-weekly-case';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-us-weekly-case';
 
 const navigationMounts = new WeakMap();
 const stateMounts = new WeakMap();

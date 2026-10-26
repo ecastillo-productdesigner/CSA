@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261026-source-selection-follow';
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261026-source-selection-follow';
+import { createIcon } from './icons.js?v=20261026-us-weekly-case';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261026-us-weekly-case';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');

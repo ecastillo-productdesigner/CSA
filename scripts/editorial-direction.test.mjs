@@ -5,7 +5,7 @@ import { sampleVariant } from '../dist/outputs.js';
 const selections = [
   { key: 'format', value: 'standard', label: 'Standard Format' },
   { key: 'audience', value: 'general', label: 'General Audience' },
-  { key: 'voice', value: 'us-weekly', label: 'US Weekly' },
+  { key: 'voice', value: 'us-weekly', label: 'Us Weekly' },
 ];
 
 test('each pending piece snapshots its direction while later additions retain the project guidance', () => {

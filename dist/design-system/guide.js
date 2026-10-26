@@ -1,18 +1,18 @@
-import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-source-selection-follow';
-import { bindTabSelection } from '../selection-controls.js?v=20261026-source-selection-follow';
-import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261026-source-selection-follow';
-import { mountProjectSpecimens } from './project-specimens.js?v=20261026-source-selection-follow';
-import { mountFormSpecimens } from './form-specimens.js?v=20261026-source-selection-follow';
-import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261026-source-selection-follow';
-import { colorRoleGroups } from './color-roles.js?v=20261026-source-selection-follow';
-import { typographyRoleGroups } from './typography-roles.js?v=20261026-source-selection-follow';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-source-selection-follow';
-import { populateDraftOptions } from '../draft-options.js?v=20261026-source-selection-follow';
-import { iconInventory } from './icon-inventory.js?v=20261026-source-selection-follow';
-import { tokenNumber } from './runtime.js?v=20261026-source-selection-follow';
-import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261026-source-selection-follow';
-import { createDraftSourcesPopover } from '../draft-sources-popover.js?v=20261026-source-selection-follow';
-import { createSourcePreview } from '../sources.js?v=20261026-source-selection-follow';
+import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-us-weekly-case';
+import { bindTabSelection } from '../selection-controls.js?v=20261026-us-weekly-case';
+import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261026-us-weekly-case';
+import { mountProjectSpecimens } from './project-specimens.js?v=20261026-us-weekly-case';
+import { mountFormSpecimens } from './form-specimens.js?v=20261026-us-weekly-case';
+import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261026-us-weekly-case';
+import { colorRoleGroups } from './color-roles.js?v=20261026-us-weekly-case';
+import { typographyRoleGroups } from './typography-roles.js?v=20261026-us-weekly-case';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-us-weekly-case';
+import { populateDraftOptions } from '../draft-options.js?v=20261026-us-weekly-case';
+import { iconInventory } from './icon-inventory.js?v=20261026-us-weekly-case';
+import { tokenNumber } from './runtime.js?v=20261026-us-weekly-case';
+import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261026-us-weekly-case';
+import { createDraftSourcesPopover } from '../draft-sources-popover.js?v=20261026-us-weekly-case';
+import { createSourcePreview } from '../sources.js?v=20261026-us-weekly-case';
 const $ = selector => document.querySelector(selector);
 populateDraftOptions(document);
 const toolDropdowns = createToolDropdowns();
@@ -127,7 +127,7 @@ const contentAdaptFooter = $('#ds-content-adapt-footer');
 const contentAdapt = $('#ds-content-adapt');
 const pendingContent = {
   id: 'ds-content-example', title: 'A Surprise Studio Session Sparks a New Creative Chapter', status: 'pending', draftText: '',
-  labels: [{ key: 'format', label: 'Standard Format' }, { key: 'audience', label: 'General Audience' }, { key: 'voice', label: 'US Weekly' }],
+  labels: [{ key: 'format', label: 'Standard Format' }, { key: 'audience', label: 'General Audience' }, { key: 'voice', label: 'Us Weekly' }],
 };
 const adaptedContent = structuredClone(pendingContent);
 populateOutputContent(adaptedContent);

@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261026-source-selection-follow');
+  await import('./app.js?v=20261026-us-weekly-case');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

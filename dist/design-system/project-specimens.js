@@ -1,6 +1,6 @@
-import { createIcon } from '../icons.js?v=20261026-source-selection-follow';
-import { bindRovingSelection } from '../selection-controls.js?v=20261026-source-selection-follow';
-import { projectUpdatedDate, projectContentCountLabel } from '../dashboard.js?v=20261026-source-selection-follow';
+import { createIcon } from '../icons.js?v=20261026-us-weekly-case';
+import { bindRovingSelection } from '../selection-controls.js?v=20261026-us-weekly-case';
+import { projectUpdatedDate, projectContentCountLabel } from '../dashboard.js?v=20261026-us-weekly-case';
 
 // Isolated documentation data. This specimen never mounts the app dashboard
 // controller, reads browser storage, or changes a saved project.

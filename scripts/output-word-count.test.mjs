@@ -103,6 +103,33 @@ test('shared badges show capitalized actual words before the source-count popove
   assert.equal(headerBadges.at(-1).children.at(-1).textContent, '3 Sources');
 });
 
+test('legacy saved voice badges display current Us Weekly spelling without changing saved labels or authored content', t => {
+  documentFor(t);
+  const output = {
+    id: 'saved', title: 'US Weekly coverage', draftText: 'Authored US Weekly text',
+    toolPreferences: { voice: 'us-weekly' },
+    labels: [
+      { key: 'voice', label: 'US Weekly' },
+      { key: 'audience', label: 'General Audience' },
+      { key: 'format', label: 'US Weekly' },
+      { key: 'voice', label: "Woman's World" },
+    ],
+  };
+  const before = structuredClone(output);
+  const options = { includeSourceCount: false, includeWordCount: false };
+  const badges = createOutputBadges(output, options);
+  for (const [index, expected] of ['Us Weekly', 'General Audience', 'US Weekly', "Woman's World"].entries()) {
+    assert.equal(badges[index].textContent, expected);
+    assert.equal(badges[index].title, expected);
+    assert.equal(badges[index].attributes['aria-label'], expected);
+  }
+  const truncated = createOutputBadges(output, { ...options, maxLabelLength: 5 })[0];
+  assert.equal(truncated.textContent, 'Us W…');
+  assert.equal(truncated.title, 'Us Weekly');
+  assert.equal(truncated.attributes['aria-label'], 'Us Weekly');
+  assert.deepEqual(output, before);
+});
+
 test('pending, regenerating, and blank drafts omit word pills instead of displaying zero', t => {
   documentFor(t);
   for (const output of [

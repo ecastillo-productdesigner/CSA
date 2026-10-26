@@ -1,5 +1,5 @@
-import { saveDocuments, deleteDocuments } from './documents.js?v=20261026-source-selection-follow';
-import { createIcon } from './icons.js?v=20261026-source-selection-follow';
+import { saveDocuments, deleteDocuments } from './documents.js?v=20261026-us-weekly-case';
+import { createIcon } from './icons.js?v=20261026-us-weekly-case';
 
 const supportedExtensions = new Set(['pdf', 'docx', 'pptx', 'txt', 'md']);
 const maximumFileSize = 10 * 1024 * 1024;

@@ -1,4 +1,4 @@
-import { fictionalTopicParagraphs } from './topic-draft.js?v=20261026-source-selection-follow';
+import { fictionalTopicParagraphs } from './topic-draft.js?v=20261026-us-weekly-case';
 
 function safeUrl(value) {
   try {

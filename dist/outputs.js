@@ -1,11 +1,11 @@
-import { syncSelection } from './selection-controls.js?v=20261026-source-selection-follow';
-import { createIcon } from './icons.js?v=20261026-source-selection-follow';
-import { normalizeWordCount } from './variant-word-count.js?v=20261026-source-selection-follow';
-import { countPreviewWords } from './content-preview.js?v=20261026-source-selection-follow';
-import { createContentCardActions } from './content-card-editing.js?v=20261026-source-selection-follow';
-import { createDraftingAnimation } from './drafting-animation.js?v=20261026-source-selection-follow';
-import { topicDraftContent } from './topic-draft.js?v=20261026-source-selection-follow';
-import { formatDraftContent } from './draft-format.js?v=20261026-source-selection-follow';
+import { syncSelection } from './selection-controls.js?v=20261026-us-weekly-case';
+import { createIcon } from './icons.js?v=20261026-us-weekly-case';
+import { normalizeWordCount } from './variant-word-count.js?v=20261026-us-weekly-case';
+import { countPreviewWords } from './content-preview.js?v=20261026-us-weekly-case';
+import { createContentCardActions } from './content-card-editing.js?v=20261026-us-weekly-case';
+import { createDraftingAnimation } from './drafting-animation.js?v=20261026-us-weekly-case';
+import { topicDraftContent } from './topic-draft.js?v=20261026-us-weekly-case';
+import { formatDraftContent } from './draft-format.js?v=20261026-us-weekly-case';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',
@@ -129,10 +129,11 @@ export function createOutputBadges(output, { maxLabelLength = 20, includeSourceC
     .map(label => {
       const badge = document.createElement('span');
       badge.className = `output-badge output-badge--${label.key}`;
-      const characters = Array.from(label.label);
-      badge.textContent = maxLabelLength && characters.length > maxLabelLength ? `${characters.slice(0, maxLabelLength - 1).join('').trimEnd()}…` : label.label;
-      badge.title = label.label;
-      badge.setAttribute('aria-label', label.label);
+      const displayLabel = label.key === 'voice' && label.label.trim() === 'US Weekly' ? 'Us Weekly' : label.label;
+      const characters = Array.from(displayLabel);
+      badge.textContent = maxLabelLength && characters.length > maxLabelLength ? `${characters.slice(0, maxLabelLength - 1).join('').trimEnd()}…` : displayLabel;
+      badge.title = displayLabel;
+      badge.setAttribute('aria-label', displayLabel);
       return badge;
     });
   if (includeWordCount) {

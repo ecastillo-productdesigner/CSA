@@ -1,4 +1,4 @@
-import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-source-selection-follow';
+import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-us-weekly-case';
 
 function durationMilliseconds(path) {
   const value = tokenValue(path);

@@ -1,4 +1,4 @@
-import { parseSourceLinks, formatSourceLinks } from '../source-links.js?v=20261026-ds-consolidation';
+import { parseSourceLinks, formatSourceLinks } from '../source-links.js?v=20261026-listicle-format';
 
 const mounted = new WeakMap();
 

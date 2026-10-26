@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261026-ds-consolidation';
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261026-ds-consolidation';
+import { createIcon } from './icons.js?v=20261026-listicle-format';
+import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261026-listicle-format';
 
 export function createEditorTabs({ onSelect }) {
   const root = document.querySelector('#editor-variant-tabs');

@@ -21,6 +21,7 @@ const topics = [
     titles: momentumTitles,
     shareText: 'An encouraging opening can lift a campaign’s mood, but early participation offers only part of the election picture.',
     openings: ['the political momentum suggested by the first stretch of early voting', 'the gap between an encouraging early-voting start and the longer campaign ahead', 'the competing expectations that can form around the first wave of early votes'],
+    sectionHeadings: ["Why an Early Start Can Energize Campaigns", "What the First Wave Leaves Unanswered", "Balancing Momentum With Perspective", "Turning Early Enthusiasm Into Lasting Participation"],
     paragraphs: [
       'A strong early start can give a party something valuable beyond the immediate numbers: a sense of energy. Campaigns look for signs that supporters are engaged and that their organizing efforts are reaching people. An encouraging opening could help sustain that enthusiasm through the remaining voting period.',
       'The first wave of participation still leaves much of the picture unfinished. Some voters prefer to act early, while others wait until later. A burst of activity can shape expectations without establishing how every part of the electorate will take part or how the final balance will look.',
@@ -33,6 +34,7 @@ const topics = [
     titles: () => ['The Questions That Shape an Early Voting Plan', 'Making Sense of Early Voting Before Election Day', 'A Clearer Look at Voting Before the Final Day'],
     shareText: 'A closer look at early voting, the practical choices it presents, and the everyday circumstances that shape participation before election day.',
     openings: ['the everyday choices that can make voting before election day appealing', 'the balance between convenience and preparation in an early-voting plan', 'the practical questions surrounding the choice to vote early'],
+    sectionHeadings: ["Making Early Voting Fit a Busy Calendar", "Comparing Local Options With Everyday Needs", "Checking Dates, Locations, and Procedures", "Building a Plan Around Personal Circumstances"],
     paragraphs: [
       'The appeal of early voting can begin with something ordinary: a crowded calendar. Work, family commitments, and transportation can all shape when a person is able to participate. The option to make a plan ahead of the final day can offer a different way to approach those competing demands.',
       'Convenience is not the same for everyone. A location that suits one routine may be difficult for another, and a preferred time may depend on other responsibilities. The practical value lies in understanding the available local options and comparing them with the circumstances of the person making the choice.',
@@ -45,6 +47,7 @@ const topics = [
     titles: () => ['The Political Questions That Reach Beyond a Single Headline', 'What the Latest Political Debate Could Mean for the Road Ahead', 'The Context Shaping a New Political Conversation'],
     shareText: 'The expectations, public questions, and unfinished context shaping the political conversation as the wider debate continues to develop.',
     openings: ['the public questions and competing expectations behind the political story', 'the tension between a political development and the expectations that follow it', 'the wider debate that can grow around a political headline'],
+    sectionHeadings: ["The Different Meanings of a Political Development", "Why the Stage of the Process Matters", "Finding Context in Records and Public Positions", "Following the Next Public Decision"],
     paragraphs: [
       'A political development can carry more than one meaning for the people following it. Supporters may see an opportunity, critics may focus on the unresolved questions, and people outside that immediate debate may want to know how the issue connects with everyday concerns.',
       'The process matters as much as the reaction. A proposal, a campaign statement, a public decision, and an election result represent different stages of a story. Keeping those distinctions visible gives the debate a clearer shape without assuming that the first announcement settles what happens next.',
@@ -57,6 +60,7 @@ const topics = [
     titles: () => ['The Unanswered Questions at the Center of a Developing Case', 'Understanding the Next Chapter in a Legal Story', 'The Context Behind a Legal Development'],
     shareText: 'The process, public questions, and unresolved context surrounding a developing legal or public-safety story and the next stage ahead.',
     openings: ['the public questions surrounding a developing legal or public-safety story', 'the distinction between a new legal development and a final resolution', 'the process that can unfold beyond the initial legal headline'],
+    sectionHeadings: ["Understanding the Stage of the Case", "What New Documents Leave Unanswered", "Separating Claims From Court Findings", "Watching the Next Procedural Step"],
     paragraphs: [
       'A development in a case can attract attention before the wider picture is clear. The significance depends in part on the stage of the process: an allegation, an investigation, a filing, and a court decision carry different meanings.',
       'That distinction shapes how the story unfolds. A new document may explain one part of a dispute while leaving other questions open. Public interest can grow around those gaps, even when the available record does not yet offer a complete account.',
@@ -69,6 +73,7 @@ const topics = [
     titles: () => ['The Weather Questions That Could Shape the Days Ahead', 'A Changing Forecast Brings Everyday Plans Into Focus', 'The Bigger Picture Behind a Weather Headline'],
     shareText: 'Timing, uncertainty, and everyday decisions give the weather story its wider significance as the picture continues to develop.',
     openings: ['the uncertainty and everyday decisions surrounding a weather story', 'the way a developing weather picture can bring ordinary plans into focus', 'the practical questions that arise while a weather situation continues to develop'],
+    sectionHeadings: ["How Changing Weather Affects Daily Plans", "Why Location and Timing Matter", "What the Next Forecast Update Can Clarify", "Making Everyday Decisions Amid Uncertainty"],
     paragraphs: [
       'Weather becomes personal when it intersects with the ordinary shape of a day. A journey, an outdoor event, or a familiar routine can take on a different significance when conditions may change. The concern is often as much about timing as the weather itself.',
       'Location adds another layer to that uncertainty. A broad forecast does not describe every place in the same way, and the period covered by an update matters. The details give a weather report its scale and explain why nearby communities may be following different questions.',
@@ -81,6 +86,7 @@ const topics = [
     titles: () => ['The Sporting Story Behind the Latest Expectations', 'A New Test of Preparation, Pressure, and Possibility', 'What Comes Next in a Developing Sports Story'],
     shareText: 'Preparation, expectations, and the questions beyond a single moment give the sporting story its wider interest.',
     openings: ['the expectations and open questions surrounding the sporting story', 'the balance between preparation and pressure in a sporting moment', 'the wider significance a sporting development can take on for an audience'],
+    sectionHeadings: ["Looking Beyond the First Sporting Moment", "Balancing Supporters’ Hopes With Open Questions", "Putting Preparation and Performance in Context", "The Next Test of Sporting Expectations"],
     paragraphs: [
       'Sporting interest often extends beyond the moment that first draws attention. A result, a roster question, or a preview can become a way to think about preparation, opportunity, and the expectations surrounding a competition.',
       'Those expectations can look different from one perspective to another. Supporters may focus on possibility, while a more cautious view considers the questions still to be answered. That tension gives the story room to develop beyond a single prediction.',
@@ -93,6 +99,7 @@ const topics = [
     titles: () => ['The Entertainment Story Behind the Growing Conversation', 'A New Perspective on a Familiar Entertainment Topic', 'The Questions Keeping an Entertainment Story in Focus'],
     shareText: 'Audience interest, cultural context, and the questions beyond the headline give the entertainment story room to develop.',
     openings: ['the audience interest and cultural context surrounding the entertainment story', 'the questions that can keep an entertainment topic in the conversation', 'the connection between a familiar entertainment subject and a fresh point of interest'],
+    sectionHeadings: ["How Familiar Work Shapes New Audience Interest", "The Questions That Follow an Entertainment Headline", "Why Audiences Bring Their Own Expectations", "Following the Wider Cultural Conversation"],
     paragraphs: [
       'An entertainment story can draw attention because it connects something new with something an audience already knows. Familiar work, public appearances, and an ongoing cultural conversation can give a headline significance beyond its immediate wording.',
       'Part of the appeal lies in the questions that follow. A screen project invites discussion about the work itself, while a public timeline raises questions about context and continuity. Those different interests can coexist without turning interpretation into a claim about someone’s private intentions.',
@@ -105,6 +112,7 @@ const topics = [
     titles: () => ['The Health Questions That Deserve a Closer Look', 'Finding Context in a Growing Wellness Conversation', 'The Bigger Picture Behind a Wellness Headline'],
     shareText: 'Everyday concerns and the need for context shape the discussion around the health or wellness topic.',
     openings: ['the everyday concerns and open questions surrounding a health topic', 'the gap between an attention-grabbing wellness headline and its wider context', 'the interest a health topic can generate when it connects with ordinary concerns'],
+    sectionHeadings: ["Why Health Headlines Connect With Personal Concerns", "Distinguishing Personal Accounts From Research", "Considering Evidence and Individual Circumstances", "Recognizing When Further Guidance Is Needed"],
     paragraphs: [
       'Health topics often attract attention because they connect a broad idea with a personal concern. A familiar habit, an experience, or a research discussion can prompt people to reconsider questions they have carried for some time.',
       'Context gives that interest a clearer shape. A personal account and a research finding offer different kinds of information, and the scope of each matters. Understanding what a piece of information describes is part of understanding why it may be significant.',
@@ -117,6 +125,7 @@ const topics = [
     titles: () => ['The Everyday Choices Behind a New Shopping Conversation', 'A Fresh Perspective on Style, Usefulness, and Personal Preference', 'The Practical Questions Behind a Fashion Headline'],
     shareText: 'Personal preference, practical priorities, and everyday use bring the fashion or shopping topic into clearer focus beyond a first impression.',
     openings: ['the everyday choices and personal preferences behind the shopping story', 'the practical appeal a fashion topic can have beyond its first impression', 'the balance between a new style idea and the routines it might fit into'],
+    sectionHeadings: ["What Makes a Familiar Style Idea Feel New", "How Comfort and Personal Preference Shape Choices", "Comparing Trends With Everyday Usefulness", "Finding a Fit for Ordinary Life"],
     paragraphs: [
       'A fashion or shopping idea can gain interest when it offers a new way to think about something familiar. The appeal might be visual, practical, or simply the possibility of seeing an everyday choice from another angle.',
       'Personal preference gives that idea different meanings. Comfort, intended use, and what someone already owns can all shape the questions they ask. An option that feels fresh to one person may matter less to another.',
@@ -129,6 +138,7 @@ const topics = [
     titles: () => ['The Economic Questions That Reach Into Everyday Life', 'Understanding the Wider Stakes of a Business Development', 'The Context Behind a Changing Business Picture'],
     shareText: 'Scale, expectations, and everyday concerns give the economic or business story its wider significance beyond the first response to a headline.',
     openings: ['the everyday concerns and expectations surrounding an economic story', 'the different ways a business development can be understood', 'the comparisons that give an economic headline its wider significance'],
+    sectionHeadings: ["Why Households, Workers, and Businesses See Different Stakes", "Putting the Scale of an Economic Change in Context", "Separating Expectations From Eventual Effects", "Connecting Economic Developments With Everyday Decisions"],
     paragraphs: [
       'An economic story can look different depending on who is following it. A household, a worker, and a business owner may focus on different questions, even when they are responding to the same broad development.',
       'The scale of a change matters as much as its direction. A comparison can carry different meaning depending on the period, place, or group it describes. Those distinctions help explain why an immediate reaction may be only part of the picture.',
@@ -150,6 +160,7 @@ const generalTopic = {
   titles: generalTitles,
   shareText: 'The wider context, everyday connections, and open questions behind the selected article’s central topic bring a new perspective to the conversation.',
   openings: ['the wider conversation surrounding the subject of the selected article', 'the everyday connections that can give a headline broader significance', 'the questions that keep the selected topic open to a closer look'],
+  sectionHeadings: ["The Questions Behind the First Impression", "How the Topic Connects With Everyday Concerns", "What New Context Could Change", "Why the Wider Conversation Matters"],
   paragraphs: [
     'A single development can become significant because of the questions around it. The first impression may be straightforward, but the wider context can reveal why the subject matters to people approaching it from different perspectives.',
     'Some of that interest comes from everyday connections. A topic can overlap with familiar concerns, existing expectations, or a conversation that has been developing for some time. Those connections give the story depth beyond the moment that first attracted attention.',
@@ -162,14 +173,18 @@ function topicFor(headline) {
   return topics.find(topic => typeof topic.matches === 'function' ? topic.matches(headline) : topic.matches.test(headline)) || generalTopic;
 }
 
+function rotateSections(sections, index) {
+  const middle = sections.slice(0, -1);
+  const rotation = index % middle.length;
+  return [...middle.slice(rotation), ...middle.slice(0, rotation), sections.at(-1)];
+}
+
 export function fictionalTopicParagraphs(title, { revision = 0, relatedTitles = [] } = {}) {
   const headline = cleanTitle(title) || 'the selected article';
   const topic = topicFor(headline);
   const index = indexValue(revision);
   const opening = `This imagined account, inspired by “${headline}”, explores ${topic.openings[index % topic.openings.length]}.`;
-  const middle = topic.paragraphs.slice(0, -1);
-  const rotation = index % middle.length;
-  const paragraphs = [opening, ...middle.slice(rotation), ...middle.slice(0, rotation), topic.paragraphs.at(-1)];
+  const paragraphs = [opening, ...rotateSections(topic.paragraphs, index)];
   const related = [...new Set(relatedTitles.map(cleanTitle).filter(value => value && value !== headline))].slice(0, 2);
   if (related.length) paragraphs[paragraphs.length - 1] += ` The related ${related.length === 1 ? 'story' : 'stories'} ${related.map(value => `“${value}”`).join(' and ')} ${related.length === 1 ? 'adds' : 'add'} another point of context to that conversation.`;
   return paragraphs;
@@ -187,5 +202,10 @@ export function topicDraftContent(sources, { revision = 0, variant = 0 } = {}) {
   const choice = (indexValue(variant) + indexValue(revision)) % titles.length;
   let title = titles[choice];
   if (title.toLocaleLowerCase() === headline.toLocaleLowerCase()) title = titles[(choice + 1) % titles.length];
-  return { title, shareText: topic.shareText, paragraphs: fictionalTopicParagraphs(headline, { revision, relatedTitles: headlines.slice(1) }) };
+  return {
+    title,
+    shareText: topic.shareText,
+    paragraphs: fictionalTopicParagraphs(headline, { revision, relatedTitles: headlines.slice(1) }),
+    sectionHeadings: rotateSections(topic.sectionHeadings, indexValue(revision)),
+  };
 }

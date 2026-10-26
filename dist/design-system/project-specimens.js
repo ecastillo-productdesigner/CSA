@@ -1,6 +1,6 @@
-import { createIcon } from '../icons.js?v=20261026-ds-consolidation';
-import { bindRovingSelection } from '../selection-controls.js?v=20261026-ds-consolidation';
-import { projectUpdatedDate, projectContentCountLabel } from '../dashboard.js?v=20261026-ds-consolidation';
+import { createIcon } from '../icons.js?v=20261026-listicle-format';
+import { bindRovingSelection } from '../selection-controls.js?v=20261026-listicle-format';
+import { projectUpdatedDate, projectContentCountLabel } from '../dashboard.js?v=20261026-listicle-format';
 
 // Isolated documentation data. This specimen never mounts the app dashboard
 // controller, reads browser storage, or changes a saved project.

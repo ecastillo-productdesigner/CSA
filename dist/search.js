@@ -1,6 +1,6 @@
-import { createIcon } from './icons.js?v=20261026-ds-consolidation';
-import { createSourceAddingAnimation } from './drafting-animation.js?v=20261026-ds-consolidation';
-import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-ds-consolidation';
+import { createIcon } from './icons.js?v=20261026-listicle-format';
+import { createSourceAddingAnimation } from './drafting-animation.js?v=20261026-listicle-format';
+import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-listicle-format';
 // Sample content for the results-screen prototype. No live news requests are made.
 function sampleArticles(query) {
   const isKelly = /^kelly\s+clarkson$/i.test(query.trim());

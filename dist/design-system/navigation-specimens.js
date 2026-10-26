@@ -1,12 +1,12 @@
-import { createRailPanelTransition } from '../navigation.js?v=20261026-ds-consolidation';
-import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-ds-consolidation';
-import { bindTabSelection } from '../selection-controls.js?v=20261026-ds-consolidation';
-import { createPanelDisclosure } from '../panel-disclosure.js?v=20261026-ds-consolidation';
-import { createDraftingAnimation, createSourceAddingAnimation } from '../drafting-animation.js?v=20261026-ds-consolidation';
-import { createIcon } from '../icons.js?v=20261026-ds-consolidation';
-import { tokenNumber } from './runtime.js?v=20261026-ds-consolidation';
-import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261026-ds-consolidation';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-ds-consolidation';
+import { createRailPanelTransition } from '../navigation.js?v=20261026-listicle-format';
+import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-listicle-format';
+import { bindTabSelection } from '../selection-controls.js?v=20261026-listicle-format';
+import { createPanelDisclosure } from '../panel-disclosure.js?v=20261026-listicle-format';
+import { createDraftingAnimation, createSourceAddingAnimation } from '../drafting-animation.js?v=20261026-listicle-format';
+import { createIcon } from '../icons.js?v=20261026-listicle-format';
+import { tokenNumber } from './runtime.js?v=20261026-listicle-format';
+import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261026-listicle-format';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-listicle-format';
 
 const navigationMounts = new WeakMap();
 const stateMounts = new WeakMap();

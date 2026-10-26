@@ -1,8 +1,8 @@
-import { bindRovingSelection } from './selection-controls.js?v=20261026-ds-consolidation';
-import { tokenNumber } from './design-system/runtime.js?v=20261026-ds-consolidation';
-import { createIcon as icon } from './icons.js?v=20261026-ds-consolidation';
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261026-ds-consolidation';
-import { sourceLinkArticles } from './source-links.js?v=20261026-ds-consolidation';
+import { bindRovingSelection } from './selection-controls.js?v=20261026-listicle-format';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-listicle-format';
+import { createIcon as icon } from './icons.js?v=20261026-listicle-format';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261026-listicle-format';
+import { sourceLinkArticles } from './source-links.js?v=20261026-listicle-format';
 
 const layoutKey = 'csa.dashboard.layout.v1';
 function readLayout() {

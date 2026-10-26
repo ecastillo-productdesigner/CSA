@@ -1,5 +1,5 @@
-import { createIcon } from './icons.js?v=20261026-ds-consolidation';
-import { tokenNumber } from './design-system/runtime.js?v=20261026-ds-consolidation';
+import { createIcon } from './icons.js?v=20261026-listicle-format';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-listicle-format';
 
 const contentOutputs = project => (Array.isArray(project?.outputs) ? project.outputs : [])
   .filter(output => output && typeof output.id === 'string');

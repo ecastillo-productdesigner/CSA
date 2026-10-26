@@ -1,10 +1,11 @@
-import { syncSelection } from './selection-controls.js?v=20261026-ds-consolidation';
-import { createIcon } from './icons.js?v=20261026-ds-consolidation';
-import { normalizeWordCount } from './variant-word-count.js?v=20261026-ds-consolidation';
-import { countPreviewWords } from './content-preview.js?v=20261026-ds-consolidation';
-import { createContentCardActions } from './content-card-editing.js?v=20261026-ds-consolidation';
-import { createDraftingAnimation } from './drafting-animation.js?v=20261026-ds-consolidation';
-import { topicDraftContent } from './topic-draft.js?v=20261026-ds-consolidation';
+import { syncSelection } from './selection-controls.js?v=20261026-listicle-format';
+import { createIcon } from './icons.js?v=20261026-listicle-format';
+import { normalizeWordCount } from './variant-word-count.js?v=20261026-listicle-format';
+import { countPreviewWords } from './content-preview.js?v=20261026-listicle-format';
+import { createContentCardActions } from './content-card-editing.js?v=20261026-listicle-format';
+import { createDraftingAnimation } from './drafting-animation.js?v=20261026-listicle-format';
+import { topicDraftContent } from './topic-draft.js?v=20261026-listicle-format';
+import { formatDraftContent } from './draft-format.js?v=20261026-listicle-format';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',
@@ -300,8 +301,10 @@ export function populateOutputContent(output) {
   const untouchedSample = !hasFormatting && index >= 0 && normalized(current) === normalized(storyParagraphs[index].join('\n\n'));
   const sourceTopic = !current.trim() && !output.contentInitialized ? topicDraftContent(output.sourceSnapshots) : null;
   if (sourceTopic) {
-    output.draftText = sourceTopic.paragraphs.join('\n\n');
-    output.document = { ops: sourceTopic.paragraphs.map(paragraph => ({ insert: `${paragraph}\n` })) };
+    Object.assign(output, formatDraftContent(sourceTopic.paragraphs, {
+      format: output.toolPreferences?.format,
+      headings: sourceTopic.sectionHeadings,
+    }));
     output.topicDraftVersion = 1;
     if (initializedShareText) output.shareText = sourceTopic.shareText;
   } else if ((!current.trim() && !output.contentInitialized) || untouchedLegacy || untouchedSample) {
@@ -310,8 +313,7 @@ export function populateOutputContent(output) {
       ...storyParagraphs[2].slice(1),
     ];
     const paragraphs = [...opening.slice(0, -1), ...extraStoryParagraphs[index >= 0 ? index : 2], opening.at(-1)];
-    output.draftText = paragraphs.join('\n\n');
-    output.document = { ops: paragraphs.map(paragraph => ({ insert: `${paragraph}\n` })) };
+    Object.assign(output, formatDraftContent(paragraphs, { format: output.toolPreferences?.format }));
   }
   output.contentInitialized = true;
   output.contentVersion = 3;
@@ -326,10 +328,13 @@ export function reviseSampleOutput(output, instructions, requestedAt, completedA
   const normalize = text => text.replace(/\s+/g, ' ').trim();
   const current = normalize(output.draftText || '');
   const samples = storyParagraphs.map((opening, index) => [...opening.slice(0, -1), ...extraStoryParagraphs[index], opening.at(-1)]);
-  const choices = samples.filter(paragraphs => normalize(paragraphs.join('\n\n')) !== current);
+  const formatContent = paragraphs => formatDraftContent(paragraphs, {
+    format: output.toolPreferences?.format,
+    headings: sourceTopic?.sectionHeadings,
+  });
+  const choices = sourceTopic ? [] : samples.filter(paragraphs => normalize(formatContent(paragraphs).draftText) !== current);
   const paragraphs = sourceTopic?.paragraphs || choices[Math.floor(Math.random() * choices.length)];
-  output.draftText = paragraphs.join('\n\n');
-  output.document = { ops: paragraphs.map(paragraph => ({ insert: `${paragraph}\n` })) };
+  Object.assign(output, formatContent(paragraphs));
   output.contentInitialized = true;
   output.contentVersion = 3;
   output.updatedAt = completedAt;

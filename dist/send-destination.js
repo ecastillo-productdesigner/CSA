@@ -1,6 +1,6 @@
-import { createIcon } from './icons.js?v=20261026-ds-consolidation';
-import { tokenNumber } from './design-system/runtime.js?v=20261026-ds-consolidation';
-import { bindTapActivation } from './tap-activation.js?v=20261026-ds-consolidation';
+import { createIcon } from './icons.js?v=20261026-listicle-format';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-listicle-format';
+import { bindTapActivation } from './tap-activation.js?v=20261026-listicle-format';
 
 export const sendDestinations = Object.freeze([
   { id: 'us-weekly', name: 'Us Weekly WordPress', url: 'https://www.usmagazine.com', adminView: true },

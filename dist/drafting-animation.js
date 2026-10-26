@@ -1,4 +1,4 @@
-import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-ds-consolidation';
+import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-listicle-format';
 
 function durationMilliseconds(path) {
   const value = tokenValue(path);

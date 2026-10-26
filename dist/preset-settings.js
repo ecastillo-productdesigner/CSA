@@ -1,5 +1,5 @@
-import { savedVariantName } from './outputs.js?v=20261026-ds-consolidation';
-import { normalizeWordCount } from './variant-word-count.js?v=20261026-ds-consolidation';
+import { savedVariantName } from './outputs.js?v=20261026-listicle-format';
+import { normalizeWordCount } from './variant-word-count.js?v=20261026-listicle-format';
 const keys = ['format', 'audience', 'voice'];
 export function presetConfiguration(output) {
   const saved = output?.presetSettings;

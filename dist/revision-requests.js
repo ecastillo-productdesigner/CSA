@@ -1,4 +1,4 @@
-import { createIcon } from './icons.js?v=20261026-ds-consolidation';
+import { createIcon } from './icons.js?v=20261026-listicle-format';
 
 export function createRevisionButton(output, disabled = false) {
   const button = document.createElement('button');

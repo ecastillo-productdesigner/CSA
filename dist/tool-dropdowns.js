@@ -1,7 +1,7 @@
-import { createDropdownTransition } from './dropdown-transition.js?v=20261026-ds-consolidation';
-import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261026-ds-consolidation';
-import { createIcon } from './icons.js?v=20261026-ds-consolidation';
-import { bindTapActivation } from './tap-activation.js?v=20261026-ds-consolidation';
+import { createDropdownTransition } from './dropdown-transition.js?v=20261026-listicle-format';
+import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261026-listicle-format';
+import { createIcon } from './icons.js?v=20261026-listicle-format';
+import { bindTapActivation } from './tap-activation.js?v=20261026-listicle-format';
 
 export function createToolDropdowns({ root = document } = {}) {
   const controls = [...root.querySelectorAll('.composer-field, .results-sort-field, .feedback-select-field, .editor-style-field, .word-count-field')].map(field => {

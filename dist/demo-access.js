@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261026-ds-consolidation');
+  await import('./app.js?v=20261026-listicle-format');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

@@ -1,4 +1,4 @@
-import { fictionalTopicParagraphs } from './topic-draft.js?v=20261026-ds-consolidation';
+import { fictionalTopicParagraphs } from './topic-draft.js?v=20261026-listicle-format';
 
 function safeUrl(value) {
   try {

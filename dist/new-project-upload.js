@@ -1,5 +1,5 @@
-import { saveDocuments, deleteDocuments } from './documents.js?v=20261026-ds-consolidation';
-import { createIcon } from './icons.js?v=20261026-ds-consolidation';
+import { saveDocuments, deleteDocuments } from './documents.js?v=20261026-listicle-format';
+import { createIcon } from './icons.js?v=20261026-listicle-format';
 
 const supportedExtensions = new Set(['pdf', 'docx', 'pptx', 'txt', 'md']);
 const maximumFileSize = 10 * 1024 * 1024;

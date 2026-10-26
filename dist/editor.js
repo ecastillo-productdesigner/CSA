@@ -1,9 +1,9 @@
-import { documentStyles } from './design-system/export-styles.js?v=20261026-ds-consolidation';
-import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-ds-consolidation';
-import { initializeOutputShareText } from './outputs.js?v=20261026-ds-consolidation';
-import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261026-ds-consolidation';
-import { draftPreferenceValue } from './draft-options.js?v=20261026-ds-consolidation';
-import './vendor/quill-2.0.3.js?v=20261026-ds-consolidation';
+import { documentStyles } from './design-system/export-styles.js?v=20261026-listicle-format';
+import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-listicle-format';
+import { initializeOutputShareText } from './outputs.js?v=20261026-listicle-format';
+import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261026-listicle-format';
+import { draftPreferenceValue } from './draft-options.js?v=20261026-listicle-format';
+import './vendor/quill-2.0.3.js?v=20261026-listicle-format';
 
 const Quill = window.Quill;
 const Delta = Quill.import('delta');

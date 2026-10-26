@@ -1,4 +1,4 @@
-import { tokenValue, tokenNumber } from './design-system/runtime.js?v=20261026-ds-consolidation';
+import { tokenValue, tokenNumber } from './design-system/runtime.js?v=20261026-listicle-format';
 
 function milliseconds(value) {
   const amount = Number.parseFloat(value);

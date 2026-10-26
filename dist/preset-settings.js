@@ -1,5 +1,5 @@
-import { savedVariantName } from './outputs.js?v=20261026-us-weekly-case';
-import { normalizeWordCount } from './variant-word-count.js?v=20261026-us-weekly-case';
+import { savedVariantName } from './outputs.js?v=20261026-drafting-card-size';
+import { normalizeWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
 const keys = ['format', 'audience', 'voice'];
 export function presetConfiguration(output) {
   const saved = output?.presetSettings;

@@ -1,8 +1,8 @@
-import { bindRovingSelection } from './selection-controls.js?v=20261026-us-weekly-case';
-import { tokenNumber } from './design-system/runtime.js?v=20261026-us-weekly-case';
-import { createIcon as icon } from './icons.js?v=20261026-us-weekly-case';
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261026-us-weekly-case';
-import { sourceLinkArticles } from './source-links.js?v=20261026-us-weekly-case';
+import { bindRovingSelection } from './selection-controls.js?v=20261026-drafting-card-size';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-drafting-card-size';
+import { createIcon as icon } from './icons.js?v=20261026-drafting-card-size';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261026-drafting-card-size';
+import { sourceLinkArticles } from './source-links.js?v=20261026-drafting-card-size';
 
 const layoutKey = 'csa.dashboard.layout.v1';
 function readLayout() {

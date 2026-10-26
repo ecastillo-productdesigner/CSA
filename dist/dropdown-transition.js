@@ -1,4 +1,4 @@
-import { tokenValue, tokenNumber } from './design-system/runtime.js?v=20261026-us-weekly-case';
+import { tokenValue, tokenNumber } from './design-system/runtime.js?v=20261026-drafting-card-size';
 
 function milliseconds(value) {
   const amount = Number.parseFloat(value);

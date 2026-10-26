@@ -1,6 +1,6 @@
-import { tokenNumber } from './design-system/runtime.js?v=20261026-us-weekly-case';
-import { createIcon } from './icons.js?v=20261026-us-weekly-case';
-import { draftSourcesFor } from './source-model.js?v=20261026-us-weekly-case';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-drafting-card-size';
+import { createIcon } from './icons.js?v=20261026-drafting-card-size';
+import { draftSourcesFor } from './source-model.js?v=20261026-drafting-card-size';
 export { draftSourcesFor };
 
 let nextPopoverId = 0;

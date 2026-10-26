@@ -1,4 +1,4 @@
-import { parseSourceLinks, formatSourceLinks } from '../source-links.js?v=20261026-us-weekly-case';
+import { parseSourceLinks, formatSourceLinks } from '../source-links.js?v=20261026-drafting-card-size';
 
 const mounted = new WeakMap();
 

@@ -1,12 +1,12 @@
-import { createRailPanelTransition } from '../navigation.js?v=20261026-us-weekly-case';
-import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-us-weekly-case';
-import { bindTabSelection, bindRovingSelection } from '../selection-controls.js?v=20261026-us-weekly-case';
-import { createPanelDisclosure } from '../panel-disclosure.js?v=20261026-us-weekly-case';
-import { createDraftingAnimation, createSourceAddingAnimation } from '../drafting-animation.js?v=20261026-us-weekly-case';
-import { createIcon } from '../icons.js?v=20261026-us-weekly-case';
-import { tokenNumber } from './runtime.js?v=20261026-us-weekly-case';
-import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261026-us-weekly-case';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-us-weekly-case';
+import { createRailPanelTransition } from '../navigation.js?v=20261026-drafting-card-size';
+import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-drafting-card-size';
+import { bindTabSelection, bindRovingSelection } from '../selection-controls.js?v=20261026-drafting-card-size';
+import { createPanelDisclosure } from '../panel-disclosure.js?v=20261026-drafting-card-size';
+import { createDraftingAnimation, createSourceAddingAnimation } from '../drafting-animation.js?v=20261026-drafting-card-size';
+import { createIcon } from '../icons.js?v=20261026-drafting-card-size';
+import { tokenNumber } from './runtime.js?v=20261026-drafting-card-size';
+import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261026-drafting-card-size';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-drafting-card-size';
 
 const navigationMounts = new WeakMap();
 const stateMounts = new WeakMap();
@@ -351,7 +351,7 @@ export function mountStateSpecimens(root) {
     draftingPreviews.append(draftingStage);
     return drafting;
   });
-  loading.append(draftingPreviews, element('p', 'ds-caption', 'These white cards keep the fixed label “Drafting Content” while their paper and shimmer colors cycle. The examples show one selected category (Format), two (Audience + Voice), and all three. Each visual phase uses one matching selected-category color: pink for Format, lavender for Audience, or peach for Voice. Colors cycle in Format/Audience/Voice order, skipping unselected categories. One selection keeps its color, Audience + Voice alternates lavender and peach, and all three cycle pink, lavender, then peach. With no choices, legacy content uses a neutral shimmer. Each sweep lasts 2.4 seconds; each paper phase holds for 5 seconds before an 800 ms handoff. Paper sheets stay white, paper lines use Neutral 500 (#737373), and the label stays dark and unchanged. The reference previews repeat the visual phases. Reduced motion hides the shimmer sweep and keeps a static sheet and label.'));
+  loading.append(draftingPreviews, element('p', 'ds-caption', 'These white cards match drafted content cards with a shared 90 px minimum height, 8 px corners, and the same specimen width. Loading outlines are 1 px Neutral 200 (#E5E5E5). Revision overlays preserve the active card’s outer footprint, including its 92 px selected height. The fixed label “Drafting Content” stays visible while paper and shimmer colors cycle. The examples show one selected category (Format), two (Audience + Voice), and all three. Each visual phase uses one matching selected-category color: pink for Format, lavender for Audience, or peach for Voice. Colors cycle in Format/Audience/Voice order, skipping unselected categories. One selection keeps its color, Audience + Voice alternates lavender and peach, and all three cycle pink, lavender, then peach. With no choices, legacy content uses a neutral shimmer. Each sweep lasts 2.4 seconds; each paper phase holds for 5 seconds before an 800 ms handoff. Paper sheets stay white, paper lines use Neutral 500 (#737373), and the label stays dark and unchanged. The reference previews repeat the visual phases. Reduced motion hides the shimmer sweep and keeps a static sheet and label.'));
   const sourceAdding = createSourceAddingAnimation();
   const addingStage = element('div', 'ds-drafting-specimen');
   addingStage.append(sourceAdding.element);

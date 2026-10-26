@@ -336,7 +336,7 @@ main:focus { outline: none; }
 .output-status-content { display: flex; flex: 1; flex-direction: column; min-height: 0; }
 .output-list { display: grid; align-content: start; gap: var(--csa-foundation-space-14); min-height: 0; margin: calc(var(--csa-foundation-space-24) - var(--csa-foundation-space-3)) calc(-1 * var(--csa-foundation-space-3)) 0; padding: var(--csa-foundation-space-3); overflow-y: auto; list-style: none; }
 .output-list li { min-width: 0; }
-.output-card { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; width: 100%; border: var(--csa-component-variant-card-border-width) dashed var(--line); border-radius: var(--csa-component-variant-card-radius); background: var(--csa-foundation-color-neutral-0); color: var(--ink); text-align: left; }
+.output-card { position: relative; min-height: var(--csa-component-variant-card-min-height); display: grid; grid-template-columns: minmax(0, 1fr) auto; width: 100%; border: var(--csa-component-variant-card-border-width) dashed var(--line); border-radius: var(--csa-component-variant-card-radius); background: var(--csa-foundation-color-neutral-0); color: var(--ink); text-align: left; }
 .output-card[data-ready="true"] { border-style: solid; background: var(--csa-foundation-color-neutral-0); }
 .output-card:hover { border-color: var(--line); background: var(--csa-foundation-color-neutral-0); }
 .output-card[data-selected="true"] { border-width: var(--csa-component-variant-card-selected-border-width); border-color: var(--csa-component-variant-card-selected-border); background: var(--csa-component-variant-card-selected-background); }
@@ -1302,6 +1302,7 @@ html:has(#home:not([hidden])) { scrollbar-gutter: stable; }
   min-height: var(--csa-foundation-size-120);
   padding: var(--csa-foundation-space-16);
 }
+.drafting-animation[data-compact="true"][data-variant="drafting"] { min-height: var(--csa-component-variant-card-min-height); padding: var(--csa-foundation-space-12); border-radius: var(--csa-component-variant-card-radius); }
 .drafting-animation[data-variant="source"] { --drafting-shimmer-color: var(--csa-component-drafting-shimmer-source); flex-direction: column; gap: var(--csa-foundation-space-8); padding: var(--csa-foundation-space-12); }
 .drafting-animation[data-variant="source"] > .drafting-paper-stack { flex: none; }
 .drafting-animation[data-variant="source"] .drafting-message { max-width: 100%; text-align: center; }
@@ -1321,7 +1322,8 @@ html:has(#home:not([hidden])) { scrollbar-gutter: stable; }
 .drafting-animation[data-reduced-motion="true"] .drafting-paper-line, .drafting-animation[data-reduced-motion="true"] .drafting-paper[data-depth="front"].is-drawing .drafting-paper-line { animation: none; opacity: 1; transform: none; }
 .drafting-animation[data-reduced-motion="true"] .drafting-message { animation: none; background: none; color: var(--csa-semantic-color-text-primary); }
 @keyframes drafting-line-loop { 0% { transform: scaleX(0); opacity: 0; } 20% { opacity: 1; } 50%, 75% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1); opacity: 0; } }
-.output-card[data-revising="true"] { min-height: var(--csa-foundation-size-120); border: var(--csa-foundation-border-width-1) solid var(--csa-semantic-color-border-default); border-radius: var(--csa-foundation-radius-16); background: var(--csa-semantic-color-surface-default); }
+.output-card[data-revising="true"] { border-width: var(--csa-component-variant-card-border-width); border-style: solid; border-color: var(--csa-semantic-color-border-default); background: var(--csa-semantic-color-surface-default); }
+.output-card[data-revising="true"][data-selected="true"] { min-height: calc(var(--csa-component-variant-card-min-height) + 2 * (var(--csa-component-variant-card-selected-border-width) - var(--csa-component-variant-card-border-width))); }
 .output-card[data-revising="true"] > :is(.output-open, .output-badges, .output-card-actions, .output-card-dash) { visibility: hidden; }
 .output-card[data-revising="true"] > .drafting-animation { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 100%; border: 0; border-radius: inherit; background: var(--csa-semantic-color-surface-default); }
 @media (prefers-reduced-motion: reduce) {

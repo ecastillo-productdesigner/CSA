@@ -1,9 +1,9 @@
-import { documentStyles } from './design-system/export-styles.js?v=20261026-us-weekly-case';
-import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-us-weekly-case';
-import { initializeOutputShareText } from './outputs.js?v=20261026-us-weekly-case';
-import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261026-us-weekly-case';
-import { draftPreferenceValue } from './draft-options.js?v=20261026-us-weekly-case';
-import './vendor/quill-2.0.3.js?v=20261026-us-weekly-case';
+import { documentStyles } from './design-system/export-styles.js?v=20261026-drafting-card-size';
+import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-drafting-card-size';
+import { initializeOutputShareText } from './outputs.js?v=20261026-drafting-card-size';
+import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261026-drafting-card-size';
+import { draftPreferenceValue } from './draft-options.js?v=20261026-drafting-card-size';
+import './vendor/quill-2.0.3.js?v=20261026-drafting-card-size';
 
 const Quill = window.Quill;
 const Delta = Quill.import('delta');

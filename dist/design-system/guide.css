@@ -249,3 +249,4 @@ body.ds-page:has(dialog[open]) { overflow: hidden; }
 
 .ds-drafting-previews { display: grid; gap: var(--csa-component-composer-panel-gap); }
 .ds-drafting-specimen { width: 100%; max-width: var(--csa-component-navigation-drawer-width); }
+.ds-drafting-previews .ds-drafting-specimen { max-width: var(--csa-foundation-size-320); }

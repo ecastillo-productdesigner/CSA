@@ -1,5 +1,5 @@
-import { createFeedbackPill, createVariantFeedback } from '../variant-feedback.js?v=20261026-us-weekly-case';
-import { sendDestinations } from '../send-destination.js?v=20261026-us-weekly-case';
+import { createFeedbackPill, createVariantFeedback } from '../variant-feedback.js?v=20261026-drafting-card-size';
+import { sendDestinations } from '../send-destination.js?v=20261026-drafting-card-size';
 
 // The app controller operates on one in-memory draft here. No project storage,
 // content editor, server submission, or prototype controllers are mounted.

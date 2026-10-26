@@ -1,7 +1,7 @@
-import { createDropdownTransition } from './dropdown-transition.js?v=20261026-us-weekly-case';
-import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261026-us-weekly-case';
-import { createIcon } from './icons.js?v=20261026-us-weekly-case';
-import { bindTapActivation } from './tap-activation.js?v=20261026-us-weekly-case';
+import { createDropdownTransition } from './dropdown-transition.js?v=20261026-drafting-card-size';
+import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261026-drafting-card-size';
+import { createIcon } from './icons.js?v=20261026-drafting-card-size';
+import { bindTapActivation } from './tap-activation.js?v=20261026-drafting-card-size';
 
 export function createToolDropdowns({ root = document } = {}) {
   const controls = [...root.querySelectorAll('.composer-field, .results-sort-field, .feedback-select-field, .editor-style-field, .word-count-field')].map(field => {

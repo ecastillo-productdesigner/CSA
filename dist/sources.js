@@ -1,6 +1,6 @@
-import { draftSourcesFor } from './source-model.js?v=20261026-us-weekly-case';
-import { tokenNumber } from './design-system/runtime.js?v=20261026-us-weekly-case';
-import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-us-weekly-case';
+import { draftSourcesFor } from './source-model.js?v=20261026-drafting-card-size';
+import { tokenNumber } from './design-system/runtime.js?v=20261026-drafting-card-size';
+import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-drafting-card-size';
 export function sourceSelectionFor(project, variant = null) {
   const available = project?.sources || [];
   if (!variant) return { sources: available, selectedSources: new Set(available.filter(source => source.selected !== false)) };

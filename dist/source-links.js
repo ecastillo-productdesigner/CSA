@@ -1,4 +1,4 @@
-import { fictionalTopicParagraphs } from './topic-draft.js?v=20261026-us-weekly-case';
+import { fictionalTopicParagraphs } from './topic-draft.js?v=20261026-drafting-card-size';
 
 function safeUrl(value) {
   try {

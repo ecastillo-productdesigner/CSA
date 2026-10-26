@@ -1,11 +1,11 @@
-import { syncSelection } from './selection-controls.js?v=20261026-us-weekly-case';
-import { createIcon } from './icons.js?v=20261026-us-weekly-case';
-import { normalizeWordCount } from './variant-word-count.js?v=20261026-us-weekly-case';
-import { countPreviewWords } from './content-preview.js?v=20261026-us-weekly-case';
-import { createContentCardActions } from './content-card-editing.js?v=20261026-us-weekly-case';
-import { createDraftingAnimation } from './drafting-animation.js?v=20261026-us-weekly-case';
-import { topicDraftContent } from './topic-draft.js?v=20261026-us-weekly-case';
-import { formatDraftContent } from './draft-format.js?v=20261026-us-weekly-case';
+import { syncSelection } from './selection-controls.js?v=20261026-drafting-card-size';
+import { createIcon } from './icons.js?v=20261026-drafting-card-size';
+import { normalizeWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
+import { countPreviewWords } from './content-preview.js?v=20261026-drafting-card-size';
+import { createContentCardActions } from './content-card-editing.js?v=20261026-drafting-card-size';
+import { createDraftingAnimation } from './drafting-animation.js?v=20261026-drafting-card-size';
+import { topicDraftContent } from './topic-draft.js?v=20261026-drafting-card-size';
+import { formatDraftContent } from './draft-format.js?v=20261026-drafting-card-size';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',

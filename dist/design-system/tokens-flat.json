@@ -5676,6 +5676,18 @@
       "status": "observed"
     },
     {
+      "name": "component.variant-card.min-height",
+      "designName": "component/variant-card/min-height",
+      "cssVariable": "--csa-component-variant-card-min-height",
+      "type": "dimension",
+      "layer": "component",
+      "category": "variant-card",
+      "value": "90px",
+      "reference": "foundation.size.90",
+      "description": "Shared minimum outer height for drafted content cards and compact drafting previews; selected borders and existing card rows retain their natural size.",
+      "status": "observed"
+    },
+    {
       "name": "component.checkbox.size",
       "designName": "component/checkbox/size",
       "cssVariable": "--csa-component-checkbox-size",

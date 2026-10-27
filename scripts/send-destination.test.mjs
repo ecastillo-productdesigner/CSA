@@ -52,7 +52,7 @@ class Control {
 
 function setup(t, initialSiteValue = 'us-weekly') {
   const previous = { document: globalThis.document, window: globalThis.window, getComputedStyle: globalThis.getComputedStyle };
-  const nodes = Object.fromEntries(['dialog', 'form', 'site', 'trigger', 'name', 'url', 'admin', 'options', 'close', 'cancel', 'confirm', 'error'].map(name => [name, new Control()]));
+  const nodes = Object.fromEntries(['dialog', 'form', 'site', 'trigger', 'name', 'url', 'options', 'close', 'cancel', 'confirm', 'error'].map(name => [name, new Control()]));
   const main = new Control();
   const opener = new Control();
   const doc = new Control();
@@ -64,7 +64,7 @@ function setup(t, initialSiteValue = 'us-weekly') {
   globalThis.window = new Control();
   globalThis.getComputedStyle = () => ({ getPropertyValue: name => ({ '--csa-foundation-space-12': '12px', '--csa-foundation-space-8': '8px', '--csa-foundation-size-420': '420px' }[name]) });
   t.after(() => { Object.assign(globalThis, previous); });
-  nodes.trigger.append(nodes.name, nodes.url, nodes.admin);
+  nodes.trigger.append(nodes.name, nodes.url);
   nodes.dialog.append(nodes.trigger, nodes.options);
   nodes.options.hidden = true;
   nodes.options.rect = { left: 100, top: 280, width: 400, height: 380 };
@@ -235,26 +235,23 @@ test('closing returns focus to main when the original trigger was removed or hid
   assert.equal(document.activeElement, ui.main);
 });
 
-test('the destination catalog contains the requested names, URLs and four noninteractive Admin View tags', t => {
+test('the destination catalog retains the requested names and URLs without Admin View badges', t => {
   const ui = setup(t);
-  assert.deepEqual(sendDestinations.map(({ id, name, url, adminView }) => [id, name, url, adminView]), [
-    ['us-weekly', 'Us Weekly WordPress', 'https://www.usmagazine.com', true],
-    ['bargain-hunter', 'Bargain Hunter WordPress', 'https://www.bargainhunter.com', true],
-    ['womans-world', "Woman's World", 'https://www.womansworld.com', true],
-    ['soap-opera-digest', 'Soap Opera Digest', 'https://www.soapoperadigest.com', true],
+  assert.deepEqual(sendDestinations.map(({ id, name, url }) => [id, name, url]), [
+    ['us-weekly', 'Us Weekly WordPress', 'https://www.usmagazine.com'],
+    ['bargain-hunter', 'Bargain Hunter WordPress', 'https://www.bargainhunter.com'],
+    ['womans-world', "Woman's World", 'https://www.womansworld.com'],
+    ['soap-opera-digest', 'Soap Opera Digest', 'https://www.soapoperadigest.com'],
   ]);
   assert.equal(ui.site.children.length, 4);
   assert.equal(ui.options.children.length, 4);
-  for (const { id, adminView } of sendDestinations) {
+  for (const { id, name, url } of sendDestinations) {
     const row = ui.option(id);
     assert.equal(row.type, 'button');
     assert.equal(row.getAttribute('role'), 'option');
-    const admin = row.querySelector('.send-destination-admin');
-    assert.equal(admin.textContent, 'ADMIN VIEW');
-    assert.equal(admin.hidden, !adminView);
-    assert.equal(admin.tagName, 'span');
-    assert.equal(admin.getAttribute('role'), undefined);
-    assert.equal(admin.tabIndex, undefined);
+    assert.equal(row.querySelector('.send-destination-site-name').textContent, name);
+    assert.equal(row.querySelector('.send-destination-site-url').textContent, url);
+    assert.equal(row.querySelector('.send-destination-admin'), null);
     assert.equal(isSendDestination(id), true);
   }
   for (const invalid of ['', null, 'csa-gate-test', 'us-weekly.invalid', 'https://www.usmagazine.com', {}, 1]) assert.equal(isSendDestination(invalid), false);
@@ -273,7 +270,6 @@ test('every destination can be chosen, updates both trigger lines, and sends onl
     assert.equal(ui.site.value, destination.id);
     assert.equal(ui.name.textContent, destination.name);
     assert.equal(ui.url.textContent, destination.url);
-    assert.equal(ui.admin.hidden, !destination.adminView);
     assert.equal(document.activeElement, ui.trigger);
     for (const row of ui.options.children) {
       const selected = row.dataset.sendDestination === destination.id;
@@ -306,7 +302,6 @@ test('keyboard navigation chooses an option and Escape closes the list before cl
   assert.equal(document.activeElement, ui.option('us-weekly'));
   ui.options.fire('keydown', { key: ' ' });
   assert.equal(ui.site.value, 'us-weekly');
-  assert.equal(ui.admin.hidden, false);
   ui.trigger.fire('keydown', { key: 'End' });
   ui.options.fire('keydown', { key: 'Escape' });
   assert.equal(ui.options.hidden, true);
@@ -422,7 +417,6 @@ test('removed test-site and unknown historical selections fall back to the first
     assert.equal(ui.site.value, 'us-weekly');
     assert.equal(ui.name.textContent, 'Us Weekly WordPress');
     assert.equal(ui.url.textContent, 'https://www.usmagazine.com');
-    assert.equal(ui.admin.hidden, false);
     assert.equal(ui.option('csa-gate-test'), undefined);
     ui.api.open('project');
     assert.equal(ui.confirm.disabled, false);

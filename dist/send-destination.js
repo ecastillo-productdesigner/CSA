@@ -3,10 +3,10 @@ import { tokenNumber } from './design-system/runtime.js?v=20261026-drafting-card
 import { bindTapActivation } from './tap-activation.js?v=20261026-drafting-card-size';
 
 export const sendDestinations = Object.freeze([
-  { id: 'us-weekly', name: 'Us Weekly WordPress', url: 'https://www.usmagazine.com', adminView: true },
-  { id: 'bargain-hunter', name: 'Bargain Hunter WordPress', url: 'https://www.bargainhunter.com', adminView: true },
-  { id: 'womans-world', name: "Woman's World", url: 'https://www.womansworld.com', adminView: true },
-  { id: 'soap-opera-digest', name: 'Soap Opera Digest', url: 'https://www.soapoperadigest.com', adminView: true },
+  { id: 'us-weekly', name: 'Us Weekly WordPress', url: 'https://www.usmagazine.com' },
+  { id: 'bargain-hunter', name: 'Bargain Hunter WordPress', url: 'https://www.bargainhunter.com' },
+  { id: 'womans-world', name: "Woman's World", url: 'https://www.womansworld.com' },
+  { id: 'soap-opera-digest', name: 'Soap Opera Digest', url: 'https://www.soapoperadigest.com' },
 ].map(destination => Object.freeze(destination)));
 export const isSendDestination = value => sendDestinations.some(destination => destination.id === value);
 
@@ -22,7 +22,6 @@ export function createSendDestinationDialog({ getTarget, onSend, onSent }) {
   const picker = document.querySelector('#send-destination-trigger');
   const pickerName = document.querySelector('#send-destination-name');
   const pickerUrl = document.querySelector('#send-destination-url');
-  const pickerAdmin = document.querySelector('#send-destination-admin');
   const options = document.querySelector('#send-destination-options');
   const dismiss = document.querySelector('#send-destination-close');
   const cancel = document.querySelector('#send-destination-cancel');
@@ -44,20 +43,13 @@ export function createSendDestinationDialog({ getTarget, onSend, onSent }) {
     button.setAttribute('role', 'option');
     const preview = document.createElement('span');
     preview.className = 'send-destination-site-preview';
-    const nameRow = document.createElement('span');
-    nameRow.className = 'send-destination-name-row';
     const name = document.createElement('span');
     name.className = 'send-destination-site-name';
     name.textContent = destination.name;
-    const admin = document.createElement('span');
-    admin.className = 'send-destination-admin';
-    admin.textContent = 'ADMIN VIEW';
-    admin.hidden = !destination.adminView;
     const url = document.createElement('span');
     url.className = 'send-destination-site-url';
     url.textContent = destination.url;
-    nameRow.append(name, admin);
-    preview.append(nameRow, url);
+    preview.append(name, url);
     const check = createIcon('check', 'send-destination-option-check');
     button.append(preview, check);
     bindTapActivation(button, () => chooseDestination(destination.id));
@@ -71,8 +63,6 @@ export function createSendDestinationDialog({ getTarget, onSend, onSent }) {
     const selected = sendDestinations.find(destination => destination.id === site.value);
     pickerName.textContent = selected?.name || 'Choose a destination';
     pickerUrl.textContent = selected?.url || '';
-    pickerAdmin.textContent = 'ADMIN VIEW';
-    pickerAdmin.hidden = !selected?.adminView;
     for (const row of rows) {
       const selected = row.destination.id === site.value;
       row.button.setAttribute('aria-selected', String(selected));

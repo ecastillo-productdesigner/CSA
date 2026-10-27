@@ -9,7 +9,7 @@ export function createRevisionButton(output, disabled = false) {
   button.setAttribute('aria-haspopup', 'dialog');
   button.setAttribute('aria-controls', 'revision-request-dialog');
   button.setAttribute('aria-expanded', 'false');
-  button.append(createIcon('edit_note'), document.createTextNode('Request Revision'));
+  button.append(createIcon('edit_document'), document.createTextNode('Request Revision'));
   return button;
 }
 
@@ -23,7 +23,7 @@ export function createRevisionRequests({ onSubmit, closePanels }) {
   const trigger = () => target && [...document.querySelectorAll('[data-request-revision]')].find(button => button.dataset.requestRevision === target.outputId);
 
   function refresh() {
-    submit.disabled = !onSubmit || !target || !instructions.value.trim();
+    submit.disabled = !onSubmit || !target || !instructions.value.trim() || instructions.value.length > instructions.maxLength;
     if (instructions.value.trim()) error.hidden = true;
   }
   instructions.addEventListener('input', refresh);

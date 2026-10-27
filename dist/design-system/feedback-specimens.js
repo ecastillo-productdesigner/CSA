@@ -1,4 +1,5 @@
 import { createFeedbackPill, createVariantFeedback } from '../variant-feedback.js?v=20261026-drafting-card-size';
+import { createRevisionButton, createRevisionRequests } from '../revision-requests.js?v=20261026-drafting-card-size';
 import { sendDestinations } from '../send-destination.js?v=20261026-drafting-card-size';
 
 // The app controller operates on one in-memory draft here. No project storage,
@@ -8,16 +9,17 @@ export function mountFeedbackSpecimens(root, dropdowns) {
   const document = root.ownerDocument;
   const dialog = document.querySelector('#experience-feedback-dialog');
   const project = { id: 'ds-feedback-project', updatedAt: Date.now() };
-  const variant = { id: 'ds-feedback-draft', status: 'ready' };
+  const variant = { id: 'ds-feedback-draft', title: 'A Local Business Finds a Fresh Way to Connect', status: 'ready' };
   let invokingControl = null;
 
   const heading = document.createElement('h4');
   heading.className = 'ds-button-example-title';
   heading.id = 'ds-draft-feedback-title';
-  heading.textContent = 'Draft Feedback';
+  heading.textContent = 'Draft Feedback & Revision';
   const guidance = document.createElement('p');
   guidance.className = 'ds-caption';
-  guidance.textContent = 'Choose a thumb to open the app’s feedback form. Rating, Category, and Describe the issue are required; Severity and Additional comments are optional. The issue summary allows 500 characters.';
+  guidance.textContent = 'Request Revision opens the instructions popup using edit_document; this sample keeps requests only while this page is open. Choose a thumb to open the app’s feedback form. Rating, Category, Severity, and Describe the issue are required; Additional comments are optional. The issue summary allows 500 characters. Description and comment fields use the white field surface. The export heading-to-button and button-to-divider gaps are both 32 px.';
+  const revisionButton = createRevisionButton(variant);
   const pill = createFeedbackPill(variant);
   const previewExport = document.createElement('button');
   previewExport.type = 'button';
@@ -25,14 +27,31 @@ export function mountFeedbackSpecimens(root, dropdowns) {
   previewExport.textContent = 'Preview after export';
   const actions = document.createElement('div');
   actions.className = 'ds-inline';
-  actions.append(pill, previewExport);
+  actions.append(revisionButton, pill, previewExport);
   const status = document.createElement('p');
   status.className = 'ds-specimen-status';
   status.setAttribute('role', 'status');
-  status.textContent = 'The export form and confirmation share a close icon at the top right. Submit Report shows a centered confirmation and Done. Reopen to review the saved sample; this example keeps feedback only while this page is open.';
+  status.textContent = 'The export form and confirmation share a close icon at the top right. Submit Report shows a centered confirmation using the same 14 px / 20 px Semibold style as the rating question, followed by Done. Reopen to review the saved sample; this example keeps feedback only while this page is open.';
   root.classList.add('ds-button-example');
   root.setAttribute('aria-labelledby', heading.id);
   root.replaceChildren(heading, guidance, actions, status);
+
+  const revisionDialog = document.querySelector('#revision-request-dialog');
+  const revisions = createRevisionRequests({
+    closePanels: () => dropdowns.close(),
+    onSubmit(request) {
+      variant.revisionRequests = [...(variant.revisionRequests || []), request];
+      status.textContent = 'Sample revision request saved: ' + request.instructions;
+      return true;
+    },
+  });
+  revisionButton.addEventListener('click', () => revisions.open(project, variant));
+  revisionDialog.addEventListener('click', event => {
+    if (event.target.closest('[data-close="revision-request-dialog"]')) { revisionDialog.close(); return; }
+    if (event.target !== revisionDialog) return;
+    const bounds = revisionDialog.getBoundingClientRect();
+    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) revisionDialog.close();
+  });
 
   const controller = createVariantFeedback({
     save() {

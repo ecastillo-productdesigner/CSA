@@ -45,7 +45,7 @@ function setup(t, saved = null) {
   t.after(() => { globalThis.document = previousDocument; });
   const ids = [
     'experience-feedback-dialog', 'experience-feedback-form', 'feedback-category',
-    'feedback-category-trigger', 'feedback-severity', 'feedback-description', 'feedback-comments',
+    'feedback-category-trigger', 'feedback-severity', 'feedback-severity-trigger', 'feedback-description', 'feedback-comments',
     'feedback-submit', 'feedback-error', 'experience-feedback-complete', 'feedback-description-count',
     'experience-feedback-options', 'experience-feedback-thanks', 'experience-feedback-done',
     'experience-feedback-export', 'feedback-wordpress-link',
@@ -102,6 +102,7 @@ function setup(t, saved = null) {
 
 function completeRequired(ui, description = 'The draft needs more context.') {
   ui.category.value = 'content';
+  ui.severity.value = 'medium';
   ui.description.value = description;
   ui.change();
 }
@@ -121,7 +122,7 @@ test('thumb triggers name their draft rating, link the dialog and expose saved s
   assert.ok(disabled.children.every(button => button.disabled && button.getAttribute('aria-pressed') === 'false'));
 });
 
-test('opening preselects the clicked rating but requires category and a nonblank description', t => {
+test('opening preselects the clicked rating but requires category, severity, and a nonblank description', t => {
   const ui = setup(t);
   ui.api.open(ui.project, ui.output, 'up');
   assert.equal(ui.dialog.open, true);
@@ -142,7 +143,13 @@ test('opening preselects the clicked rating but requires category and a nonblank
   assert.equal(ui.submit.disabled, true);
   ui.description.value = 'Needs context';
   ui.change();
+  assert.equal(ui.submit.disabled, true, 'severity is still required');
+  ui.severity.value = 'medium';
+  ui.change();
   assert.equal(ui.submit.disabled, false);
+  ui.severity.value = '';
+  ui.change();
+  assert.equal(ui.submit.disabled, true, 'clearing severity disables submission');
   assert.equal(ui.count.textContent, '487 characters remaining');
   assert.equal(ui.calls.save, 0);
 });
@@ -157,6 +164,11 @@ test('invalid programmatic submission cannot save and focuses the first missing 
   ui.send();
   assert.equal(document.activeElement, ui.get('feedback-category-trigger'));
   ui.category.value = 'content';
+  ui.description.value = 'Missing severity';
+  ui.send();
+  assert.equal(document.activeElement, ui.get('feedback-severity-trigger'));
+  assert.equal(ui.calls.save, 0);
+  ui.severity.value = 'medium';
   ui.description.value = '   ';
   ui.send();
   assert.equal(document.activeElement, ui.description);
@@ -211,14 +223,14 @@ test('Submit saves the chosen draft only, updates thumb state and shows confirma
   assert.equal(ui.output.experienceFeedback, feedback);
 });
 
-test('severity and comments stay optional and failed persistence truthfully keeps session feedback', t => {
+test('comments stay optional and failed persistence truthfully keeps session feedback', t => {
   const ui = setup(t);
   ui.setSaveResult(false);
   ui.api.open(ui.project, ui.output, 'up');
   completeRequired(ui);
   assert.equal(ui.submit.disabled, false);
   ui.send();
-  assert.equal(ui.output.experienceFeedback.severity, '');
+  assert.equal(ui.output.experienceFeedback.severity, 'medium');
   assert.equal(ui.output.experienceFeedback.comments, '');
   assert.equal(ui.calls.save, 1);
   assert.equal(ui.complete.hidden, false);

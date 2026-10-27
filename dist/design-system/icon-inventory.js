@@ -13,6 +13,7 @@ export const iconInventory = [
   ['description', 'Document'],
   ['draw', 'Draft'],
   ['edit', 'Edit Content'],
+  ['edit_document', 'Request Revision'],
   ['folder_open', 'Sources'],
   ['format_bold', 'Bold'],
   ['format_h2', 'Heading 2'],

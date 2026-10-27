@@ -8,7 +8,7 @@
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css?v=20261026-ds-consolidation">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=add_circle,arrow_forward,article,check,chevron_forward,close,delete,description,draw,edit,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,unfold_less,upload,view_module,visibility&amp;display=block">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=add_circle,arrow_forward,article,check,chevron_forward,close,delete,description,draw,edit,edit_document,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,unfold_less,upload,view_module,visibility&amp;display=block">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
     <link rel="stylesheet" href="./design-system/tokens.css?v=20261026-drafting-card-size">
     <link rel="stylesheet" href="./styles.css?v=20261026-drafting-card-size">
@@ -282,6 +282,18 @@
 
     <dialog class="editor-link-dialog" id="editor-link-dialog" aria-labelledby="editor-link-heading"><form id="editor-link-form"><div class="editor-panel-heading"><h2 id="editor-link-heading">Add a link</h2><button class="icon-button" type="button" data-close="editor-link-dialog" aria-label="Close link dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div><label for="editor-link-text">Link text<input id="editor-link-text" type="text" placeholder="Text to display" maxlength="2000"></label><label for="editor-link-url">URL<input id="editor-link-url" type="text" placeholder="https://" required></label><p class="form-error" id="editor-link-error" role="alert" hidden></p><div class="dialog-footer"><button class="secondary-button" id="editor-remove-link" type="button">Remove Link</button><button class="primary-button" type="submit">Apply Link</button></div></form></dialog>
 
+    <dialog class="revision-request-dialog" id="revision-request-dialog" aria-labelledby="revision-request-heading" aria-describedby="revision-request-title revision-request-description">
+      <form id="revision-request-form">
+        <div class="revision-request-heading"><h2 id="revision-request-heading">Request Revision</h2><button class="icon-button" type="button" data-close="revision-request-dialog" aria-label="Close revision request"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
+        <p class="revision-request-title" id="revision-request-title"></p>
+        <p class="revision-request-description" id="revision-request-description">Describe the change you'd like to this draft. You'll get a notification when the revision is ready.</p>
+        <label class="visually-hidden" for="revision-request-instructions">Revision instructions</label>
+        <textarea id="revision-request-instructions" rows="4" maxlength="8000" placeholder='e.g. “Make the tone less formal” or “Shorten the intro”' required></textarea>
+        <p class="form-error" id="revision-request-error" role="alert" hidden></p>
+        <div class="dialog-footer"><button class="secondary-button dialog-cancel-button" type="button" data-close="revision-request-dialog">Cancel</button><button class="primary-button dialog-action-button" id="revision-request-submit" type="submit" disabled>Request Revision</button></div>
+      </form>
+    </dialog>
+
     <dialog class="experience-feedback-dialog" id="experience-feedback-dialog" aria-labelledby="experience-feedback-heading">
       <button class="icon-button experience-feedback-close" type="button" data-close="experience-feedback-dialog" aria-label="Close feedback dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
       <div class="experience-feedback-export" id="experience-feedback-export" hidden><h2>Export Complete</h2><button class="primary-button feedback-wordpress-link" id="feedback-wordpress-link" type="button">Go to WordPress</button></div>
@@ -300,13 +312,13 @@
                 <option value="">Select a category</option><option>Accuracy</option><option>Content Quality</option><option>Format</option><option>Length</option><option>Missing Data</option><option>Other</option><option>Quotes</option><option>Relevance</option><option>SPEED</option><option>Structure</option><option>Style Guide</option><option>Tone</option><option>UI / UX</option><option>Usability</option><option>Workflow</option>
               </select></div>
             </div>
-            <div class="feedback-form-field"><label for="feedback-severity">Severity</label>
-              <div class="feedback-select-field" data-label="Severity" data-placeholder="No severity"><select id="feedback-severity" name="severity" hidden><option value="">No severity</option><option>High</option><option>Low</option><option>Medium</option></select></div>
+            <div class="feedback-form-field"><label id="feedback-severity-label" for="feedback-severity">Severity <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label>
+              <div class="feedback-select-field" data-label="Severity" data-placeholder="Select a severity"><select id="feedback-severity" name="severity" required aria-labelledby="feedback-severity-label" hidden><option value="">Select a severity</option><option>High</option><option>Low</option><option>Medium</option></select></div>
             </div>
           </div>
           <div class="feedback-form-field"><label for="feedback-description">Describe the issue <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label><input id="feedback-description" name="description" type="text" maxlength="500" placeholder="Brief summary of the problem" aria-describedby="feedback-description-count" required><p class="feedback-character-count" id="feedback-description-count">500 characters remaining</p></div>
           <div class="feedback-form-field"><label for="feedback-comments">Additional comments</label><textarea id="feedback-comments" name="comments" rows="3" placeholder="Any extra context or details (optional)"></textarea></div>
-          <p class="form-error" id="feedback-error" role="alert" hidden>Please choose a rating, select a category, and describe the issue.</p>
+          <p class="form-error" id="feedback-error" role="alert" hidden>Please choose a rating, select a category and severity, and describe the issue.</p>
         </div>
         <div class="dialog-footer"><button class="secondary-button" type="button" data-close="experience-feedback-dialog">Close</button><button class="primary-button dialog-action-button" id="feedback-submit" type="submit" disabled>Submit Report</button></div>
       </form>

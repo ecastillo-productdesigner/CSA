@@ -6844,6 +6844,18 @@
       "status": "observed"
     },
     {
+      "name": "component.drafting.revision-duration",
+      "designName": "component/drafting/revision-duration",
+      "cssVariable": "--csa-component-drafting-revision-duration",
+      "type": "duration",
+      "layer": "component",
+      "category": "drafting",
+      "value": "4000ms",
+      "reference": "",
+      "description": "Prototype revision-processing duration, expressed in milliseconds for the selected-draft timer.",
+      "status": "observed"
+    },
+    {
       "name": "component.composer-panel.heading-font-size",
       "designName": "component/composer-panel/heading-font-size",
       "cssVariable": "--csa-component-composer-panel-heading-font-size",

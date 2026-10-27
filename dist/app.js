@@ -26,6 +26,7 @@ import { createEditorTabs } from './editor-tabs.js?v=20261026-drafting-card-size
 import { createContentCardEditing } from './content-card-editing.js?v=20261026-drafting-card-size';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-drafting-card-size';
 import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261026-drafting-card-size';
+import { createRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261026-drafting-card-size';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -110,6 +111,10 @@ const newProjectUpload = createNewProjectUpload({
   },
 });
 const variantFeedback = createVariantFeedback({ save: saveProjects, refreshDropdowns: toolDropdowns.refresh, closeDropdowns: toolDropdowns.close });
+const revisionRequests = createRevisionRequests({
+  onSubmit: requestVariantRevision,
+  closePanels() { draftSourcesPopover.close(); toolDropdowns.close(); richEditor.closePanels(); },
+});
 const contentPreview = createContentPreview({
   onChange(text) {
     const project = projects.find(entry => entry.id === activeProjectId);
@@ -213,7 +218,7 @@ function renderOutputs(project) {
   const labels = $('#editor-variant-labels');
   labels.replaceChildren(...createOutputBadges(selectedOutput, { includeWordCount: false }));
   if (selectedOutput && outputIsReady(selectedOutput) && !selectedOutput.needsRegeneration) {
-    labels.append(createFeedbackPill(selectedOutput, Boolean(project?.outputProcessing)));
+    labels.append(createRevisionButton(selectedOutput, Boolean(project?.outputProcessing)), createFeedbackPill(selectedOutput, Boolean(project?.outputProcessing)));
   }
   labels.hidden = !labels.childElementCount;
 }
@@ -839,9 +844,46 @@ $('#editor-variant-labels').addEventListener('click', event => {
     }
     return;
   }
+  const revision = event.target.closest('[data-request-revision]');
+  if (revision) {
+    richEditor.flush();
+    const project = projects.find(entry => entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
+    const output = projectOutputs(project).find(entry => entry.id === revision.dataset.requestRevision && outputIsReady(entry) && !entry.needsRegeneration);
+    if (output && !project.outputProcessing) revisionRequests.open(project, output);
+    return;
+  }
   const button = event.target.closest('[data-variant-sources]');
   if (button) openVariantSources(button);
 });
+
+function requestVariantRevision({ projectId, outputId, instructions }) {
+  richEditor.flush();
+  const project = projects.find(entry => entry.id === projectId && entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
+  const output = projectOutputs(project).find(entry => entry.id === outputId && outputIsReady(entry) && !entry.needsRegeneration);
+  const text = typeof instructions === 'string' ? instructions.trim() : '';
+  if (!output || project.outputProcessing || !text || text.length > 8000) return false;
+  const requestedAt = Date.now();
+  const previousUpdatedAt = project.updatedAt;
+  project.updatedAt = requestedAt;
+  project.outputProcessing = { kind: 'revision', ids: [outputId], openOutputId: outputId, instructions: text, requestedAt, readyAt: requestedAt + tokenNumber('component.drafting.revision-duration') };
+  if (!saveProjects()) { delete project.outputProcessing; project.updatedAt = previousUpdatedAt; return false; }
+  outputViews.set(project.id, 'created');
+  renderOutputs(project);
+  updateComposerActions();
+  resumeOutputProcessing(project);
+  requestAnimationFrame(() => {
+    if (window.matchMedia(breakpointQuery()).matches) railNavigation.open('variants');
+    const list = $('#output-list');
+    const card = list.querySelector('[data-revising="true"]');
+    if (!card) return;
+    const viewport = list.getBoundingClientRect();
+    const bounds = card.getBoundingClientRect();
+    const inset = tokenNumber('foundation.space.3');
+    if (bounds.top < viewport.top) list.scrollTop += bounds.top - viewport.top - inset;
+    else if (bounds.bottom > viewport.bottom) list.scrollTop += bounds.bottom - viewport.bottom + inset;
+  });
+  return true;
+}
 
 function finishOutputProcessing(project, renderWhenReady = true) {
   const job = project.outputProcessing;
@@ -870,7 +912,7 @@ function finishOutputProcessing(project, renderWhenReady = true) {
     if (deferRender) deferredOutputProjectId = project.id;
     else { railNavigation.closeTransient(); showEditorProject(project); }
   }
-  if (job.kind === 'revision') notify('Revision complete. Your draft has been updated.');
+  if (job.kind === 'revision') notify('Revision complete');
 }
 
 function resumeOutputProcessing(project, renderWhenReady = true) {

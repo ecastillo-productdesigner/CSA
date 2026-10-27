@@ -8,7 +8,7 @@
   <title>CSA Design System</title>
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,chevron_forward,close,delete,description,draw,edit,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,unfold_less,upload,view_module,visibility&amp;display=block">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,chevron_forward,close,delete,description,draw,edit,edit_document,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,unfold_less,upload,view_module,visibility&amp;display=block">
   <link rel="stylesheet" href="tokens.css?v=20261026-drafting-card-size">
   <link rel="stylesheet" href="../styles.css?v=20261026-drafting-card-size">
   <link rel="stylesheet" href="guide.css?v=20261026-drafting-card-size">
@@ -134,7 +134,7 @@
       <article class="ds-panel" id="form-components" aria-labelledby="ds-forms-title"><div class="ds-panel-heading"><h3 id="ds-forms-title">Text entry &amp; validation</h3><span>Default, disabled, error, and upload states</span></div><div id="ds-form-sample-root"></div></article>
       <div class="ds-two-column">
         <article class="ds-panel" id="navigation-components" aria-labelledby="ds-navigation-title"><div class="ds-panel-heading"><h3 id="ds-navigation-title">Navigation controls</h3><span>Source selection, avatar, and menu</span></div><div id="ds-navigation-sample-root"></div></article>
-        <article class="ds-panel" id="feedback-components" aria-labelledby="ds-feedback-title"><div class="ds-panel-heading"><h3 id="ds-feedback-title">Panels &amp; feedback</h3><span>Disclosure, draft feedback, and states</span></div><div id="ds-state-sample-root"></div><section id="ds-feedback-sample-root"></section></article>
+        <article class="ds-panel" id="feedback-components" aria-labelledby="ds-feedback-title"><div class="ds-panel-heading"><h3 id="ds-feedback-title">Panels &amp; feedback</h3><span>Disclosure, draft feedback, revision, and states</span></div><div id="ds-state-sample-root"></div><section id="ds-feedback-sample-root"></section></article>
       </div>
     </section>
 
@@ -156,6 +156,18 @@
     </section>
     <footer class="ds-end"><strong>CSA</strong><span>Design system v1.0 · Extracted from the product</span><a href="#overview">Back to top</a></footer>
   </main>
+    <dialog class="revision-request-dialog" id="revision-request-dialog" aria-labelledby="revision-request-heading" aria-describedby="revision-request-title revision-request-description">
+      <form id="revision-request-form">
+        <div class="revision-request-heading"><h2 id="revision-request-heading">Request Revision</h2><button class="icon-button" type="button" data-close="revision-request-dialog" aria-label="Close revision request"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
+        <p class="revision-request-title" id="revision-request-title"></p>
+        <p class="revision-request-description" id="revision-request-description">Describe the change you'd like to this draft. You'll get a notification when the revision is ready.</p>
+        <label class="visually-hidden" for="revision-request-instructions">Revision instructions</label>
+        <textarea id="revision-request-instructions" rows="4" maxlength="8000" placeholder='e.g. “Make the tone less formal” or “Shorten the intro”' required></textarea>
+        <p class="form-error" id="revision-request-error" role="alert" hidden></p>
+        <div class="dialog-footer"><button class="secondary-button dialog-cancel-button" type="button" data-close="revision-request-dialog">Cancel</button><button class="primary-button dialog-action-button" id="revision-request-submit" type="submit" disabled>Request Revision</button></div>
+      </form>
+    </dialog>
+
     <dialog class="experience-feedback-dialog" id="experience-feedback-dialog" aria-labelledby="experience-feedback-heading">
       <button class="icon-button experience-feedback-close" type="button" data-close="experience-feedback-dialog" aria-label="Close feedback dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
       <div class="experience-feedback-export" id="experience-feedback-export" hidden><h2>Export Complete</h2><button class="primary-button feedback-wordpress-link" id="feedback-wordpress-link" type="button">Go to WordPress</button></div>
@@ -174,13 +186,13 @@
                 <option value="">Select a category</option><option>Accuracy</option><option>Content Quality</option><option>Format</option><option>Length</option><option>Missing Data</option><option>Other</option><option>Quotes</option><option>Relevance</option><option>SPEED</option><option>Structure</option><option>Style Guide</option><option>Tone</option><option>UI / UX</option><option>Usability</option><option>Workflow</option>
               </select></div>
             </div>
-            <div class="feedback-form-field"><label for="feedback-severity">Severity</label>
-              <div class="feedback-select-field" data-label="Severity" data-placeholder="No severity"><select id="feedback-severity" name="severity" hidden><option value="">No severity</option><option>High</option><option>Low</option><option>Medium</option></select></div>
+            <div class="feedback-form-field"><label id="feedback-severity-label" for="feedback-severity">Severity <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label>
+              <div class="feedback-select-field" data-label="Severity" data-placeholder="Select a severity"><select id="feedback-severity" name="severity" required aria-labelledby="feedback-severity-label" hidden><option value="">Select a severity</option><option>High</option><option>Low</option><option>Medium</option></select></div>
             </div>
           </div>
           <div class="feedback-form-field"><label for="feedback-description">Describe the issue <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label><input id="feedback-description" name="description" type="text" maxlength="500" placeholder="Brief summary of the problem" aria-describedby="feedback-description-count" required><p class="feedback-character-count" id="feedback-description-count">500 characters remaining</p></div>
           <div class="feedback-form-field"><label for="feedback-comments">Additional comments</label><textarea id="feedback-comments" name="comments" rows="3" placeholder="Any extra context or details (optional)"></textarea></div>
-          <p class="form-error" id="feedback-error" role="alert" hidden>Please choose a rating, select a category, and describe the issue.</p>
+          <p class="form-error" id="feedback-error" role="alert" hidden>Please choose a rating, select a category and severity, and describe the issue.</p>
         </div>
         <div class="dialog-footer"><button class="secondary-button" type="button" data-close="experience-feedback-dialog">Close</button><button class="primary-button dialog-action-button" id="feedback-submit" type="submit" disabled>Submit Report</button></div>
       </form>

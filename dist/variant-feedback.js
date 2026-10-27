@@ -51,7 +51,7 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
   }
 
   function valid() {
-    return ['up', 'down'].includes(rating) && Boolean(category.value) && Boolean(description.value.trim()) && description.value.length <= 500;
+    return ['up', 'down'].includes(rating) && Boolean(category.value) && Boolean(severity.value) && Boolean(description.value.trim()) && description.value.length <= 500;
   }
 
   function refresh() {
@@ -74,7 +74,7 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
     if (!target || form.hidden) return;
     if (!valid()) {
       error.hidden = false;
-      (!rating ? ratings[0] : !category.value ? document.querySelector('#feedback-category-trigger') : description).focus();
+      (!rating ? ratings[0] : !category.value ? document.querySelector('#feedback-category-trigger') : !severity.value ? document.querySelector('#feedback-severity-trigger') : description).focus();
       return;
     }
     const submittedAt = Date.now();

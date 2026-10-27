@@ -1,3 +1,4 @@
+import { createToast } from './toast.js?v=20261027-toast-timing';
 import { updatePresetPreferences } from './preset-settings.js?v=20261026-drafting-card-size';
 import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
 import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261026-drafting-card-size';
@@ -21,7 +22,7 @@ import { createNewProjectUpload } from './new-project-upload.js?v=20261026-draft
 import { createRailNavigation } from './navigation.js?v=20261026-drafting-card-size';
 import { createProjectSources } from './sources.js?v=20261026-drafting-card-size';
 import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261026-drafting-card-size';
-import { projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261026-drafting-card-size';
+import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261026-drafting-card-size';
 import { createEditorTabs } from './editor-tabs.js?v=20261026-drafting-card-size';
 import { createContentCardEditing } from './content-card-editing.js?v=20261026-drafting-card-size';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-drafting-card-size';
@@ -85,8 +86,7 @@ let materialMode = 'upload';
 let selectedFiles = [];
 let addingToProject = false;
 let materialBusy = false;
-let toastTimer;
-let toastAction = null;
+const toast = createToast({ root: $('#toast'), message: $('#toast-message'), action: $('#toast-undo') });
 let dashboard = null;
 const outputTimers = new Map();
 const outputViews = new Map();
@@ -214,7 +214,7 @@ function renderOutputs(project) {
   contentCardEditing.render(project);
   editorTabs.render(project);
   const selectedOutput = projectOutputs(project).find(output => output.id === project?.selectedOutputId && (outputIsReady(output) || output.needsRegeneration));
-  richEditor.setRevisionBusy(Boolean(project?.outputProcessing?.kind === 'revision' && project.outputProcessing.ids.includes(selectedOutput?.id)));
+  richEditor.setRevisionBusy(Boolean(project?.outputProcessing?.kind === 'revision' && project.outputProcessing.ids.includes(selectedOutput?.id)), outputLoadingSelectionKeys(selectedOutput));
   const labels = $('#editor-variant-labels');
   labels.replaceChildren(...createOutputBadges(selectedOutput, { includeWordCount: false }));
   if (selectedOutput && outputIsReady(selectedOutput) && !selectedOutput.needsRegeneration) {
@@ -266,7 +266,7 @@ function removeProjectSource(projectId, source) {
     project.sources.splice(index, 0, source);
     before.forEach(([output, indexes]) => { output.selectedSourceIndexes = indexes; });
     project.updatedAt = updatedAt;
-    notify('Could not delete this source. Please try again.');
+    notify('Couldn’t delete source. Try again');
     return;
   }
   renderProjectSources(project);
@@ -274,7 +274,7 @@ function removeProjectSource(projectId, source) {
   updateComposerActions();
   const focus = [...$('#editor-source-list').querySelectorAll('.editor-source-more')];
   (focus[Math.min(index, focus.length - 1)] || ($('#editor-source-list .editor-source-open') || $('#show-sources'))).focus({ preventScroll: true });
-  notify('Source deleted.', () => {
+  notify('Source deleted', () => {
     if (project.deletedAt || !projects.includes(project)) return;
     richEditor.flush();
     const currentIndexes = projectOutputs(project).map(output => [output, output.selectedSourceIndexes]);
@@ -290,7 +290,7 @@ function removeProjectSource(projectId, source) {
     if (!saveProjects()) {
       project.sources.splice(insertAt, 1);
       currentIndexes.forEach(([output, indexes]) => { output.selectedSourceIndexes = indexes; });
-      notify('Could not restore this source. Please try again.');
+      notify('Couldn’t restore source. Try again');
       return;
     }
     if (activeProjectId === project.id) {
@@ -298,7 +298,7 @@ function removeProjectSource(projectId, source) {
       if ($('#composer').classList.contains('has-link-cards')) searchExperience.show(project, { embedded: true });
       updateComposerActions();
     }
-    notify('Source restored.');
+    notify('Source restored');
   });
 }
 
@@ -317,7 +317,7 @@ function deleteVariant({ projectId, outputId }) {
   };
   let deletion;
   try { deletion = removeVariant(projects, projectId, outputId, persist); }
-  catch { notify('Could not delete this variant. Please try again.'); return false; }
+  catch { notify('Couldn’t delete draft. Try again'); return false; }
   if (!deletion) return false;
   projects = deletion.projects;
   refresh();
@@ -325,11 +325,11 @@ function deleteVariant({ projectId, outputId }) {
     richEditor.flush();
     let restored;
     try { restored = restoreVariant(projects, deletion.undo, persist); }
-    catch { notify('Could not restore this variant. Please try again.'); return; }
-    if (!restored) { notify('This variant could not be restored.'); return; }
+    catch { notify('Couldn’t restore draft. Try again'); return; }
+    if (!restored) { notify('Couldn’t restore draft'); return; }
     projects = restored.projects;
     refresh();
-    notify('Variant restored.');
+    notify('Draft restored');
   });
   return true;
 }
@@ -351,6 +351,7 @@ function openEditorTab(outputId) {
   }
   const output = projectOutputs(project).find(output => output.id === outputId && (outputIsReady(output) || output.needsRegeneration));
   if (!project || !output) return;
+  output.revisionUnread = false;
   outputViews.set(project.id, outputIsReady(output) ? 'created' : 'pending');
   project.selectedOutputIds = outputIsReady(output) ? [outputId] : [...new Set([...selectedPendingOutputs(project).map(output => output.id), outputId])];
   project.selectedOutputId = outputId;
@@ -389,20 +390,13 @@ function saveProjects() {
     localStorage.setItem(storageKey, JSON.stringify(projects));
   } catch {
     saved = false;
-    notify('Browser storage is unavailable or full. This project will last for this session.');
+    notify('Storage unavailable. Changes are saved for this session only');
   }
   dashboard?.render(projects);
   return saved;
 }
 
-function notify(message, action = null) {
-  clearTimeout(toastTimer);
-  toastAction = action;
-  $('#toast-message').textContent = message.replace(/\.\s*$/, '');
-  $('#toast-undo').hidden = !action;
-  $('#toast').hidden = false;
-  toastTimer = setTimeout(() => { $('#toast').hidden = true; toastAction = null; }, action ? 9000 : 5500);
-}
+function notify(message, action = null) { toast.show(message, action); }
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -537,7 +531,7 @@ function appendProjectSources(sources, projectId = sourceTargetProjectId) {
   sourceTargetProjectId = null;
   showEditorProject(project);
   railNavigation.open('sources');
-  notify(additions.length ? `${additions.length} ${additions.length === 1 ? 'source' : 'sources'} added.` : 'These sources are already in your project.');
+  notify(additions.length ? `${additions.length} ${additions.length === 1 ? 'source' : 'sources'} added` : 'Sources already added');
 }
 
 function showProject(id) {
@@ -902,7 +896,7 @@ function finishOutputProcessing(project, renderWhenReady = true) {
   }
   const latestCreated = projectOutputs(project).find(output => output.id === job.openOutputId && outputIsReady(output)) || projectOutputs(project).filter(output => ids.has(output.id) && outputIsReady(output)).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))[0];
   if (latestCreated) outputViews.set(project.id, 'created');
-  if (latestCreated) { project.selectedOutputId = latestCreated.id; project.viewOriginalDraft = false; }
+  if (latestCreated && job.kind !== 'revision') { project.selectedOutputId = latestCreated.id; project.viewOriginalDraft = false; }
   delete project.selectedPendingOutputIds;
   delete project.outputProcessing;
   if (job.kind === 'revision') project.updatedAt = Date.now();
@@ -1061,7 +1055,7 @@ $('#new-project-search-form').addEventListener('submit', (event) => {
 });
 async function downloadSource(source) {
   try { await downloadDocument(source); }
-  catch (error) { notify(error.message || 'This document could not be downloaded. Please try again.'); }
+  catch (error) { notify(error.message || 'Couldn’t download document. Try again'); }
 }
 
 $('.brand').addEventListener('click', () => showHome());
@@ -1311,10 +1305,10 @@ function moveProject(id, destination) {
   else project.deletedAt = Date.now();
   saveProjects();
   if (activeProjectId === id) showHome();
-  notify(destination === 'archive' ? 'Project archived.' : 'Project moved to Trash.', () => {
+  notify(destination === 'archive' ? 'Project archived' : 'Project moved to Trash', () => {
     Object.assign(project, previous);
     saveProjects();
-    notify('Project restored.');
+    notify('Project restored');
   });
 }
 
@@ -1329,18 +1323,12 @@ function markVariantSentToCms(projectId, outputId) {
   project.updatedAt = variant.cmsSentAt;
   const saved = saveProjects();
   editorTabs.render(project);
-  notify(saved ? 'Demo: variant marked as sent to CMS. WordPress is not connected.' : 'Demo: variant marked as sent for this session only. WordPress is not connected.');
+  notify(saved ? 'Draft marked as sent (demo). CMS isn’t connected' : 'Draft marked as sent for this session only (demo). CMS isn’t connected');
   return true;
 }
 
 
-$('#toast-undo').addEventListener('click', () => {
-  const action = toastAction;
-  clearTimeout(toastTimer);
-  toastAction = null;
-  $('#toast').hidden = true;
-  action?.();
-});
+
 
 async function deleteProjectPermanently(id) {
   richEditor.flush();
@@ -1356,10 +1344,10 @@ async function deleteProjectPermanently(id) {
   if (activeProjectId === id) showHome(false);
   try { await deleteDocuments(removal.attachmentIds); }
   catch {
-    notify('Project deleted. Some uploaded files could not be cleared from browser storage.');
+    notify('Project deleted. Some uploaded files remain in browser storage');
     return true;
   }
-  notify('Project deleted permanently.');
+  notify('Project permanently deleted');
   return true;
 }
 

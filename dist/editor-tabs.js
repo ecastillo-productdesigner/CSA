@@ -1,10 +1,17 @@
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
-import { projectOutputs, outputIsReady, outputIsSent } from './outputs.js?v=20261026-drafting-card-size';
+import { projectOutputs, outputIsReady, outputIsSent, outputLoadingSelectionKeys } from './outputs.js?v=20261026-drafting-card-size';
 
-export function createEditorTabs({ onSelect }) {
+import { createRevisionAnimation } from './drafting-animation.js?v=20261027-revision-tabs';
+
+export function createEditorTabs({ onSelect, createAnimation = createRevisionAnimation }) {
   const root = document.querySelector('#editor-variant-tabs');
   const panel = document.querySelector('#editor-canvas-content');
   let signature = '';
+  const animations = new Set();
+  function clearAnimations() {
+    for (const animation of animations) animation.destroy();
+    animations.clear();
+  }
 
   function revealSelected() {
     const tab = root.querySelector('[aria-selected="true"]');
@@ -14,7 +21,8 @@ export function createEditorTabs({ onSelect }) {
     if (item.left < row.left + 8) root.scrollLeft += item.left - row.left - 8;
     else if (item.right > row.right - 8) root.scrollLeft += item.right - row.right + 8;
   }
-  new ResizeObserver(revealSelected).observe(root);
+  const resizeObserver = new ResizeObserver(revealSelected);
+  resizeObserver.observe(root);
 
   function select(tab) {
     onSelect(tab.dataset.editorOutput || null);
@@ -43,9 +51,11 @@ export function createEditorTabs({ onSelect }) {
       const outputs = allOutputs.filter(output => outputIsReady(output) || output.needsRegeneration);
       const showCreateTab = !outputs.length && Boolean(project?.linkCards || project?.viewOriginalDraft || project?.awaitingOutput || allOutputs.some(output => output.id === project?.lastPendingOutputId && !outputIsReady(output)));
       const activeId = showCreateTab && project?.viewOriginalDraft ? null : outputs.some(output => output.id === project?.selectedOutputId) ? project.selectedOutputId : outputs[0]?.id ?? null;
-      const nextSignature = JSON.stringify([project?.id, activeId, showCreateTab, outputs.map(output => [output.id, output.title, output.cmsSentAt])]);
+      const revisingIds = project?.outputProcessing?.kind === 'revision' ? project.outputProcessing.ids || [] : [];
+      const nextSignature = JSON.stringify([project?.id, activeId, showCreateTab, revisingIds, outputs.map(output => [output.id, output.title, output.cmsSentAt, output.revisionUnread, revisingIds.includes(output.id) ? outputLoadingSelectionKeys(output) : null])]);
       if (signature === nextSignature) return;
       signature = nextSignature;
+      clearAnimations();
       const hasTabs = showCreateTab || Boolean(outputs.length);
       root.hidden = !hasTabs;
       panel.classList.toggle('has-variant-tabs', hasTabs);
@@ -82,15 +92,35 @@ export function createEditorTabs({ onSelect }) {
         if (!preview) {
           const label = document.createElement('span');
           label.className = 'editor-tab-title';
-          label.textContent = title;
+          const titleText = document.createElement('span');
+          titleText.className = 'editor-tab-title-text';
+          titleText.textContent = title;
+          if (output.revisionUnread) {
+            const dot = document.createElement('span');
+            dot.className = 'editor-tab-revision-dot';
+            dot.setAttribute('aria-hidden', 'true');
+            label.append(dot);
+            tab.setAttribute('aria-description', `${status} · Revision complete, unread`);
+          }
+          label.append(titleText);
           tab.append(label);
         }
-        tab.title = preview ? title : `${title} · ${status}`;
+        tab.title = preview ? title : `${title} · ${status}${output.revisionUnread ? " · Revision complete" : ""}`;
+        if (!preview && id !== activeId && revisingIds.includes(id)) {
+          tab.dataset.revising = 'true';
+          tab.setAttribute('aria-description', 'Revising Draft');
+          tab.title = `${title} · Revising Draft`;
+          const animation = createAnimation({ selectionKeys: outputLoadingSelectionKeys(output) });
+          animation.element.setAttribute('aria-hidden', 'true');
+          animations.add(animation);
+          tab.append(animation.element);
+        }
         return tab;
       }));
       panel.setAttribute('role', 'tabpanel');
       panel.setAttribute('aria-labelledby', `editor-tab-${activeId || 'original'}`);
       requestAnimationFrame(revealSelected);
     },
+    destroy() { clearAnimations(); resizeObserver.disconnect(); },
   };
 }

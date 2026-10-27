@@ -534,6 +534,8 @@
   --csa-component-toast-action-radius: var(--csa-foundation-radius-8);
   --csa-component-toast-action-foreground: var(--csa-semantic-color-action-primary);
   --csa-component-toast-action-hover: var(--csa-semantic-color-surface-hover);
+  --csa-component-toast-message-duration: 5000ms;
+  --csa-component-toast-undo-duration: 10000ms;
   --csa-component-drafting-message-hold-duration: 5000ms;
   --csa-component-drafting-paper-rotation-step: 3;
   --csa-component-drafting-paper-scale-step: 0.04;
@@ -549,4 +551,6 @@
   --csa-component-composer-panel-heading-font-size: var(--csa-foundation-font-size-16);
   --csa-component-composer-panel-heading-line-height: var(--csa-foundation-line-height-24);
   --csa-component-composer-panel-gap: var(--csa-foundation-space-16);
+  --csa-component-editor-tab-revision-dot-size: var(--csa-foundation-space-8);
+  --csa-component-editor-tab-revision-dot-color: var(--csa-foundation-color-red-700);
 }

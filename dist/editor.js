@@ -2,6 +2,8 @@ import { documentStyles } from './design-system/export-styles.js?v=20261026-draf
 import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-drafting-card-size';
 import { initializeOutputShareText } from './outputs.js?v=20261026-drafting-card-size';
 import { createRevisionLoading } from './revision-loading.js?v=20261027-revision-loading';
+import { createLastRevisionNote } from './last-revision-note.js?v=20261027-metadata';
+import { createStoryMetadata, storyMetadata } from './story-metadata.js?v=20261027-metadata';
 import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261026-drafting-card-size';
 import { draftPreferenceValue } from './draft-options.js?v=20261026-drafting-card-size';
 import './vendor/quill-2.0.3.js?v=20261026-drafting-card-size';
@@ -53,6 +55,8 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     host: $('#editor-revision-loading'),
     content: [root.querySelector('.editor-document-header'), $('#editor-toolbar'), $('#rich-text-editor'), root.querySelector('.editor-footer')],
   });
+  const metadata = createStoryMetadata({ read: currentStoryMetadata, closePanels() { setPanel('', false); directionMetadata.close(); } });
+  const revisionNote = createLastRevisionNote({ closePanels() { setPanel('', false); directionMetadata.close(); metadata.close(); } });
   let quill = null;
   let project = null;
   let loading = false;
@@ -71,7 +75,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     quill.root.setAttribute('aria-label', 'Story body');
     quill.root.setAttribute('aria-multiline', 'true');
     quill.root.setAttribute('spellcheck', 'true');
-    quill.on('text-change', () => { if (!loading) { updateCounts(); updateToolbar(); updateFind(); scheduleSave(); onContentChange(); } });
+    quill.on('text-change', () => { if (!loading) { updateCounts(); updateToolbar(); updateFind(); scheduleSave(); metadata.refresh(); onContentChange(); } });
     quill.on('selection-change', (range) => { if (range) { selection = range; updateToolbar(); } });
 
   }
@@ -88,10 +92,12 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     return JSON.stringify([title.value.trim() || 'Untitled story', ops, ...(shareText.value.trim() ? [shareText.value.trim()] : [])]);
   }
 
-  function setRevisionBusy(value) {
+  function currentStoryMetadata() { return storyMetadata(title.value, quill?.getText() || ''); }
+
+  function setRevisionBusy(value, selectionKeys = []) {
     revisionBusy = Boolean(value);
-    revisionLoading.setBusy(revisionBusy);
-    if (revisionBusy) { setPanel('', false); directionMetadata.close(); }
+    revisionLoading.setBusy(revisionBusy, selectionKeys);
+    if (revisionBusy) { setPanel('', false); directionMetadata.close(); metadata.close(); revisionNote.close(); }
     quill?.enable(!revisionBusy);
     title.disabled = revisionBusy;
     shareText.disabled = revisionBusy;
@@ -131,7 +137,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       id: project.id, title: title.value.trim() || 'Untitled story', shareText: shareText.value, shareTextEdited: project.shareTextEdited === true, kind: 'draft',
       document: quill.getContents(), draftText: quill.getText().replace(/\n$/, ''),
       sources: project.sources,
-      metadata: { ...project.metadata },
+      metadata: { ...project.metadata, ...currentStoryMetadata() },
       toolPreferences: Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, $(`#composer-${key}`).value])),
       updatedAt: Date.now(),
       ...(sentContent !== null ? { cmsSentContent: sentContent } : {}),
@@ -217,7 +223,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   });
   $('#editor-align').addEventListener('change', () => format('align', $('#editor-align').value || false));
   $('#editor-color').addEventListener('input', () => format('color', $('#editor-color').value));
-  title.addEventListener('input', () => { resizeTitle(); scheduleSave(); });
+  title.addEventListener('input', () => { resizeTitle(); scheduleSave(); metadata.refresh(); });
   shareText.addEventListener('input', () => { if (project && !loading) project.shareTextEdited = true; syncShareText(); scheduleSave(); });
   let previousWidth = 0;
   new ResizeObserver(entries => {
@@ -230,7 +236,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     const active = name === 'find' && open;
     $('#editor-find').hidden = !active;
     $('#editor-find-button').setAttribute('aria-expanded', String(active));
-    if (active) { directionMetadata.close(); $('#editor-find-text').focus(); }
+    if (active) { directionMetadata.close(); metadata.close(); revisionNote.close(); $('#editor-find-text').focus(); }
   }
   $('#editor-find-button').addEventListener('click', () => setPanel('find', $('#editor-find').hidden));
   for (const button of root.querySelectorAll('[data-editor-close]')) button.addEventListener('click', () => { setPanel(button.dataset.editorClose, false); $(`#editor-${button.dataset.editorClose}-button`).focus(); });
@@ -302,7 +308,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     for (const index of indices) { changes.retain(index - previous).delete(length).insert(replacement, quill.getFormat(index, length)); previous = index + length; }
     quill.history.cutoff(); quill.updateContents(changes, 'user'); quill.history.cutoff();
     findIndex = -1; updateFind();
-    notify(`Replaced ${indices.length} ${indices.length === 1 ? 'match' : 'matches'}.`);
+    notify(`${indices.length} ${indices.length === 1 ? 'match' : 'matches'} replaced`);
   });
 
   function escaped(text) { return text.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char])); }
@@ -320,8 +326,8 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   }
   for (const button of root.querySelectorAll('[data-export]')) button.addEventListener('click', () => exportDocument(button.dataset.export));
   $('#editor-copy').addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText([title.value.trim() || 'Untitled story', shareText.value.trim(), quill.getText()].filter(Boolean).join('\n\n')); notify('Story copied.'); }
-    catch { notify('Select your text and use ⌘/Ctrl+C to copy.'); }
+    try { await navigator.clipboard.writeText([title.value.trim() || 'Untitled story', shareText.value.trim(), quill.getText()].filter(Boolean).join('\n\n')); notify('Draft copied'); }
+    catch { notify('Select your text and use ⌘/Ctrl+C to copy'); }
     $('#editor-download').open = false;
   });
   $('#editor-print').addEventListener('click', () => { $('#editor-download').open = false; flush(); window.print(); });
@@ -343,8 +349,9 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
 
   return {
     open(next) {
-      flush(); project = next; loading = true; root.hidden = false;
+      flush(); metadata.close(); project = next; loading = true; root.hidden = false;
       directionMetadata.update(next.editorialDirection);
+      revisionNote.update(next);
       initialize();
       setRevisionBusy(false);
       quill.enable(true);
@@ -379,9 +386,9 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       if (initializedShareText) scheduleSave();
       if (!next.draftText) title.focus(); else quill.setSelection(0, 0, 'silent');
     },
-    close() { flush(); directionMetadata.close(); setRevisionBusy(false); title.disabled = false; quill?.enable(true); project = null; root.hidden = true; setPanel('', false); if (linkDialog.open) linkDialog.close(); $('#editor-download').open = false; },
+    close() { flush(); metadata.close(); revisionNote.close(); directionMetadata.close(); setRevisionBusy(false); title.disabled = false; quill?.enable(true); project = null; root.hidden = true; setPanel('', false); if (linkDialog.open) linkDialog.close(); $('#editor-download').open = false; },
     setRevisionBusy,
-    closePanels() { setPanel('', false); directionMetadata.close(); },
+    closePanels() { setPanel('', false); directionMetadata.close(); metadata.close(); revisionNote.close(); },
     hasContent() { return Boolean(project && quill && quill.getText().replace(/[\s\u200B-\u200D\uFEFF]/gu, '')); },
     canSend,
     markSent() {

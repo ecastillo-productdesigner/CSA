@@ -346,6 +346,7 @@ export function reviseSampleOutput(output, instructions, requestedAt, completedA
   output.contentInitialized = true;
   output.contentVersion = 3;
   output.updatedAt = completedAt;
+  output.revisionUnread = true;
   output.status = 'ready';
   delete output.needsRegeneration;
   delete output.cmsSentAt;

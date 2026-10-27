@@ -10,7 +10,6 @@ function durationMilliseconds(path) {
 export function createDraftingAnimation({ compact = true, selectionKeys = [], variant = 'drafting' } = {}) {
   const addingSource = variant === 'source';
   const revising = variant === 'revision';
-  const mintShimmer = addingSource || revising;
   const depths = addingSource ? ['front'] : ['back', 'middle', 'front'];
   const element = document.createElement('div');
   element.className = 'drafting-animation';
@@ -21,12 +20,12 @@ export function createDraftingAnimation({ compact = true, selectionKeys = [], va
   element.dataset.phaseCount = String(depths.length);
   const selectedKeys = Array.isArray(selectionKeys) ? selectionKeys : [];
   const shimmerColors = ['format', 'audience', 'voice'].filter(key => selectedKeys.includes(key));
-  element.dataset.shimmerColors = mintShimmer ? 'source' : shimmerColors.join(' ');
+  element.dataset.shimmerColors = addingSource ? 'source' : shimmerColors.join(' ');
   let shimmerIndex = 0;
   function updateShimmerColor() {
-    const color = mintShimmer ? 'source' : shimmerColors[shimmerIndex];
+    const color = addingSource ? 'source' : shimmerColors[shimmerIndex];
     element.dataset.shimmerColor = color || 'neutral';
-    if (!mintShimmer && color) {
+    if (!addingSource && color) {
       element.style.setProperty('--drafting-shimmer-color', `var(--csa-component-drafting-shimmer-${color})`);
     }
   }
@@ -52,17 +51,27 @@ export function createDraftingAnimation({ compact = true, selectionKeys = [], va
   message.setAttribute('role', 'status');
   message.setAttribute('aria-live', 'polite');
   message.setAttribute('aria-atomic', 'true');
-  message.textContent = addingSource ? 'Adding your Source' : revising ? 'Revising Draft' : 'Drafting Content';
-  element.append(stack, message);
+  message.textContent = addingSource ? 'Adding Source' : revising ? 'Revising Draft' : 'Drafting Content';
+  if (revising) {
+    const content = document.createElement('div');
+    content.className = 'revision-animation-content';
+    content.append(stack, message);
+    element.append(content);
+  } else element.append(stack, message);
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const rotationStep = tokenNumber('component.drafting.paper-rotation-step');
   const scaleStep = tokenNumber('component.drafting.paper-scale-step');
   const liftOffset = tokenNumber('component.drafting.paper-lift-offset');
   const frontOffset = tokenNumber('component.drafting.paper-front-offset');
-  const holdDuration = durationMilliseconds('component.drafting.message-hold-duration');
+  const handoffDuration = durationMilliseconds('foundation.motion.duration.800');
+  const colorPhases = Math.max(1, shimmerColors.length);
+  // Fit every selected category into the short revision job, preserving color order.
+  const holdDuration = revising && colorPhases > 1
+    ? Math.max(0, (tokenNumber('component.drafting.revision-duration') - handoffDuration * (colorPhases - 1)) / colorPhases)
+    : durationMilliseconds('component.drafting.message-hold-duration');
   const timing = {
-    duration: durationMilliseconds('foundation.motion.duration.800'),
+    duration: handoffDuration,
     easing: tokenValue('foundation.motion.easing.arrive'),
     fill: 'both',
   };
@@ -73,6 +82,7 @@ export function createDraftingAnimation({ compact = true, selectionKeys = [], va
     back: pose(tokenNumber('foundation.space.6'), -tokenNumber('foundation.space.4'), rotationStep * 2, 1 - scaleStep * 2),
     lift: pose(tokenNumber('foundation.space.12'), -tokenNumber('foundation.space.14'), rotationStep * 3, 1 - scaleStep),
   };
+  let indicatorY = null;
   let phaseIndex = 0;
   let timer = null;
   let moving = false;
@@ -191,6 +201,17 @@ export function createDraftingAnimation({ compact = true, selectionKeys = [], va
     if (connected) connectedOnce = true;
     else if (connectedOnce) { destroy(); return; }
     const hasLayout = connected && element.getClientRects().length > 0;
+    if (revising && hasLayout && typeof element.getBoundingClientRect === 'function') {
+      const bounds = element.getBoundingClientRect();
+      const viewportHeight = document.documentElement.clientHeight || window.innerHeight;
+      const top = Math.max(0, bounds.top);
+      const bottom = Math.min(viewportHeight, bounds.bottom);
+      const center = bottom > top ? (top + bottom) / 2 - bounds.top : bounds.height / 2;
+      if (Number.isFinite(center) && center !== indicatorY) {
+        indicatorY = center;
+        element.style.setProperty('--revision-indicator-y', `${center}px`);
+      }
+    }
     const visible = hasLayout && isInViewport();
     const next = Boolean(connected && visible && pageActive && !document.hidden && !reducedMotion.matches);
     element.dataset.playbackState = !connected ? 'detached' : !hasLayout ? 'hidden-layout' : !visible ? 'offscreen' : !pageActive ? 'inactive-page' : document.hidden ? 'hidden-document' : reducedMotion.matches ? 'reduced-motion' : 'playing';
@@ -250,6 +271,6 @@ export function createSourceAddingAnimation() {
   return createDraftingAnimation({ compact: true, variant: 'source' });
 }
 
-export function createRevisionAnimation() {
-  return createDraftingAnimation({ compact: true, variant: 'revision' });
+export function createRevisionAnimation({ selectionKeys = [] } = {}) {
+  return createDraftingAnimation({ compact: true, variant: 'revision', selectionKeys });
 }

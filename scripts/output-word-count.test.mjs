@@ -28,7 +28,7 @@ function documentFor(t, roots = {}) {
     createTextNode: text => ({ textContent: text }),
     querySelector: selector => roots[selector],
   };
-  globalThis.ResizeObserver = class { observe() {} };
+  globalThis.ResizeObserver = class { observe() {} disconnect() {} };
   globalThis.requestAnimationFrame = () => {};
   t.after(() => {
     for (const [name, value] of Object.entries(previous)) {
@@ -173,4 +173,69 @@ test('draft tabs retain status and heading while body counts stay in shared meta
   assert.equal(root.children[0].children.some(hasWords), false);
   tabs.render({ id: 'original', linkCards: true, outputs: [] });
   assert.equal(root.children[0].children.some(hasWords), false);
+});
+
+test('completed revision dots update even when the selected tab and title stay the same', t => {
+  const root = new Element();
+  const panel = new Element();
+  panel.id = 'editor-canvas-content';
+  documentFor(t, { '#editor-variant-tabs': root, '#editor-canvas-content': panel });
+  const tabs = createEditorTabs({ onSelect() {} });
+  const output = { id: 'draft', title: 'My draft', status: 'ready' };
+  const project = { id: 'project', outputs: [output], selectedOutputId: output.id };
+  const label = () => root.children[0].children.find(child => child.className === 'editor-tab-title');
+  const dot = () => label().children.find(child => child.className === 'editor-tab-revision-dot');
+  tabs.render(project);
+  assert.equal(dot(), undefined);
+  output.revisionUnread = true;
+  tabs.render(project);
+  assert.equal(dot().attributes['aria-hidden'], 'true');
+  assert.equal(root.children[0].attributes['aria-label'], 'My draft');
+  assert.match(root.children[0].attributes['aria-description'], /Revision complete/);
+  output.revisionUnread = false;
+  tabs.render(project);
+  assert.equal(dot(), undefined);
+  assert.equal(root.children[0].attributes['aria-description'], 'Draft');
+});
+
+test('only inactive revising tabs animate, retain their identity, and clean up on selection or completion', t => {
+  const root = new Element();
+  const panel = new Element();
+  panel.id = 'editor-canvas-content';
+  documentFor(t, { '#editor-variant-tabs': root, '#editor-canvas-content': panel });
+  const controllers = [];
+  const tabs = createEditorTabs({ onSelect() {}, createAnimation(options) {
+    const controller = { element: new Element(), options, destroyed: false, destroy() { this.destroyed = true; } };
+    controllers.push(controller);
+    return controller;
+  } });
+  const first = { id: 'first', title: 'First draft', status: 'ready', toolPreferences: { format: 'listicle', audience: '', voice: 'us-weekly' } };
+  const second = { id: 'second', title: 'Second draft', status: 'ready' };
+  const project = { id: 'project', outputs: [first, second], selectedOutputId: first.id, outputProcessing: { kind: 'revision', ids: [first.id] } };
+  tabs.render(project);
+  assert.equal(controllers.length, 0, 'the selected draft uses the main editor loader');
+  project.selectedOutputId = second.id;
+  tabs.render(project);
+  assert.equal(controllers.length, 1);
+  assert.deepEqual(controllers[0].options.selectionKeys, ['format', 'voice']);
+  assert.equal(root.children[0].dataset.revising, 'true');
+  assert.equal(root.children[0].attributes['aria-label'], 'First draft');
+  assert.equal(root.children[0].attributes['aria-description'], 'Revising Draft');
+  assert.equal(controllers[0].element.attributes['aria-hidden'], 'true');
+  tabs.render(project);
+  assert.equal(controllers.length, 1, 'unchanged renders preserve animation progress');
+  project.selectedOutputId = first.id;
+  tabs.render(project);
+  assert.equal(controllers[0].destroyed, true);
+  project.selectedOutputId = second.id;
+  tabs.render(project);
+  assert.equal(controllers.length, 2);
+  delete project.outputProcessing;
+  first.revisionUnread = true;
+  tabs.render(project);
+  assert.equal(controllers[1].destroyed, true);
+  assert.equal(root.children[0].dataset.revising, undefined);
+  assert.match(root.children[0].attributes['aria-description'], /Revision complete/);
+  assert.equal(root.children[1].attributes['aria-selected'], 'true', 'completion keeps the user on their chosen draft');
+  tabs.destroy();
 });

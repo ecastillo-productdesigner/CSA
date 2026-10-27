@@ -1,3 +1,4 @@
+import { createToast } from '../toast.js?v=20261027-toast-timing';
 import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-drafting-card-size';
 import { bindTabSelection } from '../selection-controls.js?v=20261026-drafting-card-size';
 import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261026-drafting-card-size';
@@ -17,16 +18,8 @@ const $ = selector => document.querySelector(selector);
 populateDraftOptions(document);
 const toolDropdowns = createToolDropdowns();
 const sourcePreview = createSourcePreview();
-let toastTimer;
-let toastAction = null;
-function notify(message, action = null) {
-  clearTimeout(toastTimer);
-  toastAction = action;
-  $('#ds-toast-message').textContent = message.replace(/\.\s*$/, '');
-  $('#ds-toast-action').hidden = !action;
-  $('#ds-toast').hidden = false;
-  toastTimer = setTimeout(() => { $('#ds-toast').hidden = true; toastAction = null; }, action ? 9000 : 5500);
-}
+const toast = createToast({ root: $('#ds-toast'), message: $('#ds-toast-message'), action: $('#ds-toast-action') });
+function notify(message, action = null) { toast.show(message, action); }
 function element(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -107,14 +100,8 @@ $('#ds-show-toast').addEventListener('click', () => {
   showToastSpecimen();
   notify('Source deleted', restoreToastSpecimen);
 });
-$('#ds-toast-action').addEventListener('click', () => {
-  const action = toastAction;
-  clearTimeout(toastTimer);
-  toastAction = null;
-  $('#ds-toast').hidden = true;
-  action?.();
-});
-for (const button of document.querySelectorAll('[data-specimen-action]')) button.addEventListener('click', () => notify('Component preview · no project changes'));
+
+for (const button of document.querySelectorAll('[data-specimen-action]')) button.addEventListener('click', () => notify('Preview only'));
 const contentCard = $('#ds-variant');
 const contentOpen = $('#ds-content-open');
 const contentBadges = contentCard.querySelector('.output-badges');
@@ -253,7 +240,7 @@ contentRestore.addEventListener('click', () => {
   contentDeleted = false;
   renderContentCard();
   contentEdit.focus();
-  notify('Content restored');
+  notify('Draft restored');
 });
 function luminance(hex) {
   const values = hex.slice(1,7).match(/../g).map(byte => parseInt(byte,16)/255).map(v => v <= .04045 ? v/12.92 : ((v+.055)/1.055)**2.4);
@@ -367,7 +354,7 @@ try {
       const action=element('td');const copy=element('button','ds-copy','Copy'); copy.type='button';copy.setAttribute('aria-label','Copy CSS for '+token.name);
       copy.addEventListener('click',async()=>{
         try {await navigator.clipboard.writeText(copiedValue(token));notify('CSS copied');}
-        catch {notify('Copy unavailable. Select the CSS variable in the table.');}
+        catch {notify('Couldn’t copy CSS. Select its value in the table');}
       });
       action.append(copy); row.append(name,value,purpose,action); $('#ds-token-rows').append(row);
     }

@@ -4,7 +4,7 @@ import { createRevisionLoading } from '../dist/revision-loading.js';
 
 function fixture() {
   const host = { hidden: true, children: [], replaceChildren(...children) { this.children = children; } };
-  const content = [{ hidden: false, inert: false }, { hidden: true, inert: true }];
+  const content = [{ hidden: false, style: { visibility: '' }, inert: false }, { hidden: true, style: { visibility: 'collapse' }, inert: true }];
   const animations = [];
   const controller = createRevisionLoading({ host, content, createAnimation() {
     const animation = { element: {}, destroyed: false, destroy() { this.destroyed = true; } };
@@ -14,19 +14,20 @@ function fixture() {
   return { host, content, animations, controller };
 }
 
-test('revision loading blocks document controls, reuses one animation and restores previous visibility', () => {
+test('revision loading preserves document layout, blocks controls and restores previous visibility', () => {
   const { host, content, animations, controller } = fixture();
   controller.setBusy(true);
   assert.equal(host.hidden, false);
   assert.deepEqual(host.children, [animations[0].element]);
-  assert.equal(content.every(element => element.hidden && element.inert), true);
+  assert.equal(content.every(element => element.style.visibility === 'hidden' && element.inert), true);
+  assert.deepEqual(content.map(element => element.hidden), [false, true], 'loading must preserve display and layout rather than collapse the document');
   controller.setBusy(true);
   assert.equal(animations.length, 1, 'rerendering the same job must not leak observers or duplicate status messages');
   controller.setBusy(false);
   assert.equal(animations[0].destroyed, true);
   assert.equal(host.hidden, true);
   assert.deepEqual(host.children, []);
-  assert.deepEqual(content, [{ hidden: false, inert: false }, { hidden: true, inert: true }]);
+  assert.deepEqual(content, [{ hidden: false, style: { visibility: '' }, inert: false }, { hidden: true, style: { visibility: 'collapse' }, inert: true }]);
   controller.setBusy(false);
   assert.equal(animations.length, 1);
 });

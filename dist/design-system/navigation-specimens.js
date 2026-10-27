@@ -355,7 +355,7 @@ export function mountStateSpecimens(root) {
   const sourceAdding = createSourceAddingAnimation();
   const addingStage = element('div', 'ds-drafting-specimen');
   addingStage.append(sourceAdding.element);
-  loading.append(element('h4', '', 'Adding a source'), addingStage, element('p', 'ds-caption', 'A white card centers one paper above the text “Adding your Source”. A fixed Teal 50 (#F0FDFA) shimmer sweeps every 2.4 seconds. The page and text stay centered, with a fixed label and no paper handoff. Reduced motion hides the shimmer sweep and keeps the paper and text static.'));
+  loading.append(element('h4', '', 'Adding a source'), addingStage, element('p', 'ds-caption', 'A white card centers one paper beside the text “Adding Source”. A fixed Teal 50 (#F0FDFA) shimmer sweeps every 2.4 seconds. The paper and Inter Medium Italic (500) label stay centered as a row, with a fixed label and no paper handoff. Reduced motion hides the shimmer sweep and keeps the paper and text static.'));
   const status = element('p', 'ds-specimen-status');
   status.setAttribute('role', 'status');
   let dropdowns;

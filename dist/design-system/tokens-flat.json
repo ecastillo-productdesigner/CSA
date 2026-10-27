@@ -6516,7 +6516,7 @@
       "category": "toast",
       "value": "440px",
       "reference": "",
-      "description": "Preferred Compact toast width, constrained by viewport insets.",
+      "description": "Maximum Compact toast width. Short messages fit their content with equal horizontal padding; viewport insets constrain longer messages.",
       "status": "observed"
     },
     {
@@ -6564,7 +6564,7 @@
       "category": "toast",
       "value": "16px",
       "reference": "foundation.space.16",
-      "description": "Toast horizontal inset.",
+      "description": "Equal left and right toast padding; the toast hugs its message and optional action.",
       "status": "observed"
     },
     {
@@ -6670,6 +6670,30 @@
         "alpha": 1,
         "hex": "#f5f5f5"
       }
+    },
+    {
+      "name": "component.toast.message-duration",
+      "designName": "component/toast/message-duration",
+      "cssVariable": "--csa-component-toast-message-duration",
+      "type": "duration",
+      "layer": "component",
+      "category": "toast",
+      "value": "5000ms",
+      "reference": "",
+      "description": "Dismiss message-only toasts after 5 seconds.",
+      "status": "observed"
+    },
+    {
+      "name": "component.toast.undo-duration",
+      "designName": "component/toast/undo-duration",
+      "cssVariable": "--csa-component-toast-undo-duration",
+      "type": "duration",
+      "layer": "component",
+      "category": "toast",
+      "value": "10000ms",
+      "reference": "",
+      "description": "Keep Undo available for 10 seconds before dismissing the toast.",
+      "status": "observed"
     },
     {
       "name": "component.drafting.message-hold-duration",
@@ -6890,6 +6914,40 @@
       "reference": "foundation.space.16",
       "description": "Gap between New Draft and Content panels and between mobile navigation and open panels.",
       "status": "observed"
+    },
+    {
+      "name": "component.editor-tab.revision-dot-size",
+      "designName": "component/editor-tab/revision-dot-size",
+      "cssVariable": "--csa-component-editor-tab-revision-dot-size",
+      "type": "dimension",
+      "layer": "component",
+      "category": "editor-tab",
+      "value": "8px",
+      "reference": "foundation.space.8",
+      "description": "Unread completed-revision dot diameter.",
+      "status": "observed"
+    },
+    {
+      "name": "component.editor-tab.revision-dot-color",
+      "designName": "component/editor-tab/revision-dot-color",
+      "cssVariable": "--csa-component-editor-tab-revision-dot-color",
+      "type": "color",
+      "layer": "component",
+      "category": "editor-tab",
+      "value": "#b91c1c",
+      "reference": "foundation.color.red.700",
+      "description": "User-approved #B91C1C indicator for an unread completed revision. Clears when its draft tab is activated.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.7254901960784313,
+          0.10980392156862745,
+          0.10980392156862745
+        ],
+        "alpha": 1,
+        "hex": "#b91c1c"
+      }
     }
   ]
 }

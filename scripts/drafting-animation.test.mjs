@@ -70,6 +70,7 @@ function setup(t, { reduced = false, observers = true } = {}) {
       '--csa-component-drafting-paper-lift-offset': '0.44',
       '--csa-component-drafting-paper-front-offset': '0.47',
       '--csa-component-drafting-message-hold-duration': '5000ms',
+      '--csa-component-drafting-revision-duration': '4000ms',
       '--csa-foundation-motion-duration-800': '0.8s',
       '--csa-foundation-motion-easing-arrive': 'cubic-bezier(0.2, 0.7, 0.2, 1)',
       '--csa-foundation-space-2': '2px', '--csa-foundation-space-3': '3px',
@@ -105,8 +106,9 @@ function setup(t, { reduced = false, observers = true } = {}) {
   }
   const create = (options, factory = createDraftingAnimation) => {
     const controller = factory(options);
-    const stack = controller.element.children[0];
-    const message = controller.element.children[1];
+    const content = controller.element.dataset.variant === 'revision' ? controller.element.children[0] : controller.element;
+    const stack = content.children[0];
+    const message = content.children[1];
     const mount = () => { controller.element.isConnected = true; mutations[0]?.change(); intersections[0]?.visible(true); if (!observers) document.fire('visibilitychange'); };
     return { controller, root: controller.element, stack, message, papers: stack.children, mount };
   };
@@ -228,14 +230,14 @@ test('source adding keeps one page and a fixed message without scheduling handof
   assert.equal(ui.papers.length, 1);
   assert.equal(ui.papers[0].dataset.depth, 'front');
   assert.equal(ui.papers[0].children.length, 7);
-  assert.equal(ui.message.textContent, 'Adding your Source');
+  assert.equal(ui.message.textContent, 'Adding Source');
   assert.equal(ui.message.getAttribute('role'), 'status');
   assert.equal(ui.message.getAttribute('aria-live'), 'polite');
   ui.mount();
   assert.equal(ui.root.dataset.playing, 'true', 'the CSS shimmer can play without a message timer');
   assert.equal(env.timers.size, 0);
   env.tick(60000);
-  assert.equal(ui.message.textContent, 'Adding your Source');
+  assert.equal(ui.message.textContent, 'Adding Source');
   assert.equal(ui.root.dataset.phaseIndex, '0');
   assert.equal(ui.message.textWrites, 1);
   assert.equal(ui.root.dataset.shimmerColors, 'source');
@@ -553,12 +555,12 @@ test('browsers without animation or observer APIs still rotate papers while keep
   ui.controller.destroy();
 });
 
-test('revision progress keeps the paper stack, mint source shimmer and a fixed accessible status', t => {
+test('revision progress keeps the paper stack, neutral fallback and a fixed accessible status', t => {
   const env = setup(t);
   const ui = env.create(undefined, createRevisionAnimation);
   assert.equal(ui.root.dataset.variant, 'revision');
   assert.equal(ui.root.dataset.phaseCount, '3');
-  assertActiveShimmer(ui, 'source');
+  assertActiveShimmer(ui, 'neutral');
   assert.equal(ui.message.textContent, 'Revising Draft');
   assert.equal(ui.message.getAttribute('role'), 'status');
   assert.equal(ui.message.getAttribute('aria-live'), 'polite');
@@ -574,4 +576,48 @@ test('revision progress keeps the paper stack, mint source shimmer and a fixed a
   assert.equal(env.document.listenerCount(), 0);
   assert.equal(env.window.listenerCount(), 0);
   assert.equal(env.motion.listenerCount(), 0);
+});
+
+test('revision colors follow saved categories in canonical order, never the source-adding mint', t => {
+  const env = setup(t);
+  for (const [selectionKeys, expected] of [
+    [['format'], ['format']], [['voice'], ['voice']],
+    [['voice', 'audience'], ['audience', 'voice']],
+    [['voice', 'format', 'audience', 'invalid'], ['format', 'audience', 'voice']],
+  ]) {
+    const ui = env.create({ selectionKeys }, createRevisionAnimation);
+    assert.equal(ui.root.dataset.shimmerColors, expected.join(' '));
+    assertActiveShimmer(ui, expected[0]);
+    ui.controller.destroy();
+  }
+});
+
+test('three-category revision shows pink, lavender and peach within the four-second job', async t => {
+  const env = setup(t, { observers: false });
+  const ui = env.create({ selectionKeys: ['voice', 'audience', 'format'] }, createRevisionAnimation);
+  ui.mount();
+  assertActiveShimmer(ui, 'format');
+  env.tick(800);
+  assertActiveShimmer(ui, 'audience');
+  env.tick(800);
+  allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
+  await flush();
+  env.tick(800);
+  assertActiveShimmer(ui, 'voice');
+  assert.equal(ui.message.textContent, 'Revising Draft');
+  ui.controller.destroy();
+});
+
+test('revision indicator stays centered in the visible part of a long draft while its background covers the full area', t => {
+  const env = setup(t);
+  const ui = env.create({ selectionKeys: ['voice'] }, createRevisionAnimation);
+  const move = provideGeometry(env, ui);
+  move({ top: 100, height: 1200 });
+  ui.mount();
+  assert.equal(ui.root.style['--revision-indicator-y'], '250px');
+  move({ top: -400 });
+  env.document.fire('scroll');
+  assert.equal(ui.root.style['--revision-indicator-y'], '700px');
+  assert.equal(ui.root.getBoundingClientRect().height, 1200);
+  ui.controller.destroy();
 });

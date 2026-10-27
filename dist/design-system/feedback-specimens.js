@@ -18,7 +18,7 @@ export function mountFeedbackSpecimens(root, dropdowns) {
   heading.textContent = 'Draft Feedback & Revision';
   const guidance = document.createElement('p');
   guidance.className = 'ds-caption';
-  guidance.textContent = 'Request Revision uses edit_document, outlined when closed and filled while its popup is open, matching Sources; this sample keeps requests only while this page is open. Choose a thumb to open the app’s feedback form. Rating, Category, Severity, and Describe the issue are required; Additional comments are optional. The issue summary allows 500 characters. Description and comment fields use the white field surface. The export heading-to-button and button-to-divider gaps are both 32 px.';
+  guidance.textContent = 'Request Revision uses edit_document, outlined when closed and filled while its popup is open, matching Sources; this sample keeps requests only while this page is open. Choose a thumb to open the app’s feedback form. Rating, Category, and Describe the issue are required. Severity is required only for Could be better; it is optional for Good feedback. Additional comments are optional. The issue summary allows 500 characters. Description and comment fields use the white field surface. The export heading-to-button and button-to-divider gaps are both 32 px.';
   const revisionButton = createRevisionButton(variant);
   const pill = createFeedbackPill(variant);
   const previewExport = document.createElement('button');
@@ -31,7 +31,7 @@ export function mountFeedbackSpecimens(root, dropdowns) {
   const status = document.createElement('p');
   status.className = 'ds-specimen-status';
   status.setAttribute('role', 'status');
-  status.textContent = 'The export form and confirmation share a close icon at the top right. Submit Report shows a centered confirmation using the same 14 px / 20 px Semibold style as the rating question, followed by Done. Reopen to review the saved sample; this example keeps feedback only while this page is open.';
+  status.textContent = 'The export form and confirmation share a close icon at the top right. Submit Report shows a centered confirmation using the same 14 px / 20 px Semibold style as the rating question. Use the close icon to dismiss the confirmation. Reopen to review the saved sample; this example keeps feedback only while this page is open.';
   root.classList.add('ds-button-example');
   root.setAttribute('aria-labelledby', heading.id);
   root.replaceChildren(heading, guidance, actions, status);

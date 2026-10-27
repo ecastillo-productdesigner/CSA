@@ -286,14 +286,14 @@
       <form id="revision-request-form">
         <div class="revision-request-heading"><h2 id="revision-request-heading">Request Revision</h2><button class="icon-button" type="button" data-close="revision-request-dialog" aria-label="Close revision request"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
         <label class="visually-hidden" for="revision-request-instructions">Revision instructions</label>
-        <textarea id="revision-request-instructions" rows="4" maxlength="8000" placeholder="Describe the change you&#x27;d like to this draft. (for example, &quot;make subheads into questions&quot;)" required></textarea>
+        <textarea id="revision-request-instructions" rows="4" maxlength="8000" placeholder="Describe the change you’d like to make (for example, “make subheads into questions”)" required></textarea>
         <p class="form-error" id="revision-request-error" role="alert" hidden></p>
         <div class="dialog-footer"><button class="secondary-button dialog-cancel-button" type="button" data-close="revision-request-dialog">Cancel</button><button class="primary-button dialog-action-button" id="revision-request-submit" type="submit" disabled>Request Revision</button></div>
       </form>
     </dialog>
 
     <dialog class="experience-feedback-dialog" id="experience-feedback-dialog" aria-labelledby="experience-feedback-heading">
-      <button class="icon-button experience-feedback-close" type="button" data-close="experience-feedback-dialog" aria-label="Close feedback dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+      <button class="icon-button experience-feedback-close" id="experience-feedback-close" type="button" data-close="experience-feedback-dialog" aria-label="Close feedback dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
       <div class="experience-feedback-export" id="experience-feedback-export" hidden><h2>Export Complete</h2><button class="primary-button feedback-wordpress-link" id="feedback-wordpress-link" type="button">Go to WordPress</button></div>
       <h2 class="visually-hidden" id="experience-feedback-heading">Draft Feedback</h2>
       <form id="experience-feedback-form" novalidate>
@@ -310,17 +310,17 @@
                 <option value="">Select a category</option><option>Accuracy</option><option>Content Quality</option><option>Format</option><option>Length</option><option>Missing Data</option><option>Other</option><option>Quotes</option><option>Relevance</option><option>SPEED</option><option>Structure</option><option>Style Guide</option><option>Tone</option><option>UI / UX</option><option>Usability</option><option>Workflow</option>
               </select></div>
             </div>
-            <div class="feedback-form-field"><label id="feedback-severity-label" for="feedback-severity">Severity <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label>
-              <div class="feedback-select-field" data-label="Severity" data-placeholder="Select a severity"><select id="feedback-severity" name="severity" required aria-labelledby="feedback-severity-label" hidden><option value="">Select a severity</option><option>High</option><option>Low</option><option>Medium</option></select></div>
+            <div class="feedback-form-field"><label id="feedback-severity-label" for="feedback-severity">Severity <span class="feedback-required" id="feedback-severity-required" aria-hidden="true" hidden>*</span><span class="visually-hidden" id="feedback-severity-required-text" hidden> (required)</span></label>
+              <div class="feedback-select-field" data-label="Severity" data-placeholder="Select a severity"><select id="feedback-severity" name="severity" aria-labelledby="feedback-severity-label" hidden><option value="">Select a severity</option><option>High</option><option>Low</option><option>Medium</option></select></div>
             </div>
           </div>
           <div class="feedback-form-field"><label for="feedback-description">Describe the issue <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label><input id="feedback-description" name="description" type="text" maxlength="500" placeholder="Brief summary of the problem" aria-describedby="feedback-description-count" required><p class="feedback-character-count" id="feedback-description-count">500 characters remaining</p></div>
           <div class="feedback-form-field"><label for="feedback-comments">Additional comments</label><textarea id="feedback-comments" name="comments" rows="3" placeholder="Any extra context or details (optional)"></textarea></div>
-          <p class="form-error" id="feedback-error" role="alert" hidden>Please choose a rating, select a category and severity, and describe the issue.</p>
+          <p class="form-error" id="feedback-error" role="alert" hidden>Complete the required fields before submitting.</p>
         </div>
         <div class="dialog-footer"><button class="secondary-button" type="button" data-close="experience-feedback-dialog">Close</button><button class="primary-button dialog-action-button" id="feedback-submit" type="submit" disabled>Submit Report</button></div>
       </form>
-      <div class="experience-feedback-complete" id="experience-feedback-complete" hidden><p class="experience-feedback-thanks" id="experience-feedback-thanks" role="status">Thanks for your feedback!</p><button class="primary-button experience-feedback-done" id="experience-feedback-done" type="button" data-close="experience-feedback-dialog">Done</button></div>
+      <div class="experience-feedback-complete" id="experience-feedback-complete" hidden><p class="experience-feedback-thanks" id="experience-feedback-thanks" role="status">Thanks for your feedback!</p></div>
     </dialog>
 
     <dialog class="send-destination-dialog" id="send-destination-dialog" aria-labelledby="send-destination-heading">

@@ -50,11 +50,16 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
     return true;
   }
 
+  const requiresSeverity = () => rating === 'down';
+
   function valid() {
-    return ['up', 'down'].includes(rating) && Boolean(category.value) && Boolean(severity.value) && Boolean(description.value.trim()) && description.value.length <= 500;
+    return ['up', 'down'].includes(rating) && Boolean(category.value) && (!requiresSeverity() || Boolean(severity.value)) && Boolean(description.value.trim()) && description.value.length <= 500;
   }
 
   function refresh() {
+    severity.required = requiresSeverity();
+    document.querySelector('#feedback-severity-required').hidden = !requiresSeverity();
+    document.querySelector('#feedback-severity-required-text').hidden = !requiresSeverity();
     ratings.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.experienceRating === rating)));
     document.querySelector('#feedback-description-count').textContent = `${Math.max(0, description.maxLength - description.value.length)} characters remaining`;
     submit.disabled = !valid();
@@ -74,7 +79,7 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
     if (!target || form.hidden) return;
     if (!valid()) {
       error.hidden = false;
-      (!rating ? ratings[0] : !category.value ? document.querySelector('#feedback-category-trigger') : !severity.value ? document.querySelector('#feedback-severity-trigger') : description).focus();
+      (!rating ? ratings[0] : !category.value ? document.querySelector('#feedback-category-trigger') : requiresSeverity() && !severity.value ? document.querySelector('#feedback-severity-trigger') : description).focus();
       return;
     }
     const submittedAt = Date.now();
@@ -97,7 +102,7 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
     form.hidden = true;
     complete.hidden = false;
     document.querySelector('#experience-feedback-thanks').textContent = saved ? 'Thanks for your feedback!' : 'Thanks! Your feedback is saved for this session.';
-    document.querySelector('#experience-feedback-done').focus();
+    document.querySelector('#experience-feedback-close').focus();
   });
   dialog.addEventListener('close', () => { closeDropdowns(); clearExport(); target = null; });
 

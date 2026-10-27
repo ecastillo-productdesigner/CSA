@@ -54,9 +54,6 @@ export function createRevisionRequests({ onSubmit, closePanels }) {
       target = { projectId: project.id, outputId: output.id };
       form.reset();
       error.hidden = true;
-      const title = document.querySelector('#revision-request-title');
-      title.textContent = output.title;
-      title.title = output.title;
       refresh();
       trigger()?.setAttribute('aria-expanded', 'true');
       dialog.showModal();

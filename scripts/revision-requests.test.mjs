@@ -21,7 +21,7 @@ class Control {
 
 function setup(t) {
   const previous = globalThis.document;
-  const nodes = Object.fromEntries(['dialog', 'form', 'instructions', 'submit', 'error', 'title'].map(name => [name, new Control()]));
+  const nodes = Object.fromEntries(['dialog', 'form', 'instructions', 'submit', 'error'].map(name => [name, new Control()]));
   const fallback = new Control();
   const buttons = [];
   globalThis.document = {
@@ -61,11 +61,10 @@ test('revision trigger uses the requested edit_document glyph and native dialog 
   assert.equal(createRevisionButton(ui.output, true).disabled, true);
 });
 
-test('opening identifies one draft and rejects blank or over-limit instructions before submitting', t => {
+test('opening focuses instructions and rejects blank or over-limit input before submitting', t => {
   const ui = setup(t);
   ui.api.open(ui.project, ui.output);
   assert.equal(ui.closes(), 1);
-  assert.equal(ui.title.textContent, ui.output.title);
   assert.equal(ui.dialog.open, true);
   assert.equal(document.activeElement, ui.instructions);
   assert.equal(ui.trigger.getAttribute('aria-expanded'), 'true');

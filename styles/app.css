@@ -1166,9 +1166,9 @@ html:has(#home:not([hidden])) { scrollbar-gutter: stable; }
 .variant-feedback-trigger .material-symbols-outlined { display: inline-flex; align-items: center; justify-content: center; width: var(--csa-foundation-icon-size-16); height: var(--csa-foundation-icon-size-16); font-size: var(--csa-foundation-icon-size-16); }
 .variant-feedback-trigger:focus-visible { outline-offset: calc(-1 * var(--csa-foundation-border-width-3)); }
 
-/* Source folder state follows the panel or variant source selection. */
-:is(#show-sources, [data-variant-sources])[aria-expanded="false"] .material-symbols-outlined { font-variation-settings: "FILL" var(--csa-component-icon-outline-fill), "wght" var(--csa-foundation-font-weight-400), "GRAD" var(--csa-component-icon-grade), "opsz" var(--csa-component-icon-optical-size); }
-:is(#show-sources, [data-variant-sources])[aria-expanded="true"] .material-symbols-outlined { font-variation-settings: "FILL" var(--csa-component-icon-fill), "wght" var(--csa-foundation-font-weight-400), "GRAD" var(--csa-component-icon-grade), "opsz" var(--csa-component-icon-optical-size); }
+/* Source and revision icons follow their panel or popup open state. */
+:is(#show-sources, [data-variant-sources], [data-request-revision])[aria-expanded="false"] .material-symbols-outlined { font-variation-settings: "FILL" var(--csa-component-icon-outline-fill), "wght" var(--csa-foundation-font-weight-400), "GRAD" var(--csa-component-icon-grade), "opsz" var(--csa-component-icon-optical-size); }
+:is(#show-sources, [data-variant-sources], [data-request-revision])[aria-expanded="true"] .material-symbols-outlined { font-variation-settings: "FILL" var(--csa-component-icon-fill), "wght" var(--csa-foundation-font-weight-400), "GRAD" var(--csa-component-icon-grade), "opsz" var(--csa-component-icon-optical-size); }
 
 #new-project .material-symbols-outlined { color: var(--csa-component-button-primary-background); }
 

@@ -18,7 +18,7 @@ export function mountFeedbackSpecimens(root, dropdowns) {
   heading.textContent = 'Draft Feedback & Revision';
   const guidance = document.createElement('p');
   guidance.className = 'ds-caption';
-  guidance.textContent = 'Request Revision opens the instructions popup using edit_document; this sample keeps requests only while this page is open. Choose a thumb to open the app’s feedback form. Rating, Category, Severity, and Describe the issue are required; Additional comments are optional. The issue summary allows 500 characters. Description and comment fields use the white field surface. The export heading-to-button and button-to-divider gaps are both 32 px.';
+  guidance.textContent = 'Request Revision uses edit_document, outlined when closed and filled while its popup is open, matching Sources; this sample keeps requests only while this page is open. Choose a thumb to open the app’s feedback form. Rating, Category, Severity, and Describe the issue are required; Additional comments are optional. The issue summary allows 500 characters. Description and comment fields use the white field surface. The export heading-to-button and button-to-divider gaps are both 32 px.';
   const revisionButton = createRevisionButton(variant);
   const pill = createFeedbackPill(variant);
   const previewExport = document.createElement('button');

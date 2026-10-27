@@ -1,0 +1,14 @@
+# The app source lives in dist; include it in GitHub language statistics.
+/dist/** linguist-vendored=false
+
+# Compact authored CSS is source, even when it has long lines.
+/styles/*.css linguist-generated=false
+
+# Exclude generated copies so source styles are counted only once.
+/dist/styles.css linguist-generated=true
+/dist/design-system/guide.css linguist-generated=true
+/dist/design-system/tokens.css linguist-generated=true
+/dist/design-system/export-styles.js linguist-generated=true
+
+# Keep bundled third-party dependencies out of the language totals.
+/dist/vendor/** linguist-vendored=true

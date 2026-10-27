@@ -547,7 +547,7 @@
   --csa-component-drafting-shimmer-voice: var(--csa-component-chip-voice-background);
   --csa-component-drafting-shimmer-source: var(--csa-foundation-color-teal-50);
   --csa-component-drafting-shimmer-duration: 2400ms;
-  --csa-component-drafting-revision-duration: 4000ms;
+  --csa-component-drafting-revision-duration: 5000ms;
   --csa-component-composer-panel-heading-font-size: var(--csa-foundation-font-size-16);
   --csa-component-composer-panel-heading-line-height: var(--csa-foundation-line-height-24);
   --csa-component-composer-panel-gap: var(--csa-foundation-space-16);

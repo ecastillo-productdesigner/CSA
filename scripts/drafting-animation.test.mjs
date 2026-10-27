@@ -70,7 +70,7 @@ function setup(t, { reduced = false, observers = true } = {}) {
       '--csa-component-drafting-paper-lift-offset': '0.44',
       '--csa-component-drafting-paper-front-offset': '0.47',
       '--csa-component-drafting-message-hold-duration': '5000ms',
-      '--csa-component-drafting-revision-duration': '4000ms',
+      '--csa-component-drafting-revision-duration': '5000ms',
       '--csa-foundation-motion-duration-800': '0.8s',
       '--csa-foundation-motion-easing-arrive': 'cubic-bezier(0.2, 0.7, 0.2, 1)',
       '--csa-foundation-space-2': '2px', '--csa-foundation-space-3': '3px',
@@ -592,17 +592,21 @@ test('revision colors follow saved categories in canonical order, never the sour
   }
 });
 
-test('three-category revision shows pink, lavender and peach within the four-second job', async t => {
+test('three-category revision shows pink, lavender and peach within the five-second job', async t => {
+  const tokens = JSON.parse(readFileSync(new URL('../dist/design-system/tokens.json', import.meta.url), 'utf8'));
+  const duration = tokens.component.drafting['revision-duration'].$value.value;
+  assert.equal(duration, 5000);
+  const hold = (duration - 2 * 800) / 3;
   const env = setup(t, { observers: false });
   const ui = env.create({ selectionKeys: ['voice', 'audience', 'format'] }, createRevisionAnimation);
   ui.mount();
   assertActiveShimmer(ui, 'format');
-  env.tick(800);
+  env.tick(hold);
   assertActiveShimmer(ui, 'audience');
   env.tick(800);
   allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
   await flush();
-  env.tick(800);
+  env.tick(hold);
   assertActiveShimmer(ui, 'voice');
   assert.equal(ui.message.textContent, 'Revising Draft');
   ui.controller.destroy();

@@ -6874,9 +6874,9 @@
       "type": "duration",
       "layer": "component",
       "category": "drafting",
-      "value": "4000ms",
+      "value": "5000ms",
       "reference": "",
-      "description": "Prototype revision-processing duration, expressed in milliseconds for the selected-draft timer.",
+      "description": "Five-second prototype revision-processing duration, expressed in milliseconds for the selected-draft timer.",
       "status": "observed"
     },
     {

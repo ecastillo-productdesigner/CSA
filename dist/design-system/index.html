@@ -157,6 +157,7 @@
     <footer class="ds-end"><strong>CSA</strong><span>Design system v1.0 · Extracted from the product</span><a href="#overview">Back to top</a></footer>
   </main>
     <dialog class="experience-feedback-dialog" id="experience-feedback-dialog" aria-labelledby="experience-feedback-heading">
+      <button class="icon-button experience-feedback-close" type="button" data-close="experience-feedback-dialog" aria-label="Close feedback dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
       <div class="experience-feedback-export" id="experience-feedback-export" hidden><h2>Export Complete</h2><button class="primary-button feedback-wordpress-link" id="feedback-wordpress-link" type="button">Go to WordPress</button></div>
       <h2 class="visually-hidden" id="experience-feedback-heading">Draft Feedback</h2>
       <form id="experience-feedback-form" novalidate>
@@ -183,7 +184,7 @@
         </div>
         <div class="dialog-footer"><button class="secondary-button" type="button" data-close="experience-feedback-dialog">Close</button><button class="primary-button dialog-action-button" id="feedback-submit" type="submit" disabled>Submit Report</button></div>
       </form>
-      <div class="experience-feedback-complete" id="experience-feedback-complete" hidden><button class="icon-button experience-feedback-complete-close" type="button" data-close="experience-feedback-dialog" aria-label="Close feedback confirmation"><span class="material-symbols-outlined" aria-hidden="true">close</span></button><p class="experience-feedback-thanks" id="experience-feedback-thanks" role="status">Thanks for your feedback!</p><button class="primary-button experience-feedback-done" id="experience-feedback-done" type="button" data-close="experience-feedback-dialog">Done</button></div>
+      <div class="experience-feedback-complete" id="experience-feedback-complete" hidden><p class="experience-feedback-thanks" id="experience-feedback-thanks" role="status">Thanks for your feedback!</p><button class="primary-button experience-feedback-done" id="experience-feedback-done" type="button" data-close="experience-feedback-dialog">Done</button></div>
     </dialog>
     <dialog class="article-preview-dialog" id="article-preview-dialog" aria-labelledby="article-preview-title" aria-describedby="article-preview-notice">
       <div class="panel-heading"><span class="article-preview-badge">Fictional article preview</span><button class="icon-button" type="button" aria-label="Close article preview"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>

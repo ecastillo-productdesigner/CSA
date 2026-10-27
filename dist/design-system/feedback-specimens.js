@@ -29,7 +29,7 @@ export function mountFeedbackSpecimens(root, dropdowns) {
   const status = document.createElement('p');
   status.className = 'ds-specimen-status';
   status.setAttribute('role', 'status');
-  status.textContent = 'Submit Report shows a centered confirmation, a close icon at the top right, and Done. Reopen to review the saved sample; this example keeps feedback only while this page is open.';
+  status.textContent = 'The export form and confirmation share a close icon at the top right. Submit Report shows a centered confirmation and Done. Reopen to review the saved sample; this example keeps feedback only while this page is open.';
   root.classList.add('ds-button-example');
   root.setAttribute('aria-labelledby', heading.id);
   root.replaceChildren(heading, guidance, actions, status);

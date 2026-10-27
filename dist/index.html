@@ -283,6 +283,7 @@
     <dialog class="editor-link-dialog" id="editor-link-dialog" aria-labelledby="editor-link-heading"><form id="editor-link-form"><div class="editor-panel-heading"><h2 id="editor-link-heading">Add a link</h2><button class="icon-button" type="button" data-close="editor-link-dialog" aria-label="Close link dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div><label for="editor-link-text">Link text<input id="editor-link-text" type="text" placeholder="Text to display" maxlength="2000"></label><label for="editor-link-url">URL<input id="editor-link-url" type="text" placeholder="https://" required></label><p class="form-error" id="editor-link-error" role="alert" hidden></p><div class="dialog-footer"><button class="secondary-button" id="editor-remove-link" type="button">Remove Link</button><button class="primary-button" type="submit">Apply Link</button></div></form></dialog>
 
     <dialog class="experience-feedback-dialog" id="experience-feedback-dialog" aria-labelledby="experience-feedback-heading">
+      <button class="icon-button experience-feedback-close" type="button" data-close="experience-feedback-dialog" aria-label="Close feedback dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
       <div class="experience-feedback-export" id="experience-feedback-export" hidden><h2>Export Complete</h2><button class="primary-button feedback-wordpress-link" id="feedback-wordpress-link" type="button">Go to WordPress</button></div>
       <h2 class="visually-hidden" id="experience-feedback-heading">Draft Feedback</h2>
       <form id="experience-feedback-form" novalidate>
@@ -309,7 +310,7 @@
         </div>
         <div class="dialog-footer"><button class="secondary-button" type="button" data-close="experience-feedback-dialog">Close</button><button class="primary-button dialog-action-button" id="feedback-submit" type="submit" disabled>Submit Report</button></div>
       </form>
-      <div class="experience-feedback-complete" id="experience-feedback-complete" hidden><button class="icon-button experience-feedback-complete-close" type="button" data-close="experience-feedback-dialog" aria-label="Close feedback confirmation"><span class="material-symbols-outlined" aria-hidden="true">close</span></button><p class="experience-feedback-thanks" id="experience-feedback-thanks" role="status">Thanks for your feedback!</p><button class="primary-button experience-feedback-done" id="experience-feedback-done" type="button" data-close="experience-feedback-dialog">Done</button></div>
+      <div class="experience-feedback-complete" id="experience-feedback-complete" hidden><p class="experience-feedback-thanks" id="experience-feedback-thanks" role="status">Thanks for your feedback!</p><button class="primary-button experience-feedback-done" id="experience-feedback-done" type="button" data-close="experience-feedback-dialog">Done</button></div>
     </dialog>
 
     <dialog class="send-destination-dialog" id="send-destination-dialog" aria-labelledby="send-destination-heading">

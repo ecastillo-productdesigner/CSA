@@ -282,12 +282,11 @@
 
     <dialog class="editor-link-dialog" id="editor-link-dialog" aria-labelledby="editor-link-heading"><form id="editor-link-form"><div class="editor-panel-heading"><h2 id="editor-link-heading">Add a link</h2><button class="icon-button" type="button" data-close="editor-link-dialog" aria-label="Close link dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div><label for="editor-link-text">Link text<input id="editor-link-text" type="text" placeholder="Text to display" maxlength="2000"></label><label for="editor-link-url">URL<input id="editor-link-url" type="text" placeholder="https://" required></label><p class="form-error" id="editor-link-error" role="alert" hidden></p><div class="dialog-footer"><button class="secondary-button" id="editor-remove-link" type="button">Remove Link</button><button class="primary-button" type="submit">Apply Link</button></div></form></dialog>
 
-    <dialog class="revision-request-dialog" id="revision-request-dialog" aria-labelledby="revision-request-heading" aria-describedby="revision-request-description">
+    <dialog class="revision-request-dialog" id="revision-request-dialog" aria-labelledby="revision-request-heading">
       <form id="revision-request-form">
         <div class="revision-request-heading"><h2 id="revision-request-heading">Request Revision</h2><button class="icon-button" type="button" data-close="revision-request-dialog" aria-label="Close revision request"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
-        <p class="revision-request-description" id="revision-request-description">Describe the change you'd like to this draft. You'll get a notification when the revision is ready.</p>
         <label class="visually-hidden" for="revision-request-instructions">Revision instructions</label>
-        <textarea id="revision-request-instructions" rows="4" maxlength="8000" placeholder='e.g. “Make the tone less formal” or “Shorten the intro”' required></textarea>
+        <textarea id="revision-request-instructions" rows="4" maxlength="8000" placeholder="Describe the change you&#x27;d like to this draft. (for example, &quot;make subheads into questions&quot;)" required></textarea>
         <p class="form-error" id="revision-request-error" role="alert" hidden></p>
         <div class="dialog-footer"><button class="secondary-button dialog-cancel-button" type="button" data-close="revision-request-dialog">Cancel</button><button class="primary-button dialog-action-button" id="revision-request-submit" type="submit" disabled>Request Revision</button></div>
       </form>

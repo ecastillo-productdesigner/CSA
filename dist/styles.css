@@ -1103,9 +1103,8 @@ button:disabled:not(.output-open):not(.icon-button):not(.tertiary-button) { colo
 
 .revision-request-dialog { width: min(var(--csa-component-dialog-width), calc(100vw - var(--csa-foundation-space-32))); max-height: calc(100dvh - var(--csa-foundation-space-32)); overflow-y: auto; padding: var(--csa-foundation-space-24); border-radius: var(--csa-component-dialog-radius-desktop); box-shadow: none; }
 
-.revision-request-heading { display: flex; align-items: center; gap: var(--csa-foundation-space-12); }
+.revision-request-heading { display: flex; align-items: center; gap: var(--csa-foundation-space-12); margin-bottom: var(--csa-foundation-space-16); }
 .revision-request-heading h2 { flex: 1; min-width: 0; margin: 0; font-family: var(--csa-semantic-typography-dialog-heading-font-family); font-size: var(--csa-semantic-typography-dialog-heading-font-size); line-height: var(--csa-semantic-typography-dialog-heading-line-height); font-weight: var(--csa-semantic-typography-dialog-heading-font-weight); letter-spacing: var(--csa-semantic-typography-dialog-heading-letter-spacing); }
-.revision-request-description { margin: var(--csa-foundation-space-12) 0 var(--csa-foundation-space-16); font-size: var(--csa-foundation-font-size-14); line-height: var(--csa-foundation-line-height-20); }
 
 .revision-request-dialog textarea { display: block; width: 100%; min-height: var(--csa-foundation-size-96); max-height: calc(var(--csa-foundation-layout-ratio-40) * 1dvh); resize: vertical; padding: var(--csa-foundation-space-10) var(--csa-foundation-space-12); border: var(--csa-foundation-border-width-1) solid var(--csa-component-field-border); border-radius: var(--csa-component-field-radius); background: var(--csa-foundation-color-neutral-0); color: var(--ink); font: inherit; font-size: var(--csa-semantic-typography-input-value-font-size); line-height: var(--csa-semantic-typography-input-value-line-height); font-weight: var(--csa-semantic-typography-input-value-font-weight); }
 .revision-request-dialog textarea::placeholder { color: var(--csa-semantic-color-text-secondary); opacity: 1; }

@@ -156,12 +156,11 @@
     </section>
     <footer class="ds-end"><strong>CSA</strong><span>Design system v1.0 · Extracted from the product</span><a href="#overview">Back to top</a></footer>
   </main>
-    <dialog class="revision-request-dialog" id="revision-request-dialog" aria-labelledby="revision-request-heading" aria-describedby="revision-request-description">
+    <dialog class="revision-request-dialog" id="revision-request-dialog" aria-labelledby="revision-request-heading">
       <form id="revision-request-form">
         <div class="revision-request-heading"><h2 id="revision-request-heading">Request Revision</h2><button class="icon-button" type="button" data-close="revision-request-dialog" aria-label="Close revision request"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
-        <p class="revision-request-description" id="revision-request-description">Describe the change you'd like to this draft. You'll get a notification when the revision is ready.</p>
         <label class="visually-hidden" for="revision-request-instructions">Revision instructions</label>
-        <textarea id="revision-request-instructions" rows="4" maxlength="8000" placeholder='e.g. “Make the tone less formal” or “Shorten the intro”' required></textarea>
+        <textarea id="revision-request-instructions" rows="4" maxlength="8000" placeholder="Describe the change you&#x27;d like to this draft. (for example, &quot;make subheads into questions&quot;)" required></textarea>
         <p class="form-error" id="revision-request-error" role="alert" hidden></p>
         <div class="dialog-footer"><button class="secondary-button dialog-cancel-button" type="button" data-close="revision-request-dialog">Cancel</button><button class="primary-button dialog-action-button" id="revision-request-submit" type="submit" disabled>Request Revision</button></div>
       </form>

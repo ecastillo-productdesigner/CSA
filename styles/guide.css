@@ -249,3 +249,8 @@ body.ds-page:has(dialog[open]) { overflow: hidden; }
 .ds-drafting-previews { display: grid; gap: var(--csa-component-composer-panel-gap); }
 .ds-drafting-specimen { width: 100%; max-width: var(--csa-component-navigation-drawer-width); }
 .ds-drafting-previews .ds-drafting-specimen { max-width: var(--csa-foundation-size-320); }
+
+.ds-revision-preview { height: var(--csa-foundation-size-300); margin-top: var(--csa-foundation-space-24); }
+.ds-revision-preview-content { flex: 1; padding: var(--csa-foundation-space-24); }
+.ds-revision-preview-content h5 { margin: 0 0 var(--csa-foundation-space-16); font-size: var(--csa-foundation-font-size-20); line-height: var(--csa-foundation-line-height-28); }
+.ds-revision-preview-content p { margin: 0; }

@@ -45,7 +45,7 @@ export function createRevisionRequests({ onSubmit, closePanels }) {
     form.reset();
     refresh();
     if (button && !button.disabled) button.focus({ preventScroll: true });
-    else document.querySelector('.output-status-tabs [aria-selected="true"]')?.focus({ preventScroll: true });
+    else (document.querySelector('#editor-variant-tabs [aria-selected="true"]') || document.querySelector('.output-status-tabs [aria-selected="true"]'))?.focus({ preventScroll: true });
   });
 
   return {

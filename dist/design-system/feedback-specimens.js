@@ -1,9 +1,11 @@
 import { createFeedbackPill, createVariantFeedback } from '../variant-feedback.js?v=20261026-drafting-card-size';
 import { createRevisionButton, createRevisionRequests } from '../revision-requests.js?v=20261026-drafting-card-size';
+import { createRevisionLoading } from '../revision-loading.js?v=20261027-revision-loading';
+import { tokenNumber } from './runtime.js?v=20261026-drafting-card-size';
 import { sendDestinations } from '../send-destination.js?v=20261026-drafting-card-size';
 
 // The app controller operates on one in-memory draft here. No project storage,
-// content editor, server submission, or prototype controllers are mounted.
+// content storage or server submission is used.
 export function mountFeedbackSpecimens(root, dropdowns) {
   if (!root) return;
   const document = root.ownerDocument;
@@ -18,7 +20,7 @@ export function mountFeedbackSpecimens(root, dropdowns) {
   heading.textContent = 'Draft Feedback & Revision';
   const guidance = document.createElement('p');
   guidance.className = 'ds-caption';
-  guidance.textContent = 'Request Revision uses edit_document, outlined when closed and filled while its popup is open, matching Sources; this sample keeps requests only while this page is open. Choose a thumb to open the app’s feedback form. Rating, Category, and Describe the issue are required. Severity is required only for Could be better; it is optional for Good feedback. Additional comments are optional. The issue summary allows 500 characters. Description and comment fields use the white field surface. The export heading-to-button and button-to-divider gaps are both 32 px.';
+  guidance.textContent = 'Request Revision uses edit_document, outlined when closed and filled while its popup is open, matching Sources; submitting the popup previews the editor’s mint Revising Draft state below, using the same shimmer as Adding your Source. Tabs and Send to CMS remain visible; editing and sending resume when the revision completes. This sample keeps requests only while this page is open. Choose a thumb to open the app’s feedback form. Rating, Category, and Describe the issue are required. Severity is required only for Could be better; it is optional for Good feedback. Additional comments are optional. The issue summary allows 500 characters. Description and comment fields use the white field surface. The export heading-to-button and button-to-divider gaps are both 32 px.';
   const revisionButton = createRevisionButton(variant);
   const pill = createFeedbackPill(variant);
   const previewExport = document.createElement('button');
@@ -28,20 +30,57 @@ export function mountFeedbackSpecimens(root, dropdowns) {
   const actions = document.createElement('div');
   actions.className = 'ds-inline';
   actions.append(revisionButton, pill, previewExport);
+  const preview = document.createElement('div');
+  preview.className = 'editor-sheet ds-revision-preview';
+  preview.setAttribute('aria-label', 'Revision editor preview');
+  const previewContent = document.createElement('div');
+  previewContent.className = 'ds-revision-preview-content';
+  const previewTitle = document.createElement('h5');
+  previewTitle.textContent = variant.title;
+  const previewCopy = document.createElement('p');
+  previewCopy.textContent = 'Submit Request Revision to preview the loading state in this draft area.';
+  previewContent.append(previewTitle, previewCopy);
+  const revisionHost = document.createElement('div');
+  revisionHost.className = 'editor-revision-loading';
+  revisionHost.hidden = true;
+  const publishActions = document.createElement('div');
+  publishActions.className = 'editor-publish-actions';
+  const publish = document.createElement('button');
+  publish.className = 'editor-wordpress-button';
+  publish.type = 'button';
+  publish.textContent = 'Send to CMS';
+  publish.disabled = true;
+  publish.title = 'Preview only';
+  publishActions.append(publish);
+  preview.append(previewContent, revisionHost, publishActions);
+  const revisionLoading = createRevisionLoading({ host: revisionHost, content: [previewContent] });
+  let revisionTimer;
+  function finishRevisionPreview() {
+    clearTimeout(revisionTimer);
+    revisionLoading.setBusy(false);
+    revisionButton.disabled = false;
+  }
+  window.addEventListener('pagehide', finishRevisionPreview);
   const status = document.createElement('p');
   status.className = 'ds-specimen-status';
   status.setAttribute('role', 'status');
   status.textContent = 'The export form and confirmation share a close icon at the top right. Submit Report shows a centered confirmation using the same 14 px / 20 px Semibold style as the rating question. Use the close icon to dismiss the confirmation. Reopen to review the saved sample; this example keeps feedback only while this page is open.';
   root.classList.add('ds-button-example');
   root.setAttribute('aria-labelledby', heading.id);
-  root.replaceChildren(heading, guidance, actions, status);
+  root.replaceChildren(heading, guidance, actions, preview, status);
 
   const revisionDialog = document.querySelector('#revision-request-dialog');
   const revisions = createRevisionRequests({
     closePanels: () => dropdowns.close(),
     onSubmit(request) {
       variant.revisionRequests = [...(variant.revisionRequests || []), request];
-      status.textContent = 'Sample revision request saved: ' + request.instructions;
+      revisionLoading.setBusy(true);
+      revisionButton.disabled = true;
+      status.textContent = '';
+      revisionTimer = setTimeout(() => {
+        finishRevisionPreview();
+        status.textContent = 'Sample revision complete: ' + request.instructions;
+      }, tokenNumber('component.drafting.revision-duration'));
       return true;
     },
   });

@@ -872,7 +872,6 @@ function requestVariantRevision({ projectId, outputId, instructions }) {
   updateComposerActions();
   resumeOutputProcessing(project);
   requestAnimationFrame(() => {
-    if (window.matchMedia(breakpointQuery()).matches) railNavigation.open('variants');
     const list = $('#output-list');
     const card = list.querySelector('[data-revising="true"]');
     if (!card) return;

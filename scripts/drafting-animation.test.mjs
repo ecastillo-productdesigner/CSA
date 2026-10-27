@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createDraftingAnimation, createSourceAddingAnimation } from '../dist/drafting-animation.js';
+import { createDraftingAnimation, createSourceAddingAnimation, createRevisionAnimation } from '../dist/drafting-animation.js';
 
 class Events {
   constructor() { this.listeners = new Map(); }
@@ -551,4 +551,27 @@ test('browsers without animation or observer APIs still rotate papers while keep
   env.document.fire('visibilitychange');
   assert.equal(env.timers.size, 0);
   ui.controller.destroy();
+});
+
+test('revision progress keeps the paper stack, mint source shimmer and a fixed accessible status', t => {
+  const env = setup(t);
+  const ui = env.create(undefined, createRevisionAnimation);
+  assert.equal(ui.root.dataset.variant, 'revision');
+  assert.equal(ui.root.dataset.phaseCount, '3');
+  assertActiveShimmer(ui, 'source');
+  assert.equal(ui.message.textContent, 'Revising Draft');
+  assert.equal(ui.message.getAttribute('role'), 'status');
+  assert.equal(ui.message.getAttribute('aria-live'), 'polite');
+  ui.mount();
+  assert.equal(ui.root.dataset.playing, 'true');
+  env.motion.matches = true;
+  env.motion.fire('change');
+  assert.equal(ui.root.dataset.playing, 'false');
+  assert.equal(ui.root.dataset.reducedMotion, 'true');
+  assert.equal(env.timers.size, 0);
+  assert.equal(ui.message.textContent, 'Revising Draft');
+  ui.controller.destroy();
+  assert.equal(env.document.listenerCount(), 0);
+  assert.equal(env.window.listenerCount(), 0);
+  assert.equal(env.motion.listenerCount(), 0);
 });

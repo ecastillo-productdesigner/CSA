@@ -1,6 +1,7 @@
 import { documentStyles } from './design-system/export-styles.js?v=20261026-drafting-card-size';
 import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-drafting-card-size';
 import { initializeOutputShareText } from './outputs.js?v=20261026-drafting-card-size';
+import { createRevisionLoading } from './revision-loading.js?v=20261027-revision-loading';
 import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261026-drafting-card-size';
 import { draftPreferenceValue } from './draft-options.js?v=20261026-drafting-card-size';
 import './vendor/quill-2.0.3.js?v=20261026-drafting-card-size';
@@ -48,6 +49,10 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   const status = $('#editor-save-status');
   const linkDialog = $('#editor-link-dialog');
   const directionMetadata = createEditorialDirectionMetadata();
+  const revisionLoading = createRevisionLoading({
+    host: $('#editor-revision-loading'),
+    content: [root.querySelector('.editor-document-header'), $('#editor-toolbar'), $('#rich-text-editor'), root.querySelector('.editor-footer')],
+  });
   let quill = null;
   let project = null;
   let loading = false;
@@ -83,6 +88,18 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     return JSON.stringify([title.value.trim() || 'Untitled story', ops, ...(shareText.value.trim() ? [shareText.value.trim()] : [])]);
   }
 
+  function setRevisionBusy(value) {
+    revisionBusy = Boolean(value);
+    revisionLoading.setBusy(revisionBusy);
+    if (revisionBusy) { setPanel('', false); directionMetadata.close(); }
+    quill?.enable(!revisionBusy);
+    title.disabled = revisionBusy;
+    shareText.disabled = revisionBusy;
+    for (const control of $('#editor-toolbar').querySelectorAll('button, input, select')) control.disabled = revisionBusy;
+    onToolbarChange();
+    updateSendButton();
+  }
+
   function canSend() {
     return Boolean(!revisionBusy && project?.selectedOutputId && project.status !== 'pending' && !project.needsRegeneration && quill && (sentContent === null || contentSignature() !== sentContent));
   }
@@ -92,6 +109,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     button.disabled = !canSend();
     button.title = !project?.selectedOutputId ? 'Select a generated variant to send to CMS'
       : project.status === 'pending' || project.needsRegeneration ? 'Create this variant again to apply its updated settings before sending.'
+      : revisionBusy ? 'Wait for this draft’s revision to finish'
       : button.disabled ? 'This version has been sent. Edit the title or content to send an update.'
         : 'Send this variant to CMS (demo)';
   }
@@ -313,7 +331,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     onSendToCms(project.id);
   });
   document.addEventListener('keydown', event => {
-    if (!project || root.hidden || document.querySelector('dialog[open]') || !(event.metaKey || event.ctrlKey) || event.altKey) return;
+    if (!project || root.hidden || revisionBusy || document.querySelector('dialog[open]') || !(event.metaKey || event.ctrlKey) || event.altKey) return;
     const key = event.key.toLowerCase();
     if (key === 's') { event.preventDefault(); flush(); }
     if (key === 'f') { event.preventDefault(); setPanel('find', true); }
@@ -328,7 +346,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       flush(); project = next; loading = true; root.hidden = false;
       directionMetadata.update(next.editorialDirection);
       initialize();
-      revisionBusy = false;
+      setRevisionBusy(false);
       quill.enable(true);
       title.disabled = false;
       shareText.disabled = false;
@@ -361,16 +379,8 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       if (initializedShareText) scheduleSave();
       if (!next.draftText) title.focus(); else quill.setSelection(0, 0, 'silent');
     },
-    close() { flush(); directionMetadata.close(); revisionBusy = false; title.disabled = false; quill?.enable(true); project = null; root.hidden = true; setPanel('', false); if (linkDialog.open) linkDialog.close(); $('#editor-download').open = false; },
-    setRevisionBusy(value) {
-      revisionBusy = value;
-      quill?.enable(!value);
-      title.disabled = value;
-      shareText.disabled = value;
-      for (const control of $('#editor-toolbar').querySelectorAll('button, input, select')) control.disabled = value;
-      onToolbarChange();
-      updateSendButton();
-    },
+    close() { flush(); directionMetadata.close(); setRevisionBusy(false); title.disabled = false; quill?.enable(true); project = null; root.hidden = true; setPanel('', false); if (linkDialog.open) linkDialog.close(); $('#editor-download').open = false; },
+    setRevisionBusy,
     closePanels() { setPanel('', false); directionMetadata.close(); },
     hasContent() { return Boolean(project && quill && quill.getText().replace(/[\s\u200B-\u200D\uFEFF]/gu, '')); },
     canSend,

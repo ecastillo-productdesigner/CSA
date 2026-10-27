@@ -9,22 +9,24 @@ function durationMilliseconds(path) {
 
 export function createDraftingAnimation({ compact = true, selectionKeys = [], variant = 'drafting' } = {}) {
   const addingSource = variant === 'source';
+  const revising = variant === 'revision';
+  const mintShimmer = addingSource || revising;
   const depths = addingSource ? ['front'] : ['back', 'middle', 'front'];
   const element = document.createElement('div');
   element.className = 'drafting-animation';
   element.dataset.compact = String(compact);
-  element.dataset.variant = addingSource ? 'source' : 'drafting';
+  element.dataset.variant = addingSource ? 'source' : revising ? 'revision' : 'drafting';
   element.dataset.playing = 'false';
   element.dataset.phaseIndex = '0';
   element.dataset.phaseCount = String(depths.length);
   const selectedKeys = Array.isArray(selectionKeys) ? selectionKeys : [];
   const shimmerColors = ['format', 'audience', 'voice'].filter(key => selectedKeys.includes(key));
-  element.dataset.shimmerColors = addingSource ? 'source' : shimmerColors.join(' ');
+  element.dataset.shimmerColors = mintShimmer ? 'source' : shimmerColors.join(' ');
   let shimmerIndex = 0;
   function updateShimmerColor() {
-    const color = addingSource ? 'source' : shimmerColors[shimmerIndex];
+    const color = mintShimmer ? 'source' : shimmerColors[shimmerIndex];
     element.dataset.shimmerColor = color || 'neutral';
-    if (!addingSource && color) {
+    if (!mintShimmer && color) {
       element.style.setProperty('--drafting-shimmer-color', `var(--csa-component-drafting-shimmer-${color})`);
     }
   }
@@ -50,7 +52,7 @@ export function createDraftingAnimation({ compact = true, selectionKeys = [], va
   message.setAttribute('role', 'status');
   message.setAttribute('aria-live', 'polite');
   message.setAttribute('aria-atomic', 'true');
-  message.textContent = addingSource ? 'Adding your Source' : 'Drafting Content';
+  message.textContent = addingSource ? 'Adding your Source' : revising ? 'Revising Draft' : 'Drafting Content';
   element.append(stack, message);
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -246,4 +248,8 @@ export function createDraftingAnimation({ compact = true, selectionKeys = [], va
 
 export function createSourceAddingAnimation() {
   return createDraftingAnimation({ compact: true, variant: 'source' });
+}
+
+export function createRevisionAnimation() {
+  return createDraftingAnimation({ compact: true, variant: 'revision' });
 }

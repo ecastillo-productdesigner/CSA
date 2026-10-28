@@ -57,6 +57,7 @@ class Element {
     const event = { target: this, preventDefault() {}, stopPropagation() {}, ...properties };
     for (const listener of this.listeners.get(type) || []) listener(event);
   }
+  getBoundingClientRect() { return { left: 10, right: 300, top: 20, bottom: 70, width: 290, height: 50 }; }
   focus() { document.activeElement = this; }
 }
 
@@ -67,6 +68,7 @@ function setup(t, callbacks = {}) {
   doc.append(doc.body);
   doc.createElement = tag => new Element(tag);
   doc.createTextNode = text => { const node = new Element('#text'); node.textContent = text; return node; };
+  const additionTimers = [];
   const sourcePanel = new Element('aside');
   const list = new Element('ul'); list.id = 'editor-source-list';
   const status = new Element('p'); status.id = 'editor-source-selection-status';
@@ -82,10 +84,10 @@ function setup(t, callbacks = {}) {
   preview.showModal = () => { preview.open = true; preview.openCount += 1; };
   preview.close = () => { preview.open = false; preview.fire('close'); };
   doc.body.append(sourcePanel, preview);
-  Object.assign(globalThis, { document: doc, window: new Element('window'), setTimeout: () => 1, clearTimeout() {}, getComputedStyle: () => ({ getPropertyValue: () => '5000ms' }) });
+  Object.assign(globalThis, { document: doc, window: new Element('window'), setTimeout: (callback, delay) => { additionTimers.push({ callback, delay }); return additionTimers.length; }, clearTimeout() {}, getComputedStyle: () => ({ getPropertyValue: () => '5000ms' }) });
   t.after(() => Object.assign(globalThis, previous));
   const controller = createProjectSources({ createAddingAnimation: () => ({ element: new Element(), destroy() {} }), onSelectionChange() {}, onDownloadSource() {}, onRemoveSource() {}, ...callbacks });
-  return { doc, list, status, preview, controller };
+  return { doc, list, status, preview, controller, additionTimers };
 }
 const source = (title, selected) => ({ type: 'text', title, text: `${title} captured material.`, ...(selected === undefined ? {} : { selected }) });
 
@@ -207,26 +209,27 @@ test('switching drafts follows the exact captured subset while same-context rend
 });
 
 
-test('checking a source shows Adding Source in that exact row while preserving its neighbors and saved draft', t => {
-  const project = { id: 'project', sources: [source('Before', true), source('Adding', false), source('After', true)] };
-  const snapshot = structuredClone(project.sources);
-  const ui = setup(t, { createAddingAnimation: ({ label }) => {
-    const element = new Element(); element.className = 'drafting-animation'; element.textContent = label;
-    return { element, destroy() {} };
+test('checking and unchecking existing sources update selection without starting source-loading animations', t => {
+  const project = { id: 'project', sources: [source('Before', true), source('Selecting', false), source('After', true)] };
+  let animationCount = 0;
+  const ui = setup(t, { createAddingAnimation: () => {
+    animationCount += 1;
+    return { element: new Element(), destroy() {} };
   } });
   ui.controller.render(project);
   const rows = [...ui.list.children];
   const checkbox = ui.list.querySelectorAll('.editor-source-checkbox')[1];
-  checkbox.checked = true;
-  checkbox.fire('change');
-  assert.equal(ui.list.children.length, rows.length, 'the loading state replaces a source row, not its position');
-  assert.deepEqual(ui.list.children, rows);
-  assert.equal(rows[2].className, 'is-adding-source');
-  assert.equal(rows[2].querySelector('.drafting-animation').textContent, 'Adding Source');
-  assert.equal(rows[1].querySelector('.drafting-animation'), null);
-  assert.equal(rows[3].querySelector('.drafting-animation'), null);
-  assert.equal(project.sources[1].selected, true);
-  assert.equal(snapshot[1].selected, false);
+  for (const checked of [true, false, true]) {
+    checkbox.checked = checked;
+    checkbox.fire('change');
+    assert.equal(project.sources[1].selected, checked);
+    assert.equal(ui.status.textContent, `${checked ? 3 : 2} of 3 selected for new drafts`);
+    assert.equal(animationCount, 0);
+    assert.equal(ui.additionTimers.length, 0);
+    assert.equal(ui.list.querySelector('.drafting-animation'), null);
+    assert.equal(ui.list.querySelector('.is-adding-source'), null);
+    assert.deepEqual(ui.list.children, rows, 'selection keeps the source rows in place');
+  }
 });
 
 
@@ -243,4 +246,32 @@ test('a linked source keeps its actions when its current headline differs from t
   assert.equal(ui.list.querySelectorAll('.editor-source-more').length, 1);
   assert.equal(ui.list.querySelector('.editor-source-more').getAttribute('aria-label'), 'Source options: Updated school bus routes');
   assert.deepEqual(variant, before, 'the draft retains its original captured headline');
+});
+
+
+test('historical sources expose the same Delete menu as current sources without offering a restore action', t => {
+  const historical = source('Saved source', true);
+  const project = { id: 'project', sources: [source('Current source', true)] };
+  const variant = { id: 'draft', sourceSnapshots: [historical] };
+  const before = structuredClone(variant);
+  const deletions = [];
+  const ui = setup(t, { onRemoveSource: (projectId, source) => deletions.push({ projectId, source }) });
+  ui.controller.render(project, { variant });
+  const more = ui.list.querySelectorAll('.editor-source-more');
+  assert.equal(more.length, 2);
+  more[1].fire('click');
+  const menu = ui.doc.querySelector('#editor-source-menu');
+  const action = menu.querySelector('button');
+  assert.equal(menu.hidden, false);
+  assert.match(action.innerHTML, /Delete/);
+  assert.doesNotMatch(action.innerHTML, /Add to Project Sources/);
+  assert.equal(document.activeElement, action);
+  menu.fire('keydown', { key: 'Escape' });
+  assert.equal(menu.hidden, true);
+  assert.equal(document.activeElement, more[1]);
+  more[1].fire('click');
+  action.fire('click');
+  assert.equal(menu.hidden, true);
+  assert.deepEqual(deletions, [{ projectId: 'project', source: historical }]);
+  assert.deepEqual(variant, before, 'opening and using the menu does not rewrite saved draft sources');
 });

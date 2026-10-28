@@ -137,7 +137,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
   function addLinkedArticle(id) {
     if (!state || additionTimers.has(id)) return;
     if (state.selected.has(id) && state.readyArticleIds.has(id)) {
-      onDuplicateSource($('#result-list').querySelector(`[data-add-article-id="${id}"]`));
+      onDuplicateSource($('#result-list').querySelector(`[data-add-article-id="${id}"]`), state.articles.find(article => article.id === id));
       return;
     }
     state.selected.add(id);

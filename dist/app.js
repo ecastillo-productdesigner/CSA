@@ -1,4 +1,4 @@
-import { partitionSourceAdditions } from './source-model.js?v=20261026-drafting-card-size';
+import { partitionSourceAdditions, sourceIdentityKey, findDuplicateSource } from './source-model.js?v=20261026-drafting-card-size';
 import { createSourceAlreadyAddedDialog } from './source-already-added.js?v=20261026-drafting-card-size';
 import { createToast } from './toast.js?v=20261027-toast-timing';
 import { updatePresetPreferences } from './preset-settings.js?v=20261026-drafting-card-size';
@@ -89,7 +89,9 @@ let selectedFiles = [];
 let addingToProject = false;
 let materialBusy = false;
 const toast = createToast({ root: $('#toast'), message: $('#toast-message'), action: $('#toast-undo') });
-const sourceAlreadyAdded = createSourceAlreadyAddedDialog();
+const sourceAlreadyAdded = createSourceAlreadyAddedDialog({
+  onOpenSource: (source, trigger) => projectSourcesPanel.openPreview(source, trigger),
+});
 let dashboard = null;
 const outputTimers = new Map();
 const outputViews = new Map();
@@ -256,17 +258,25 @@ function renderProjectSources(project) {
 function removeProjectSource(projectId, source) {
   richEditor.flush();
   const project = projects.find(entry => entry.id === projectId && !entry.deletedAt);
-  const index = project?.sources.indexOf(source) ?? -1;
-  if (index < 0) return;
+  if (!project) return;
+  const index = project.sources.indexOf(source);
+  const key = sourceIdentityKey(source);
+  if (index < 0 && !projectOutputs(project).some(output => draftSourcesFor(project, output).some(snapshot => sourceIdentityKey(snapshot) === key))) return;
   const before = projectOutputs(project).map(output => [output, output.selectedSourceIndexes]);
+  const previousKeys = project.removedSourceKeys;
+  const wasHidden = previousKeys?.includes(key);
   const updatedAt = project.updatedAt;
-  project.sources.splice(index, 1);
-  for (const [output, indexes] of before) {
-    if (Array.isArray(indexes)) output.selectedSourceIndexes = indexes.filter(value => value !== index).map(value => value > index ? value - 1 : value);
+  project.removedSourceKeys = [...new Set([...(previousKeys || []), key])];
+  if (index >= 0) {
+    project.sources.splice(index, 1);
+    for (const [output, indexes] of before) {
+      if (Array.isArray(indexes)) output.selectedSourceIndexes = indexes.filter(value => value !== index).map(value => value > index ? value - 1 : value);
+    }
   }
   project.updatedAt = Date.now();
   if (!saveProjects()) {
-    project.sources.splice(index, 0, source);
+    if (index >= 0) project.sources.splice(index, 0, source);
+    if (previousKeys === undefined) delete project.removedSourceKeys; else project.removedSourceKeys = previousKeys;
     before.forEach(([output, indexes]) => { output.selectedSourceIndexes = indexes; });
     project.updatedAt = updatedAt;
     notify('Couldn’t delete source. Try again');
@@ -276,22 +286,29 @@ function removeProjectSource(projectId, source) {
   if ($('#composer').classList.contains('has-link-cards')) searchExperience.show(project, { embedded: true });
   updateComposerActions();
   const focus = [...$('#editor-source-list').querySelectorAll('.editor-source-more')];
-  (focus[Math.min(index, focus.length - 1)] || $('#editor-add-source-button')).focus({ preventScroll: true });
+  (focus[Math.min(Math.max(index, 0), focus.length - 1)] || $('#editor-add-source-button')).focus({ preventScroll: true });
   notify('Source deleted', () => {
     if (project.deletedAt || !projects.includes(project)) return;
     richEditor.flush();
     const currentIndexes = projectOutputs(project).map(output => [output, output.selectedSourceIndexes]);
-    const insertAt = Math.min(index, project.sources.length);
-    project.sources.splice(insertAt, 0, source);
-    for (const [output, indexes] of currentIndexes) {
-      if (!Array.isArray(indexes)) continue;
-      const restored = indexes.map(value => value >= insertAt ? value + 1 : value);
-      if (before.some(([previous, values]) => previous.id === output.id && values?.includes(index))) restored.push(insertAt);
-      output.selectedSourceIndexes = [...new Set(restored)].sort((a, b) => a - b);
+    const currentKeys = project.removedSourceKeys;
+    const currentUpdatedAt = project.updatedAt;
+    const insertAt = index >= 0 ? Math.min(index, project.sources.length) : -1;
+    if (insertAt >= 0) {
+      project.sources.splice(insertAt, 0, source);
+      for (const [output, indexes] of currentIndexes) {
+        if (!Array.isArray(indexes)) continue;
+        const restored = indexes.map(value => value >= insertAt ? value + 1 : value);
+        if (before.some(([previous, values]) => previous.id === output.id && values?.includes(index))) restored.push(insertAt);
+        output.selectedSourceIndexes = [...new Set(restored)].sort((a, b) => a - b);
+      }
     }
+    if (!wasHidden) project.removedSourceKeys = (currentKeys || []).filter(value => value !== key);
     project.updatedAt = Date.now();
     if (!saveProjects()) {
-      project.sources.splice(insertAt, 1);
+      if (insertAt >= 0) project.sources.splice(insertAt, 1);
+      project.removedSourceKeys = currentKeys;
+      project.updatedAt = currentUpdatedAt;
       currentIndexes.forEach(([output, indexes]) => { output.selectedSourceIndexes = indexes; });
       notify('Couldn’t restore source. Try again');
       return;
@@ -545,7 +562,7 @@ async function appendProjectSources(sources, projectId = sourceTargetProjectId) 
   showEditorProject(project);
   railNavigation.open('sources');
   if (additions.length) {
-    if (!await projectSourcesPanel.waitForAddition(project.id)) return false;
+    if (!await projectSourcesPanel.waitForAddition(project.id, additions.length === 1 ? additions[0] : null)) return false;
     // A background addition must not reopen a project the person left or deleted.
     if (project.deletedAt || !projects.includes(project)) {
       await deleteDocuments(additions.map(source => source.attachmentId).filter(Boolean));
@@ -567,7 +584,7 @@ async function appendProjectSources(sources, projectId = sourceTargetProjectId) 
   await deleteDocuments([...new Set(duplicates.map(source => source.attachmentId).filter(id => id && !retainedAttachments.has(id)))]);
   if (additions.length) notify(`${additions.length} ${additions.length === 1 ? 'source' : 'sources'} added`);
   if (duplicates.length && activeProjectId === project.id && !project.archivedAt) {
-    sourceAlreadyAdded.open({ count: duplicates.length, trigger: $('#editor-add-source-button') });
+    sourceAlreadyAdded.open({ count: duplicates.length, source: findDuplicateSource(project.sources, duplicates[0]), trigger: $('#editor-add-source-button') });
   }
   return true;
 }
@@ -1311,7 +1328,11 @@ for (const dialog of document.querySelectorAll('dialog')) {
 }
 
 const searchExperience = createSearchExperience({
-  onDuplicateSource: trigger => sourceAlreadyAdded.open({ trigger }),
+  onDuplicateSource(trigger, article) {
+    const project = projects.find(entry => entry.id === activeProjectId);
+    const source = project?.sources.find(source => source.url === article?.url);
+    sourceAlreadyAdded.open({ source, trigger });
+  },
   onSearch: submitSource,
   onDirectionChange(id, direction) {
     const project = projects.find(entry => entry.id === id);

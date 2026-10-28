@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { createContext, runInContext } from 'node:vm';
 import { randomUUID } from 'node:crypto';
 import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from '../dist/source-links.js';
-import { partitionSourceAdditions } from '../dist/source-model.js';
+import { partitionSourceAdditions, findDuplicateSource } from '../dist/source-model.js';
 import { projectTitleFromSources } from '../dist/dashboard.js';
 import { normalizeWordCount } from '../dist/variant-word-count.js';
 import { createNewProjectUpload } from '../dist/new-project-upload.js';
@@ -95,7 +95,7 @@ function setup(t, { target = null, active = null, projects = [], dialogOpen = tr
   document.querySelector = selector => selector === '#composer' ? composer : querySelector(selector);
   const calls = { resolve: [], saved: [], shown: [], sourcePanels: [], notifications: [], fileSaves: 0, resets: 0, editorCloses: 0, additionWaits: [], sourceRenders: [], deletedDocuments: [], duplicatePopups: [] };
   const context = createContext({
-    partitionSourceAdditions, sourceAlreadyAdded: { open: options => calls.duplicatePopups.push(options) },
+    partitionSourceAdditions, findDuplicateSource, sourceAlreadyAdded: { open: options => calls.duplicatePopups.push(options) },
     AbortController, crypto: { randomUUID }, document, parseSourceLinks, formatSourceLinks, sourceLinkArticles, projectTitleFromSources, normalizeWordCount,
     projectOutputs, selectedOutputs, outputIsReady, populateOutputContent, reviseSampleOutput, clearTimeout,
     projectSourcesPanel: { waitForAddition: id => { calls.additionWaits.push(id); return holdAddition ? addition.promise : Promise.resolve(true); } },

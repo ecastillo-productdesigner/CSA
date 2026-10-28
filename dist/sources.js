@@ -1,4 +1,4 @@
-import { draftSourcesFor } from './source-model.js?v=20261026-drafting-card-size';
+import { draftSourcesFor, sourceIdentityKey } from './source-model.js?v=20261026-drafting-card-size';
 import { tokenNumber } from './design-system/runtime.js?v=20261026-drafting-card-size';
 import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-drafting-card-size';
 import { createSourceAdditionLoading } from './source-addition-loading.js?v=20261026-drafting-card-size';
@@ -9,12 +9,14 @@ export function sourceSelectionFor(project, variant = null) {
   const saved = draftSourcesFor(project, variant);
   const selectedSources = new Set();
   const historical = [];
+  const removed = new Set(project?.removedSourceKeys || []);
   for (const snapshot of saved) {
     const match = available.find(source => !selectedSources.has(source) && (snapshot.attachmentId
       ? source.attachmentId === snapshot.attachmentId
       : snapshot.type === 'link' && snapshot.url
         ? source.type === 'link' && source.url === snapshot.url
         : source.type === snapshot.type && source.title === snapshot.title && source.url === snapshot.url && source.text === snapshot.text));
+    if (!match && removed.has(sourceIdentityKey(snapshot))) continue;
     selectedSources.add(match || snapshot);
     if (!match) historical.push(snapshot);
   }
@@ -165,11 +167,11 @@ export function createProjectSources({ onBeforeSelectionChange = () => {}, onSel
   menu.setAttribute('role', 'menu');
   menu.setAttribute('aria-label', 'Source actions');
   menu.hidden = true;
-  const remove = document.createElement('button');
-  remove.type = 'button';
-  remove.setAttribute('role', 'menuitem');
-  remove.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">delete</span><span>Delete</span>';
-  menu.append(remove);
+  const sourceAction = document.createElement('button');
+  sourceAction.type = 'button';
+  sourceAction.setAttribute('role', 'menuitem');
+  sourceAction.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">delete</span><span>Delete</span>';
+  menu.append(sourceAction);
   list.parentElement.append(menu);
 
   function closeMenu(restoreFocus = false) {
@@ -190,16 +192,16 @@ export function createProjectSources({ onBeforeSelectionChange = () => {}, onSel
     const bounds = menu.getBoundingClientRect();
     menu.style.left = `${Math.max(tokenNumber('foundation.space.12'), Math.min(anchor.right - bounds.width, window.innerWidth - bounds.width - tokenNumber('foundation.space.12')))}px`;
     menu.style.top = `${Math.max(tokenNumber('foundation.space.12'), Math.min(anchor.bottom + tokenNumber('foundation.space.4'), window.innerHeight - bounds.height - tokenNumber('foundation.space.12')))}px`;
-    remove.focus({ preventScroll: true });
+    sourceAction.focus({ preventScroll: true });
   }
-  remove.addEventListener('click', () => {
+  sourceAction.addEventListener('click', () => {
     const target = menuTarget;
     closeMenu();
     if (target) onRemoveSource(target.projectId, target.source);
   });
   menu.addEventListener('keydown', event => {
     if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeMenu(true); }
-    else if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) { event.preventDefault(); remove.focus(); }
+    else if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) { event.preventDefault(); sourceAction.focus(); }
     else if (event.key === 'Tab') closeMenu(true);
   });
   document.addEventListener('pointerdown', event => { if (menuTarget && !menu.contains(event.target) && !menuTarget.button.contains(event.target)) closeMenu(); });
@@ -276,7 +278,6 @@ export function createProjectSources({ onBeforeSelectionChange = () => {}, onSel
           selectedSources = new Set(project.sources.filter(entry => entry.selected !== false));
           updateSelectionStatus();
           onSelectionChange(project.id);
-          if (checkbox.checked) void additionLoading.wait(project.id, source);
         });
         selectionControl.append(checkbox);
         row.append(selectionControl);
@@ -320,15 +321,16 @@ export function createProjectSources({ onBeforeSelectionChange = () => {}, onSel
       more.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">more_horiz</span>';
       more.addEventListener('click', () => openMenu(source, more));
       more.addEventListener('keydown', event => { if (['ArrowDown', 'ArrowUp'].includes(event.key)) { event.preventDefault(); openMenu(source, more); } });
-      if (available) row.append(more);
+      row.append(more);
       list.append(row);
       sourceRows.push({ source, row });
     }
     applySourceView();
     return { selectionChanged };
   }
-  async function waitForAddition(projectId) {
-    const pending = additionLoading.wait(projectId);
+  async function waitForAddition(projectId, source = null) {
+    const inlineSource = sourceRows.find(entry => entry.source === source)?.source || null;
+    const pending = additionLoading.wait(projectId, inlineSource);
     applySourceView();
     try { return await pending; }
     finally { applySourceView(); }

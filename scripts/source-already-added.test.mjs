@@ -17,15 +17,15 @@ class Element {
   getBoundingClientRect() { return { left: 10, top: 10, right: 500, bottom: 200 }; }
 }
 
-function setup(t) {
+function setup(t, options = {}) {
   const previous = globalThis.document;
   const body = new Element('body');
   globalThis.document = { body, createElement: tag => new Element(tag), activeElement: null };
   t.after(() => { globalThis.document = previous; });
-  const controller = createSourceAlreadyAddedDialog();
+  const controller = createSourceAlreadyAddedDialog(options);
   const dialog = body.children[0];
   const [heading, footer] = dialog.children;
-  return { controller, dialog, title: heading.children[0], dismiss: heading.children[1], button: footer.children[0] };
+  return { controller, dialog, title: heading.children[0], dismiss: heading.children[1], openSource: footer.children[0], button: footer.children[1] };
 }
 
 test('duplicate-source popup contains only Source Already Added, the close icon, and Close with accessible focus', t => {
@@ -59,4 +59,23 @@ test('close icon, native Escape close event, and outside clicks dismiss without 
   assert.equal(ui.dialog.open, false);
   ui.controller.destroy();
   assert.equal(ui.dialog.isConnected, false);
+});
+
+
+test('View Source uses the secondary action, closes the notice, and opens the original source with an external focus target', t => {
+  const opened = [];
+  const ui = setup(t, { onOpenSource: (source, trigger) => opened.push({ source, trigger }) });
+  const trigger = new Element('button');
+  const source = { type: 'text', title: 'Already saved source', text: 'Original source text' };
+  ui.controller.open({ source, trigger });
+  assert.equal(ui.openSource.hidden, false);
+  assert.equal(ui.openSource.textContent, 'View Source');
+  assert.equal(ui.openSource.className, 'secondary-button');
+  assert.equal(ui.button.textContent, 'Close');
+  assert.equal(document.activeElement, ui.button);
+  ui.openSource.fire('click');
+  assert.equal(ui.dialog.open, false);
+  assert.deepEqual(opened, [{ source, trigger }]);
+  ui.controller.open({ trigger });
+  assert.equal(ui.openSource.hidden, true, 'a missing source cannot open an empty preview');
 });

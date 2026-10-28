@@ -1,6 +1,6 @@
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 
-export function createSourceAlreadyAddedDialog({ host = document.body, id = 'source-already-added-dialog' } = {}) {
+export function createSourceAlreadyAddedDialog({ host = document.body, id = 'source-already-added-dialog', onOpenSource } = {}) {
   const node = (tag, className, text) => {
     const element = document.createElement(tag);
     element.className = className || '';
@@ -20,15 +20,26 @@ export function createSourceAlreadyAddedDialog({ host = document.body, id = 'sou
   dismiss.append(createIcon('close'));
   heading.append(title, dismiss);
   const footer = node('div', 'dialog-footer');
+  const openSourceButton = node('button', 'secondary-button', 'View Source');
+  openSourceButton.type = 'button';
+  openSourceButton.hidden = true;
   const closeButton = node('button', 'primary-button', 'Close');
   closeButton.type = 'button';
   closeButton.autofocus = true;
-  footer.append(closeButton);
+  footer.append(openSourceButton, closeButton);
   dialog.append(heading, footer);
   host.append(dialog);
   let returnFocus = null;
+  let previewSource = null;
   const close = () => dialog.close();
   dismiss.addEventListener('click', close);
+  openSourceButton.addEventListener('click', () => {
+    if (!previewSource || !onOpenSource) return;
+    const source = previewSource;
+    const trigger = returnFocus;
+    close();
+    onOpenSource(source, trigger);
+  });
   closeButton.addEventListener('click', close);
   dialog.addEventListener('click', event => {
     if (event.target !== dialog) return;
@@ -38,10 +49,13 @@ export function createSourceAlreadyAddedDialog({ host = document.body, id = 'sou
   dialog.addEventListener('close', () => {
     if (returnFocus?.isConnected && !returnFocus.disabled && !returnFocus.closest('[hidden], [inert]')) returnFocus.focus({ preventScroll: true });
     returnFocus = null;
+    previewSource = null;
   });
 
-  function open({ trigger = document.activeElement } = {}) {
+  function open({ source = null, trigger = document.activeElement } = {}) {
     returnFocus = trigger;
+    previewSource = source;
+    openSourceButton.hidden = !source || !onOpenSource;
     if (!dialog.open) dialog.showModal();
     closeButton.focus({ preventScroll: true });
   }

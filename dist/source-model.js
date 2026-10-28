@@ -10,14 +10,24 @@ export function draftSourcesFor(project, output) {
 }
 
 
+// Stable visibility keys let the sidebar hide deleted sources without rewriting draft history.
+export function sourceIdentityKey(source) {
+  return JSON.stringify(source.attachmentId ? ['document', source.attachmentId]
+    : source.url ? ['link', source.url] : [source.type, source.title, source.text || '']);
+}
+
+export function findDuplicateSource(existing, source) {
+  return existing.find(saved => source.url ? saved.url === source.url
+    : saved.type === source.type && saved.title === source.title && saved.text === source.text);
+}
+
 // Use the same identity rule for pasted links, documents, and source batches.
 export function partitionSourceAdditions(existing, incoming) {
   const known = [...existing];
   const additions = [];
   const duplicates = [];
   for (const source of incoming) {
-    const duplicate = known.some(saved => source.url ? saved.url === source.url
-      : saved.type === source.type && saved.title === source.title && saved.text === source.text);
+    const duplicate = findDuplicateSource(known, source);
     if (duplicate) duplicates.push(source);
     else { additions.push(source); known.push(source); }
   }

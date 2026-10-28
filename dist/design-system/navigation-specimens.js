@@ -114,7 +114,6 @@ export function mountNavigationSpecimens(root, { onOpenSource } = {}) {
       source.selected = checkbox.checked;
       selectionEdited = true;
       updateSelectionStatus();
-      if (checkbox.checked) void sourceAddition.wait('navigation-example', source);
     });
     selection.append(checkbox);
     sourceCheckboxes.push(checkbox);
@@ -135,7 +134,7 @@ export function mountNavigationSpecimens(root, { onOpenSource } = {}) {
   exampleSources.forEach(appendExampleSource);
   const sourceAddition = createSourceAdditionLoading({ list: sourceList });
   sourceAddition.render('navigation-example', sourceRows);
-  const duplicateDialog = createSourceAlreadyAddedDialog({ id: 'ds-source-already-added-dialog' });
+  const duplicateDialog = createSourceAlreadyAddedDialog({ id: 'ds-source-already-added-dialog', onOpenSource });
   const draftSelection = bindRovingSelection({
     root: draftSwitch, items: draftButtons,
     getValue: control => control.dataset.exampleDraft,
@@ -173,8 +172,8 @@ export function mountNavigationSpecimens(root, { onOpenSource } = {}) {
   selectedPreview.insertBefore(addSource, selectionStatus);
   const duplicateSource = button('secondary-button', 'Try duplicate source');
   duplicateSource.textContent = 'Try duplicate source';
-  duplicateSource.addEventListener('click', () => duplicateDialog.open({ trigger: duplicateSource }));
-  selectedPreview.append(sourceList, duplicateSource, element('p', 'ds-caption', 'Add new source uses the shared outlined secondary button above the source list. In the app it opens the existing source picker for the current project, supporting article URLs and uploaded documents. After submission, the shared mint shimmer and Inter Medium Italic label “Adding sources” appear at the bottom of Project Sources for five seconds before the new rows appear. Selecting an existing source shows the same green shimmer inside its row for five seconds, preserving the surrounding rows. Uncheck and recheck a source to try it. Duplicate sources show “Source Already Added” with one Close action. Existing sources remain visible. Try Add new source here to preview the same timing. Switch between the 2 Sources and 1 Source examples to show the sources captured by each active draft. Its exact saved set becomes checked and the counter says used in this draft. Editing a checkbox chooses sources for the next draft and changes the counter to selected for new drafts; it does not rewrite the current article or saved snapshots. Switching drafts restores that draft’s captured set. Source titles open the shared read-only preview independently of their checkbox. Their hover uses the shared light-gray surface, 8 px corners, and near-black text without an underline; keyboard focus keeps its visible outline.'));
+  duplicateSource.addEventListener('click', () => duplicateDialog.open({ source: exampleSources[0], trigger: duplicateSource }));
+  selectedPreview.append(sourceList, duplicateSource, element('p', 'ds-caption', 'Add new source uses the shared outlined secondary button above the source list. In the app it opens the existing source picker for the current project, supporting article URLs and uploaded documents. After submission, the shared mint shimmer and Inter Medium Italic label “Adding sources” appear at the bottom of Project Sources for five seconds before the new rows appear. Checking or unchecking an existing source updates its selection immediately without an adding animation. The five-second shimmer appears only when new sources are actually added to the project. Duplicate sources show “Source Already Added” with View Source as a secondary action and Close as the primary action. View Source opens the existing source preview within the app. Existing sources remain visible. Try Add new source here to preview the same timing. Switch between the 2 Sources and 1 Source examples to show the sources captured by each active draft. Its exact saved set becomes checked and the counter says used in this draft. Editing a checkbox chooses sources for the next draft and changes the counter to selected for new drafts; it does not rewrite the current article or saved snapshots. Switching drafts restores that draft’s captured set. Every source row has the same three-dot Delete menu. Deleting a saved-only source hides it from this list while preserving the draft’s source history; Undo brings it back. Source titles open the shared read-only preview independently of their checkbox. Their hover uses the shared light-gray surface, 8 px corners, and near-black text without an underline; keyboard focus keeps its visible outline.'));
   const tooltips = [];
 
   function hideTooltips() {

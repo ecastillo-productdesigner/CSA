@@ -109,6 +109,21 @@ test('legacy fallback includes only valid unique saved indexes and never all cur
   assert.deepEqual(draftSourcesFor(project, {}), []);
 });
 
+test('headings distinguish content to draft from completed drafts, including legacy drafts', t => {
+  const ui = setup(t);
+  for (const [state, expected] of [
+    [{ status: 'pending', draftText: 'Saved recipe text' }, 'Sources'],
+    [{ status: 'ready' }, 'Sources Used'],
+    [{ draftText: 'Legacy draft body' }, 'Sources Used'],
+    [{ document: { ops: [] } }, 'Sources Used'],
+  ]) {
+    ui.controller.toggle(ui.trigger, { output: { id: 'draft', sourceSnapshots: [used], ...state } });
+    assert.equal(ui.popover.querySelector('.draft-sources-title').textContent, expected);
+    ui.controller.close();
+  }
+  ui.controller.destroy();
+});
+
 test('the dialog lists full captured titles with shared-preview actions and snapshot downloads only', t => {
   const ui = setup(t);
   const output = { id: 'draft', sourceSnapshots: [used, file, { type: 'text', title: 'Saved interview notes', text: 'Only the captured text.' }] };
@@ -117,7 +132,7 @@ test('the dialog lists full captured titles with shared-preview actions and snap
   assert.equal(ui.controller.isOpen, true);
   assert.equal(ui.popover.getAttribute('role'), 'dialog');
   assert.equal(ui.popover.getAttribute('aria-modal'), 'false');
-  assert.equal(ui.popover.querySelector('.draft-sources-title').textContent, 'Sources Used');
+  assert.equal(ui.popover.querySelector('.draft-sources-title').textContent, 'Sources');
   assert.equal(ui.popover.querySelector('.draft-sources-folder').textContent, 'folder_open');
   assert.equal(ui.popover.querySelector('.draft-sources-folder').getAttribute('data-icon-fill'), '0');
   assert.equal(ui.popover.querySelectorAll('.draft-sources-kind').length, 0);
@@ -168,7 +183,7 @@ test('positioning uses an eight-pixel gap from the visual pill inside a larger h
   const output = { id: 'draft', sourceSnapshots: [used] };
   ui.trigger.rect = { left: 450, top: 30, width: 40, height: 44 };
   ui.controller.toggle(ui.trigger, { output });
-  assert.equal(ui.popover.querySelector('.draft-sources-title').textContent, 'Source Used');
+  assert.equal(ui.popover.querySelector('.draft-sources-title').textContent, 'Sources');
   assert.equal(ui.popover.style.width, '360px');
   assert.equal(ui.popover.style.left, '128px');
   assert.equal(ui.popover.style.top, '72px');

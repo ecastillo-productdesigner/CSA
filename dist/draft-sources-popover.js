@@ -1,6 +1,7 @@
 import { tokenNumber } from './design-system/runtime.js?v=20261026-drafting-card-size';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { draftSourcesFor } from './source-model.js?v=20261026-drafting-card-size';
+import { outputIsReady } from './outputs.js?v=20261026-drafting-card-size';
 export { draftSourcesFor };
 
 let nextPopoverId = 0;
@@ -18,7 +19,7 @@ export function createDraftSourcesPopover({ onDownloadSource = () => {}, onOpenS
   const title = document.createElement('h2');
   title.id = `${popover.id}-title`;
   title.className = 'draft-sources-title';
-  title.textContent = 'Sources Used';
+  title.textContent = 'Sources';
   const folder = createIcon('folder_open', 'draft-sources-folder');
   folder.setAttribute('data-icon-fill', '0');
   const dismiss = document.createElement('button');
@@ -64,7 +65,7 @@ export function createDraftSourcesPopover({ onDownloadSource = () => {}, onOpenS
 
   function render(project, output) {
     const sources = draftSourcesFor(project, output);
-    title.textContent = sources.length === 1 ? 'Source Used' : 'Sources Used';
+    title.textContent = outputIsReady(output) ? 'Sources Used' : 'Sources';
     list.replaceChildren();
     list.hidden = !sources.length;
     empty.hidden = Boolean(sources.length);

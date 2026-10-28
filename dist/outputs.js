@@ -494,7 +494,7 @@ export function renderOutputs(project, requestedView) {
       drag = null;
       delete badges.dataset.dragging;
     });
-    badges.append(...createOutputBadges(output, { includeSourceCount: false, includeWordCount: false }));
+    badges.append(...createOutputBadges(output, { includeWordCount: false }));
     const heading = document.createElement('strong');
     heading.className = 'output-card-title';
     heading.textContent = output.title;

@@ -356,7 +356,7 @@ main:focus { outline: none; }
 
 .composer-outputs-header { position: relative; display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; gap: var(--csa-foundation-space-12); }
 
-.output-badges { display: flex; grid-column: 1; grid-row: 1; align-items: center; align-self: center; gap: var(--csa-foundation-space-8); min-width: 0; margin: var(--csa-foundation-space-10) 0 var(--csa-foundation-space-10) var(--csa-foundation-space-10); overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; }
+.output-badges { display: flex; grid-column: 1; grid-row: 1; align-items: center; align-self: center; gap: var(--csa-foundation-space-8); min-width: 0; margin: 0 0 0 var(--csa-foundation-space-10); padding-block: var(--csa-foundation-space-10); overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; }
 .output-badges::-webkit-scrollbar { display: none; }
 .output-badges[tabindex="0"] { cursor: grab; user-select: none; }
 .output-badges[data-dragging="true"] { cursor: grabbing; }
@@ -370,6 +370,7 @@ main:focus { outline: none; }
 .output-badge--voice { background: var(--color-orange-100); color: var(--ink); }
 .output-badge--words { padding: var(--csa-foundation-space-1) var(--csa-foundation-space-9); border: var(--csa-foundation-border-width-1) solid var(--line); background: var(--csa-semantic-color-surface-default); color: var(--csa-semantic-color-text-primary); }
 .output-badge--sources { position: relative; isolation: isolate; gap: var(--csa-foundation-space-6); min-height: var(--csa-foundation-space-44); padding: var(--csa-foundation-space-1) var(--csa-foundation-space-9); border: 0; background: transparent; color: var(--ink); }
+.output-badges .output-badge--sources { margin-block: calc(-1 * var(--csa-foundation-space-10)); }
 .output-badge--sources::before { content: ""; position: absolute; z-index: -1; inset-inline: 0; top: 50%; height: var(--csa-component-chip-height); border-radius: inherit; background: transparent; transform: translateY(-50%); pointer-events: none; }
 .output-badge--sources .material-symbols-outlined { display: inline-flex; align-items: center; justify-content: center; width: var(--csa-foundation-icon-size-16); height: var(--csa-foundation-icon-size-16); font-size: var(--csa-foundation-icon-size-16); line-height: var(--csa-foundation-font-leading-1); font-variation-settings: "FILL" var(--csa-component-icon-fill), "wght" var(--csa-foundation-font-weight-400), "GRAD" var(--csa-component-icon-grade), "opsz" var(--csa-component-icon-optical-size); }
 .output-badge--sources:hover::before { background: var(--icon-hover-background); }

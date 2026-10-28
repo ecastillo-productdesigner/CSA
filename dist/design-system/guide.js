@@ -69,7 +69,7 @@ function mountDraftSourcesSpecimen(root) {
     { type: 'link', title: 'Unused project source', url: 'https://news.example.com/unused-source' },
   ] };
   const output = {
-    id: 'ds-draft-source-output', sourceCount: usedSources.length,
+    id: 'ds-draft-source-output', status: 'ready', sourceCount: usedSources.length,
     selectedSourceIndexes: [0, 1], sourceSnapshots: structuredClone(usedSources), labels: [],
   };
   const popover = createDraftSourcesPopover({ onOpenSource: (source, opener) => sourcePreview.open(source, opener) });
@@ -115,7 +115,12 @@ const contentAdapt = $('#ds-content-adapt');
 const pendingContent = {
   id: 'ds-content-example', title: 'A Surprise Studio Session Sparks a New Creative Chapter', status: 'pending', draftText: '',
   labels: [{ key: 'format', label: 'Standard Format' }, { key: 'audience', label: 'General Audience' }, { key: 'voice', label: 'Us Weekly' }],
+  sourceSnapshots: [
+    { type: 'text', title: 'Studio session reporting notes', text: 'A local musician invited two collaborators to an informal studio session. The group recorded an early version of a new song and agreed to meet again.' },
+    { type: 'text', title: 'Creative collaboration interview', text: 'In this example interview, a collaborator describes how sharing unfinished ideas helped the group find a new direction for the project.' },
+  ],
 };
+const contentSourcesPopover = createDraftSourcesPopover({ onOpenSource: (source, opener) => sourcePreview.open(source, opener) });
 const adaptedContent = structuredClone(pendingContent);
 populateOutputContent(adaptedContent);
 adaptedContent.status = 'ready';
@@ -138,7 +143,7 @@ function renderContentCard() {
   contentCard.dataset.selected = String(selected);
   contentCard.dataset.active = String(selected);
   contentCard.querySelector('.output-card-dash').toggleAttribute('hidden', !pending);
-  contentBadges.replaceChildren(...createOutputBadges(output, { includeSourceCount: false, includeWordCount: false }));
+  contentBadges.replaceChildren(...createOutputBadges(output, { includeWordCount: false }));
   const heading = contentCard.querySelector('.output-card-title');
   heading.textContent = output.title;
   heading.title = output.title;
@@ -157,6 +162,7 @@ function renderContentCard() {
   updateContentBadgeOverflow();
 }
 function setContentCardState(state) {
+  contentSourcesPopover.close();
   contentState = state;
   pendingContentSelected = true;
   contentDeleted = false;
@@ -170,6 +176,12 @@ function togglePendingContentSelection() {
 for (const button of document.querySelectorAll('[data-card-state]')) button.addEventListener('click', () => { closeContentMenu(false); setContentCardState(button.dataset.cardState); });
 contentOpen.addEventListener('click', togglePendingContentSelection);
 contentCard.addEventListener('click', event => {
+  const sources = event.target.closest('[data-variant-sources]');
+  if (sources) {
+    closeContentMenu(false);
+    contentSourcesPopover.toggle(sources, { output: contentState === 'pending' ? pendingContent : adaptedContent });
+    return;
+  }
   if (event.target.closest('.output-open, .output-card-actions, .variant-source')) return;
   togglePendingContentSelection();
 });

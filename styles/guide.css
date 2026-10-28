@@ -256,3 +256,8 @@ body.ds-page:has(dialog[open]) { overflow: hidden; }
 .ds-revision-preview-content { flex: 1; padding: var(--csa-foundation-space-24); }
 .ds-revision-preview-content h5 { margin: 0 0 var(--csa-foundation-space-16); font-size: var(--csa-foundation-font-size-20); line-height: var(--csa-foundation-line-height-28); }
 .ds-revision-preview-content p { margin: 0; }
+
+.ds-revision-indicator-states { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--csa-foundation-space-24); }
+.ds-revision-indicator-example { min-width: 0; padding: var(--csa-foundation-space-16); border: var(--csa-foundation-border-width-1) solid var(--csa-semantic-color-border-default); border-radius: var(--csa-foundation-radius-8); }
+.ds-revision-indicator-example h4 { margin: 0 0 var(--csa-foundation-space-12); font-size: var(--csa-foundation-font-size-14); line-height: var(--csa-foundation-line-height-20); font-weight: var(--csa-foundation-font-weight-500); }
+@media (max-width: token(foundation.breakpoint.mobile)) { .ds-revision-indicator-states { grid-template-columns: minmax(0, 1fr); } }

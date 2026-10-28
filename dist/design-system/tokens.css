@@ -23,6 +23,7 @@
   --csa-foundation-color-teal-50: #f0fdfa;
   --csa-foundation-color-teal-700: #00786f;
   --csa-foundation-color-teal-800: #005f5a;
+  --csa-foundation-color-blue-500: #3b82f6;
   --csa-foundation-space-0: 0px;
   --csa-foundation-space-1: 1px;
   --csa-foundation-space-2: 2px;
@@ -258,6 +259,7 @@
   --csa-semantic-color-overlay-loading: var(--csa-foundation-color-overlay-loading);
   --csa-semantic-color-overlay-canvas-fade: var(--csa-foundation-color-overlay-amber-canvas-fade);
   --csa-semantic-color-overlay-scrim: var(--csa-foundation-color-overlay-scrim);
+  --csa-semantic-color-status-revision-unread: var(--csa-foundation-color-blue-500);
   --csa-semantic-typography-greeting-desktop-font-family: var(--csa-foundation-font-family-editorial);
   --csa-semantic-typography-greeting-desktop-font-size: var(--csa-foundation-font-size-30);
   --csa-semantic-typography-greeting-desktop-font-weight: var(--csa-foundation-font-weight-700);
@@ -554,6 +556,6 @@
   --csa-component-composer-panel-gap: var(--csa-foundation-space-16);
   --csa-component-composer-panel-collapsed-padding-block: var(--csa-foundation-space-12);
   --csa-component-editor-tab-revision-dot-size: var(--csa-foundation-space-8);
-  --csa-component-editor-tab-revision-dot-color: var(--csa-foundation-color-red-700);
+  --csa-component-editor-tab-revision-dot-color: var(--csa-semantic-color-status-revision-unread);
   --csa-component-editor-tab-revision-dot-active-duration: 10000ms;
 }

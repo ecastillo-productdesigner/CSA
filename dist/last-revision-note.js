@@ -46,7 +46,7 @@ export function createLastRevisionNote({ container = document.querySelector('#ma
       dateRow.append(dateLabel, dateValue);
       const noteRow = document.createElement('div');
       const noteLabel = document.createElement('dt');
-      noteLabel.textContent = 'Requested change: ';
+      noteLabel.textContent = 'Requested Change: ';
       const copy = document.createElement('dd');
       copy.className = 'editor-direction-copy';
       copy.textContent = details.instructions;

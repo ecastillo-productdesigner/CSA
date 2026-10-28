@@ -9,10 +9,10 @@
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,chevron_forward,close,delete,description,draw,edit,edit_document,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,unfold_less,upload,view_module,visibility&amp;display=block">
-  <link rel="stylesheet" href="tokens.css?v=20261026-drafting-card-size">
+  <link rel="stylesheet" href="tokens.css?v=20261028-revision-indicator">
   <link rel="stylesheet" href="../styles.css?v=20261028-source-panel-spacing">
-  <link rel="stylesheet" href="guide.css?v=20261026-drafting-card-size">
-  <script src="guide.js?v=20261026-drafting-card-size" type="module"></script>
+  <link rel="stylesheet" href="guide.css?v=20261028-revision-indicator">
+  <script src="guide.js?v=20261028-revision-indicator" type="module"></script>
 </head>
 <body class="ds-page">
   <a class="ds-skip" href="#overview">Skip to reference</a>
@@ -90,7 +90,7 @@
         </section>
       </article>
       <div class="ds-two-column">
-        <article class="ds-panel"><div class="ds-panel-heading"><h3>Labels &amp; status</h3><span>Chips &amp; status 12 / 20</span></div><div class="ds-stack"><div class="ds-inline"><span class="output-badge output-badge--format">Listicle</span><span class="output-badge output-badge--audience">General Audience</span><span class="output-badge output-badge--voice">Apple News</span></div><div class="ds-inline"><span class="editor-tab-draft" data-pending="true"><span class="material-symbols-outlined" aria-hidden="true">article</span>To Draft</span><span class="project-badge project-badge--draft"><span class="material-symbols-outlined" aria-hidden="true">draw</span>Draft</span><span class="project-badge project-badge--sent"><span class="material-symbols-outlined" aria-hidden="true">send</span>Sent</span></div></div><p class="ds-caption">Status labels match settings chips: Inter Medium (500), 12 px with a 20 px line height. Status badges keep shared detail corners (4 px), and settings chips keep pill corners. Format uses Rose 200, Audience uses Indigo 100, and Voice uses Orange 200; drafting shimmer steps share these category colors. Pair status color with its label and icon. Completed revisions show an 8 px #B91C1C dot before the draft title until that tab is activated; completion keeps the current tab open.</p></article>
+        <article class="ds-panel"><div class="ds-panel-heading"><h3>Labels &amp; status</h3><span>Chips &amp; status 12 / 20</span></div><div class="ds-stack"><div class="ds-inline"><span class="output-badge output-badge--format">Listicle</span><span class="output-badge output-badge--audience">General Audience</span><span class="output-badge output-badge--voice">Apple News</span></div><div class="ds-inline"><span class="editor-tab-draft" data-pending="true"><span class="material-symbols-outlined" aria-hidden="true">article</span>To Draft</span><span class="project-badge project-badge--draft"><span class="material-symbols-outlined" aria-hidden="true">draw</span>Draft</span><span class="project-badge project-badge--sent"><span class="material-symbols-outlined" aria-hidden="true">send</span>Sent</span></div></div><p class="ds-caption">Status labels match settings chips: Inter Medium (500), 12 px with a 20 px line height. Status badges keep shared detail corners (4 px), and settings chips keep pill corners. Format uses Rose 200, Audience uses Indigo 100, and Voice uses Orange 200; drafting shimmer steps share these category colors. Pair status color with its label and icon. Completed revisions show an 8 px #3B82F6 dot before the draft title until that tab is activated; completion keeps the current tab open.</p></article>
         <article class="ds-panel" id="composer-tools"><div class="ds-panel-heading"><h3>Selection fields</h3><span>14 px / 400 · 36 px desktop · 46 px mobile</span></div>
           <div class="ds-selection-fields" id="composer-variant-form">
             <div class="composer-fields">
@@ -102,6 +102,15 @@
           <p class="ds-caption">Empty dropdowns show their purpose—Format, Audience, or Voice—in Inter Regular (400) on a white surface. Choosing a value displays the selection. Selected recipe and WordPress destination options keep neutral text and row backgrounds, with a teal checkmark showing selection. CMS destinations show only the publication name and URL. Pointer hover stays gray and keyboard focus keeps its visible outline. Choosing None Selected from the menu clears the value and restores the purpose label.</p>
         </article>
       </div>
+      <article class="ds-panel" id="revision-indicator" aria-labelledby="ds-revision-indicator-title">
+        <div class="ds-panel-heading"><h3 id="ds-revision-indicator-title">Revision indicator</h3><span>8 px · Blue 500 · #3B82F6</span></div>
+        <div class="ds-revision-indicator-states">
+          <div class="ds-revision-indicator-example"><h4>Unread revision</h4><span class="editor-tab-title"><span class="editor-tab-revision-dot" aria-hidden="true"></span><span class="editor-tab-title-text">A new creative chapter</span></span></div>
+          <div class="ds-revision-indicator-example"><h4>Viewed revision</h4><span class="editor-tab-title"><span class="editor-tab-title-text">A new creative chapter</span></span></div>
+        </div>
+        <p class="ds-caption">A completed revision adds the blue dot before its draft title, with an 8 px gap. Opening that tab clears it. If the revised draft stays selected, the dot clears after 10 seconds; dots on other tabs remain until those tabs are opened. The tab also announces “Revision complete, unread” to assistive technology. <a href="#feedback-components">Try the revision preview</a> to see the interaction.</p>
+        <details class="ds-type-details"><summary>Component tokens</summary><p><code>component.editor-tab.revision-dot-color</code> → <code>semantic.color.status.revision-unread</code> → <code>foundation.color.blue.500</code></p><p><code>component.editor-tab.revision-dot-size</code>: 8 px · <code>component.editor-tab.revision-dot-active-duration</code>: 10 seconds</p></details>
+      </article>
       <article class="ds-panel" id="control-boundaries" aria-labelledby="ds-control-boundaries-title">
         <div class="ds-panel-heading"><h3 id="ds-control-boundaries-title">Text-field and checkbox boundaries</h3><span>Neutral 500 · 3:1 minimum</span></div>
         <div class="ds-boundary-controls">
@@ -158,7 +167,7 @@
   </main>
     <div class="editor-context-panel editor-flyover" id="editor-metadata-popover" role="dialog" aria-labelledby="editor-metadata-heading" tabindex="-1" hidden>
       <div class="editor-panel-heading"><h2 id="editor-metadata-heading">Metadata</h2><button class="icon-button" id="editor-metadata-close" type="button" aria-label="Close Metadata"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
-      <dl class="editor-seo-metadata"><div><dt>SEO title:</dt> <dd id="editor-seo-title">—</dd></div><div><dt>Meta description:</dt> <dd id="editor-meta-description">—</dd></div><div><dt>SEO keywords:</dt> <dd id="editor-seo-keywords">—</dd></div></dl>
+      <dl class="editor-seo-metadata"><div><dt>SEO title:</dt> <dd id="editor-seo-title">—</dd></div><div><dt>Meta Description:</dt> <dd id="editor-meta-description">—</dd></div><div><dt>SEO Keywords:</dt> <dd id="editor-seo-keywords">—</dd></div></dl>
     </div>
     <div class="editor-context-panel editor-flyover" id="editor-revision-note-popover" role="dialog" aria-labelledby="editor-revision-note-heading" tabindex="-1" hidden>
       <div class="editor-panel-heading"><h2 id="editor-revision-note-heading">Requested Revision</h2><button class="icon-button" id="editor-revision-note-close" type="button" aria-label="Close Requested Revision"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>

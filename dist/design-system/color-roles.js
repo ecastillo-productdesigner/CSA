@@ -34,6 +34,7 @@ export const colorRoleGroups = [
     colors: [
       { name: 'Primary action / selection / focus', token: 'semantic.color.action.primary', description: 'Teal 700 (#00786F) is the primary button fill, links and plus icons, selected labels and indicators, selected borders and checkbox fills, and keyboard-focus outlines. White labels provide 5.36:1 contrast; teal text is 5.27:1 on the cream canvas.' },
       { name: 'Primary hover / press', token: 'semantic.color.action.primary-hover', description: 'Teal 800 (#005F5A) is the hover or pressed primary fill and outlined or text-action label. White labels provide 7.54:1 contrast, and teal text is 7.41:1 on the cream canvas.' },
+      { name: 'Revision notification', token: 'semantic.color.status.revision-unread', description: 'Blue 500 (#3B82F6) marks a completed revision that has not been acknowledged. The 8 px dot appears before the draft title and stays until its tab is opened, or clears after 10 seconds while its draft stays selected.' },
       { name: 'Sent status', token: 'foundation.color.green.200', description: 'Green identifies Sent badges with a readable label and icon.' },
       { name: 'Destructive action', token: 'semantic.color.danger.default', description: 'Red 700 identifies Delete labels and icons, and destructive confirmation fills.' },
       { name: 'Destructive hover / press', token: 'semantic.color.danger.hover', description: 'Red 800 is the destructive confirmation fill on hover or press.' },

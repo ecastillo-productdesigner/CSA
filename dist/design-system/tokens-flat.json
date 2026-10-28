@@ -504,6 +504,28 @@
       }
     },
     {
+      "name": "foundation.color.blue.500",
+      "designName": "foundation/color/blue/500",
+      "cssVariable": "--csa-foundation-color-blue-500",
+      "type": "color",
+      "layer": "foundation",
+      "category": "color",
+      "value": "#3b82f6",
+      "reference": "",
+      "description": "Blue 500 for unread completed-revision indicators.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.23137254901960785,
+          0.5098039215686274,
+          0.9647058823529412
+        ],
+        "alpha": 1,
+        "hex": "#3b82f6"
+      }
+    },
+    {
       "name": "foundation.space.0",
       "designName": "foundation/space/0",
       "cssVariable": "--csa-foundation-space-0",
@@ -3589,6 +3611,28 @@
           0.3137254901960784
         ],
         "alpha": 0.16
+      }
+    },
+    {
+      "name": "semantic.color.status.revision-unread",
+      "designName": "semantic/color/status/revision-unread",
+      "cssVariable": "--csa-semantic-color-status-revision-unread",
+      "type": "color",
+      "layer": "semantic",
+      "category": "color",
+      "value": "#3b82f6",
+      "reference": "foundation.color.blue.500",
+      "description": "A completed revision that has not yet been acknowledged.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.23137254901960785,
+          0.5098039215686274,
+          0.9647058823529412
+        ],
+        "alpha": 1,
+        "hex": "#3b82f6"
       }
     },
     {
@@ -6958,19 +7002,19 @@
       "type": "color",
       "layer": "component",
       "category": "editor-tab",
-      "value": "#b91c1c",
-      "reference": "foundation.color.red.700",
-      "description": "User-approved #B91C1C indicator for an unread completed revision. Clears on tab activation or after 10 seconds while its draft stays selected.",
+      "value": "#3b82f6",
+      "reference": "semantic.color.status.revision-unread",
+      "description": "User-approved #3B82F6 indicator for an unread completed revision. Clears on tab activation or after 10 seconds while its draft stays selected.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
         "components": [
-          0.7254901960784313,
-          0.10980392156862745,
-          0.10980392156862745
+          0.23137254901960785,
+          0.5098039215686274,
+          0.9647058823529412
         ],
         "alpha": 1,
-        "hex": "#b91c1c"
+        "hex": "#3b82f6"
       }
     },
     {

@@ -132,3 +132,10 @@ test('text-field and unchecked-checkbox boundaries meet non-text contrast on fie
     }
   }
 });
+
+test('revision notifications use Blue 500 and meet non-text contrast on tab surfaces', () => {
+  assert.equal(colorKey('component.editor-tab.revision-dot-color'), '3b82f6ff');
+  for (const surface of ['semantic.color.surface.default', 'semantic.color.background.canvas']) {
+    assertContrast('component.editor-tab.revision-dot-color', surface, 3);
+  }
+});

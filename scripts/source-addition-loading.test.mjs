@@ -3,7 +3,12 @@ import assert from 'node:assert/strict';
 import { createSourceAdditionLoading } from '../dist/source-addition-loading.js';
 
 class Element {
-  constructor() { this.children = []; this.scrollHeight = 400; this.scrollTop = 0; }
+  constructor() { this.className = ''; this.attributes = new Map(); this.classList = { toggle: (name, enabled) => { this.className = enabled ? name : ''; } }; this.children = []; this.scrollHeight = 400; this.scrollTop = 0; }
+  setAttribute(name, value) { this.attributes.set(name, value); }
+  removeAttribute(name) { this.attributes.delete(name); }
+  contains(child) { return this === child || this.children.some(element => element.contains(child)); }
+  focus() { document.activeElement = this; }
+  querySelector() { return null; }
   get lastElementChild() { return this.children.at(-1); }
   append(child) { child.remove(); this.children.push(child); child.parentElement = this; }
   remove() {
@@ -108,4 +113,34 @@ test('overlapping batches retain loading until every batch finishes, and destroy
   assert.equal(await canceled, false);
   assert.equal(ui.timers.size, 0);
   assert.equal(ui.list.children.length, 1);
+});
+
+
+test('a source row shimmers in place for five seconds and returns after rerendering without moving its neighbors', async t => {
+  const ui = setup(t);
+  const source = { title: 'Selected source' };
+  const following = new Element();
+  ui.list.append(following);
+  ui.controller.render('one', [{ source, row: ui.existing }]);
+  const pending = ui.controller.wait('one', source);
+  assert.deepEqual(ui.list.children, [ui.existing, following]);
+  assert.equal(ui.existing.className, 'is-adding-source');
+  assert.equal(ui.animations.at(-1).options.label, 'Adding Source');
+  ui.tick(2000);
+  const replacement = new Element();
+  ui.existing.remove();
+  following.remove();
+  ui.list.append(replacement); ui.list.append(following);
+  ui.controller.render('one', [{ source, row: replacement }]);
+  assert.equal(ui.existing.className, '');
+  assert.equal(replacement.className, 'is-adding-source');
+  assert.equal(ui.animations[0].destroyed, true);
+  ui.tick(2999);
+  assert.equal(replacement.className, 'is-adding-source');
+  ui.tick(1);
+  assert.equal(await pending, true);
+  assert.equal(replacement.className, '');
+  assert.deepEqual(ui.list.children, [replacement, following]);
+  assert.equal(replacement.children.length, 0);
+  assert.equal(ui.animations.at(-1).destroyed, true);
 });

@@ -1,3 +1,5 @@
+import { partitionSourceAdditions } from './source-model.js?v=20261026-drafting-card-size';
+import { createSourceAlreadyAddedDialog } from './source-already-added.js?v=20261026-drafting-card-size';
 import { createToast } from './toast.js?v=20261027-toast-timing';
 import { updatePresetPreferences } from './preset-settings.js?v=20261026-drafting-card-size';
 import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
@@ -87,6 +89,7 @@ let selectedFiles = [];
 let addingToProject = false;
 let materialBusy = false;
 const toast = createToast({ root: $('#toast'), message: $('#toast-message'), action: $('#toast-undo') });
+const sourceAlreadyAdded = createSourceAlreadyAddedDialog();
 let dashboard = null;
 const outputTimers = new Map();
 const outputViews = new Map();
@@ -101,9 +104,7 @@ const newProjectUpload = createNewProjectUpload({
     if (sourceTargetProjectId) {
       const target = projects.find(project => project.id === sourceTargetProjectId && !project.deletedAt);
       if (!target) return false;
-      const duplicates = sources.filter(source => target.sources.some(existing => existing.type === source.type && existing.title === source.title && existing.text === source.text));
-      await deleteDocuments(duplicates.map(source => source.attachmentId));
-      return appendProjectSources(sources.filter(source => !duplicates.includes(source)), target.id);
+      return appendProjectSources(sources, target.id);
     } else {
       createProject(sources, { kind: 'draft', awaitingOutput: true });
       if (!window.matchMedia(breakpointQuery()).matches) railNavigation.open('sources');
@@ -538,8 +539,7 @@ function returnFromSourceAddition() {
 async function appendProjectSources(sources, projectId = sourceTargetProjectId) {
   const project = projects.find(entry => entry.id === projectId && !entry.deletedAt);
   if (!project) return false;
-  const isNew = source => !project.sources.some(existing => source.url ? existing.url === source.url : existing.type === source.type && existing.title === source.title && existing.text === source.text);
-  let additions = sources.filter(isNew);
+  let { additions, duplicates } = partitionSourceAdditions(project.sources, sources);
   sourceTargetProjectId = null;
   if ($('#new-project-dialog').open) $('#new-project-dialog').close();
   showEditorProject(project);
@@ -551,7 +551,9 @@ async function appendProjectSources(sources, projectId = sourceTargetProjectId) 
       await deleteDocuments(additions.map(source => source.attachmentId).filter(Boolean));
       return true;
     }
-    additions = additions.filter(isNew);
+    const current = partitionSourceAdditions(project.sources, additions);
+    additions = current.additions;
+    duplicates.push(...current.duplicates);
     project.sources.push(...additions.map(source => ({ ...source, selected: true })));
     project.updatedAt = Date.now();
     saveProjects();
@@ -561,7 +563,12 @@ async function appendProjectSources(sources, projectId = sourceTargetProjectId) 
       updateComposerActions();
     }
   }
-  notify(additions.length ? `${additions.length} ${additions.length === 1 ? 'source' : 'sources'} added` : 'Sources already added');
+  const retainedAttachments = new Set(project.sources.map(source => source.attachmentId).filter(Boolean));
+  await deleteDocuments([...new Set(duplicates.map(source => source.attachmentId).filter(id => id && !retainedAttachments.has(id)))]);
+  if (additions.length) notify(`${additions.length} ${additions.length === 1 ? 'source' : 'sources'} added`);
+  if (duplicates.length && activeProjectId === project.id && !project.archivedAt) {
+    sourceAlreadyAdded.open({ count: duplicates.length, trigger: $('#editor-add-source-button') });
+  }
   return true;
 }
 
@@ -1304,6 +1311,7 @@ for (const dialog of document.querySelectorAll('dialog')) {
 }
 
 const searchExperience = createSearchExperience({
+  onDuplicateSource: trigger => sourceAlreadyAdded.open({ trigger }),
   onSearch: submitSource,
   onDirectionChange(id, direction) {
     const project = projects.find(entry => entry.id === id);

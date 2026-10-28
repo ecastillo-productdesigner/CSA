@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { createContext, runInContext } from 'node:vm';
 import { randomUUID } from 'node:crypto';
 import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from '../dist/source-links.js';
+import { partitionSourceAdditions } from '../dist/source-model.js';
 import { projectTitleFromSources } from '../dist/dashboard.js';
 import { normalizeWordCount } from '../dist/variant-word-count.js';
 import { createNewProjectUpload } from '../dist/new-project-upload.js';
@@ -92,8 +93,9 @@ function setup(t, { target = null, active = null, projects = [], dialogOpen = tr
   const composer = new Control();
   const querySelector = document.querySelector;
   document.querySelector = selector => selector === '#composer' ? composer : querySelector(selector);
-  const calls = { resolve: [], saved: [], shown: [], sourcePanels: [], notifications: [], fileSaves: 0, resets: 0, editorCloses: 0, additionWaits: [], sourceRenders: [], deletedDocuments: [] };
+  const calls = { resolve: [], saved: [], shown: [], sourcePanels: [], notifications: [], fileSaves: 0, resets: 0, editorCloses: 0, additionWaits: [], sourceRenders: [], deletedDocuments: [], duplicatePopups: [] };
   const context = createContext({
+    partitionSourceAdditions, sourceAlreadyAdded: { open: options => calls.duplicatePopups.push(options) },
     AbortController, crypto: { randomUUID }, document, parseSourceLinks, formatSourceLinks, sourceLinkArticles, projectTitleFromSources, normalizeWordCount,
     projectOutputs, selectedOutputs, outputIsReady, populateOutputContent, reviseSampleOutput, clearTimeout,
     projectSourcesPanel: { waitForAddition: id => { calls.additionWaits.push(id); return holdAddition ? addition.promise : Promise.resolve(true); } },
@@ -349,5 +351,33 @@ test('an already-added source does not show a five-second loading state or dupli
   assert.equal(await work, true);
   assert.equal(ui.context.projects[0].sources.length, 1);
   assert.deepEqual(ui.calls.additionWaits, []);
-  assert.deepEqual(ui.calls.notifications, ['Sources already added']);
+  assert.deepEqual(ui.calls.notifications, []);
+  assert.equal(ui.calls.duplicatePopups.length, 1);
+  assert.equal(ui.calls.duplicatePopups[0].count, 1);
+});
+
+
+test('a mixed batch adds only new sources then shows the duplicate popup once', async t => {
+  const original = { type: 'text', title: 'Original', text: 'Keep this', selected: true };
+  const fresh = { type: 'text', title: 'New', text: 'New source' };
+  const ui = setup(t, { target: 'target', active: 'target', projects: [{ id: 'target', title: 'Existing', sources: [original] }], holdAddition: true });
+  const work = ui.context.appendProjectSources([original, fresh, fresh], 'target');
+  assert.equal(ui.context.projects[0].sources.length, 1);
+  ui.addition.resolve(true);
+  assert.equal(await work, true);
+  assert.equal(ui.context.projects[0].sources.length, 2);
+  assert.deepEqual(ui.calls.notifications, ['1 source added']);
+  assert.equal(ui.calls.duplicatePopups.length, 1);
+  assert.equal(ui.calls.duplicatePopups[0].count, 2);
+});
+
+test('duplicate documents discard only the unused new upload and preserve the saved attachment', async t => {
+  const original = { type: 'file', title: 'Notes.pdf', attachmentId: 'saved-file' };
+  const ui = setup(t, { target: 'target', active: 'target', projects: [{ id: 'target', title: 'Existing', sources: [original] }] });
+  assert.equal(await ui.context.appendProjectSources([{ ...original, attachmentId: 'unused-upload' }, original], 'target'), true);
+  assert.deepEqual(ui.calls.deletedDocuments, ['unused-upload']);
+  assert.equal(ui.context.projects[0].sources.length, 1);
+  assert.equal(ui.context.projects[0].sources[0].attachmentId, 'saved-file');
+  assert.equal(ui.calls.duplicatePopups[0].count, 2);
+  assert.deepEqual(ui.calls.additionWaits, []);
 });

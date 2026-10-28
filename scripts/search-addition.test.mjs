@@ -153,13 +153,15 @@ function setup(t) {
     }
   });
   const changes = [];
+  const duplicates = [];
   const experience = createSearchExperience({
     onSearch() {}, onDirectionChange() {}, onDraft() {},
+    onDuplicateSource: trigger => duplicates.push(trigger),
     onSelectionChange(projectId, selected, ready) { changes.push({ projectId, selected, ready }); },
   });
   const $ = selector => document.querySelector(selector);
   return {
-    experience, changes, $, pending: () => timers.size,
+    experience, changes, duplicates, $, pending: () => timers.size,
     animationListeners: () => document.listenerCount() + window.listenerCount() + motion.listenerCount(),
     animationObservers: () => mutations.size,
     addition: id => $('#result-list').querySelector('[data-addition-article-id="' + id + '"]'),
@@ -321,4 +323,17 @@ test('search stories still begin adding only after selection', t => {
   ui.experience.show({ id: 'search', kind: 'search', sources: [{ type: 'search', title: 'Kelly Clarkson' }], selectedArticleIds: ['article-1'], addedArticleIds: ['article-1'] });
   assert.equal(ui.pending(), 0);
   assert.equal(loading(ui.addition('article-1')), false);
+});
+
+
+test('adding an already-ready link opens the duplicate popup without replaying its shimmer or changing selection', t => {
+  const ui = setup(t);
+  ui.experience.show(project([link('ready', { addedToCsa: true })]), { embedded: true });
+  const add = ui.$('#result-list').querySelector('[data-add-article-id="link-1"]');
+  const before = ui.changes.length;
+  ui.$('#result-list').emit('click', add);
+  assert.deepEqual(ui.duplicates, [add]);
+  assert.equal(ui.changes.length, before);
+  assert.equal(ui.pending(), 0);
+  assert.equal(loading(ui.addition('link-1')), false);
 });

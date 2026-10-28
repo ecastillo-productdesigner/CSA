@@ -1113,16 +1113,16 @@ button:disabled:not(.output-open):not(.icon-button):not(.tertiary-button) { colo
 .tool-dropdown-option .tool-dropdown-check { width: var(--csa-foundation-icon-size-16); font-size: var(--csa-foundation-icon-size-16); visibility: hidden; height: var(--csa-foundation-icon-size-16); }
 .tool-dropdown-row[data-selected="true"] .tool-dropdown-check { visibility: visible; color: var(--csa-semantic-color-action-primary); }
 
-.revision-request-dialog { width: min(var(--csa-component-dialog-width), calc(100vw - var(--csa-foundation-space-32))); max-height: calc(100dvh - var(--csa-foundation-space-32)); overflow-y: auto; padding: var(--csa-foundation-space-24); border-radius: var(--csa-component-dialog-radius-desktop); box-shadow: none; }
+.revision-request-dialog, .source-already-added-dialog { width: min(var(--csa-component-dialog-width), calc(100vw - var(--csa-foundation-space-32))); max-height: calc(100dvh - var(--csa-foundation-space-32)); overflow-y: auto; padding: var(--csa-foundation-space-24); border-radius: var(--csa-component-dialog-radius-desktop); box-shadow: none; }
 
-.revision-request-heading { display: flex; align-items: center; gap: var(--csa-foundation-space-12); margin-bottom: var(--csa-foundation-space-16); }
-.revision-request-heading h2 { flex: 1; min-width: 0; margin: 0; font-family: var(--csa-semantic-typography-dialog-heading-font-family); font-size: var(--csa-semantic-typography-dialog-heading-font-size); line-height: var(--csa-semantic-typography-dialog-heading-line-height); font-weight: var(--csa-semantic-typography-dialog-heading-font-weight); letter-spacing: var(--csa-semantic-typography-dialog-heading-letter-spacing); }
+.revision-request-heading, .source-already-added-heading { display: flex; align-items: center; gap: var(--csa-foundation-space-12); margin-bottom: var(--csa-foundation-space-16); }
+.revision-request-heading h2, .source-already-added-heading h2 { flex: 1; min-width: 0; margin: 0; font-family: var(--csa-semantic-typography-dialog-heading-font-family); font-size: var(--csa-semantic-typography-dialog-heading-font-size); line-height: var(--csa-semantic-typography-dialog-heading-line-height); font-weight: var(--csa-semantic-typography-dialog-heading-font-weight); letter-spacing: var(--csa-semantic-typography-dialog-heading-letter-spacing); }
 
 .revision-request-dialog textarea { display: block; width: 100%; min-height: var(--csa-foundation-size-96); max-height: calc(var(--csa-foundation-layout-ratio-40) * 1dvh); resize: vertical; padding: var(--csa-foundation-space-10) var(--csa-foundation-space-12); border: var(--csa-foundation-border-width-1) solid var(--csa-component-field-border); border-radius: var(--csa-component-field-radius); background: var(--csa-foundation-color-neutral-0); color: var(--ink); font: inherit; font-size: var(--csa-semantic-typography-input-value-font-size); line-height: var(--csa-semantic-typography-input-value-line-height); font-weight: var(--csa-semantic-typography-input-value-font-weight); }
 .revision-request-dialog textarea::placeholder { color: var(--csa-semantic-color-text-secondary); opacity: 1; }
-.revision-request-dialog .dialog-footer { margin-top: var(--csa-foundation-space-24); flex-wrap: wrap; }
-body:has(#revision-request-dialog[open]) { overflow: hidden; }
-@media (max-width: token(foundation.breakpoint.mobile)) { .revision-request-dialog { padding: var(--csa-foundation-space-20); border-radius: var(--csa-component-dialog-radius-mobile); } .revision-request-dialog textarea { font-size: var(--csa-semantic-typography-input-value-font-size); line-height: var(--csa-semantic-typography-input-value-line-height); font-weight: var(--csa-semantic-typography-input-value-font-weight); } }
+.revision-request-dialog .dialog-footer, .source-already-added-dialog .dialog-footer { margin-top: var(--csa-foundation-space-24); flex-wrap: wrap; }
+body:has(#revision-request-dialog[open], .source-already-added-dialog[open]) { overflow: hidden; }
+@media (max-width: token(foundation.breakpoint.mobile)) { .revision-request-dialog, .source-already-added-dialog { padding: var(--csa-foundation-space-20); border-radius: var(--csa-component-dialog-radius-mobile); } .revision-request-dialog textarea { font-size: var(--csa-semantic-typography-input-value-font-size); line-height: var(--csa-semantic-typography-input-value-line-height); font-weight: var(--csa-semantic-typography-input-value-font-weight); } }
 
 .output-revision-overlay { position: absolute; inset: var(--csa-foundation-space-1); z-index: var(--csa-foundation-layer-2); display: flex; align-items: center; justify-content: center; gap: var(--csa-foundation-space-8); border-radius: inherit; background: var(--csa-semantic-color-overlay-loading); color: var(--heading); font-size: var(--csa-foundation-font-size-14); font-weight: var(--csa-foundation-font-weight-600); }
 
@@ -1382,3 +1382,8 @@ html:has(#home:not([hidden])) { scrollbar-gutter: stable; }
 .editor-revision-history { display: grid; gap: var(--csa-foundation-space-20); margin: 0; padding: 0; list-style: none; }
 .editor-revision-history > li + li { padding-top: var(--csa-foundation-space-20); border-top: var(--csa-foundation-border-width-1) solid var(--line); }
 .editor-revision-history h3 { margin: 0 0 var(--csa-foundation-space-12); font-size: var(--csa-foundation-font-size-14); line-height: var(--csa-foundation-line-height-20); font-weight: var(--csa-foundation-font-weight-600); }
+
+.source-already-added-heading { margin-bottom: 0; }
+.sources-panel #editor-source-list > li.is-adding-source { display: block; }
+.sources-panel #editor-source-list > li.is-adding-source > :not(.drafting-animation) { display: none; }
+.editor-source-addition > .drafting-animation[data-variant="source"], .is-adding-source > .drafting-animation[data-variant="source"] { min-height: var(--csa-component-variant-card-min-height); border: 0; border-radius: var(--csa-component-variant-card-radius); }

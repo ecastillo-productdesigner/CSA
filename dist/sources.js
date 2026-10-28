@@ -12,7 +12,9 @@ export function sourceSelectionFor(project, variant = null) {
   for (const snapshot of saved) {
     const match = available.find(source => !selectedSources.has(source) && (snapshot.attachmentId
       ? source.attachmentId === snapshot.attachmentId
-      : source.type === snapshot.type && source.title === snapshot.title && source.url === snapshot.url && source.text === snapshot.text));
+      : snapshot.type === 'link' && snapshot.url
+        ? source.type === 'link' && source.url === snapshot.url
+        : source.type === snapshot.type && source.title === snapshot.title && source.url === snapshot.url && source.text === snapshot.text));
     selectedSources.add(match || snapshot);
     if (!match) historical.push(snapshot);
   }
@@ -100,7 +102,7 @@ export function createSourcePreview() {
   return { open: openPreview, close };
 }
 
-export function createProjectSources({ onBeforeSelectionChange = () => {}, onSelectionChange = () => {}, onDownloadSource, onRemoveSource, onVariantContextChange = () => {} }) {
+export function createProjectSources({ onBeforeSelectionChange = () => {}, onSelectionChange = () => {}, onDownloadSource, onRemoveSource, onVariantContextChange = () => {}, createAddingAnimation }) {
   const list = document.querySelector('#editor-source-list');
   const status = document.querySelector('#editor-source-selection-status');
   const sourcePanel = document.createElement('div');
@@ -108,7 +110,7 @@ export function createProjectSources({ onBeforeSelectionChange = () => {}, onSel
   sourcePanel.className = 'source-status-content';
   list.before(sourcePanel);
   sourcePanel.append(list);
-  const additionLoading = createSourceAdditionLoading({ list });
+  const additionLoading = createSourceAdditionLoading({ list, createAnimation: createAddingAnimation });
   let sourceRows = [];
   let emptyRow = null;
   const titleTooltip = document.createElement('div');
@@ -143,7 +145,7 @@ export function createProjectSources({ onBeforeSelectionChange = () => {}, onSel
   function applySourceView() {
     closeMenu();
     hideTitleTooltip();
-    additionLoading.render(project?.id || null);
+    additionLoading.render(project?.id || null, sourceRows);
     emptyRow.hidden = sourceRows.length > 0 || additionLoading.isPending(project?.id);
     emptyRow.textContent = project ? 'No sources yet. Add a new source to this project.' : 'Open a project to view its sources.';
     list.setAttribute('aria-label', 'Project Sources');
@@ -274,6 +276,7 @@ export function createProjectSources({ onBeforeSelectionChange = () => {}, onSel
           selectedSources = new Set(project.sources.filter(entry => entry.selected !== false));
           updateSelectionStatus();
           onSelectionChange(project.id);
+          if (checkbox.checked) void additionLoading.wait(project.id, source);
         });
         selectionControl.append(checkbox);
         row.append(selectionControl);

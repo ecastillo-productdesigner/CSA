@@ -54,7 +54,7 @@ function dateLabel(value) {
   return new Date(`${value}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 }
 
-export function createSearchExperience({ onSearch, onSelectionChange, onDirectionChange, onDraft }) {
+export function createSearchExperience({ onSearch, onSelectionChange, onDirectionChange, onDraft, onDuplicateSource = () => {} }) {
   const $ = (selector) => document.querySelector(selector);
   const results = $('#search-results');
   const resultsHome = results.parentElement;
@@ -136,6 +136,10 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
 
   function addLinkedArticle(id) {
     if (!state || additionTimers.has(id)) return;
+    if (state.selected.has(id) && state.readyArticleIds.has(id)) {
+      onDuplicateSource($('#result-list').querySelector(`[data-add-article-id="${id}"]`));
+      return;
+    }
     state.selected.add(id);
     state.readyArticleIds.delete(id);
     startAddition(id);

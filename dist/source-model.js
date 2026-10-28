@@ -9,3 +9,17 @@ export function draftSourcesFor(project, output) {
     .map(index => sources[index]).filter(isSource);
 }
 
+
+// Use the same identity rule for pasted links, documents, and source batches.
+export function partitionSourceAdditions(existing, incoming) {
+  const known = [...existing];
+  const additions = [];
+  const duplicates = [];
+  for (const source of incoming) {
+    const duplicate = known.some(saved => source.url ? saved.url === source.url
+      : saved.type === source.type && saved.title === source.title && saved.text === source.text);
+    if (duplicate) duplicates.push(source);
+    else { additions.push(source); known.push(source); }
+  }
+  return { additions, duplicates };
+}

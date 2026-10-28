@@ -28,6 +28,10 @@ class Element {
       this.children.push(child);
     }
   }
+  remove() {
+    if (this.parentElement) this.parentElement.children = this.parentElement.children.filter(entry => entry !== this);
+    this.parentElement = null;
+  }
   before(child) {
     const siblings = this.parentElement.children;
     child.parentElement = this.parentElement;
@@ -57,7 +61,7 @@ class Element {
 }
 
 function setup(t, callbacks = {}) {
-  const previous = { document: globalThis.document, window: globalThis.window };
+  const previous = { document: globalThis.document, window: globalThis.window, setTimeout: globalThis.setTimeout, clearTimeout: globalThis.clearTimeout, getComputedStyle: globalThis.getComputedStyle };
   const doc = new Element('document');
   doc.body = new Element('body');
   doc.append(doc.body);
@@ -78,9 +82,9 @@ function setup(t, callbacks = {}) {
   preview.showModal = () => { preview.open = true; preview.openCount += 1; };
   preview.close = () => { preview.open = false; preview.fire('close'); };
   doc.body.append(sourcePanel, preview);
-  Object.assign(globalThis, { document: doc, window: new Element('window') });
+  Object.assign(globalThis, { document: doc, window: new Element('window'), setTimeout: () => 1, clearTimeout() {}, getComputedStyle: () => ({ getPropertyValue: () => '5000ms' }) });
   t.after(() => Object.assign(globalThis, previous));
-  const controller = createProjectSources({ onSelectionChange() {}, onDownloadSource() {}, onRemoveSource() {}, ...callbacks });
+  const controller = createProjectSources({ createAddingAnimation: () => ({ element: new Element(), destroy() {} }), onSelectionChange() {}, onDownloadSource() {}, onRemoveSource() {}, ...callbacks });
   return { doc, list, status, preview, controller };
 }
 const source = (title, selected) => ({ type: 'text', title, text: `${title} captured material.`, ...(selected === undefined ? {} : { selected }) });
@@ -200,4 +204,43 @@ test('switching drafts follows the exact captured subset while same-context rend
   assert.deepEqual(checked(), [true, false, true], 'a different active draft restores that draft’s captured baseline');
   assert.equal(ui.status.textContent, '2 of 3 used in this draft');
   assert.deepEqual(outputs, before);
+});
+
+
+test('checking a source shows Adding Source in that exact row while preserving its neighbors and saved draft', t => {
+  const project = { id: 'project', sources: [source('Before', true), source('Adding', false), source('After', true)] };
+  const snapshot = structuredClone(project.sources);
+  const ui = setup(t, { createAddingAnimation: ({ label }) => {
+    const element = new Element(); element.className = 'drafting-animation'; element.textContent = label;
+    return { element, destroy() {} };
+  } });
+  ui.controller.render(project);
+  const rows = [...ui.list.children];
+  const checkbox = ui.list.querySelectorAll('.editor-source-checkbox')[1];
+  checkbox.checked = true;
+  checkbox.fire('change');
+  assert.equal(ui.list.children.length, rows.length, 'the loading state replaces a source row, not its position');
+  assert.deepEqual(ui.list.children, rows);
+  assert.equal(rows[2].className, 'is-adding-source');
+  assert.equal(rows[2].querySelector('.drafting-animation').textContent, 'Adding Source');
+  assert.equal(rows[1].querySelector('.drafting-animation'), null);
+  assert.equal(rows[3].querySelector('.drafting-animation'), null);
+  assert.equal(project.sources[1].selected, true);
+  assert.equal(snapshot[1].selected, false);
+});
+
+
+test('a linked source keeps its actions when its current headline differs from the saved draft snapshot', t => {
+  const current = { type: 'link', url: 'https://example.com/school-bus-routes', title: 'Updated school bus routes', selected: false };
+  const captured = { ...current, title: 'Original school bus routes', selected: true };
+  const variant = { id: 'draft', sourceSnapshots: [captured] };
+  const before = structuredClone(variant);
+  const ui = setup(t);
+  ui.controller.render({ id: 'project', sources: [current] }, { variant });
+  assert.equal(ui.list.querySelectorAll('.editor-source-checkbox').length, 1, 'do not append a historical duplicate for the same URL');
+  assert.equal(ui.list.querySelector('.editor-source-checkbox').disabled, false);
+  assert.equal(ui.list.querySelector('.editor-source-checkbox').checked, true);
+  assert.equal(ui.list.querySelectorAll('.editor-source-more').length, 1);
+  assert.equal(ui.list.querySelector('.editor-source-more').getAttribute('aria-label'), 'Source options: Updated school bus routes');
+  assert.deepEqual(variant, before, 'the draft retains its original captured headline');
 });

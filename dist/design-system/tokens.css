@@ -551,6 +551,8 @@
   --csa-component-composer-panel-heading-font-size: var(--csa-foundation-font-size-16);
   --csa-component-composer-panel-heading-line-height: var(--csa-foundation-line-height-24);
   --csa-component-composer-panel-gap: var(--csa-foundation-space-16);
+  --csa-component-composer-panel-collapsed-padding-block: var(--csa-foundation-space-12);
   --csa-component-editor-tab-revision-dot-size: var(--csa-foundation-space-8);
   --csa-component-editor-tab-revision-dot-color: var(--csa-foundation-color-red-700);
+  --csa-component-editor-tab-revision-dot-active-duration: 10000ms;
 }

@@ -172,8 +172,9 @@
             </div>
           </section>
           <section class="composer-panel composer-outputs" id="composer-outputs" aria-labelledby="composer-outputs-heading">
-            <div class="composer-outputs-header"><h2 id="composer-outputs-heading" tabindex="-1"><span class="material-symbols-outlined" aria-hidden="true">article</span><span>Content</span></h2><button class="icon-button mobile-panel-close" type="button" data-close-navigation="variants" aria-label="Close Content Panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+            <div class="composer-outputs-header"><h2 id="composer-outputs-heading" tabindex="-1"><button class="composer-tools-toggle" id="toggle-content" type="button" aria-label="Collapse Content" aria-expanded="true" aria-controls="composer-outputs-body"><span class="material-symbols-outlined" aria-hidden="true">article</span><span>Content</span><span class="material-symbols-outlined" data-collapse-chevron aria-hidden="true">keyboard_arrow_up</span></button></h2><button class="icon-button mobile-panel-close" type="button" data-close-navigation="variants" aria-label="Close Content Panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
             </div>
+            <div class="composer-outputs-body" id="composer-outputs-body">
             <div class="output-status-tabs" role="tablist" aria-label="Content status">
               <button id="output-pending-tab" type="button" role="tab" aria-selected="true" aria-controls="output-status-content" data-output-view="pending">To Draft</button>
               <button id="output-created-tab" type="button" role="tab" aria-selected="false" aria-controls="output-status-content" tabindex="-1" data-output-view="created">Drafted</button>
@@ -183,6 +184,7 @@
             <ul class="output-list" id="output-list" aria-label="Content" hidden></ul>
             <div class="outputs-footer"><button class="create-output" id="create-output" type="button" disabled><span id="create-output-label">Draft</span></button></div>
             <p class="visually-hidden" id="output-processing-status" role="status" aria-live="polite"></p>
+            </div>
             </div>
           </section>
         </aside>

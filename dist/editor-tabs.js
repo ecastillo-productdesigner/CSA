@@ -1,12 +1,44 @@
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { projectOutputs, outputIsReady, outputIsSent, outputLoadingSelectionKeys } from './outputs.js?v=20261026-drafting-card-size';
 
+import { tokenNumber } from './design-system/runtime.js?v=20261028-revision-dot';
 import { createRevisionAnimation } from './drafting-animation.js?v=20261027-revision-tabs';
 
-export function createEditorTabs({ onSelect, createAnimation = createRevisionAnimation }) {
+export function createEditorTabs({ onSelect, onRevisionRead = () => {}, createAnimation = createRevisionAnimation }) {
   const root = document.querySelector('#editor-variant-tabs');
   const panel = document.querySelector('#editor-canvas-content');
   let signature = '';
+  let currentProject = null;
+  let currentActiveId = null;
+  let readTimer = null;
+  let readKey = '';
+  function clearReadTimer() {
+    clearTimeout(readTimer);
+    readTimer = null;
+    readKey = '';
+  }
+  function syncReadTimer(project, activeId, outputs, revisingIds) {
+    currentProject = project;
+    currentActiveId = activeId;
+    const output = outputs.find(output => output.id === activeId);
+    const history = Array.isArray(output?.revisionRequests) ? output.revisionRequests : [];
+    const key = output?.revisionUnread && !revisingIds.includes(activeId)
+      ? JSON.stringify([project.id, activeId, history.length, history.at(-1)?.completedAt]) : '';
+    if (key === readKey) return;
+    clearReadTimer();
+    if (!key) return;
+    readKey = key;
+    readTimer = setTimeout(() => {
+      clearReadTimer();
+      const output = projectOutputs(currentProject).find(output => output.id === currentActiveId);
+      if (!output?.revisionUnread) return;
+      const focused = document.activeElement && root.querySelector('[aria-selected="true"]') === document.activeElement;
+      output.revisionUnread = false;
+      onRevisionRead(currentProject, output);
+      controller.render(currentProject);
+      if (focused) root.querySelector('[aria-selected="true"]')?.focus({ preventScroll: true });
+    }, tokenNumber('component.editor-tab.revision-dot-active-duration'));
+  }
   const animations = new Set();
   function clearAnimations() {
     for (const animation of animations) animation.destroy();
@@ -45,13 +77,14 @@ export function createEditorTabs({ onSelect, createAnimation = createRevisionAni
     select(tabs[next]);
   });
 
-  return {
+  const controller = {
     render(project) {
       const allOutputs = projectOutputs(project);
       const outputs = allOutputs.filter(output => outputIsReady(output) || output.needsRegeneration);
       const showCreateTab = !outputs.length && Boolean(project?.linkCards || project?.viewOriginalDraft || project?.awaitingOutput || allOutputs.some(output => output.id === project?.lastPendingOutputId && !outputIsReady(output)));
       const activeId = showCreateTab && project?.viewOriginalDraft ? null : outputs.some(output => output.id === project?.selectedOutputId) ? project.selectedOutputId : outputs[0]?.id ?? null;
       const revisingIds = project?.outputProcessing?.kind === 'revision' ? project.outputProcessing.ids || [] : [];
+      syncReadTimer(project, activeId, outputs, revisingIds);
       const nextSignature = JSON.stringify([project?.id, activeId, showCreateTab, revisingIds, outputs.map(output => [output.id, output.title, output.cmsSentAt, output.revisionUnread, revisingIds.includes(output.id) ? outputLoadingSelectionKeys(output) : null])]);
       if (signature === nextSignature) return;
       signature = nextSignature;
@@ -121,6 +154,8 @@ export function createEditorTabs({ onSelect, createAnimation = createRevisionAni
       panel.setAttribute('aria-labelledby', `editor-tab-${activeId || 'original'}`);
       requestAnimationFrame(revealSelected);
     },
-    destroy() { clearAnimations(); resizeObserver.disconnect(); },
+    suspend() { clearReadTimer(); currentProject = null; currentActiveId = null; },
+    destroy() { controller.suspend(); clearAnimations(); resizeObserver.disconnect(); },
   };
+  return controller;
 }

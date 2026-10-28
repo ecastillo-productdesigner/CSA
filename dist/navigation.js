@@ -75,7 +75,7 @@ export function createRailPanelTransition(panel, { trigger, motionQuery, readTok
   };
 }
 
-export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVariantOpen, onOpen }) {
+export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVariantOpen, onVariantsOpen, onOpen }) {
   const panels = {
     sources: { trigger: document.querySelector('#show-sources'), panel: document.querySelector('#editor-sources') },
     newVariant: { trigger: document.querySelector('#show-new-variant'), panel: document.querySelector('#composer-tools'), mobileOnly: true },
@@ -155,6 +155,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
     onOpen?.();
     if (name === 'sources') onSourcesOpen();
     if (name === 'newVariant') onNewVariantOpen?.();
+    if (name === 'variants') onVariantsOpen?.();
     // Keep the mobile Sources panel above the backdrop without lifting its navigation bar.
     if (name === 'sources' && mobileTopBar()) document.querySelector('#workspace-app').append(panels.sources.panel);
     if (panels[name].mobileOnly) panels[name].panel.dataset.mobileOpen = 'true';

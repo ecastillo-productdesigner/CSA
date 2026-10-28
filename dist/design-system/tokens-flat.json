@@ -6916,6 +6916,18 @@
       "status": "observed"
     },
     {
+      "name": "component.composer-panel.collapsed-padding-block",
+      "designName": "component/composer-panel/collapsed-padding-block",
+      "cssVariable": "--csa-component-composer-panel-collapsed-padding-block",
+      "type": "dimension",
+      "layer": "component",
+      "category": "composer-panel",
+      "value": "12px",
+      "reference": "foundation.space.12",
+      "description": "Equal top and bottom padding for collapsed New Draft and Content panels. Expanded panel spacing is unchanged.",
+      "status": "observed"
+    },
+    {
       "name": "component.editor-tab.revision-dot-size",
       "designName": "component/editor-tab/revision-dot-size",
       "cssVariable": "--csa-component-editor-tab-revision-dot-size",
@@ -6936,7 +6948,7 @@
       "category": "editor-tab",
       "value": "#b91c1c",
       "reference": "foundation.color.red.700",
-      "description": "User-approved #B91C1C indicator for an unread completed revision. Clears when its draft tab is activated.",
+      "description": "User-approved #B91C1C indicator for an unread completed revision. Clears on tab activation or after 10 seconds while its draft stays selected.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
@@ -6948,6 +6960,18 @@
         "alpha": 1,
         "hex": "#b91c1c"
       }
+    },
+    {
+      "name": "component.editor-tab.revision-dot-active-duration",
+      "designName": "component/editor-tab/revision-dot-active-duration",
+      "cssVariable": "--csa-component-editor-tab-revision-dot-active-duration",
+      "type": "duration",
+      "layer": "component",
+      "category": "editor-tab",
+      "value": "10000ms",
+      "reference": "",
+      "description": "Show the completed-revision dot for 10 seconds while its draft stays selected. Inactive tabs retain their unread dots until activated.",
+      "status": "observed"
     }
   ]
 }

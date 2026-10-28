@@ -263,7 +263,7 @@ export function mountStateSpecimens(root) {
   header.append(heading);
   const body = element('div', 'ds-disclosure-body');
   body.id = 'ds-disclosure-body';
-  const guidance = element('p', 'ds-caption', 'Choose any Format, Audience, or Voice to enable Add to List. New Draft and its dropdowns open and close over 200 ms with ease timing; dropdowns use a short fade and slide. Closing dropdowns leave the focus order immediately. Reduced motion changes them immediately.');
+  const guidance = element('p', 'ds-caption', 'Choose any Format, Audience, or Voice to enable Add to List. New Draft and Content both collapse using their heading chevrons, a 200 ms height animation, and immediate changes for reduced motion. Collapsed panels have equal 12 px top and bottom padding. Expanded spacing is unchanged. New Draft and its dropdowns open and close over 200 ms with ease timing; dropdowns use a short fade and slide. Closing dropdowns leave the focus order immediately. Reduced motion changes them immediately.');
   const fields = element('div', 'composer-fields');
   for (const { label, key } of draftOptions) {
     const field = element('div', 'composer-field');
@@ -294,7 +294,16 @@ export function mountStateSpecimens(root) {
   const emptyPreview = element('section', 'composer-panel composer-outputs ds-disclosure-panel');
   const emptyHeading = element('h2');
   emptyHeading.setAttribute('aria-level', '4');
-  emptyHeading.append(createIcon('article'), element('span', '', 'Content'));
+  const contentToggle = button('composer-tools-toggle', 'Collapse Content');
+  contentToggle.setAttribute('aria-controls', 'ds-content-disclosure-body');
+  const contentChevron = createIcon('keyboard_arrow_up');
+  contentChevron.dataset.collapseChevron = '';
+  contentToggle.append(createIcon('article'), element('span', '', 'Content'), contentChevron);
+  emptyHeading.append(contentToggle);
+  const emptyHeader = element('div', 'composer-outputs-header');
+  emptyHeader.append(emptyHeading);
+  const emptyBody = element('div', 'composer-outputs-body');
+  emptyBody.id = 'ds-content-disclosure-body';
   const emptyTabs = element('div', 'output-status-tabs');
   emptyTabs.setAttribute('role', 'tablist');
   emptyTabs.setAttribute('aria-label', 'Empty content state');
@@ -330,7 +339,10 @@ export function mountStateSpecimens(root) {
     },
   });
   emptySelection.sync(emptyView);
-  emptyPreview.append(emptyHeading, emptyTabs, emptyPanel);
+  emptyBody.append(emptyTabs, emptyPanel);
+  emptyPreview.append(emptyHeader, emptyBody);
+  const contentDisclosure = createPanelDisclosure({ body: emptyBody, trigger: contentToggle, panel: emptyPreview, label: 'Content', expanded: true });
+  contentToggle.addEventListener('click', () => contentDisclosure.setExpanded(!contentDisclosure.expanded));
   const loading = element('div', 'ds-loading-specimen');
   loading.append(element('h4', '', 'Drafting content'));
   const draftingPreviews = element('div', 'ds-drafting-previews');
@@ -381,7 +393,7 @@ export function mountStateSpecimens(root) {
   const updateAdd = () => { add.disabled = !hasDraftSelection(Object.fromEntries([...fields.querySelectorAll('select')].map(select => [select.closest('.composer-field').dataset.label.toLowerCase(), select.value]))); };
   fields.addEventListener('change', updateAdd);
   updateAdd();
-  const mounted = { setExpanded, destroy() { disclosure.destroy(); emptySelection.destroy(); emptyTransition.destroy(); draftingAnimations.forEach(drafting => drafting.destroy()); sourceAdding.destroy(); dropdowns.close(); stateMounts.delete(root); } };
+  const mounted = { setExpanded, destroy() { disclosure.destroy(); contentDisclosure.destroy(); emptySelection.destroy(); emptyTransition.destroy(); draftingAnimations.forEach(drafting => drafting.destroy()); sourceAdding.destroy(); dropdowns.close(); stateMounts.delete(root); } };
   stateMounts.set(root, mounted);
   return mounted;
 }

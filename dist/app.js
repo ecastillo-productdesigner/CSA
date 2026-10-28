@@ -93,6 +93,7 @@ const outputViews = new Map();
 populateDraftOptions(document);
 const toolDropdowns = createToolDropdowns();
 const newDraftDisclosure = createPanelDisclosure({ body: $('#composer-variant-form'), trigger: $('#toggle-new-variant'), panel: $('.composer-tools'), expanded: true });
+const contentDisclosure = createPanelDisclosure({ body: $('#composer-outputs-body'), trigger: $('#toggle-content'), panel: $('#composer-outputs'), label: 'Content', expanded: true });
 const outputTabTransition = createTabPanelTransition($('#output-status-content'));
 const newProjectUpload = createNewProjectUpload({
   isBlocked: () => Boolean(sourceImport),
@@ -126,7 +127,7 @@ const contentPreview = createContentPreview({
     updateComposerActions();
   },
 });
-const editorTabs = createEditorTabs({ onSelect: openEditorTab });
+const editorTabs = createEditorTabs({ onSelect: openEditorTab, onRevisionRead: () => saveProjects() });
 const projectSourcesPanel = createProjectSources({
   onRemoveSource: removeProjectSource,
   onDownloadSource: downloadSource,
@@ -149,6 +150,7 @@ const draftSourcesPopover = createDraftSourcesPopover({
 const railNavigation = createRailNavigation({
   onSourcesOpen() { renderProjectSources(projects.find(project => project.id === activeProjectId && project.kind === 'draft') || null); },
   onNewVariantOpen() { setNewVariantCollapsed(false); },
+  onVariantsOpen() { setContentCollapsed(false); },
   onOpen: () => { toolDropdowns.close(); richEditor.closePanels(); draftSourcesPopover.close(); },
 });
 createProfile({
@@ -475,6 +477,7 @@ function showSourceStart() {
 }
 
 function closeComposer() {
+  editorTabs.suspend();
   draftSourcesPopover.close();
   sendDestinationDialog.close();
   toolDropdowns.close();
@@ -696,6 +699,7 @@ function showEditorProject(project) {
     else if (card.bottom > viewport.bottom) list.scrollTop += card.bottom - viewport.bottom + 3;
   });
   setNewVariantCollapsed(Boolean(project.newVariantCollapsed));
+  setContentCollapsed(Boolean(project.contentCollapsed));
   closeProfile();
   document.title = `${selectedOutput?.title || project.title} — CSA`;
   try { sessionStorage.setItem('csa.editor.active.v1', project.id); } catch { /* Drafts still save to local project storage. */ }
@@ -750,6 +754,18 @@ $('#toggle-new-variant').addEventListener('click', () => {
   const project = projects.find(entry => entry.id === activeProjectId);
   if (project) { project.newVariantCollapsed = collapsed; saveProjects(); }
   setNewVariantCollapsed(collapsed, { animate: true });
+});
+
+function setContentCollapsed(collapsed, { animate = false } = {}) {
+  if (collapsed) { contentCardEditing.close(); draftSourcesPopover.close(); }
+  contentDisclosure.setExpanded(!collapsed, { animate });
+}
+
+$('#toggle-content').addEventListener('click', () => {
+  const collapsed = contentDisclosure.expanded;
+  const project = projects.find(entry => entry.id === activeProjectId);
+  if (project) { project.contentCollapsed = collapsed; saveProjects(); }
+  setContentCollapsed(collapsed, { animate: true });
 });
 
 $('.create-variant').addEventListener('click', () => {

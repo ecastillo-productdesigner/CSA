@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { outputWordCount, outputSourceCount, createOutputBadges, createOutputWordCountBadge } from '../dist/outputs.js';
 import { createEditorTabs } from '../dist/editor-tabs.js';
 
@@ -22,8 +23,17 @@ class Element {
 }
 
 function documentFor(t, roots = {}) {
-  const previous = { document: globalThis.document, ResizeObserver: globalThis.ResizeObserver, requestAnimationFrame: globalThis.requestAnimationFrame };
+  const names = ['document', 'ResizeObserver', 'requestAnimationFrame', 'getComputedStyle', 'setTimeout', 'clearTimeout'];
+  const previous = Object.fromEntries(names.map(name => [name, globalThis[name]]));
+  const duration = JSON.parse(readFileSync(new URL('../dist/design-system/tokens.json', import.meta.url), 'utf8')).component['editor-tab']['revision-dot-active-duration'].$value;
+  let now = 0;
+  let sequence = 0;
+  const timers = new Map();
+  globalThis.getComputedStyle = () => ({ getPropertyValue: () => `${duration.value}${duration.unit}` });
+  globalThis.setTimeout = (callback, delay) => { const id = ++sequence; timers.set(id, { at: now + delay, callback }); return id; };
+  globalThis.clearTimeout = id => timers.delete(id);
   globalThis.document = {
+    documentElement: {},
     createElement: tag => new Element(tag),
     createTextNode: text => ({ textContent: text }),
     querySelector: selector => roots[selector],
@@ -36,6 +46,17 @@ function documentFor(t, roots = {}) {
       else globalThis[name] = value;
     }
   });
+  return { timers, tick(milliseconds) {
+    const until = now + milliseconds;
+    let next;
+    while ((next = [...timers.entries()].filter(([, timer]) => timer.at <= until).sort(([, a], [, b]) => a.at - b.at)[0])) {
+      const [id, timer] = next;
+      now = timer.at;
+      timers.delete(id);
+      timer.callback();
+    }
+    now = until;
+  } };
 }
 
 const hasWords = badge => badge.className.split(' ').includes('output-badge--words');
@@ -238,4 +259,98 @@ test('only inactive revising tabs animate, retain their identity, and clean up o
   assert.match(root.children[0].attributes['aria-description'], /Revision complete/);
   assert.equal(root.children[1].attributes['aria-selected'], 'true', 'completion keeps the user on their chosen draft');
   tabs.destroy();
+});
+
+function unreadFixture(t) {
+  const root = new Element();
+  const panel = new Element();
+  panel.id = 'editor-canvas-content';
+  const clock = documentFor(t, { '#editor-variant-tabs': root, '#editor-canvas-content': panel });
+  const reads = [];
+  const tabs = createEditorTabs({ onSelect() {}, onRevisionRead(project, output) { reads.push([project.id, output.id]); } });
+  const first = { id: 'first', title: 'First draft', status: 'ready', revisionUnread: true, revisionRequests: [{ completedAt: 1 }] };
+  const second = { id: 'second', title: 'Second draft', status: 'ready', revisionUnread: true };
+  const project = { id: 'project', outputs: [first, second], selectedOutputId: first.id };
+  const dot = id => root.children.find(tab => tab.dataset.editorOutput === id)?.children.find(child => child.className === 'editor-tab-title')?.children.some(child => child.className === 'editor-tab-revision-dot');
+  return { ...clock, reads, tabs, first, second, project, dot };
+}
+
+test('a selected revision dot clears at ten seconds, persists acknowledgement, and does not clear inactive dots', t => {
+  const ui = unreadFixture(t);
+  ui.tabs.render(ui.project);
+  ui.tick(6000);
+  ui.tabs.render(ui.project);
+  ui.tick(3999);
+  assert.equal(ui.dot('first'), true);
+  assert.equal(ui.dot('second'), true);
+  assert.deepEqual(ui.reads, []);
+  ui.tick(1);
+  assert.equal(ui.dot('first'), false);
+  assert.equal(ui.first.revisionUnread, false);
+  assert.equal(ui.dot('second'), true);
+  assert.equal(ui.second.revisionUnread, true);
+  assert.deepEqual(ui.reads, [['project', 'first']]);
+  assert.equal(ui.project.selectedOutputId, 'first');
+  ui.tick(60000);
+  assert.equal(ui.dot('second'), true);
+  assert.deepEqual(ui.reads, [['project', 'first']]);
+  ui.tabs.destroy();
+});
+
+test('switching away cancels the selected-dot timer and keeps that draft unread', t => {
+  const ui = unreadFixture(t);
+  ui.second.revisionUnread = false;
+  ui.tabs.render(ui.project);
+  ui.tick(4000);
+  ui.project.selectedOutputId = 'second';
+  ui.tabs.render(ui.project);
+  ui.tick(60000);
+  assert.equal(ui.first.revisionUnread, true);
+  assert.equal(ui.dot('first'), true);
+  assert.equal(ui.timers.size, 0);
+  assert.deepEqual(ui.reads, []);
+  // Activating an unread tab acknowledges it through the app's existing onSelect handler.
+  ui.first.revisionUnread = false;
+  ui.project.selectedOutputId = 'first';
+  ui.tabs.render(ui.project);
+  assert.equal(ui.dot('first'), false);
+  assert.equal(ui.timers.size, 0);
+  ui.tabs.destroy();
+});
+
+test('a new revision cancels the old dot deadline and gets ten seconds after completion', t => {
+  const ui = unreadFixture(t);
+  ui.tabs.render(ui.project);
+  ui.tick(9000);
+  ui.project.outputProcessing = { kind: 'revision', ids: ['first'] };
+  ui.tabs.render(ui.project);
+  ui.tick(5000);
+  assert.equal(ui.first.revisionUnread, true);
+  assert.deepEqual(ui.reads, []);
+  delete ui.project.outputProcessing;
+  ui.first.revisionRequests.push({ completedAt: 2 });
+  ui.tabs.render(ui.project);
+  ui.tick(9999);
+  assert.equal(ui.first.revisionUnread, true);
+  ui.tick(1);
+  assert.equal(ui.first.revisionUnread, false);
+  assert.deepEqual(ui.reads, [['project', 'first']]);
+  ui.tabs.destroy();
+});
+
+test('leaving the editor suspends acknowledgement and returning starts a fresh interval', t => {
+  const ui = unreadFixture(t);
+  ui.tabs.render(ui.project);
+  ui.tick(5000);
+  ui.tabs.suspend();
+  ui.tick(60000);
+  assert.equal(ui.first.revisionUnread, true);
+  assert.deepEqual(ui.reads, []);
+  ui.tabs.render(ui.project);
+  ui.tick(9999);
+  assert.equal(ui.first.revisionUnread, true);
+  ui.tick(1);
+  assert.equal(ui.first.revisionUnread, false);
+  ui.tabs.destroy();
+  assert.equal(ui.timers.size, 0);
 });

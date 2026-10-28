@@ -325,7 +325,7 @@ main:focus { outline: none; }
 .create-variant { display: grid; place-items: center; min-width: 0; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-16); background: var(--csa-foundation-color-neutral-100); color: var(--muted); }
 .create-variant:not(:disabled) { background: var(--color-button-primary); border-color: var(--line); color: var(--csa-foundation-color-neutral-0); }
 .create-variant:not(:disabled):is(:hover, :active) { background: var(--color-button-primary-interaction); }
-.composer-outputs { position: relative; display: flex; flex-direction: column; min-height: 0; padding: var(--csa-foundation-space-16) var(--csa-foundation-space-20) var(--csa-foundation-space-24); }
+.composer-outputs { position: relative; display: flex; flex-direction: column; min-height: 0; padding: var(--csa-component-composer-panel-collapsed-padding-block) var(--csa-foundation-space-20) var(--csa-foundation-space-24); }
 .composer-outputs h2 { position: relative; z-index: var(--csa-foundation-layer-1); }
 .composer-outputs-body { display: flex; flex: 1; flex-direction: column; min-height: 0; }
 .composer-outputs-body[data-disclosure-animating="true"] { flex: none; }
@@ -951,7 +951,7 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
   body.showing-composer .composer-tools { padding-top: var(--csa-foundation-space-12); padding-bottom: var(--csa-foundation-space-24); }
   body.showing-composer :is(.composer-tools, .composer-outputs)[data-collapsed="true"] { min-height: 0; padding-block: var(--csa-component-composer-panel-collapsed-padding-block); }
   body.showing-composer .composer-tools[data-mobile-open="true"] { display: block; }
-  body.showing-composer .composer-outputs { padding: var(--csa-foundation-space-16) var(--csa-foundation-space-20) var(--csa-foundation-space-24); }
+  body.showing-composer .composer-outputs { padding: var(--csa-component-composer-panel-collapsed-padding-block) var(--csa-foundation-space-20) var(--csa-foundation-space-24); }
   body.showing-composer .composer-outputs-header { padding-right: var(--csa-foundation-space-36); }
   body.showing-composer .composer-outputs-header .mobile-panel-close { position: absolute; top: 50%; right: 0; transform: translateY(-50%); }
   body.showing-composer .composer-outputs[data-mobile-open="true"] { display: flex; min-height: min(var(--csa-foundation-size-320), calc(100dvh - var(--workspace-mobile-content-top) - var(--workspace-outer-inset))); }

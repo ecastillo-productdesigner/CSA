@@ -24,33 +24,39 @@ export function createSourceAdditionLoading({ list, createAnimation = createSour
     if (activeProjectId !== projectId) for (const [source, view] of views) clearView(source, view);
     activeProjectId = projectId;
     sourceRows = rows;
-    const pending = new Set([...jobs].filter(job => job.projectId === projectId).map(job => job.source));
+    const counts = new Map();
+    for (const job of jobs) {
+      if (job.projectId === projectId) counts.set(job.source, (counts.get(job.source) || 0) + job.count);
+    }
+    const pending = new Set(counts.keys());
     for (const [source, view] of views) {
       const currentRow = source && rows.find(entry => entry.source === source)?.row;
       if (!pending.has(source) || (source && currentRow !== view.row)) clearView(source, view);
     }
     for (const source of pending) {
+      const label = counts.get(source) === 1 ? 'Adding Source' : 'Adding Sources';
       let view = views.get(source);
       if (!view) {
         const row = source ? rows.find(entry => entry.source === source)?.row : document.createElement('li');
         if (!row) continue;
-        const animation = createAnimation({ label: source ? 'Adding Source' : 'Adding sources' });
+        const animation = createAnimation({ label });
         if (source) {
           row.classList.toggle('is-adding-source', true);
           row.setAttribute('tabindex', '-1');
           if (row.contains(document.activeElement)) row.focus({ preventScroll: true });
         } else row.className = 'editor-source-addition';
         row.append(animation.element);
-        view = { row, animation };
+        view = { row, animation, label };
         views.set(source, view);
       }
+      if (view.label !== label) { view.animation.setLabel?.(label); view.label = label; }
       if (!source && list.lastElementChild !== view.row) list.append(view.row);
     }
   }
 
-  function wait(projectId, source = null) {
+  function wait(projectId, source = null, count = 1) {
     return new Promise(resolve => {
-      const job = { projectId, source, resolve, timer: null };
+      const job = { projectId, source, count, resolve, timer: null };
       jobs.add(job);
       render();
       if (!source && activeProjectId === projectId) list.scrollTop = list.scrollHeight;

@@ -246,9 +246,9 @@ bindTabSelection({
   onSelect: selectOutputView,
 });
 
-function renderProjectSources(project) {
+function renderProjectSources(project, { forNewDraft = false } = {}) {
   const variant = project?.viewOriginalDraft ? null : projectOutputs(project).find(output => output.id === project?.selectedOutputId) || null;
-  const result = projectSourcesPanel.render(project, { variant });
+  const result = projectSourcesPanel.render(project, { variant, forNewDraft });
   if (result?.selectionChanged) {
     saveProjects();
     updateComposerActions();
@@ -562,7 +562,7 @@ async function appendProjectSources(sources, projectId = sourceTargetProjectId) 
   showEditorProject(project);
   railNavigation.open('sources');
   if (additions.length) {
-    if (!await projectSourcesPanel.waitForAddition(project.id, additions.length === 1 ? additions[0] : null)) return false;
+    if (!await projectSourcesPanel.waitForAddition(project.id, additions.length === 1 ? additions[0] : null, additions.length)) return false;
     // A background addition must not reopen a project the person left or deleted.
     if (project.deletedAt || !projects.includes(project)) {
       await deleteDocuments(additions.map(source => source.attachmentId).filter(Boolean));
@@ -575,7 +575,7 @@ async function appendProjectSources(sources, projectId = sourceTargetProjectId) 
     project.updatedAt = Date.now();
     saveProjects();
     if (activeProjectId === project.id && !project.archivedAt && !$('#composer').hidden) {
-      renderProjectSources(project);
+      renderProjectSources(project, { forNewDraft: true });
       if ($('#composer').classList.contains('has-link-cards')) searchExperience.show(project, { embedded: true });
       updateComposerActions();
     }

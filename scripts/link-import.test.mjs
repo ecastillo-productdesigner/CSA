@@ -93,13 +93,13 @@ function setup(t, { target = null, active = null, projects = [], dialogOpen = tr
   const composer = new Control();
   const querySelector = document.querySelector;
   document.querySelector = selector => selector === '#composer' ? composer : querySelector(selector);
-  const calls = { resolve: [], saved: [], shown: [], sourcePanels: [], notifications: [], fileSaves: 0, resets: 0, editorCloses: 0, additionWaits: [], sourceRenders: [], deletedDocuments: [], duplicatePopups: [] };
+  const calls = { resolve: [], saved: [], shown: [], sourcePanels: [], notifications: [], fileSaves: 0, resets: 0, editorCloses: 0, additionWaits: [], additionCounts: [], sourceRenders: [], sourceRenderOptions: [], deletedDocuments: [], duplicatePopups: [] };
   const context = createContext({
     partitionSourceAdditions, findDuplicateSource, sourceAlreadyAdded: { open: options => calls.duplicatePopups.push(options) },
     AbortController, crypto: { randomUUID }, document, parseSourceLinks, formatSourceLinks, sourceLinkArticles, projectTitleFromSources, normalizeWordCount,
     projectOutputs, selectedOutputs, outputIsReady, populateOutputContent, reviseSampleOutput, clearTimeout,
-    projectSourcesPanel: { waitForAddition: id => { calls.additionWaits.push(id); return holdAddition ? addition.promise : Promise.resolve(true); } },
-    renderProjectSources: project => calls.sourceRenders.push(project.id),
+    projectSourcesPanel: { waitForAddition: (id, source, count) => { calls.additionWaits.push(id); calls.additionCounts.push(count); return holdAddition ? addition.promise : Promise.resolve(true); } },
+    renderProjectSources: (project, options) => { calls.sourceRenders.push(project.id); calls.sourceRenderOptions.push(options); },
     updateComposerActions() {},
     searchExperience: { show() {} },
     deleteDocuments: async ids => { calls.deletedDocuments.push(...ids); },
@@ -310,6 +310,8 @@ test('adding a source closes the picker and waits before changing or saving proj
   assert.equal(await work, true);
   assert.equal(ui.context.projects[0].sources.length, 2);
   assert.deepEqual(ui.calls.sourceRenders, ['target']);
+  assert.equal(ui.calls.sourceRenderOptions[0].forNewDraft, true);
+  assert.deepEqual(ui.calls.additionCounts, [1]);
   assert.deepEqual(ui.calls.notifications, ['1 source added']);
 });
 
@@ -380,4 +382,20 @@ test('duplicate documents discard only the unused new upload and preserve the sa
   assert.equal(ui.context.projects[0].sources[0].attachmentId, 'saved-file');
   assert.equal(ui.calls.duplicatePopups[0].count, 2);
   assert.deepEqual(ui.calls.additionWaits, []);
+});
+
+
+test('a multi-source import passes only the unique new-source count to the animation and stages the added selection', async t => {
+  const duplicate = { type: 'text', title: 'Existing', text: 'Existing source' };
+  const fresh = { type: 'text', title: 'New one', text: 'New one' };
+  const second = { type: 'text', title: 'New two', text: 'New two' };
+  const ui = setup(t, { target: 'target', active: 'target', projects: [{ id: 'target', title: 'Project', sources: [duplicate] }], holdAddition: true });
+  const work = ui.context.appendProjectSources([duplicate, fresh, fresh, second], 'target');
+  assert.deepEqual(ui.calls.additionCounts, [2]);
+  ui.addition.resolve(true);
+  assert.equal(await work, true);
+  assert.equal(ui.context.projects[0].sources.length, 3);
+  assert.equal(ui.context.projects[0].sources[1].selected, true);
+  assert.equal(ui.context.projects[0].sources[2].selected, true);
+  assert.equal(ui.calls.sourceRenderOptions[0].forNewDraft, true);
 });

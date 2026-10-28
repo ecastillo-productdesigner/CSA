@@ -6888,7 +6888,7 @@
       "category": "drafting",
       "value": "5000ms",
       "reference": "",
-      "description": "Show Adding sources in Project Sources for five seconds before inserting the new sources.",
+      "description": "Show Adding Source or Adding Sources in Project Sources for five seconds before inserting new sources.",
       "status": "observed"
     },
     {

@@ -15,7 +15,7 @@ function productionSection(start, end) {
 }
 const production = [
   productionSection('function updateComposerActions()', '\nfunction ensureComposerProject('),
-  productionSection('function renderProjectSources(project)', '\nfunction removeProjectSource('),
+  productionSection('function renderProjectSources(', '\nfunction removeProjectSource('),
   productionSection('const projectSourcesPanel = createProjectSources({', '\nconst draftSourcesPopover ='),
   productionSection("$('.create-variant').addEventListener('click'", "\n$('#output-list').addEventListener"),
 ].join('\n');

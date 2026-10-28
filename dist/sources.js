@@ -221,19 +221,20 @@ export function createProjectSources({ onBeforeSelectionChange = () => {}, onSel
   }
 
 
-  function render(next, { variant = null } = {}) {
+  function render(next, { variant = null, forNewDraft = false } = {}) {
     closeMenu();
     hideTitleTooltip();
     const contextChanged = project !== next || sourceVariant?.id !== variant?.id || Boolean(sourceVariant) !== Boolean(variant);
     project = next;
     sourceVariant = variant;
     if (contextChanged) editingNextDraft = false;
+    if (forNewDraft) editingNextDraft = true;
     onVariantContextChange(variant?.id || null);
     const allSources = project?.sources || [];
     const selection = sourceSelectionFor(project, variant);
     visibleSources = selection.sources;
     let selectionChanged = false;
-    if (contextChanged && sourceVariant) {
+    if (contextChanged && sourceVariant && !editingNextDraft) {
       for (const source of allSources) {
         const selected = selection.selectedSources.has(source);
         if ((source.selected !== false) !== selected) {
@@ -328,9 +329,9 @@ export function createProjectSources({ onBeforeSelectionChange = () => {}, onSel
     applySourceView();
     return { selectionChanged };
   }
-  async function waitForAddition(projectId, source = null) {
+  async function waitForAddition(projectId, source = null, count = 1) {
     const inlineSource = sourceRows.find(entry => entry.source === source)?.source || null;
-    const pending = additionLoading.wait(projectId, inlineSource);
+    const pending = additionLoading.wait(projectId, inlineSource, count);
     applySourceView();
     try { return await pending; }
     finally { applySourceView(); }

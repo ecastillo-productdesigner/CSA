@@ -264,7 +264,7 @@ export function createDraftingAnimation({ compact = true, selectionKeys = [], va
   }
 
   updateVisibility();
-  return { element, destroy };
+  return { element, destroy, setLabel(value) { if (message.textContent !== value) message.textContent = value; } };
 }
 
 export function createSourceAddingAnimation({ label = 'Adding Source' } = {}) {

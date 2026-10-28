@@ -275,3 +275,38 @@ test('historical sources expose the same Delete menu as current sources without 
   assert.deepEqual(deletions, [{ projectId: 'project', source: historical }]);
   assert.deepEqual(variant, before, 'opening and using the menu does not rewrite saved draft sources');
 });
+
+
+test('newly imported sources remain checked alongside current choices without rewriting the saved draft', t => {
+  const first = source('Captured source', true);
+  const excluded = source('Excluded source', false);
+  const project = { id: 'project', sources: [first, excluded] };
+  const variant = { id: 'draft', sourceSnapshots: [structuredClone(first)] };
+  const history = structuredClone(variant);
+  const ui = setup(t);
+  ui.controller.render(project, { variant });
+  const oldCheckbox = ui.list.querySelector('.editor-source-checkbox');
+  oldCheckbox.checked = false;
+  oldCheckbox.fire('change');
+  project.sources.push(source('New source one', true), source('New source two', true));
+  ui.controller.render(project, { variant, forNewDraft: true });
+  const checked = () => ui.list.querySelectorAll('.editor-source-checkbox').map(input => input.checked);
+  assert.deepEqual(checked(), [false, false, true, true]);
+  assert.equal(ui.status.textContent, '2 of 4 selected for new drafts');
+  assert.deepEqual(variant, history);
+  ui.controller.render(project, { variant });
+  assert.deepEqual(checked(), [false, false, true, true], 'routine rerenders retain the new selection');
+  assert.deepEqual(project.sources.map(source => source.selected), [false, false, true, true]);
+  assert.equal(ui.additionTimers.length, 0, 'displaying selected sources never restarts adding');
+});
+
+test('an import rendered after a project context change preserves the new sources selected in storage', t => {
+  const old = source('Captured source', true); const added = source('New source', true);
+  const project = { id: 'project', sources: [old, added] };
+  const variant = { id: 'draft', sourceSnapshots: [structuredClone(old)] };
+  const ui = setup(t);
+  ui.controller.render(project, { variant, forNewDraft: true });
+  assert.deepEqual(ui.list.querySelectorAll('.editor-source-checkbox').map(input => input.checked), [true, true]);
+  assert.equal(added.selected, true);
+  assert.equal(ui.status.textContent, '2 of 2 selected for new drafts');
+});

@@ -34,7 +34,7 @@ function setup(t) {
   const existing = new Element(); list.append(existing);
   const animations = [];
   const controller = createSourceAdditionLoading({ list, createAnimation(options) {
-    const animation = { element: new Element(), options, destroyed: false, destroy() { this.destroyed = true; } };
+    const animation = { element: new Element(), options, destroyed: false, setLabel(label) { this.options.label = label; }, destroy() { this.destroyed = true; } };
     animations.push(animation);
     return animation;
   } });
@@ -59,7 +59,7 @@ test('source-list shimmer sits below existing sources for exactly five seconds',
   assert.equal(ui.list.children[0], ui.existing);
   assert.equal(ui.list.children.length, 2);
   assert.equal(ui.list.lastElementChild.className, 'editor-source-addition');
-  assert.equal(ui.animations[0].options.label, 'Adding sources');
+  assert.equal(ui.animations[0].options.label, 'Adding Source');
   assert.equal(ui.list.scrollTop, ui.list.scrollHeight, 'only the source list scrolls to reveal loading');
   ui.tick(4999);
   await Promise.resolve();
@@ -101,8 +101,10 @@ test('overlapping batches retain loading until every batch finishes, and destroy
   const first = ui.controller.wait('one');
   ui.tick(1000);
   const second = ui.controller.wait('one');
+  assert.equal(ui.animations[0].options.label, 'Adding Sources');
   ui.tick(4000);
   assert.equal(await first, true);
+  assert.equal(ui.animations[0].options.label, 'Adding Source');
   assert.equal(ui.controller.isPending('one'), true);
   assert.equal(ui.animations[0].destroyed, false);
   ui.tick(1000);
@@ -143,4 +145,16 @@ test('a source row shimmers in place for five seconds and returns after rerender
   assert.deepEqual(ui.list.children, [replacement, following]);
   assert.equal(replacement.children.length, 0);
   assert.equal(ui.animations.at(-1).destroyed, true);
+});
+
+
+test('a batch of multiple new sources uses Adding Sources for the same five-second wait', async t => {
+  const ui = setup(t);
+  const pending = ui.controller.wait('one', null, 3);
+  assert.equal(ui.animations[0].options.label, 'Adding Sources');
+  ui.tick(4999);
+  assert.equal(ui.controller.isPending('one'), true);
+  ui.tick(1);
+  assert.equal(await pending, true);
+  assert.equal(ui.controller.isPending('one'), false);
 });

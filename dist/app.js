@@ -275,7 +275,7 @@ function removeProjectSource(projectId, source) {
   if ($('#composer').classList.contains('has-link-cards')) searchExperience.show(project, { embedded: true });
   updateComposerActions();
   const focus = [...$('#editor-source-list').querySelectorAll('.editor-source-more')];
-  (focus[Math.min(index, focus.length - 1)] || ($('#editor-source-list .editor-source-open') || $('#show-sources'))).focus({ preventScroll: true });
+  (focus[Math.min(index, focus.length - 1)] || $('#editor-add-source-button')).focus({ preventScroll: true });
   notify('Source deleted', () => {
     if (project.deletedAt || !projects.includes(project)) return;
     richEditor.flush();
@@ -514,6 +514,17 @@ function openProjectDialog(reset = true, sourceProjectId = null) {
   const focusTarget = window.matchMedia(breakpointQuery()).matches ? $('.new-project-close') : $('#new-project-query');
   focusTarget.focus({ preventScroll: true });
 }
+
+$('#editor-add-source-button').addEventListener('click', () => {
+  const project = projects.find(entry => entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
+  if (!project || sourceImport || newProjectUpload.isBusy()) return;
+  richEditor.flush();
+  richEditor.closePanels();
+  contentCardEditing.close();
+  railNavigation.closeTransient();
+  toolDropdowns.close();
+  openProjectDialog(true, project.id);
+});
 
 function returnFromSourceAddition() {
   const project = projects.find(entry => entry.id === sourceTargetProjectId);

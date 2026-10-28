@@ -145,7 +145,11 @@ export function mountNavigationSpecimens(root, { onOpenSource } = {}) {
   });
   draftSelection.sync(activeDraft);
   updateSelectionStatus();
-  selectedPreview.append(sourceList, element('p', 'ds-caption', 'Switch between the 2 Sources and 1 Source examples to show the sources captured by each active draft. Its exact saved set becomes checked and the counter says used in this draft. Editing a checkbox chooses sources for the next draft and changes the counter to selected for new drafts; it does not rewrite the current article or saved snapshots. Switching drafts restores that draft’s captured set. Source titles open the shared read-only preview independently of their checkbox. Their hover uses the shared light-gray surface, 8 px corners, and near-black text without an underline; keyboard focus keeps its visible outline.'));
+  const addSource = button('secondary-button editor-add-source-button', 'Add new source');
+  addSource.textContent = 'Add new source';
+  addSource.addEventListener('click', () => { status.textContent = 'Add new source action selected'; });
+  selectedPreview.insertBefore(addSource, selectionStatus);
+  selectedPreview.append(sourceList, element('p', 'ds-caption', 'Add new source uses the shared outlined secondary button above the source list. In the app it opens the existing source picker for the current project, supporting article URLs and uploaded documents. Switch between the 2 Sources and 1 Source examples to show the sources captured by each active draft. Its exact saved set becomes checked and the counter says used in this draft. Editing a checkbox chooses sources for the next draft and changes the counter to selected for new drafts; it does not rewrite the current article or saved snapshots. Switching drafts restores that draft’s captured set. Source titles open the shared read-only preview independently of their checkbox. Their hover uses the shared light-gray surface, 8 px corners, and near-black text without an underline; keyboard focus keeps its visible outline.'));
   const tooltips = [];
 
   function hideTooltips() {

@@ -706,6 +706,8 @@ textarea::placeholder { color: var(--csa-semantic-color-text-secondary); opacity
 .sidebar #editor-source-list { max-height: calc(var(--csa-foundation-layout-ratio-30) * 1svh); flex: 0 1 auto; }
 .sidebar .editor-source-selection-status { font-size: var(--csa-foundation-font-size-12); margin-bottom: var(--csa-foundation-space-0); }
 
+.sources-panel #editor-source-list > .editor-source-addition { display: block; padding: 0; border: 0; }
+.editor-source-addition > .drafting-animation[data-variant="source"] { min-height: var(--csa-component-variant-card-min-height); border-radius: var(--csa-component-variant-card-radius); }
 .editor-add-source-button { flex-shrink: 0; width: 100%; margin-bottom: var(--csa-foundation-space-16); }
 .sources-panel-content { display: flex; flex: 1; flex-direction: column; min-height: 0; padding: 0 var(--csa-foundation-space-24) var(--csa-foundation-space-24); }
 .sources-panel #editor-source-list { align-content: start; flex: 1; min-height: 0; max-height: none; margin: 0; padding-right: var(--csa-foundation-space-8); overscroll-behavior-y: contain; scrollbar-width: thin; }

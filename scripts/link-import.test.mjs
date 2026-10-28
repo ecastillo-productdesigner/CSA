@@ -21,7 +21,7 @@ function productionFunction(start, end) {
 const production = [
   productionFunction('function titleFrom(', '\nfunction createProject('),
   productionFunction('function createProject(', '\nfunction showHome('),
-  productionFunction('function appendProjectSources(', '\nfunction showProject('),
+  productionFunction('async function appendProjectSources(', '\nfunction showProject('),
   productionFunction('async function submitSource(', "\n$('#new-project-query').addEventListener"),
   productionFunction('function finishOutputProcessing(', '\nfunction resumeOutputProcessing('),
   productionFunction('function renderDeferredOutput(', "\n$('#new-project-dialog').addEventListener"),
@@ -39,7 +39,7 @@ class Control {
     this.textContent = '';
     this.selectionStart = 0;
     const classes = new Set();
-    this.classList = { add: value => classes.add(value), remove: value => classes.delete(value) };
+    this.classList = { add: value => classes.add(value), remove: value => classes.delete(value), contains: value => classes.has(value) };
   }
   append(...children) { this.children.push(...children); }
   replaceChildren(...children) { this.children = children; }
@@ -63,7 +63,7 @@ const url = 'https://www.charlotteobserver.com/opinion/article317717272.html';
 const title = 'NC Democrats see the strongest start to early voting ‘in the entire country’ | Opinion';
 const metadata = (href = url, heading = title) => ({ url: href, title: heading, description: 'A public article description', headlineSource: 'json-ld', metadataStatus: 'resolved' });
 
-function setup(t, { target = null, active = null, projects = [], dialogOpen = true } = {}) {
+function setup(t, { target = null, active = null, projects = [], dialogOpen = true, holdAddition = false } = {}) {
   const priorDocument = globalThis.document;
   const tags = { dialog: 'dialog', query: 'textarea', submit: 'button', 'file-input': 'input', 'drop-zone': 'label', 'upload-selection': 'div', 'selected-files': 'ul', 'file-status': 'p', 'use-material': 'button', 'material-error': 'p', 'link-status': 'p', 'link-error': 'p', close: 'button' };
   const nodes = Object.fromEntries(Object.entries(tags).map(([key, tag]) => [key, new Control(tag)]));
@@ -88,13 +88,19 @@ function setup(t, { target = null, active = null, projects = [], dialogOpen = tr
   globalThis.document = document;
   t.after(() => { if (priorDocument === undefined) delete globalThis.document; else globalThis.document = priorDocument; });
   const pending = deferred();
+  const addition = deferred();
   const composer = new Control();
   const querySelector = document.querySelector;
   document.querySelector = selector => selector === '#composer' ? composer : querySelector(selector);
-  const calls = { resolve: [], saved: [], shown: [], sourcePanels: [], notifications: [], fileSaves: 0, resets: 0, editorCloses: 0 };
+  const calls = { resolve: [], saved: [], shown: [], sourcePanels: [], notifications: [], fileSaves: 0, resets: 0, editorCloses: 0, additionWaits: [], sourceRenders: [], deletedDocuments: [] };
   const context = createContext({
     AbortController, crypto: { randomUUID }, document, parseSourceLinks, formatSourceLinks, sourceLinkArticles, projectTitleFromSources, normalizeWordCount,
     projectOutputs, selectedOutputs, outputIsReady, populateOutputContent, reviseSampleOutput, clearTimeout,
+    projectSourcesPanel: { waitForAddition: id => { calls.additionWaits.push(id); return holdAddition ? addition.promise : Promise.resolve(true); } },
+    renderProjectSources: project => calls.sourceRenders.push(project.id),
+    updateComposerActions() {},
+    searchExperience: { show() {} },
+    deleteDocuments: async ids => { calls.deletedDocuments.push(...ids); },
     outputTimers: new Map(), outputViews: new Map(), deferredOutputProjectId: null,
     richEditor: { close: () => { calls.editorCloses++; } },
     $: selector => document.querySelector(selector),
@@ -122,7 +128,7 @@ function setup(t, { target = null, active = null, projects = [], dialogOpen = tr
     get('file-input').files = [{ name: 'Original.txt', size: 12, lastModified: 1 }];
     get('file-input').fire('change');
   }
-  return { context, get, pending, calls, upload, selectFile, otherInput, alreadyDisabled, submit: input => context.submitSource(input ?? get('query').value) };
+  return { context, get, pending, addition, calls, upload, selectFile, otherInput, alreadyDisabled, submit: input => context.submitSource(input ?? get('query').value) };
 }
 
 test('duplicate submission resolves each pasted URL once and creates one project with the exact metadata', async t => {
@@ -281,4 +287,67 @@ test('a draft completing during a headline import is saved without closing the d
   assert.equal(ui.calls.shown.length, 1, 'the new project opens without an old-project refresh stealing focus');
   assert.equal(ui.calls.shown[0], ui.context.projects[0].id);
   assert.equal(ui.context.deferredOutputProjectId, null);
+});
+
+
+const flush = async () => { await Promise.resolve(); await Promise.resolve(); };
+
+test('adding a source closes the picker and waits before changing or saving project sources', async t => {
+  const project = { id: 'target', title: 'Existing', sources: [{ type: 'text', title: 'Original', text: 'Keep this' }] };
+  const ui = setup(t, { target: 'target', active: 'target', projects: [project], holdAddition: true });
+  const work = ui.submit();
+  ui.pending.resolve([metadata()]);
+  await flush();
+  assert.deepEqual(ui.calls.additionWaits, ['target']);
+  assert.equal(ui.get('dialog').open, false);
+  assert.deepEqual(ui.calls.sourcePanels, ['sources']);
+  assert.equal(ui.context.projects[0].sources.length, 1);
+  assert.equal(ui.calls.saved.length, 0);
+  assert.equal(ui.calls.notifications.length, 0);
+  ui.addition.resolve(true);
+  assert.equal(await work, true);
+  assert.equal(ui.context.projects[0].sources.length, 2);
+  assert.deepEqual(ui.calls.sourceRenders, ['target']);
+  assert.deepEqual(ui.calls.notifications, ['1 source added']);
+});
+
+test('source additions finish in their original project without taking over the project opened during loading', async t => {
+  const ui = setup(t, { target: 'target', active: 'target', projects: [
+    { id: 'target', title: 'Existing', sources: [] }, { id: 'other', title: 'Other', sources: [] },
+  ], holdAddition: true });
+  const work = ui.submit();
+  ui.pending.resolve([metadata()]);
+  await flush();
+  ui.context.activeProjectId = 'other';
+  ui.addition.resolve(true);
+  assert.equal(await work, true);
+  assert.equal(ui.context.projects[0].sources.length, 1);
+  assert.equal(ui.context.projects[1].sources.length, 0);
+  assert.equal(ui.context.activeProjectId, 'other');
+  assert.deepEqual(ui.calls.shown, ['target'], 'completion does not open the target again');
+  assert.deepEqual(ui.calls.sourceRenders, []);
+});
+
+test('deleting a project during source loading releases its new documents without reopening it', async t => {
+  const ui = setup(t, { target: 'target', active: 'target', projects: [{ id: 'target', title: 'Existing', sources: [] }], holdAddition: true });
+  const work = ui.context.appendProjectSources([{ type: 'file', title: 'New document', attachmentId: 'new-document' }], 'target');
+  assert.deepEqual(ui.calls.additionWaits, ['target']);
+  ui.context.projects[0].deletedAt = 10;
+  ui.context.activeProjectId = null;
+  ui.addition.resolve(true);
+  assert.equal(await work, true);
+  assert.equal(ui.context.projects[0].sources.length, 0);
+  assert.deepEqual(ui.calls.deletedDocuments, ['new-document']);
+  assert.equal(ui.calls.saved.length, 0);
+  assert.equal(ui.calls.notifications.length, 0);
+});
+
+test('an already-added source does not show a five-second loading state or duplicate its row', async t => {
+  const ui = setup(t, { target: 'target', active: 'target', projects: [{ id: 'target', title: 'Existing', sources: [{ type: 'link', url, title }] }] });
+  const work = ui.submit();
+  ui.pending.resolve([metadata()]);
+  assert.equal(await work, true);
+  assert.equal(ui.context.projects[0].sources.length, 1);
+  assert.deepEqual(ui.calls.additionWaits, []);
+  assert.deepEqual(ui.calls.notifications, ['Sources already added']);
 });

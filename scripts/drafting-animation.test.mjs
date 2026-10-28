@@ -625,3 +625,14 @@ test('revision indicator stays centered in the visible part of a long draft whil
   assert.equal(ui.root.getBoundingClientRect().height, 1200);
   ui.controller.destroy();
 });
+
+
+test('source-list loading can label the same mint animation Adding sources', t => {
+  const env = setup(t);
+  const ui = env.create({ label: 'Adding sources' }, createSourceAddingAnimation);
+  assert.equal(ui.message.textContent, 'Adding sources');
+  assert.equal(ui.message.textWrites, 1);
+  assertActiveShimmer(ui, 'source');
+  assert.equal(ui.papers.length, 1);
+  ui.controller.destroy();
+});

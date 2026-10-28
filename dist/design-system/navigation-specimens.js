@@ -3,6 +3,7 @@ import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-
 import { bindTabSelection, bindRovingSelection } from '../selection-controls.js?v=20261026-drafting-card-size';
 import { createPanelDisclosure } from '../panel-disclosure.js?v=20261026-drafting-card-size';
 import { createDraftingAnimation, createSourceAddingAnimation } from '../drafting-animation.js?v=20261026-drafting-card-size';
+import { createSourceAdditionLoading } from '../source-addition-loading.js?v=20261026-drafting-card-size';
 import { createIcon } from '../icons.js?v=20261026-drafting-card-size';
 import { tokenNumber } from './runtime.js?v=20261026-drafting-card-size';
 import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261026-drafting-card-size';
@@ -100,7 +101,7 @@ export function mountNavigationSpecimens(root, { onOpenSource } = {}) {
     const selected = exampleSources.filter(source => source.selected).length;
     selectionStatus.textContent = `${selected} of ${exampleSources.length} ${selectionEdited ? 'selected for new drafts' : 'used in this draft'}`;
   }
-  for (const source of exampleSources) {
+  function appendExampleSource(source) {
     const sourceRow = element('li');
     const selection = element('label', 'editor-source-selection');
     const checkbox = element('input', 'editor-source-checkbox');
@@ -127,6 +128,9 @@ export function mountNavigationSpecimens(root, { onOpenSource } = {}) {
     sourceRow.append(selection, sourceContent);
     sourceList.append(sourceRow);
   }
+  exampleSources.forEach(appendExampleSource);
+  const sourceAddition = createSourceAdditionLoading({ list: sourceList });
+  sourceAddition.render('navigation-example');
   const draftSelection = bindRovingSelection({
     root: draftSwitch, items: draftButtons,
     getValue: control => control.dataset.exampleDraft,
@@ -147,9 +151,21 @@ export function mountNavigationSpecimens(root, { onOpenSource } = {}) {
   updateSelectionStatus();
   const addSource = button('secondary-button editor-add-source-button', 'Add new source');
   addSource.textContent = 'Add new source';
-  addSource.addEventListener('click', () => { status.textContent = 'Add new source action selected'; });
+  addSource.addEventListener('click', async () => {
+    if (sourceAddition.isPending('navigation-example')) return;
+    addSource.disabled = true;
+    if (await sourceAddition.wait('navigation-example')) {
+      const source = { type: 'text', title: `Additional source ${exampleSources.length - 1}`, text: 'This example source was added after the five-second green shimmer.', selected: true };
+      exampleSources.push(source);
+      appendExampleSource(source);
+      selectionEdited = true;
+      updateSelectionStatus();
+      status.textContent = 'Source added';
+    }
+    addSource.disabled = false;
+  });
   selectedPreview.insertBefore(addSource, selectionStatus);
-  selectedPreview.append(sourceList, element('p', 'ds-caption', 'Add new source uses the shared outlined secondary button above the source list. In the app it opens the existing source picker for the current project, supporting article URLs and uploaded documents. Switch between the 2 Sources and 1 Source examples to show the sources captured by each active draft. Its exact saved set becomes checked and the counter says used in this draft. Editing a checkbox chooses sources for the next draft and changes the counter to selected for new drafts; it does not rewrite the current article or saved snapshots. Switching drafts restores that draft’s captured set. Source titles open the shared read-only preview independently of their checkbox. Their hover uses the shared light-gray surface, 8 px corners, and near-black text without an underline; keyboard focus keeps its visible outline.'));
+  selectedPreview.append(sourceList, element('p', 'ds-caption', 'Add new source uses the shared outlined secondary button above the source list. In the app it opens the existing source picker for the current project, supporting article URLs and uploaded documents. After submission, the shared mint shimmer and Inter Medium Italic label “Adding sources” appear at the bottom of Project Sources for five seconds before the new rows appear. Existing sources remain visible. Try Add new source here to preview the same timing. Switch between the 2 Sources and 1 Source examples to show the sources captured by each active draft. Its exact saved set becomes checked and the counter says used in this draft. Editing a checkbox chooses sources for the next draft and changes the counter to selected for new drafts; it does not rewrite the current article or saved snapshots. Switching drafts restores that draft’s captured set. Source titles open the shared read-only preview independently of their checkbox. Their hover uses the shared light-gray surface, 8 px corners, and near-black text without an underline; keyboard focus keeps its visible outline.'));
   const tooltips = [];
 
   function hideTooltips() {
@@ -244,7 +260,7 @@ export function mountNavigationSpecimens(root, { onOpenSource } = {}) {
   attachTooltip(newProject, 'New Project', 'ds-nav-new-project-tooltip');
   attachTooltip(sources, 'Project Sources', 'ds-nav-sources-tooltip');
   attachTooltip(profile, 'My account', 'ds-nav-account-tooltip');
-  const mounted = { closeMenu };
+  const mounted = { closeMenu, destroy() { sourceAddition.destroy(); sourcesTransition.destroy(); draftSelection.destroy(); navigationMounts.delete(root); } };
   navigationMounts.set(root, mounted);
   return mounted;
 }

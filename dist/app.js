@@ -103,7 +103,7 @@ const newProjectUpload = createNewProjectUpload({
       if (!target) return false;
       const duplicates = sources.filter(source => target.sources.some(existing => existing.type === source.type && existing.title === source.title && existing.text === source.text));
       await deleteDocuments(duplicates.map(source => source.attachmentId));
-      appendProjectSources(sources.filter(source => !duplicates.includes(source)));
+      return appendProjectSources(sources.filter(source => !duplicates.includes(source)), target.id);
     } else {
       createProject(sources, { kind: 'draft', awaitingOutput: true });
       if (!window.matchMedia(breakpointQuery()).matches) railNavigation.open('sources');
@@ -535,17 +535,34 @@ function returnFromSourceAddition() {
   else showHome();
 }
 
-function appendProjectSources(sources, projectId = sourceTargetProjectId) {
+async function appendProjectSources(sources, projectId = sourceTargetProjectId) {
   const project = projects.find(entry => entry.id === projectId && !entry.deletedAt);
-  if (!project) { sourceTargetProjectId = null; showHome(); return; }
-  const additions = sources.filter(source => !project.sources.some(existing => source.url ? existing.url === source.url : existing.type === source.type && existing.title === source.title && existing.text === source.text));
-  project.sources.push(...additions.map(source => ({ ...source, selected: true })));
-  project.updatedAt = Date.now();
-  saveProjects();
+  if (!project) return false;
+  const isNew = source => !project.sources.some(existing => source.url ? existing.url === source.url : existing.type === source.type && existing.title === source.title && existing.text === source.text);
+  let additions = sources.filter(isNew);
   sourceTargetProjectId = null;
+  if ($('#new-project-dialog').open) $('#new-project-dialog').close();
   showEditorProject(project);
   railNavigation.open('sources');
+  if (additions.length) {
+    if (!await projectSourcesPanel.waitForAddition(project.id)) return false;
+    // A background addition must not reopen a project the person left or deleted.
+    if (project.deletedAt || !projects.includes(project)) {
+      await deleteDocuments(additions.map(source => source.attachmentId).filter(Boolean));
+      return true;
+    }
+    additions = additions.filter(isNew);
+    project.sources.push(...additions.map(source => ({ ...source, selected: true })));
+    project.updatedAt = Date.now();
+    saveProjects();
+    if (activeProjectId === project.id && !project.archivedAt && !$('#composer').hidden) {
+      renderProjectSources(project);
+      if ($('#composer').classList.contains('has-link-cards')) searchExperience.show(project, { embedded: true });
+      updateComposerActions();
+    }
+  }
   notify(additions.length ? `${additions.length} ${additions.length === 1 ? 'source' : 'sources'} added` : 'Sources already added');
+  return true;
 }
 
 function showProject(id) {
@@ -1029,7 +1046,7 @@ async function submitSource(input) {
       target.linkCards = true;
       target.viewOriginalDraft = true;
       if (dialog.open) dialog.close();
-      appendProjectSources(sources, targetProjectId);
+      return await appendProjectSources(sources, targetProjectId);
     } else {
       if (dialog.open) dialog.close();
       createProject(sources, { kind: 'draft', awaitingOutput: true, linkCards: true });
@@ -1228,7 +1245,7 @@ async function useMaterial() {
       sources = await saveDocuments(selectedFiles);
     }
     dialog.close();
-    if (sourceTargetProjectId) { appendProjectSources(sources); return; }
+    if (sourceTargetProjectId) { await appendProjectSources(sources); return; }
     const existing = addingToProject && projects.find((project) => project.id === activeProjectId);
     if (existing) {
       existing.sources.push(...sources);
@@ -1309,11 +1326,11 @@ const searchExperience = createSearchExperience({
       saveProjects();
     }
   },
-  onDraft({ query, articles, editorialDirection }) {
+  async onDraft({ query, articles, editorialDirection }) {
     const sources = articles.map((article) => article.url
       ? { type: 'link', title: article.title, url: article.url, excerpt: article.excerpt, description: article.description || '', headlineSource: article.headlineSource, metadataStatus: article.metadataStatus }
       : { type: 'text', title: article.title, text: `Fictional sample article · ${article.source} · ${article.date}\n\n${article.paragraphs.join('\n\n')}` });
-    if (sourceTargetProjectId) { appendProjectSources(sources); return; }
+    if (sourceTargetProjectId) { await appendProjectSources(sources); return; }
     createProject(sources, { title: articles[0]?.url ? articles[0].title : titleFrom(query), kind: 'draft', awaitingOutput: true, editorialDirection });
   },
 });

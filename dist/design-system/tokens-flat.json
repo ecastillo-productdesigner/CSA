@@ -6880,6 +6880,18 @@
       "status": "observed"
     },
     {
+      "name": "component.drafting.source-add-duration",
+      "designName": "component/drafting/source-add-duration",
+      "cssVariable": "--csa-component-drafting-source-add-duration",
+      "type": "duration",
+      "layer": "component",
+      "category": "drafting",
+      "value": "5000ms",
+      "reference": "",
+      "description": "Show Adding sources in Project Sources for five seconds before inserting the new sources.",
+      "status": "observed"
+    },
+    {
       "name": "component.composer-panel.heading-font-size",
       "designName": "component/composer-panel/heading-font-size",
       "cssVariable": "--csa-component-composer-panel-heading-font-size",

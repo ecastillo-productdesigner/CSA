@@ -7,7 +7,7 @@ function durationMilliseconds(path) {
   return duration * (value.endsWith('ms') ? 1 : 1000);
 }
 
-export function createDraftingAnimation({ compact = true, selectionKeys = [], variant = 'drafting' } = {}) {
+export function createDraftingAnimation({ compact = true, selectionKeys = [], variant = 'drafting', label } = {}) {
   const addingSource = variant === 'source';
   const revising = variant === 'revision';
   const depths = addingSource ? ['front'] : ['back', 'middle', 'front'];
@@ -51,7 +51,7 @@ export function createDraftingAnimation({ compact = true, selectionKeys = [], va
   message.setAttribute('role', 'status');
   message.setAttribute('aria-live', 'polite');
   message.setAttribute('aria-atomic', 'true');
-  message.textContent = addingSource ? 'Adding Source' : revising ? 'Revising Draft' : 'Drafting Content';
+  message.textContent = label ?? (addingSource ? 'Adding Source' : revising ? 'Revising Draft' : 'Drafting Content');
   if (revising) {
     const content = document.createElement('div');
     content.className = 'revision-animation-content';
@@ -267,8 +267,8 @@ export function createDraftingAnimation({ compact = true, selectionKeys = [], va
   return { element, destroy };
 }
 
-export function createSourceAddingAnimation() {
-  return createDraftingAnimation({ compact: true, variant: 'source' });
+export function createSourceAddingAnimation({ label = 'Adding Source' } = {}) {
+  return createDraftingAnimation({ compact: true, variant: 'source', label });
 }
 
 export function createRevisionAnimation({ selectionKeys = [] } = {}) {

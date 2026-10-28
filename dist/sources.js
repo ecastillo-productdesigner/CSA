@@ -1,6 +1,8 @@
 import { draftSourcesFor } from './source-model.js?v=20261026-drafting-card-size';
 import { tokenNumber } from './design-system/runtime.js?v=20261026-drafting-card-size';
 import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-drafting-card-size';
+import { createSourceAdditionLoading } from './source-addition-loading.js?v=20261026-drafting-card-size';
+
 export function sourceSelectionFor(project, variant = null) {
   const available = project?.sources || [];
   if (!variant) return { sources: available, selectedSources: new Set(available.filter(source => source.selected !== false)) };
@@ -106,6 +108,7 @@ export function createProjectSources({ onBeforeSelectionChange = () => {}, onSel
   sourcePanel.className = 'source-status-content';
   list.before(sourcePanel);
   sourcePanel.append(list);
+  const additionLoading = createSourceAdditionLoading({ list });
   let sourceRows = [];
   let emptyRow = null;
   const titleTooltip = document.createElement('div');
@@ -140,7 +143,8 @@ export function createProjectSources({ onBeforeSelectionChange = () => {}, onSel
   function applySourceView() {
     closeMenu();
     hideTitleTooltip();
-    emptyRow.hidden = sourceRows.length > 0;
+    additionLoading.render(project?.id || null);
+    emptyRow.hidden = sourceRows.length > 0 || additionLoading.isPending(project?.id);
     emptyRow.textContent = project ? 'No sources yet. Add a new source to this project.' : 'Open a project to view its sources.';
     list.setAttribute('aria-label', 'Project Sources');
     updateSelectionStatus();
@@ -320,5 +324,12 @@ export function createProjectSources({ onBeforeSelectionChange = () => {}, onSel
     applySourceView();
     return { selectionChanged };
   }
-  return { render, openPreview };
+  async function waitForAddition(projectId) {
+    const pending = additionLoading.wait(projectId);
+    applySourceView();
+    try { return await pending; }
+    finally { applySourceView(); }
+  }
+
+  return { render, openPreview, waitForAddition };
 }

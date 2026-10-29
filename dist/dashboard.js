@@ -234,7 +234,6 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
     remove.addEventListener('click', () => {
       closeMenu();
       pendingDelete = { id: project.id, trigger: more };
-      document.querySelector('#delete-project-name').textContent = project.title;
       deleteError.hidden = true;
       deleteDialog.showModal();
       deleteCancel.focus();

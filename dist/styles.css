@@ -401,7 +401,6 @@ dialog { color: var(--ink); background: var(--surface); border: var(--csa-founda
 dialog::backdrop { background: var(--csa-semantic-color-overlay-scrim); backdrop-filter: blur(var(--csa-foundation-space-3)); }
 .delete-project-dialog { width: min(var(--csa-foundation-size-420), calc(100% - var(--csa-foundation-space-32))); border-radius: var(--csa-foundation-radius-16); padding: var(--csa-foundation-space-26); }
 .delete-project-dialog .panel-heading h2 { margin: 0 0 var(--csa-foundation-space-16); color: var(--heading); font-family: var(--csa-semantic-typography-dialog-heading-font-family); font-size: var(--csa-semantic-typography-dialog-heading-font-size); line-height: var(--csa-semantic-typography-dialog-heading-line-height); font-weight: var(--csa-semantic-typography-dialog-heading-font-weight); letter-spacing: var(--csa-semantic-typography-dialog-heading-letter-spacing); }
-.delete-project-name { margin: 0 0 var(--csa-foundation-space-12); font-size: var(--csa-foundation-font-size-16); line-height: var(--csa-foundation-line-height-24); font-weight: var(--csa-foundation-font-weight-600); overflow-wrap: anywhere; }
 
 .delete-project-dialog .dialog-footer { flex-wrap: wrap; }
 .danger-button .material-symbols-outlined { font-size: var(--csa-foundation-icon-size-20); width: var(--csa-foundation-icon-size-20); height: var(--csa-foundation-icon-size-20); }

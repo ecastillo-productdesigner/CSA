@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=add_circle,arrow_forward,article,check,chevron_forward,close,delete,description,draw,edit,edit_document,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,photo_camera,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,unfold_less,upload,view_module,visibility&amp;display=block">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
     <link rel="stylesheet" href="./design-system/tokens.css?v=20261028-revision-indicator">
-    <link rel="stylesheet" href="./styles.css?v=20261029-source-workspace">
-    <script src="./demo-access.js?v=20261029-welcome-copy" type="module"></script>
+    <link rel="stylesheet" href="./styles.css?v=20261029-delete-project-dialog">
+    <script src="./demo-access.js?v=20261029-delete-project-dialog" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -254,9 +254,8 @@
 
 
 
-    <dialog class="delete-project-dialog" id="delete-project-dialog" role="alertdialog" aria-labelledby="delete-project-heading" aria-describedby="delete-project-name">
+    <dialog class="delete-project-dialog" id="delete-project-dialog" role="alertdialog" aria-labelledby="delete-project-heading">
       <div class="panel-heading"><h2 id="delete-project-heading">Delete Project?</h2><button class="icon-button" type="button" data-close="delete-project-dialog" aria-label="Close Delete Project Dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
-      <p class="delete-project-name" id="delete-project-name"></p>
       <p class="form-error" id="delete-project-error" role="alert" hidden></p>
       <div class="dialog-footer confirmation-actions"><button class="secondary-button" id="delete-project-cancel" type="button" autofocus>Cancel</button><button class="danger-button" id="delete-project-confirm" type="button"><span>Delete</span></button></div>
     </dialog>

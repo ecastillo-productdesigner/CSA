@@ -1,6 +1,6 @@
 import { createIcon } from '../icons.js?v=20261026-drafting-card-size';
 import { bindRovingSelection } from '../selection-controls.js?v=20261026-drafting-card-size';
-import { projectUpdatedDate, projectContentCountLabel } from '../dashboard.js?v=20261026-drafting-card-size';
+import { projectUpdatedDate, projectContentCountLabel } from '../dashboard.js?v=20261029-delete-project-dialog';
 
 // Isolated documentation data. This specimen never mounts the app dashboard
 // controller, reads browser storage, or changes a saved project.
@@ -44,7 +44,6 @@ export function mountProjectSpecimens(root) {
   deleteDialog.id = `${prefix}-delete-dialog`;
   deleteDialog.setAttribute('role', 'alertdialog');
   deleteDialog.setAttribute('aria-labelledby', `${prefix}-delete-heading`);
-  deleteDialog.setAttribute('aria-describedby', `${prefix}-delete-name`);
   const deleteHeading = node('div', 'panel-heading');
   const deleteTitle = node('h2', '', 'Delete Project?');
   deleteTitle.id = `${prefix}-delete-heading`;
@@ -53,8 +52,6 @@ export function mountProjectSpecimens(root) {
   dismissDelete.setAttribute('aria-label', 'Close Delete Project Dialog');
   dismissDelete.append(createIcon('close'));
   deleteHeading.append(deleteTitle, dismissDelete);
-  const deleteName = node('p', 'delete-project-name', project.title);
-  deleteName.id = `${prefix}-delete-name`;
   const deleteActions = node('div', 'dialog-footer confirmation-actions');
   const cancelDelete = node('button', 'secondary-button', 'Cancel');
   cancelDelete.type = 'button';
@@ -63,7 +60,7 @@ export function mountProjectSpecimens(root) {
   confirmDelete.type = 'button';
   confirmDelete.append(node('span', '', 'Delete'));
   deleteActions.append(cancelDelete, confirmDelete);
-  deleteDialog.append(deleteHeading, deleteName, deleteActions);
+  deleteDialog.append(deleteHeading, deleteActions);
   const viewButtons = ['grid', 'list'].map(view => {
     const button = node('button');
     button.type = 'button';

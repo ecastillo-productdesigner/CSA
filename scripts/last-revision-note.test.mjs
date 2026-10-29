@@ -29,7 +29,7 @@ test('revision details use the completion time and never invent one from the req
   assert.equal(latestRevisionDetails({}), null);
 });
 
-test('every revision is retained and displayed oldest to newest without reordering stored records', () => {
+test('revision history is normalized chronologically without reordering stored records', () => {
   const output = { revisionRequests: [{ instructions: 'Third revision', completedAt: 30 }, { instructions: 'First revision', completedAt: 10 }, { instructions: 'Second revision', completedAt: 20 }] };
   const before = structuredClone(output);
   assert.deepEqual(revisionHistory(output).map(note => note.instructions), ['First revision', 'Second revision', 'Third revision']);

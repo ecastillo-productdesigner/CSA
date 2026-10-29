@@ -164,7 +164,7 @@ test('opening Request Revision acknowledges its dot while preserving the capture
 
 const contents = element => element.textContent + element.children.map(contents).join('');
 
-test('Revision History expands saved requests chronologically without submitting or losing typed instructions', t => {
+test('Revision History displays newest first with original numbering without submitting or losing typed instructions', t => {
   const ui = setup(t);
   ui.output.revisionRequests = [
     { instructions: 'Second request', completedAt: 2000 },
@@ -176,14 +176,16 @@ test('Revision History expands saved requests chronologically without submitting
   assert.equal(ui['history-toggle'].getAttribute('aria-expanded'), 'false');
   ui.instructions.value = 'An unsent request';
   ui.instructions.fire('input');
+  ui['history-panel'].scrollTop = 100;
   ui['history-toggle'].fire('click');
+  assert.equal(ui['history-panel'].scrollTop, 0);
   assert.equal(ui['history-panel'].hidden, false);
   assert.equal(ui['history-toggle'].getAttribute('aria-expanded'), 'true');
   assert.equal(ui['history-toggle'].hidden, false);
   assert.equal(ui['history-label'].textContent, 'Revision History (2)');
   const entries = ui['history-list'].children.map(contents);
-  assert.match(entries[0], /Revision 1.*Requested Change: First request\nKeep the quote/s);
-  assert.match(entries[1], /Revision 2.*Requested Change: Second request/s);
+  assert.match(entries[1], /Revision 1.*Requested Change: First request\nKeep the quote/s);
+  assert.match(entries[0], /Revision 2.*Requested Change: Second request/s);
   ui['history-toggle'].fire('click');
   assert.equal(ui['history-panel'].hidden, true);
   assert.equal(ui.instructions.value, 'An unsent request');
@@ -236,8 +238,8 @@ test('Requested Change renders the completion result rather than claiming the ra
   ui.api.open(ui.project, ui.output);
   ui['history-toggle'].fire('click');
   const entries = ui['history-list'].children.map(contents);
-  assert.match(entries[0], /Requested Change: Updated the draft body\. No other changes\./);
-  assert.ok(entries[1].includes('Requested Change: ' + changeSummary));
-  assert.ok(!entries[1].includes('Requested Change: Add an elephant'));
+  assert.match(entries[1], /Requested Change: Updated the draft body\. No other changes\./);
+  assert.ok(entries[0].includes('Requested Change: ' + changeSummary));
+  assert.ok(!entries[0].includes('Requested Change: Add an elephant'));
   assert.equal(ui.output.revisionRequests[1].instructions, 'Add an elephant');
 });

@@ -1,4 +1,4 @@
-import { revisionHistory, renderRevisionHistory } from './last-revision-note.js?v=20261029-revision-change-summary';
+import { revisionHistory, renderRevisionHistory } from './last-revision-note.js?v=20261029-newest-revision-first';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 
 export function createRevisionButton(output, disabled = false) {
@@ -38,6 +38,7 @@ export function createRevisionRequests({ onSubmit, closePanels, onRevisionRead =
   const historyList = document.querySelector('#revision-request-history-list');
   function setHistoryOpen(open) {
     historyPanel.hidden = !open;
+    if (open) historyPanel.scrollTop = 0;
     historyToggle.setAttribute('aria-expanded', String(open));
   }
   historyToggle.addEventListener('click', () => { if (!historyToggle.hidden) setHistoryOpen(historyPanel.hidden); });

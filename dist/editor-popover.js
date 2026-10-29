@@ -1,6 +1,6 @@
 import { tokenNumber } from './design-system/runtime.js?v=20261026-drafting-card-size';
 
-export function createEditorPopover({ container, trigger, popover, dismiss, onOpen = () => {} }) {
+export function createEditorPopover({ container, trigger, popover, dismiss, onOpen = () => {}, resetScroll = false }) {
   function close(restoreFocus = false) {
     const wasOpen = !popover.hidden;
     popover.hidden = true;
@@ -35,6 +35,7 @@ export function createEditorPopover({ container, trigger, popover, dismiss, onOp
     popover.hidden = false;
     trigger.setAttribute('aria-expanded', 'true');
     position();
+    if (resetScroll) popover.scrollTop = 0;
     popover.focus({ preventScroll: true });
   });
   dismiss.addEventListener('click', () => close(true));

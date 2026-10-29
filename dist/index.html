@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
     <link rel="stylesheet" href="./design-system/tokens.css?v=20261029-revision-indicator-location">
     <link rel="stylesheet" href="./styles.css?v=20261029-panel-heading-color">
-    <script src="./demo-access.js?v=20261029-revision-change-summary" type="module"></script>
+    <script src="./demo-access.js?v=20261029-newest-revision-first" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -138,7 +138,7 @@
     </div>
     <div class="editor-context-panel editor-flyover" id="editor-revision-note-popover" role="dialog" aria-labelledby="editor-revision-note-heading" tabindex="-1" hidden>
       <div class="editor-panel-heading"><h2 id="editor-revision-note-heading">Requested Revision</h2><button class="icon-button" id="editor-revision-note-close" type="button" aria-label="Close Requested Revision"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
-      <ol class="editor-revision-history" id="editor-revision-history" aria-label="Revisions, oldest to newest"></ol>
+      <ol class="editor-revision-history" id="editor-revision-history" reversed aria-label="Revisions, newest to oldest"></ol>
     </div>
             <div class="editor-context-panel editor-flyover" id="editor-direction-popover" role="dialog" aria-labelledby="editor-direction-heading" tabindex="-1" hidden>
               <div class="editor-panel-heading"><h2 id="editor-direction-heading">Editorial Direction</h2><button class="icon-button" id="editor-direction-close" type="button" aria-label="Close Editorial Direction"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
@@ -301,7 +301,7 @@
         <textarea id="revision-request-instructions" rows="4" maxlength="8000" placeholder="Describe the change you’d like to make (for example, “make subheads into questions”)" required></textarea>
         <p class="form-error" id="revision-request-error" role="alert" hidden></p>
         <div class="revision-request-history-panel" id="revision-request-history-panel" role="region" tabindex="0" aria-labelledby="revision-request-history-toggle" hidden>
-          <ol class="editor-revision-history" id="revision-request-history-list" aria-label="Revisions, oldest to newest"></ol>
+          <ol class="editor-revision-history" id="revision-request-history-list" reversed aria-label="Revisions, newest to oldest"></ol>
         </div>
         <div class="dialog-footer"><button class="editor-metadata-trigger revision-request-history-toggle" id="revision-request-history-toggle" type="button" hidden aria-expanded="false" aria-controls="revision-request-history-panel"><span id="revision-request-history-label">Revision History</span><span class="material-symbols-outlined editor-flyover-chevron" aria-hidden="true">chevron_forward</span></button><div class="revision-request-actions"><button class="secondary-button dialog-cancel-button" type="button" data-close="revision-request-dialog">Cancel</button><button class="primary-button dialog-action-button" id="revision-request-submit" type="submit" disabled>Request Revision</button></div></div>
       </form>

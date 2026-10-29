@@ -1,4 +1,4 @@
-import { createEditorPopover } from './editor-popover.js?v=20261027-metadata';
+import { createEditorPopover } from './editor-popover.js?v=20261029-newest-revision-first';
 
 const validTime = value => typeof value === 'number' && value > 0 && Number.isFinite(new Date(value).getTime()) ? value : null;
 
@@ -47,7 +47,7 @@ export function renderRevisionHistory(list, notes) {
     fields.append(dateRow, noteRow);
     entry.append(heading, fields);
     return entry;
-  }));
+  }).reverse());
 }
 
 export function createLastRevisionNote({ container = document.querySelector('#material-editor'), closePanels = () => {} } = {}) {
@@ -65,7 +65,7 @@ export function createLastRevisionNote({ container = document.querySelector('#ma
     dismiss.setAttribute('aria-label', `Close ${title}`);
     renderRevisionHistory(list, notes);
   }
-  const controller = createEditorPopover({ container, trigger, popover, dismiss, onOpen() { closePanels(); render(); } });
+  const controller = createEditorPopover({ container, trigger, popover, dismiss, resetScroll: true, onOpen() { closePanels(); render(); } });
   function update(output) {
     controller.close();
     notes = revisionHistory(output);

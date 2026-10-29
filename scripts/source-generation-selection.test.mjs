@@ -105,6 +105,7 @@ test('Project Sources changes flush before mutation, persist afterward, and refr
 test('Add to List rechecks selected sources after flushing and rejects a stale enabled action', () => {
   const state = project([source('One')]);
   const ui = setup(state, { onFlush(current) { current.sources[0].selected = false; } });
+  ui.controls.get('#composer-editorial-direction').value = 'Keep this unsubmitted direction';
   ui.refresh();
   assert.equal(ui.create.disabled, false);
   ui.createDraft();
@@ -112,6 +113,7 @@ test('Add to List rechecks selected sources after flushing and rejects a stale e
   assert.equal(ui.persisted.length, 0);
   assert.equal(ui.opened.length, 0);
   assert.deepEqual(ui.events, ['flush']);
+  assert.equal(ui.controls.get('#composer-editorial-direction').value, 'Keep this unsubmitted direction');
 });
 
 test('new recipes capture only the current checked sources while earlier draft snapshots remain unchanged', () => {
@@ -189,4 +191,25 @@ test('an unchanged Sources render does not save or refresh creation actions', ()
   assert.equal(ui.persisted.length, 0);
   assert.equal(ui.create.disabled, true);
   assert.equal(ui.create.title, 'unchanged control state');
+});
+
+
+test('Add to List captures the direction on its recipe and clears the field and saved starter guidance', () => {
+  const state = project([source('Selected source')]);
+  const ui = setup(state);
+  const direction = 'Focus on local businesses.\nKeep the tone conversational.';
+  ui.controls.get('#composer-editorial-direction').value = direction;
+  ui.createDraft();
+  const first = state.outputs[0];
+  assert.equal(first.editorialDirection, direction);
+  assert.equal(ui.controls.get('#composer-editorial-direction').value, '');
+  assert.equal(state.editorialDirection, '');
+  assert.equal(ui.persisted.at(-1).editorialDirection, '');
+  assert.equal(ui.persisted.at(-1).outputs[0].editorialDirection, direction);
+  ui.controls.get('#composer-format').value = 'standard';
+  ui.refresh();
+  ui.createDraft();
+  assert.equal(state.outputs.length, 2);
+  assert.equal(state.outputs[0].editorialDirection, '');
+  assert.equal(first.editorialDirection, direction, 'the next addition must not change the earlier recipe');
 });

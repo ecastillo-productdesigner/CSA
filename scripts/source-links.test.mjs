@@ -91,11 +91,13 @@ test('opaque article IDs use readable URL information without inventing an unrel
   assert.notEqual(cards[0].id, cards[3].id);
 });
 
-test('URL-only Sources preview leaves missing article text empty without inventing a body', () => {
+test('URL-only Sources preview shows five illustrative paragraphs without saving them to the source', () => {
   const source = { type: 'link', title: 'article317649444', url: 'https://www.charlotteobserver.com/latest-news/article317649444.html', selected: true };
   const original = structuredClone(source);
   const article = sourceLinkArticles([source.url])[0];
-  assert.deepEqual(sourcePreviewParagraphs(source), []);
+  const paragraphs = sourcePreviewParagraphs(source);
+  assert.equal(paragraphs.length, 5);
+  assert.match(paragraphs[0], /^This imagined account,/);
   assert.deepEqual(source, original);
   assert.deepEqual(article.paragraphs, []);
 });
@@ -131,7 +133,10 @@ test('saved metadata headlines and descriptions survive card rebuilding without 
   assert.equal(first.selected, false);
   assert.equal(first.addedToCsa, true);
   assert.equal(sourceDisplayTitle(source), source.title);
-  assert.deepEqual(sourcePreviewParagraphs(source), [source.description]);
+  const paragraphs = sourcePreviewParagraphs(source);
+  assert.equal(paragraphs.length, 5);
+  assert.equal(paragraphs[0], source.description);
+  assert.match(paragraphs[1], /^This imagined account,/);
   assert.deepEqual(source, original);
 });
 
@@ -156,7 +161,12 @@ test('a missing headline uses a transparent URL fallback and labels invented sum
 });
 
 
-test('legacy generated link previews do not masquerade as captured article text', () => {
+test('legacy generated link previews use the five-paragraph sample without modifying captured sources', () => {
   const source = { type: 'link', title: 'Legacy preview', url: 'https://example.com/story', text: 'Fictional sample article · Example · 2026-10-12\n\nInvented body.', excerpt: 'Fictional preview: invented summary.' };
-  assert.deepEqual(sourcePreviewParagraphs(source), []);
+  const original = structuredClone(source);
+  const paragraphs = sourcePreviewParagraphs(source);
+  assert.equal(paragraphs.length, 5);
+  assert.match(paragraphs[0], /^This imagined account,/);
+  assert.equal(paragraphs.includes('Invented body.'), false);
+  assert.deepEqual(source, original);
 });

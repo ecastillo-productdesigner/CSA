@@ -4,7 +4,7 @@ import { bindTabSelection } from '../selection-controls.js?v=20261026-drafting-c
 import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261029-source-workspace';
 import { mountProjectSpecimens } from './project-specimens.js?v=20261029-delete-project-dialog';
 import { mountFormSpecimens } from './form-specimens.js?v=20261026-drafting-card-size';
-import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261029-source-panel-open';
+import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261029-preview-direction';
 import { colorRoleGroups } from './color-roles.js?v=20261028-revision-indicator';
 import { typographyRoleGroups } from './typography-roles.js?v=20261026-drafting-card-size';
 import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-drafting-card-size';
@@ -13,7 +13,7 @@ import { iconInventory } from './icon-inventory.js?v=20261026-drafting-card-size
 import { tokenNumber } from './runtime.js?v=20261026-drafting-card-size';
 import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261026-drafting-card-size';
 import { createDraftSourcesPopover } from '../draft-sources-popover.js?v=20261026-drafting-card-size';
-import { createSourcePreview } from '../sources.js?v=20261029-source-workspace';
+import { createSourcePreview } from '../sources.js?v=20261029-preview-direction';
 const $ = selector => document.querySelector(selector);
 populateDraftOptions(document);
 const toolDropdowns = createToolDropdowns();

@@ -326,7 +326,10 @@ test('source preview shows publisher metadata and a safe original link with an e
   assert.equal(link.target, '_blank');
   assert.equal(link.rel, 'noopener noreferrer');
   assert.equal(link.querySelector('.material-symbols-outlined').textContent, 'open_in_new');
-  assert.equal(ui.doc.querySelector('#article-preview-body').textContent, article.description);
+  const paragraphs = ui.doc.querySelector('#article-preview-body').querySelectorAll('p');
+  assert.equal(paragraphs.length, 5);
+  assert.equal(paragraphs[0].textContent, article.description);
+  assert.match(paragraphs[1].textContent, /^This imagined account,/);
   assert.deepEqual(project, before);
   ui.preview.close();
   assert.equal(ui.doc.activeElement, trigger);

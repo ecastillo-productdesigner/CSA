@@ -1,7 +1,7 @@
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { draftSourcesFor, sourceIdentityKey } from './source-model.js?v=20261026-drafting-card-size';
 import { tokenNumber } from './design-system/runtime.js?v=20261026-drafting-card-size';
-import { sourceLinkArticles } from './source-links.js?v=20261026-drafting-card-size';
+import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-drafting-card-size';
 import { createSourceAdditionLoading } from './source-addition-loading.js?v=20261026-drafting-card-size';
 
 export function sourceSelectionFor(project, variant = null) {
@@ -42,7 +42,11 @@ export function sourcePreviewParagraphs(source) {
     const article = sourceLinkArticles([source])[0];
     if (article.paragraphs.length) return article.paragraphs;
     const summary = (source.description || source.excerpt || '').trim();
-    return summary && !/^Fictional preview:/i.test(summary) ? [summary] : [];
+    const sample = fictionalArticleParagraphs(article.title);
+    if (!summary || /^Fictional preview:/i.test(summary)) return sample;
+    // Keep the publisher summary first and the illustrative introduction before
+    // the sample body, without saving preview prose as captured source text.
+    return [summary, `${sample[0]} ${sample[1]}`, ...sample.slice(2)];
   }
   if (text.startsWith('Fictional sample article · ') && text.includes('\n\n')) text = text.slice(text.indexOf('\n\n') + 2);
   return text.split(/\n\s*\n/).map(value => value.trim()).filter(Boolean);

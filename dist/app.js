@@ -22,7 +22,7 @@ import { createToolDropdowns } from './tool-dropdowns.js?v=20261026-drafting-car
 import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261026-drafting-card-size';
 import { createNewProjectUpload } from './new-project-upload.js?v=20261026-drafting-card-size';
 import { createRailNavigation } from './navigation.js?v=20261029-source-panel-open';
-import { createProjectSources } from './sources.js?v=20261029-source-workspace';
+import { createProjectSources } from './sources.js?v=20261029-preview-direction';
 import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261026-drafting-card-size';
 import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261026-drafting-card-size';
 import { createEditorTabs } from './editor-tabs.js?v=20261029-source-workspace';
@@ -847,6 +847,8 @@ $('.create-variant').addEventListener('click', () => {
   project.newVariantCollapsed = false;
   setNewVariantCollapsed(false);
   project.toolPreferences = { format: '', audience: '', voice: '' };
+  project.editorialDirection = '';
+  $('#composer-editorial-direction').value = '';
   for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = '';
   toolDropdowns.close();
   toolDropdowns.refresh();

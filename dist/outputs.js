@@ -1,3 +1,4 @@
+import { mentionsElephant, revisionChangeSummary } from './revision-change-summary.js?v=20261029-revision-change-summary';
 import { syncSelection } from './selection-controls.js?v=20261026-drafting-card-size';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { normalizeWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
@@ -329,31 +330,35 @@ export function populateOutputContent(output) {
 }
 
 export function reviseSampleOutput(output, instructions, requestedAt, completedAt = Date.now()) {
-  const revision = (Array.isArray(output.revisionRequests) ? output.revisionRequests.length : 0) + 1;
-  const sourceTopic = topicDraftContent(output.sourceSnapshots, { revision });
-  if (sourceTopic) output.topicDraftVersion = 1;
-  initializeOutputShareText(output);
-  const normalize = text => text.replace(/\s+/g, ' ').trim();
-  const current = normalize(output.draftText || '');
-  const samples = storyParagraphs.map((opening, index) => [...opening.slice(0, -1), ...extraStoryParagraphs[index], opening.at(-1)]);
-  const formatContent = paragraphs => formatDraftContent(paragraphs, {
-    format: output.toolPreferences?.format,
-    headings: sourceTopic?.sectionHeadings,
-  });
-  const choices = sourceTopic ? [] : samples.filter(paragraphs => normalize(formatContent(paragraphs).draftText) !== current);
-  const paragraphs = sourceTopic?.paragraphs || choices[Math.floor(Math.random() * choices.length)];
-  Object.assign(output, formatContent(paragraphs));
-  output.contentInitialized = true;
-  output.contentVersion = 3;
+  const before = { title: output.title, draftText: output.draftText, document: output.document, shareText: output.shareText };
+  if (!mentionsElephant(instructions)) {
+    const revision = (Array.isArray(output.revisionRequests) ? output.revisionRequests.length : 0) + 1;
+    const sourceTopic = topicDraftContent(output.sourceSnapshots, { revision });
+    if (sourceTopic) output.topicDraftVersion = 1;
+    initializeOutputShareText(output);
+    const normalize = text => text.replace(/\s+/g, ' ').trim();
+    const current = normalize(output.draftText || '');
+    const samples = storyParagraphs.map((opening, index) => [...opening.slice(0, -1), ...extraStoryParagraphs[index], opening.at(-1)]);
+    const formatContent = paragraphs => formatDraftContent(paragraphs, {
+      format: output.toolPreferences?.format,
+      headings: sourceTopic?.sectionHeadings,
+    });
+    const choices = sourceTopic ? [] : samples.filter(paragraphs => normalize(formatContent(paragraphs).draftText) !== current);
+    const paragraphs = sourceTopic?.paragraphs || choices[Math.floor(Math.random() * choices.length)];
+    Object.assign(output, formatContent(paragraphs));
+    output.contentInitialized = true;
+    output.contentVersion = 3;
+    output.status = 'ready';
+    delete output.needsRegeneration;
+    delete output.cmsSentAt;
+    delete output.cmsSentContent;
+  }
   output.updatedAt = completedAt;
   output.revisionUnread = true;
   output.revisionRequestUnread = true;
-  output.status = 'ready';
-  delete output.needsRegeneration;
-  delete output.cmsSentAt;
-  delete output.cmsSentContent;
   output.revisionRequests = [...(Array.isArray(output.revisionRequests) ? output.revisionRequests : []), {
     instructions, requestedAt, completedAt, status: 'complete',
+    changeSummary: revisionChangeSummary(before, output, instructions),
   }];
 }
 

@@ -7,12 +7,17 @@ export function revisionHistory(output) {
   return requests.flatMap((request, index) => {
     if (typeof request?.instructions !== 'string' || !request.instructions.trim()) return [];
     const completedAt = validTime(request.completedAt);
-    return [{ details: { instructions: request.instructions, completedAt }, order: completedAt ?? validTime(request.requestedAt) ?? 0, index }];
+    const details = { instructions: request.instructions, completedAt };
+    if (typeof request.changeSummary === 'string' && request.changeSummary.trim()) details.changeSummary = request.changeSummary;
+    return [{ details, order: completedAt ?? validTime(request.requestedAt) ?? 0, index }];
   }).sort((a, b) => a.order - b.order || a.index - b.index).map(entry => entry.details);
 }
 export function revisionRequestLabel(count) { return count > 1 ? 'Requested Revisions' : 'Requested Revision'; }
 export function latestRevisionDetails(output) { return revisionHistory(output).at(-1) || null; }
-export function latestRevisionNote(output) { return latestRevisionDetails(output)?.instructions || ''; }
+export function latestRevisionNote(output) {
+  const details = latestRevisionDetails(output);
+  return details?.changeSummary || details?.instructions || '';
+}
 
 export function renderRevisionHistory(list, notes) {
   list.replaceChildren(...notes.map((details, index) => {
@@ -37,7 +42,7 @@ export function renderRevisionHistory(list, notes) {
     noteLabel.textContent = 'Requested Change: ';
     const copy = document.createElement('dd');
     copy.className = 'editor-direction-copy';
-    copy.textContent = details.instructions;
+    copy.textContent = details.changeSummary || details.instructions;
     noteRow.append(noteLabel, copy);
     fields.append(dateRow, noteRow);
     entry.append(heading, fields);

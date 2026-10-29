@@ -42,3 +42,18 @@ test('the footer and popup share the requested singular or plural revision label
   assert.equal(revisionRequestLabel(2), 'Requested Revisions');
   assert.equal(revisionRequestLabel(12), 'Requested Revisions');
 });
+
+
+test('completed revision notes show the saved result while retaining the original request', () => {
+  const output = { revisionRequests: [{ instructions: 'Shorten the intro', completedAt: 20, changeSummary: 'Updated the draft body. No other changes.' }] };
+  const before = structuredClone(output);
+  assert.equal(latestRevisionNote(output), 'Updated the draft body. No other changes.');
+  assert.equal(latestRevisionDetails(output).instructions, 'Shorten the intro');
+  assert.deepEqual(output, before);
+});
+
+test('legacy and malformed summaries fall back to the saved instructions', () => {
+  for (const changeSummary of [undefined, null, '', '  ', 42]) {
+    assert.equal(latestRevisionNote({ revisionRequests: [{ instructions: 'Original request', changeSummary }] }), 'Original request');
+  }
+});

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fictionalTopicParagraphs, topicDraftContent } from '../dist/topic-draft.js';
 import { sampleVariant, populateOutputContent, reviseSampleOutput } from '../dist/outputs.js';
+import { formatDraftContent } from '../dist/draft-format.js';
 
 const votingHeadline = 'Early voting begins in Mecklenburg County: What voters should know';
 const link = (title = votingHeadline, extra = {}) => ({ type: 'link', url: 'https://news.example.com/article123.html', title, selected: true, ...extra });
@@ -196,10 +197,39 @@ test('topic revisions remain on the captured headline and preserve edited headin
   assert.deepEqual(output.toolPreferences, preferences);
   assert.equal(output.cmsSentAt, undefined);
   assert.equal(output.cmsSentContent, undefined);
-  assert.deepEqual(output.revisionRequests, [{ instructions: 'Make the reader questions clearer', requestedAt: 20, completedAt: 30, status: 'complete' }]);
+  assert.deepEqual(output.revisionRequests, [{ instructions: 'Make the reader questions clearer', changeSummary: 'Updated the draft body. No other changes.', requestedAt: 20, completedAt: 30, status: 'complete' }]);
   const firstRevision = output.draftText;
   reviseSampleOutput(output, 'Try another opening', 40, 50);
   assert.notEqual(output.draftText, firstRevision);
   assert.ok(output.draftText.includes(votingHeadline));
   assert.equal(output.revisionRequests.length, 2);
+});
+
+test('topic revision summaries distinguish formatting changes from an identical article', () => {
+  for (const formattingChanged of [true, false]) {
+    const output = sampleVariant(project(), settings);
+    const topic = topicDraftContent(output.sourceSnapshots, { revision: 1 });
+    Object.assign(output, formatDraftContent(topic.paragraphs, { format: output.toolPreferences.format, headings: topic.sectionHeadings }));
+    if (formattingChanged) output.document.ops[0].attributes = { italic: true };
+    const beforeText = output.draftText;
+    const beforeDocument = structuredClone(output.document);
+    const beforeShareText = output.shareText;
+    reviseSampleOutput(output, 'Review this draft', 10, 20);
+    assert.equal(output.draftText, beforeText);
+    assert.equal(output.shareText, beforeShareText);
+    if (formattingChanged) assert.notDeepEqual(output.document, beforeDocument);
+    else assert.deepEqual(output.document, beforeDocument);
+    assert.equal(output.revisionRequests[0].changeSummary, formattingChanged ? 'Updated the draft formatting. No other changes.' : 'No other changes.');
+  }
+});
+
+test('elephant requests leave a linked listicle and its captured source material unchanged', () => {
+  const output = sampleVariant(project(), settings);
+  populateOutputContent(output);
+  output.status = 'ready';
+  const before = structuredClone(output);
+  reviseSampleOutput(output, 'Add two elephants to this listicle', 10, 20);
+  for (const key of Object.keys(before)) assert.deepEqual(output[key], before[key], `${key} remains unchanged`);
+  assert.equal(output.revisionRequests[0].instructions, 'Add two elephants to this listicle');
+  assert.equal(output.revisionRequests[0].changeSummary, `Could not add a mention of an elephant. No elephant appears in the source material, and inserting one would introduce a fabricated, irrelevant and inappropriate detail into a factual news report about ${before.title}.`);
 });

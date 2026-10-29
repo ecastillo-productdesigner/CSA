@@ -224,3 +224,20 @@ test('Revision History count includes only saved requests with actual instructio
   assert.equal(ui['history-label'].textContent, 'Revision History (3)');
   assert.equal(ui['history-list'].children.length, 3);
 });
+
+
+test('Requested Change renders the completion result rather than claiming the raw request was performed', t => {
+  const ui = setup(t);
+  const changeSummary = 'Could not add a mention of an elephant. No elephant appears in the source material, and inserting one would introduce a fabricated, irrelevant and inappropriate detail into a factual news report about The draft being revised.';
+  ui.output.revisionRequests = [
+    { instructions: 'Shorten the intro', completedAt: 1000, changeSummary: 'Updated the draft body. No other changes.' },
+    { instructions: 'Add an elephant', completedAt: 2000, changeSummary },
+  ];
+  ui.api.open(ui.project, ui.output);
+  ui['history-toggle'].fire('click');
+  const entries = ui['history-list'].children.map(contents);
+  assert.match(entries[0], /Requested Change: Updated the draft body\. No other changes\./);
+  assert.ok(entries[1].includes('Requested Change: ' + changeSummary));
+  assert.ok(!entries[1].includes('Requested Change: Add an elephant'));
+  assert.equal(ui.output.revisionRequests[1].instructions, 'Add an elephant');
+});

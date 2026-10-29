@@ -14,7 +14,7 @@ import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261026-
 import { createProfile } from './profile.js?v=20261026-drafting-card-size';
 import { createSearchExperience } from './search.js?v=20261029-source-workspace';
 import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261029-delete-project-dialog';
-import { createMaterialEditor } from './editor.js?v=20261029-revision-history';
+import { createMaterialEditor } from './editor.js?v=20261029-revision-change-summary';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-drafting-card-size';
 import { removeProjectContent } from './project-deletion.js?v=20261026-drafting-card-size';
 import { createContentPreview } from './content-preview.js?v=20261026-drafting-card-size';
@@ -24,12 +24,12 @@ import { createNewProjectUpload } from './new-project-upload.js?v=20261026-draft
 import { createRailNavigation } from './navigation.js?v=20261029-source-panel-open';
 import { createProjectSources } from './sources.js?v=20261029-preview-direction';
 import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261026-drafting-card-size';
-import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261029-revision-indicator-location';
+import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261029-revision-change-summary';
 import { createEditorTabs } from './editor-tabs.js?v=20261029-revision-indicator-location';
 import { createContentCardEditing } from './content-card-editing.js?v=20261026-drafting-card-size';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-drafting-card-size';
 import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261026-drafting-card-size';
-import { createRevisionButton, updateRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261029-revision-history';
+import { createRevisionButton, updateRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261029-revision-change-summary';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';

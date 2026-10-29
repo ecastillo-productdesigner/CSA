@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261029-panel-heading-color');
+  await import('./app.js?v=20261029-revision-change-summary');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

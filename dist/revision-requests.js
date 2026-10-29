@@ -9,11 +9,23 @@ export function createRevisionButton(output, disabled = false) {
   button.setAttribute('aria-haspopup', 'dialog');
   button.setAttribute('aria-controls', 'revision-request-dialog');
   button.setAttribute('aria-expanded', 'false');
-  button.append(createIcon('edit_document'), document.createTextNode('Request Revision'));
+  const dot = document.createElement('span');
+  dot.className = 'revision-request-dot';
+  dot.setAttribute('aria-hidden', 'true');
+  button.append(createIcon('edit_document'), document.createTextNode('Request Revision'), dot);
+  return updateRevisionButton(button, output, disabled);
+}
+
+export function updateRevisionButton(button, output, disabled = button.disabled) {
+  button.disabled = disabled;
+  const unread = Boolean((output.revisionRequestUnread ?? output.revisionUnread) && !disabled);
+  button.querySelector('.revision-request-dot').hidden = !unread;
+  if (unread) button.setAttribute('aria-description', 'Revision complete, unread');
+  else button.removeAttribute('aria-description');
   return button;
 }
 
-export function createRevisionRequests({ onSubmit, closePanels }) {
+export function createRevisionRequests({ onSubmit, closePanels, onRevisionRead = () => {} }) {
   const dialog = document.querySelector('#revision-request-dialog');
   const form = document.querySelector('#revision-request-form');
   const instructions = document.querySelector('#revision-request-instructions');
@@ -55,8 +67,15 @@ export function createRevisionRequests({ onSubmit, closePanels }) {
       form.reset();
       error.hidden = true;
       refresh();
-      trigger()?.setAttribute('aria-expanded', 'true');
+      const button = trigger();
+      button?.setAttribute('aria-expanded', 'true');
       dialog.showModal();
+      if (output.revisionRequestUnread || output.revisionUnread) {
+        output.revisionRequestUnread = false;
+        output.revisionUnread = false;
+        if (button) updateRevisionButton(button, output);
+        onRevisionRead(project, output);
+      }
       instructions.focus();
     },
   };

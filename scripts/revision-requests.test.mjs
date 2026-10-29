@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createRevisionButton, createRevisionRequests } from '../dist/revision-requests.js';
+import { createRevisionButton, updateRevisionButton, createRevisionRequests } from '../dist/revision-requests.js';
 
 class Control {
   children = [];
@@ -14,6 +14,8 @@ class Control {
   append(...children) { this.children.push(...children); }
   setAttribute(name, value) { this.attributes.set(name, String(value)); }
   getAttribute(name) { return this.attributes.get(name); }
+  removeAttribute(name) { this.attributes.delete(name); }
+  querySelector(selector) { return this.children.find(child => selector.startsWith('.') && child.className?.split(' ').includes(selector.slice(1))) || null; }
   addEventListener(name, listener) { this.listeners.set(name, listener); }
   focus() { document.activeElement = this; }
   fire(name) { this.listeners.get(name)?.({ preventDefault() {} }); }
@@ -43,11 +45,13 @@ function setup(t) {
   const calls = [];
   let result = true;
   let closes = 0;
+  const reads = [];
   const api = createRevisionRequests({
     closePanels() { closes++; },
+    onRevisionRead(project, output) { reads.push([project.id, output.id]); },
     onSubmit(request) { calls.push(request); return result; },
   });
-  return { ...nodes, api, project, output, trigger, fallback, calls, closes: () => closes, setResult(value) { result = value; } };
+  return { ...nodes, api, project, output, trigger, fallback, calls, reads, closes: () => closes, setResult(value) { result = value; } };
 }
 
 test('revision trigger uses the requested edit_document glyph and native dialog button semantics', t => {
@@ -108,4 +112,49 @@ test('a refused revision preserves instructions for retry and cancellation resto
   assert.equal(document.activeElement, ui.fallback);
   ui.form.fire('submit');
   assert.equal(ui.calls.length, 1);
+});
+
+
+test('an unread revision uses a small decorative dot beside Request Revision without changing its label', t => {
+  const ui = setup(t);
+  ui.output.revisionUnread = true;
+  updateRevisionButton(ui.trigger, ui.output);
+  const dot = ui.trigger.querySelector('.revision-request-dot');
+  assert.equal(dot.hidden, false);
+  assert.equal(dot.getAttribute('aria-hidden'), 'true');
+  assert.equal(ui.trigger.children[1].textContent, 'Request Revision');
+  assert.equal(ui.trigger.getAttribute('aria-description'), 'Revision complete, unread');
+  updateRevisionButton(ui.trigger, ui.output, true);
+  assert.equal(dot.hidden, true, 'processing does not show a completion dot');
+  assert.equal(ui.output.revisionUnread, true, 'hiding a disabled action does not acknowledge it');
+  updateRevisionButton(ui.trigger, ui.output, false);
+  assert.equal(dot.hidden, false);
+  ui.output.revisionRequestUnread = true;
+  ui.output.revisionUnread = false;
+  updateRevisionButton(ui.trigger, ui.output);
+  assert.equal(dot.hidden, false, 'acknowledging only the tab keeps the action dot');
+  ui.output.revisionRequestUnread = false;
+  updateRevisionButton(ui.trigger, ui.output);
+  assert.equal(dot.hidden, true);
+  assert.equal(ui.trigger.getAttribute('aria-description'), undefined);
+});
+
+test('opening Request Revision acknowledges its dot while preserving the captured revision history', t => {
+  const ui = setup(t);
+  ui.output.revisionUnread = false;
+  ui.output.revisionRequestUnread = true;
+  ui.output.revisionRequests = [{ instructions: 'Keep this request', completedAt: 1 }];
+  const before = structuredClone(ui.output.revisionRequests);
+  updateRevisionButton(ui.trigger, ui.output);
+  ui.api.open(ui.project, ui.output);
+  assert.equal(ui.dialog.open, true);
+  assert.equal(ui.output.revisionUnread, false);
+  assert.equal(ui.output.revisionRequestUnread, false);
+  assert.equal(ui.trigger.querySelector('.revision-request-dot').hidden, true);
+  assert.deepEqual(ui.output.revisionRequests, before);
+  assert.deepEqual(ui.reads, [['project-a', 'draft-a']]);
+  assert.equal(document.activeElement, ui.instructions);
+  ui.dialog.close();
+  ui.api.open(ui.project, ui.output);
+  assert.equal(ui.reads.length, 1, 'a viewed revision is not acknowledged twice');
 });

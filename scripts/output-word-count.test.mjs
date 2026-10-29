@@ -1,8 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { runInNewContext } from 'node:vm';
 import { outputWordCount, outputSourceCount, createOutputBadges, createOutputWordCountBadge } from '../dist/outputs.js';
 import { createEditorTabs } from '../dist/editor-tabs.js';
+import { createRevisionButton } from '../dist/revision-requests.js';
 
 class Element {
   constructor(tagName = 'div') {
@@ -17,6 +19,7 @@ class Element {
   get textContent() { return this.text ?? this.children.map(child => child.textContent).join(''); }
   setAttribute(name, value) { this.attributes[name] = String(value); }
   removeAttribute(name) { delete this.attributes[name]; }
+  querySelector(selector) { return this.children.find(child => selector.startsWith('.') && child.className?.split(' ').includes(selector.slice(1))) || null; }
   append(...children) { this.children.push(...children); }
   replaceChildren(...children) { this.children = children; }
   addEventListener() {}
@@ -199,27 +202,33 @@ test('draft tabs retain status and heading while body counts stay in shared meta
   assert.equal(root.children[0].children.length, 0, 'welcome workspace keeps a blank tab without a To Draft badge');
 });
 
-test('completed revision dots update even when the selected tab and title stay the same', t => {
+test('completed revision dots appear only on inactive tabs and transfer away on activation', t => {
   const root = new Element();
   const panel = new Element();
   panel.id = 'editor-canvas-content';
   documentFor(t, { '#editor-variant-tabs': root, '#editor-canvas-content': panel });
   const tabs = createEditorTabs({ onSelect() {} });
   const output = { id: 'draft', title: 'My draft', status: 'ready' };
-  const project = { id: 'project', outputs: [output], selectedOutputId: output.id };
+  const project = { id: 'project', outputs: [output, { id: 'other', title: 'Other draft', status: 'ready' }], selectedOutputId: output.id };
   const label = () => root.children[0].children.find(child => child.className === 'editor-tab-title');
   const dot = () => label().children.find(child => child.className === 'editor-tab-revision-dot');
   tabs.render(project);
   assert.equal(dot(), undefined);
   output.revisionUnread = true;
   tabs.render(project);
+  assert.equal(dot(), undefined, 'the open draft shows its dot beside Request Revision');
+  assert.equal(output.revisionUnread, true);
+  project.selectedOutputId = 'other';
+  tabs.render(project);
   assert.equal(dot().attributes['aria-hidden'], 'true');
   assert.equal(root.children[0].attributes['aria-label'], 'My draft');
   assert.match(root.children[0].attributes['aria-description'], /Revision complete/);
-  output.revisionUnread = false;
+  project.selectedOutputId = output.id;
   tabs.render(project);
   assert.equal(dot(), undefined);
+  assert.equal(output.revisionUnread, true, 'opening a tab transfers rather than consumes its notification');
   assert.equal(root.children[0].attributes['aria-description'], 'Draft');
+  tabs.destroy();
 });
 
 test('only inactive revising tabs animate, retain their identity, and clean up on selection or completion', t => {
@@ -270,26 +279,30 @@ function unreadFixture(t) {
   panel.id = 'editor-canvas-content';
   const clock = documentFor(t, { '#editor-variant-tabs': root, '#editor-canvas-content': panel });
   const reads = [];
-  const tabs = createEditorTabs({ onSelect() {}, onRevisionRead(project, output) { reads.push([project.id, output.id]); } });
+  const tabs = createEditorTabs({ onSelect() {}, createAnimation: () => ({ element: new Element(), destroy() {} }), onRevisionRead(project, output) { reads.push([project.id, output.id]); } });
   const first = { id: 'first', title: 'First draft', status: 'ready', revisionUnread: true, revisionRequests: [{ completedAt: 1 }] };
   const second = { id: 'second', title: 'Second draft', status: 'ready', revisionUnread: true };
   const project = { id: 'project', outputs: [first, second], selectedOutputId: first.id };
   const dot = id => root.children.find(tab => tab.dataset.editorOutput === id)?.children.find(child => child.className === 'editor-tab-title')?.children.some(child => child.className === 'editor-tab-revision-dot');
-  return { ...clock, reads, tabs, first, second, project, dot };
+  const requestDot = () => !createRevisionButton(project.outputs.find(output => output.id === project.selectedOutputId)).querySelector('.revision-request-dot').hidden;
+  return { ...clock, reads, tabs, first, second, project, dot, requestDot };
 }
 
-test('a selected revision dot clears at ten seconds, persists acknowledgement, and does not clear inactive dots', t => {
+test('tab acknowledgement at ten seconds preserves the Request Revision dot and inactive tab dots', t => {
   const ui = unreadFixture(t);
   ui.tabs.render(ui.project);
   ui.tick(6000);
   ui.tabs.render(ui.project);
   ui.tick(3999);
-  assert.equal(ui.dot('first'), true);
+  assert.equal(ui.dot('first'), false);
+  assert.equal(ui.requestDot(), true);
   assert.equal(ui.dot('second'), true);
   assert.deepEqual(ui.reads, []);
   ui.tick(1);
   assert.equal(ui.dot('first'), false);
   assert.equal(ui.first.revisionUnread, false);
+  assert.equal(ui.requestDot(), true, 'Request Revision stays unread until clicked');
+  assert.equal(ui.first.revisionRequestUnread, true);
   assert.equal(ui.dot('second'), true);
   assert.equal(ui.second.revisionUnread, true);
   assert.deepEqual(ui.reads, [['project', 'first']]);
@@ -312,12 +325,15 @@ test('switching away cancels the selected-dot timer and keeps that draft unread'
   assert.equal(ui.dot('first'), true);
   assert.equal(ui.timers.size, 0);
   assert.deepEqual(ui.reads, []);
-  // Activating an unread tab acknowledges it through the app's existing onSelect handler.
-  ui.first.revisionUnread = false;
   ui.project.selectedOutputId = 'first';
   ui.tabs.render(ui.project);
   assert.equal(ui.dot('first'), false);
-  assert.equal(ui.timers.size, 0);
+  assert.equal(ui.first.revisionUnread, true);
+  assert.equal(ui.requestDot(), true, 'returning transfers the dot to Request Revision');
+  assert.equal(ui.timers.size, 1);
+  ui.tick(10000);
+  assert.equal(ui.first.revisionUnread, false);
+  assert.equal(ui.requestDot(), true);
   ui.tabs.destroy();
 });
 
@@ -356,4 +372,38 @@ test('leaving the editor suspends acknowledgement and returning starts a fresh i
   assert.equal(ui.first.revisionUnread, false);
   ui.tabs.destroy();
   assert.equal(ui.timers.size, 0);
+});
+
+
+test('opening an inactive editor tab acknowledges its tab dot and preserves its Request Revision dot', () => {
+  const app = readFileSync(new URL('../dist/app.js', import.meta.url), 'utf8');
+  const source = app.slice(app.indexOf('function openEditorTab('), app.indexOf('\nfunction loadProjects('));
+  const output = { id: 'revised', status: 'ready', revisionUnread: true };
+  const project = { id: 'project', outputs: [output], selectedOutputId: 'other' };
+  let saved = 0;
+  let shown = null;
+  const context = { projects: [project], activeProjectId: project.id, richEditor: { flush() {} }, projectOutputs: project => project.outputs, outputIsReady: output => output.status === 'ready', outputViews: new Map(), saveProjects() { saved++; }, showEditorProject(project) { shown = project; } };
+  runInNewContext(source, context);
+  context.openEditorTab(output.id);
+  assert.equal(project.selectedOutputId, output.id);
+  assert.equal(output.revisionUnread, false);
+  assert.equal(output.revisionRequestUnread, true);
+  assert.equal(saved, 1);
+  assert.equal(shown, project);
+});
+
+
+test('the tab keeps its ten-second acknowledgement timing while another draft revises', t => {
+  const ui = unreadFixture(t);
+  ui.tabs.render(ui.project);
+  ui.tick(4000);
+  ui.project.outputProcessing = { kind: 'revision', ids: ['second'] };
+  ui.tabs.render(ui.project);
+  ui.tick(5999);
+  assert.equal(ui.first.revisionUnread, true);
+  ui.tick(1);
+  assert.equal(ui.first.revisionUnread, false);
+  assert.equal(ui.first.revisionRequestUnread, true, 'the action notification is independent of the tab deadline');
+  assert.deepEqual(ui.reads, [['project', 'first']]);
+  ui.tabs.destroy();
 });

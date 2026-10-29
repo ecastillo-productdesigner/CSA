@@ -7004,7 +7004,7 @@
       "category": "editor-tab",
       "value": "#3b82f6",
       "reference": "semantic.color.status.revision-unread",
-      "description": "User-approved #3B82F6 indicator for an unread completed revision. Clears on tab activation or after 10 seconds while its draft stays selected.",
+      "description": "User-approved #3B82F6 indicator for an unread completed revision. Inactive tabs show it before the title; the open draft shows it beside Request Revision.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
@@ -7026,7 +7026,7 @@
       "category": "editor-tab",
       "value": "10000ms",
       "reference": "",
-      "description": "Show the completed-revision dot for 10 seconds while its draft stays selected. Inactive tabs retain their unread dots until activated.",
+      "description": "Acknowledge the tab notification after 10 seconds while its draft stays selected. Inactive tabs retain their dot until activated. The separate Request Revision notification has no timeout and clears only when that action is opened.",
       "status": "observed"
     }
   ]

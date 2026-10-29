@@ -14,6 +14,7 @@ test('demo revision replaces the body while preserving the variant identity and 
   assert.deepEqual(output.revisionRequests, [{ instructions: 'Shorten the intro', requestedAt: 10, completedAt: 20, status: 'complete' }]);
   assert.equal(output.updatedAt, 20);
   assert.equal(output.revisionUnread, true);
+  assert.equal(output.revisionRequestUnread, true);
   assert.deepEqual(variantPanelState({ outputs: [output] }).outputs, [output]);
 });
 

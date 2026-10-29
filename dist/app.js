@@ -3,7 +3,7 @@ import { createSourceAlreadyAddedDialog } from './source-already-added.js?v=2026
 import { createToast } from './toast.js?v=20261027-toast-timing';
 import { updatePresetPreferences } from './preset-settings.js?v=20261026-drafting-card-size';
 import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
-import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261026-drafting-card-size';
+import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261029-revision-indicator-location';
 import { createIcon as icon } from './icons.js?v=20261026-drafting-card-size';
 import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261026-drafting-card-size';
 import { resolveArticleMetadata } from './article-metadata.js?v=20261026-drafting-card-size';
@@ -24,12 +24,12 @@ import { createNewProjectUpload } from './new-project-upload.js?v=20261026-draft
 import { createRailNavigation } from './navigation.js?v=20261029-source-panel-open';
 import { createProjectSources } from './sources.js?v=20261029-preview-direction';
 import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261026-drafting-card-size';
-import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261026-drafting-card-size';
-import { createEditorTabs } from './editor-tabs.js?v=20261029-source-workspace';
+import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261029-revision-indicator-location';
+import { createEditorTabs } from './editor-tabs.js?v=20261029-revision-indicator-location';
 import { createContentCardEditing } from './content-card-editing.js?v=20261026-drafting-card-size';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-drafting-card-size';
 import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261026-drafting-card-size';
-import { createRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261026-drafting-card-size';
+import { createRevisionButton, updateRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261029-revision-indicator-location';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -116,6 +116,7 @@ const newProjectUpload = createNewProjectUpload({
 });
 const variantFeedback = createVariantFeedback({ save: saveProjects, refreshDropdowns: toolDropdowns.refresh, closeDropdowns: toolDropdowns.close });
 const revisionRequests = createRevisionRequests({
+  onRevisionRead(project) { saveProjects(); editorTabs.render(project); },
   onSubmit: requestVariantRevision,
   closePanels() { draftSourcesPopover.close(); toolDropdowns.close(); richEditor.closePanels(); },
 });
@@ -130,7 +131,11 @@ const contentPreview = createContentPreview({
     updateComposerActions();
   },
 });
-const editorTabs = createEditorTabs({ onSelect: openEditorTab, onRevisionRead: () => saveProjects() });
+const editorTabs = createEditorTabs({ onSelect: openEditorTab, onRevisionRead(project, output) {
+  saveProjects();
+  const trigger = $('#editor-variant-labels').querySelector('[data-request-revision]');
+  if (activeProjectId === project.id && trigger?.dataset.requestRevision === output.id) updateRevisionButton(trigger, output);
+} });
 const projectSourcesPanel = createProjectSources({
   onRemoveSource: removeProjectSource,
   onDownloadSource: downloadSource,
@@ -371,6 +376,7 @@ function openEditorTab(outputId) {
   }
   const output = projectOutputs(project).find(output => output.id === outputId && (outputIsReady(output) || output.needsRegeneration));
   if (!project || !output) return;
+  if (output.revisionUnread && output.revisionRequestUnread == null) output.revisionRequestUnread = true;
   output.revisionUnread = false;
   outputViews.set(project.id, outputIsReady(output) ? 'created' : 'pending');
   project.selectedOutputIds = outputIsReady(output) ? [outputId] : [...new Set([...selectedPendingOutputs(project).map(output => output.id), outputId])];

@@ -1,5 +1,5 @@
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
-import { projectOutputs, outputIsReady, outputIsSent, outputLoadingSelectionKeys } from './outputs.js?v=20261026-drafting-card-size';
+import { projectOutputs, outputIsReady, outputIsSent, outputLoadingSelectionKeys } from './outputs.js?v=20261029-revision-indicator-location';
 
 import { tokenNumber } from './design-system/runtime.js?v=20261028-revision-dot';
 import { createRevisionAnimation } from './drafting-animation.js?v=20261027-revision-tabs';
@@ -33,6 +33,7 @@ export function createEditorTabs({ onSelect, onRevisionRead = () => {}, createAn
       const output = projectOutputs(currentProject).find(output => output.id === currentActiveId);
       if (!output?.revisionUnread) return;
       const focused = document.activeElement && root.querySelector('[aria-selected="true"]') === document.activeElement;
+      output.revisionRequestUnread ??= output.revisionUnread;
       output.revisionUnread = false;
       onRevisionRead(currentProject, output);
       controller.render(currentProject);
@@ -128,7 +129,7 @@ export function createEditorTabs({ onSelect, onRevisionRead = () => {}, createAn
           const titleText = document.createElement('span');
           titleText.className = 'editor-tab-title-text';
           titleText.textContent = title;
-          if (output.revisionUnread) {
+          if (output.revisionUnread && id !== activeId && !revisingIds.includes(id)) {
             const dot = document.createElement('span');
             dot.className = 'editor-tab-revision-dot';
             dot.setAttribute('aria-hidden', 'true');

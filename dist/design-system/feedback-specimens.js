@@ -1,11 +1,11 @@
 import { createFeedbackPill, createVariantFeedback } from '../variant-feedback.js?v=20261026-drafting-card-size';
-import { createRevisionButton, createRevisionRequests } from '../revision-requests.js?v=20261026-drafting-card-size';
-import { createEditorTabs } from '../editor-tabs.js?v=20261029-source-workspace';
+import { createRevisionButton, updateRevisionButton, createRevisionRequests } from '../revision-requests.js?v=20261029-revision-indicator-location';
+import { createEditorTabs } from '../editor-tabs.js?v=20261029-revision-indicator-location';
 import { createLastRevisionNote } from '../last-revision-note.js?v=20261027-metadata';
 import { createStoryMetadata, storyMetadata } from '../story-metadata.js?v=20261027-metadata';
 import { createRevisionLoading } from '../revision-loading.js?v=20261027-revision-loading';
-import { tokenNumber } from './runtime.js?v=20261026-drafting-card-size';
-import { createOutputBadges, outputLoadingSelectionKeys } from '../outputs.js?v=20261026-drafting-card-size';
+import { tokenNumber } from './runtime.js?v=20261029-revision-indicator-location';
+import { createOutputBadges, outputLoadingSelectionKeys } from '../outputs.js?v=20261029-revision-indicator-location';
 import { sendDestinations } from '../send-destination.js?v=20261026-drafting-card-size';
 
 // The app controller operates on isolated in-memory drafts here. No project storage,
@@ -27,7 +27,7 @@ export function mountFeedbackSpecimens(root, dropdowns) {
   heading.textContent = 'Draft Feedback & Revision';
   const guidance = document.createElement('p');
   guidance.className = 'ds-caption';
-  guidance.textContent = 'Request Revision uses edit_document, outlined when closed and filled while its popup is open, matching Sources; submitting the popup previews the editor’s Revising Draft state below. The matching Content card also says Revising Draft and uses the same shared revision animation. Its shimmer follows the saved draft settings: Format is pink, Audience is lavender, and Voice is peach. Only selected categories cycle, in that order; a single category keeps its color and drafts without settings use neutral. The 5-second revision cycle shows each selected color before completion. The loading layer aligns with the settings and text edges, covers their full height without collapsing the layout, and uses 8 px corners. Metadata opens the sample draft’s SEO title, meta description, and SEO keywords. After a revision, Requested Revision appears at the end of the footer (Requested Revisions for multiple entries) and opens every revision in chronological order, oldest first, with its completion time and requested change. Switch to the second tab while revising to see the first tab’s paper animation, category shimmer, and Revising Draft label. Completion keeps your current tab selected and adds an 8 px blue (#3B82F6) unread dot to the revised tab; activate that tab to clear it. If you stay on the revised tab, its dot clears automatically after 10 seconds. Switching away cancels that timer and keeps the dot until you return. Loading labels use Inter Medium Italic (500). Tabs and Send to CMS remain visible; editing and sending resume when the revision completes. This sample keeps requests only while this page is open. Choose a thumb to open the app’s feedback form. Rating, Category, and Describe the issue are required. Severity is required only for Could be better; it is optional for Good feedback. Additional comments are optional. The issue summary allows 500 characters. Description and comment fields use the white field surface. The export heading-to-button and button-to-divider gaps are both 32 px.';
+  guidance.textContent = 'Request Revision uses edit_document, outlined when closed and filled while its popup is open, matching Sources; submitting the popup previews the editor’s Revising Draft state below. The matching Content card also says Revising Draft and uses the same shared revision animation. Its shimmer follows the saved draft settings: Format is pink, Audience is lavender, and Voice is peach. Only selected categories cycle, in that order; a single category keeps its color and drafts without settings use neutral. The 5-second revision cycle shows each selected color before completion. The loading layer aligns with the settings and text edges, covers their full height without collapsing the layout, and uses 8 px corners. Metadata opens the sample draft’s SEO title, meta description, and SEO keywords. After a revision, Requested Revision appears at the end of the footer (Requested Revisions for multiple entries) and opens every revision in chronological order, oldest first, with its completion time and requested change. Switch to the second tab while revising to see the first tab’s paper animation, category shimmer, and Revising Draft label. Completion keeps your current tab selected. For the open revised draft, an 8 px blue (#3B82F6) dot appears at the top right of Request Revision and stays until that action is opened. The tab notification keeps its existing acknowledgement rules: inactive tabs keep their dot until opened, and a draft that remains selected acknowledges its tab notification after 10 seconds. Opening a tab clears only its tab notification; the separate Request Revision dot stays until clicked. Loading labels use Inter Medium Italic (500). Tabs and Send to CMS remain visible; editing and sending resume when the revision completes. This sample keeps requests only while this page is open. Choose a thumb to open the app’s feedback form. Rating, Category, and Describe the issue are required. Severity is required only for Could be better; it is optional for Good feedback. Additional comments are optional. The issue summary allows 500 characters. Description and comment fields use the white field surface. The export heading-to-button and button-to-divider gaps are both 32 px.';
   const revisionButton = createRevisionButton(variant);
   const pill = createFeedbackPill(variant);
   const previewExport = document.createElement('button');
@@ -86,7 +86,7 @@ export function mountFeedbackSpecimens(root, dropdowns) {
       ? 'Submit Request Revision to preview the loading state, then switch to the other draft tab.'
       : 'The first draft keeps revising while you review this draft. Return to its tab to see the full loading area.';
     revisionLoading.setBusy(busy && selected === variant, outputLoadingSelectionKeys(variant));
-    revisionButton.disabled = busy || selected !== variant;
+    updateRevisionButton(revisionButton, variant, busy || selected !== variant);
     for (const button of pill.querySelectorAll('button')) button.disabled = selected !== variant;
     previewExport.disabled = selected !== variant;
     previewTabs.render(project);
@@ -95,7 +95,7 @@ export function mountFeedbackSpecimens(root, dropdowns) {
   function finishRevisionPreview() {
     clearTimeout(revisionTimer);
     const latest = variant.revisionRequests?.at(-1);
-    if (latest?.status === 'processing') { latest.completedAt = Date.now(); latest.status = 'complete'; variant.revisionUnread = true; }
+    if (latest?.status === 'processing') { latest.completedAt = Date.now(); latest.status = 'complete'; variant.revisionUnread = true; variant.revisionRequestUnread = true; }
     delete project.outputProcessing;
     refreshPreview();
   }
@@ -107,7 +107,7 @@ export function mountFeedbackSpecimens(root, dropdowns) {
   root.classList.add('ds-button-example');
   root.setAttribute('aria-labelledby', heading.id);
   root.replaceChildren(heading, guidance, actions, tabs, preview, status);
-  const previewTabs = createEditorTabs({ onSelect(id) {
+  const previewTabs = createEditorTabs({ onRevisionRead() { refreshPreview(); }, onSelect(id) {
     const selected = project.outputs.find(output => output.id === id);
     if (!selected) return;
     selected.revisionUnread = false;
@@ -122,6 +122,7 @@ export function mountFeedbackSpecimens(root, dropdowns) {
 
   const revisionDialog = document.querySelector('#revision-request-dialog');
   const revisions = createRevisionRequests({
+    onRevisionRead() { refreshPreview(); },
     closePanels: () => dropdowns.close(),
     onSubmit(request) {
       project.outputProcessing = { kind: 'revision', ids: [variant.id] };

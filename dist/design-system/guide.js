@@ -1,7 +1,7 @@
 import { createToast } from '../toast.js?v=20261027-toast-timing';
 import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-drafting-card-size';
 import { bindTabSelection } from '../selection-controls.js?v=20261026-drafting-card-size';
-import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261029-source-workspace';
+import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261029-revision-indicator-location';
 import { mountProjectSpecimens } from './project-specimens.js?v=20261029-delete-project-dialog';
 import { mountFormSpecimens } from './form-specimens.js?v=20261026-drafting-card-size';
 import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261029-preview-direction';
@@ -10,7 +10,7 @@ import { typographyRoleGroups } from './typography-roles.js?v=20261026-drafting-
 import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-drafting-card-size';
 import { populateDraftOptions } from '../draft-options.js?v=20261026-drafting-card-size';
 import { iconInventory } from './icon-inventory.js?v=20261026-drafting-card-size';
-import { tokenNumber } from './runtime.js?v=20261026-drafting-card-size';
+import { tokenNumber } from './runtime.js?v=20261029-revision-indicator-location';
 import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261026-drafting-card-size';
 import { createDraftSourcesPopover } from '../draft-sources-popover.js?v=20261026-drafting-card-size';
 import { createSourcePreview } from '../sources.js?v=20261029-preview-direction';

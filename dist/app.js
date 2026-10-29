@@ -529,7 +529,7 @@ function showProjectStart() {
 function openProjectDialog(reset = true, sourceProjectId = null) {
   if (newProjectUpload.isBusy()) return;
   sourceTargetProjectId = sourceProjectId;
-  $('#new-project-dialog-title').textContent = sourceProjectId ? 'Add source' : 'New Project';
+  $('#new-project-dialog-title').textContent = sourceProjectId ? 'Add Source' : 'New Project';
   $('.new-project-close').setAttribute('aria-label', sourceProjectId ? 'Close add source modal' : 'Close new project modal');
   if (reset) { $('#new-project-query').value = ''; newProjectUpload.reset(); }
   $('#new-project-use-material').textContent = sourceProjectId ? 'Add to Project' : 'Start creating';

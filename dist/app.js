@@ -12,7 +12,7 @@ import { createTabPanelTransition } from './tab-panel-transition.js?v=20261026-d
 import { bindTabSelection } from './selection-controls.js?v=20261026-drafting-card-size';
 import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261026-drafting-card-size';
 import { createProfile } from './profile.js?v=20261026-drafting-card-size';
-import { createSearchExperience } from './search.js?v=20261026-drafting-card-size';
+import { createSearchExperience } from './search.js?v=20261029-source-workspace';
 import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261026-drafting-card-size';
 import { createMaterialEditor } from './editor.js?v=20261026-drafting-card-size';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-drafting-card-size';
@@ -21,11 +21,11 @@ import { createContentPreview } from './content-preview.js?v=20261026-drafting-c
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261026-drafting-card-size';
 import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261026-drafting-card-size';
 import { createNewProjectUpload } from './new-project-upload.js?v=20261026-drafting-card-size';
-import { createRailNavigation } from './navigation.js?v=20261026-drafting-card-size';
-import { createProjectSources } from './sources.js?v=20261026-drafting-card-size';
+import { createRailNavigation } from './navigation.js?v=20261029-source-panel-open';
+import { createProjectSources } from './sources.js?v=20261029-source-workspace';
 import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261026-drafting-card-size';
 import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261026-drafting-card-size';
-import { createEditorTabs } from './editor-tabs.js?v=20261026-drafting-card-size';
+import { createEditorTabs } from './editor-tabs.js?v=20261029-source-workspace';
 import { createContentCardEditing } from './content-card-editing.js?v=20261026-drafting-card-size';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-drafting-card-size';
 import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261026-drafting-card-size';
@@ -661,10 +661,15 @@ function showProject(id) {
 
 function renderSourceStory(project) {
   const latestOutput = project.viewOriginalDraft ? null : projectOutputs(project).filter(outputIsReady).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))[0];
-  if (project.linkCards && !latestOutput) {
+  const welcome = Boolean(project.linkCards && !latestOutput);
+  $('#output-placeholder').classList.toggle('has-project-welcome', welcome);
+  $('#source-story-content').classList.toggle('project-welcome', welcome);
+  $('#source-story-title').hidden = welcome;
+  if (welcome) {
     contentPreview.hide();
-    $('#composer').classList.add('has-link-cards');
-    searchExperience.show(project, { embedded: true });
+    $('#source-story-title').textContent = 'Let’s start your story';
+    $('#source-story-body').replaceChildren(element('p', '', 'To start, choose a Format, Audience, or Voice in the New Draft panel, then select Add to List.'));
+    $('#output-placeholder').scrollTop = 0;
     return;
   }
   if (project.contentPreview && !latestOutput) {
@@ -726,7 +731,7 @@ function showEditorProject(project) {
     $('#composer').classList.add('has-output');
     $('#composer-heading').textContent = 'Story workspace';
     renderSourceStory(project);
-    $('#output-placeholder').hidden = Boolean(project.linkCards && !selectedOutput);
+    $('#output-placeholder').hidden = false;
     for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = draftPreferenceValue(key, project.toolPreferences?.[key]);
     $('#main').focus({ preventScroll: true });
   } else {
@@ -1067,14 +1072,12 @@ async function submitSource(input) {
     if (targetProjectId) {
       const target = projects.find(project => project.id === targetProjectId && !project.deletedAt);
       if (!target) return false;
-      target.linkCards = true;
-      target.viewOriginalDraft = true;
       if (dialog.open) dialog.close();
       return await appendProjectSources(sources, targetProjectId);
     } else {
       if (dialog.open) dialog.close();
-      createProject(sources, { kind: 'draft', awaitingOutput: true, linkCards: true });
-      if (!window.matchMedia(breakpointQuery()).matches) railNavigation.open('sources');
+      const project = createProject([], { title: projectTitleFromSources(sources) || 'Untitled story', kind: 'draft', awaitingOutput: true, linkCards: true, open: false });
+      return await appendProjectSources(sources, project.id);
     }
     return true;
   } finally {
@@ -1328,6 +1331,7 @@ for (const dialog of document.querySelectorAll('dialog')) {
 }
 
 const searchExperience = createSearchExperience({
+  onOpenSource: (source, trigger) => projectSourcesPanel.openPreview(source, trigger),
   onDuplicateSource(trigger, article) {
     const project = projects.find(entry => entry.id === activeProjectId);
     const source = project?.sources.find(source => source.url === article?.url);

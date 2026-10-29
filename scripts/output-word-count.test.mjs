@@ -193,7 +193,10 @@ test('draft tabs retain status and heading while body counts stay in shared meta
   assert.equal(root.children[0].attributes['aria-description'], 'Sent');
   assert.equal(root.children[0].children.some(hasWords), false);
   tabs.render({ id: 'original', linkCards: true, outputs: [] });
-  assert.equal(root.children[0].children.some(hasWords), false);
+  assert.equal(root.hidden, false);
+  assert.equal(root.children[0].attributes['aria-label'], 'Project workspace');
+  assert.equal(root.children[0].attributes['aria-description'], 'New draft workspace');
+  assert.equal(root.children[0].children.length, 0, 'welcome workspace keeps a blank tab without a To Draft badge');
 });
 
 test('completed revision dots update even when the selected tab and title stay the same', t => {

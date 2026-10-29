@@ -54,12 +54,11 @@ function dateLabel(value) {
   return new Date(`${value}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 }
 
-export function createSearchExperience({ onSearch, onSelectionChange, onDirectionChange, onDraft, onDuplicateSource = () => {} }) {
+export function createSearchExperience({ onSearch, onSelectionChange, onDirectionChange, onDraft, onOpenSource, onDuplicateSource = () => {} }) {
   const $ = (selector) => document.querySelector(selector);
   const results = $('#search-results');
   const resultsHome = results.parentElement;
   let state = null;
-  let previewArticle = null;
   const additionTimers = new Map();
   const additionAnimations = new Map();
   const preview = $('#article-preview-dialog');
@@ -151,31 +150,12 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
   function openPreview(id) {
     const article = state?.articles.find(article => article.id === id);
     if (!article || (!article.url && !state.readyArticleIds.has(id))) return;
-    previewArticle = { ...article, projectId: state.projectId };
-    document.querySelector('.article-preview-badge').textContent = 'Fictional article preview';
-    $('#article-preview-notice').hidden = false;
-    $('#article-preview-meta').hidden = false;
-    $('#article-preview-title').textContent = article.title;
-    if (article.url) {
-      $('#article-preview-meta').replaceChildren(
-        sourceMetadata('Publish Date', dateLabel(article.date)),
-        sourceMetadata('URL', article.url),
-      );
-    } else $('#article-preview-meta').textContent = `${article.source} · ${dateLabel(article.date)}`;
-    // Link cards have no fetched article text. Keep the requested demo preview
-    // explicitly fictional without saving sample copy into the source.
-    const paragraphs = article.paragraphs.length ? article.paragraphs : fictionalArticleParagraphs(article.title);
-    $('#article-preview-body').replaceChildren(...paragraphs.map(paragraph => node('p', '', paragraph)));
-    preview.showModal();
-    $('#article-preview-body').scrollTop = 0;
+    onOpenSource({
+      type: article.url ? 'link' : 'text', title: article.title, url: article.url,
+      text: article.paragraphs.join('\n\n'), description: article.description,
+      excerpt: article.excerpt, publishedDate: article.date,
+    }, $('#result-list').querySelector(`[data-inspect-article-id="${id}"]`));
   }
-
-  preview.addEventListener('close', () => {
-    if (state?.projectId === previewArticle?.projectId && !$('#search-results').hidden) {
-      $('#result-list').querySelector(`[data-inspect-article-id="${previewArticle.id}"]`)?.focus({ preventScroll: true });
-    }
-    previewArticle = null;
-  });
 
   function filteredArticles() {
     const query = state.query.toLowerCase();
@@ -382,6 +362,6 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       render();
       for (const id of selected) startAddition(id);
     },
-    hide() { clearAdditionTimers(); if (preview.open) preview.close(); previewArticle = null; state = null; $('#search-results').hidden = true; },
+    hide() { clearAdditionTimers(); if (preview.open) preview.close(); state = null; $('#search-results').hidden = true; },
   };
 }

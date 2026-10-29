@@ -98,7 +98,7 @@ export function createEditorTabs({ onSelect, onRevisionRead = () => {}, createAn
         panel.removeAttribute('aria-labelledby');
         return;
       }
-      const entries = [...(showCreateTab ? [{ id: null, title: 'Content to Draft', preview: true }] : []), ...outputs];
+      const entries = [...(showCreateTab ? [{ id: null, title: 'Project workspace', preview: true }] : []), ...outputs];
       root.replaceChildren(...entries.map(output => {
         const { id, cmsSentAt, preview } = output;
         const title = output.title;
@@ -120,8 +120,8 @@ export function createEditorTabs({ onSelect, onRevisionRead = () => {}, createAn
         badge.append(document.createTextNode(status));
         badge.dataset.sent = String(sent);
         if (preview) badge.dataset.pending = 'true';
-        tab.append(badge);
-        tab.setAttribute('aria-description', preview ? 'Content to draft' : status);
+        if (!preview) tab.append(badge);
+        tab.setAttribute('aria-description', preview ? 'New draft workspace' : status);
         if (!preview) {
           const label = document.createElement('span');
           label.className = 'editor-tab-title';

@@ -1,6 +1,7 @@
+import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { draftSourcesFor, sourceIdentityKey } from './source-model.js?v=20261026-drafting-card-size';
 import { tokenNumber } from './design-system/runtime.js?v=20261026-drafting-card-size';
-import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-drafting-card-size';
+import { sourceLinkArticles } from './source-links.js?v=20261026-drafting-card-size';
 import { createSourceAdditionLoading } from './source-addition-loading.js?v=20261026-drafting-card-size';
 
 export function sourceSelectionFor(project, variant = null) {
@@ -37,7 +38,12 @@ export function sourceDisplayTitle(source) {
 
 export function sourcePreviewParagraphs(source) {
   let text = source.text || '';
-  if (source.type === 'link' && sourceUrl(source.url) && !text.trim()) return fictionalArticleParagraphs(sourceDisplayTitle(source));
+  if (source.type === 'link' && sourceUrl(source.url) && (!text.trim() || text.startsWith('Fictional sample article · '))) {
+    const article = sourceLinkArticles([source])[0];
+    if (article.paragraphs.length) return article.paragraphs;
+    const summary = (source.description || source.excerpt || '').trim();
+    return summary && !/^Fictional preview:/i.test(summary) ? [summary] : [];
+  }
   if (text.startsWith('Fictional sample article · ') && text.includes('\n\n')) text = text.slice(text.indexOf('\n\n') + 2);
   return text.split(/\n\s*\n/).map(value => value.trim()).filter(Boolean);
 }
@@ -47,7 +53,17 @@ function sourceMetadata(label, value) {
   const heading = document.createElement('span');
   heading.className = 'source-metadata-label';
   heading.textContent = `${label}: `;
-  line.append(heading, document.createTextNode(value));
+  line.append(heading);
+  const href = label === 'URL' && sourceUrl(value);
+  if (href) {
+    const link = document.createElement('a');
+    link.href = href;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.setAttribute('aria-label', `Open source: ${href}`);
+    link.append(document.createTextNode(href), createIcon('open_in_new'));
+    line.append(link);
+  } else line.append(document.createTextNode(value));
   return line;
 }
 
@@ -62,12 +78,11 @@ export function createSourcePreview() {
   function openPreview(source, button) {
     previewTrigger = button;
     const text = source.text || '';
-    const linkOnly = source.type === 'link' && sourceUrl(source.url) && !text.trim();
-    const fictional = Boolean(linkOnly) || text.startsWith('Fictional ');
+    const linked = source.type === 'link' && sourceUrl(source.url);
     const meta = document.querySelector('#article-preview-meta');
     meta.replaceChildren();
     meta.hidden = false;
-    if (linkOnly) {
+    if (linked) {
       const date = sourceLinkArticles([source])[0].date;
       const published = date ? new Date(`${date}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : 'Not available';
       meta.append(sourceMetadata('Publish Date', published), sourceMetadata('URL', sourceUrl(source.url)));
@@ -77,16 +92,11 @@ export function createSourcePreview() {
       const date = /^\d{4}-\d{2}-\d{2}$/.test(parts[2] || '') ? new Date(`${parts[2]}T12:00:00`) : null;
       meta.textContent = [parts[1], date ? date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : parts[2]].filter(Boolean).join(' · ');
     } else if (sourceUrl(source.url || '')) {
-      const link = document.createElement('a');
-      link.href = sourceUrl(source.url);
-      link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = source.url;
-      meta.append(link);
+      meta.append(sourceMetadata('URL', source.url));
     } else meta.textContent = source.type === 'file' ? 'Document source' : 'Project source';
     document.querySelector('#article-preview-title').textContent = sourceDisplayTitle(source);
-    document.querySelector('.article-preview-badge').textContent = fictional ? 'Fictional article preview' : 'Source preview';
-    document.querySelector('#article-preview-notice').hidden = !fictional;
     const paragraphs = sourcePreviewParagraphs(source);
-    if (!paragraphs.length) paragraphs.push(source.attachmentId ? 'Download this document from Project Sources to read the original.' : 'No preview text is available for this source.');
+    if (!paragraphs.length) paragraphs.push(source.attachmentId ? 'Download this document from Project Sources to read the original.' : linked ? 'Article text is not available here yet. Open the source link to read the original.' : 'No preview text is available for this source.');
     document.querySelector('#article-preview-body').replaceChildren(...paragraphs.map(value => {
       const paragraph = document.createElement('p'); paragraph.textContent = value; return paragraph;
     }));

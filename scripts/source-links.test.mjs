@@ -91,12 +91,11 @@ test('opaque article IDs use readable URL information without inventing an unrel
   assert.notEqual(cards[0].id, cards[3].id);
 });
 
-test('URL-only Sources preview matches center article preview without saving demo text', () => {
+test('URL-only Sources preview leaves missing article text empty without inventing a body', () => {
   const source = { type: 'link', title: 'article317649444', url: 'https://www.charlotteobserver.com/latest-news/article317649444.html', selected: true };
   const original = structuredClone(source);
   const article = sourceLinkArticles([source.url])[0];
-  assert.deepEqual(sourcePreviewParagraphs(source), fictionalArticleParagraphs(article.title));
-  assert.equal(sourcePreviewParagraphs(source).length, 5);
+  assert.deepEqual(sourcePreviewParagraphs(source), []);
   assert.deepEqual(source, original);
   assert.deepEqual(article.paragraphs, []);
 });
@@ -132,7 +131,7 @@ test('saved metadata headlines and descriptions survive card rebuilding without 
   assert.equal(first.selected, false);
   assert.equal(first.addedToCsa, true);
   assert.equal(sourceDisplayTitle(source), source.title);
-  assert.deepEqual(sourcePreviewParagraphs(source), fictionalArticleParagraphs(source.title));
+  assert.deepEqual(sourcePreviewParagraphs(source), [source.description]);
   assert.deepEqual(source, original);
 });
 
@@ -142,6 +141,7 @@ test('saved excerpts and actual body paragraphs remain separate from generated f
   const article = sourceLinkArticles([source])[0];
   assert.equal(article.excerpt, source.excerpt);
   assert.deepEqual(article.paragraphs, ['Saved first paragraph.', 'Saved second paragraph.']);
+  assert.deepEqual(sourcePreviewParagraphs(source), article.paragraphs);
   assert.deepEqual(source, original);
 });
 
@@ -153,4 +153,10 @@ test('a missing headline uses a transparent URL fallback and labels invented sum
   assert.deepEqual(article.paragraphs, []);
   assert.equal(sourceDisplayTitle(source), article.title);
   assert.throws(() => sourceLinkArticles([{ url: 'javascript:alert(1)', title: 'Unsafe URL' }]), /valid article URL/);
+});
+
+
+test('legacy generated link previews do not masquerade as captured article text', () => {
+  const source = { type: 'link', title: 'Legacy preview', url: 'https://example.com/story', text: 'Fictional sample article · Example · 2026-10-12\n\nInvented body.', excerpt: 'Fictional preview: invented summary.' };
+  assert.deepEqual(sourcePreviewParagraphs(source), []);
 });

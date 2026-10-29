@@ -1,6 +1,6 @@
 import { createFeedbackPill, createVariantFeedback } from '../variant-feedback.js?v=20261026-drafting-card-size';
 import { createRevisionButton, createRevisionRequests } from '../revision-requests.js?v=20261026-drafting-card-size';
-import { createEditorTabs } from '../editor-tabs.js?v=20261027-revision-notifications';
+import { createEditorTabs } from '../editor-tabs.js?v=20261029-source-workspace';
 import { createLastRevisionNote } from '../last-revision-note.js?v=20261027-metadata';
 import { createStoryMetadata, storyMetadata } from '../story-metadata.js?v=20261027-metadata';
 import { createRevisionLoading } from '../revision-loading.js?v=20261027-revision-loading';

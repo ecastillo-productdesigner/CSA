@@ -149,6 +149,9 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
 
   function open(name) {
     if (document.querySelector('dialog[open]') || !panels[name] || (panels[name].mobileOnly && (!mobile.matches || !document.body.classList.contains('showing-composer')))) return;
+    // Apply a pending workspace layout change before opening its requested panel.
+    // Otherwise the queued MutationObserver would immediately close it again.
+    syncLayout();
     setDrawer(drawerAvailable());
     if (active === name) return;
     close();

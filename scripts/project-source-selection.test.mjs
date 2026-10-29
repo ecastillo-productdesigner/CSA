@@ -76,10 +76,9 @@ function setup(t, callbacks = {}) {
   const preview = new Element('dialog'); preview.id = 'article-preview-dialog';
   const close = new Element('button'); close.setAttribute('aria-label', 'Close article preview');
   preview.append(close);
-  for (const id of ['article-preview-meta', 'article-preview-title', 'article-preview-notice', 'article-preview-body']) {
+  for (const id of ['article-preview-meta', 'article-preview-title', 'article-preview-body']) {
     const node = new Element(); node.id = id; preview.append(node);
   }
-  const badge = new Element('span'); badge.className = 'article-preview-badge'; preview.append(badge);
   preview.openCount = 0;
   preview.showModal = () => { preview.open = true; preview.openCount += 1; };
   preview.close = () => { preview.open = false; preview.fire('close'); };
@@ -309,4 +308,26 @@ test('an import rendered after a project context change preserves the new source
   assert.deepEqual(ui.list.querySelectorAll('.editor-source-checkbox').map(input => input.checked), [true, true]);
   assert.equal(added.selected, true);
   assert.equal(ui.status.textContent, '2 of 2 selected for new drafts');
+});
+
+
+test('source preview shows publisher metadata and a safe original link with an external-link icon', t => {
+  const article = { type: 'link', title: 'Captured headline', url: 'https://example.com/story', description: 'Publisher description.', publishedAt: '2026-10-22T16:15:00Z', selected: true };
+  const project = { id: 'project', sources: [article] };
+  const before = structuredClone(project);
+  const ui = setup(t);
+  ui.controller.render(project);
+  const trigger = ui.list.querySelector('.editor-source-open');
+  trigger.fire('click');
+  assert.equal(ui.preview.open, true);
+  assert.match(ui.doc.querySelector('#article-preview-meta').textContent, /Oct 22, 2026/);
+  const link = ui.doc.querySelector('#article-preview-meta').querySelector('a');
+  assert.equal(link.href, article.url);
+  assert.equal(link.target, '_blank');
+  assert.equal(link.rel, 'noopener noreferrer');
+  assert.equal(link.querySelector('.material-symbols-outlined').textContent, 'open_in_new');
+  assert.equal(ui.doc.querySelector('#article-preview-body').textContent, article.description);
+  assert.deepEqual(project, before);
+  ui.preview.close();
+  assert.equal(ui.doc.activeElement, trigger);
 });

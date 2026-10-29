@@ -98,7 +98,7 @@ function setup(t, { target = null, active = null, projects = [], dialogOpen = tr
     partitionSourceAdditions, findDuplicateSource, sourceAlreadyAdded: { open: options => calls.duplicatePopups.push(options) },
     AbortController, crypto: { randomUUID }, document, parseSourceLinks, formatSourceLinks, sourceLinkArticles, projectTitleFromSources, normalizeWordCount,
     projectOutputs, selectedOutputs, outputIsReady, populateOutputContent, reviseSampleOutput, clearTimeout,
-    projectSourcesPanel: { waitForAddition: (id, source, count) => { calls.additionWaits.push(id); calls.additionCounts.push(count); return holdAddition ? addition.promise : Promise.resolve(true); } },
+    projectSourcesPanel: { waitForAddition: (id, source, count) => { calls.additionWaits.push(id); calls.additionCounts.push(count); assert.equal(calls.sourcePanels.at(-1), 'sources', 'Project Sources must open before its loading animation starts'); return holdAddition ? addition.promise : Promise.resolve(true); } },
     renderProjectSources: (project, options) => { calls.sourceRenders.push(project.id); calls.sourceRenderOptions.push(options); },
     updateComposerActions() {},
     searchExperience: { show() {} },
@@ -174,8 +174,8 @@ test('source addition uses the captured target and persists metadata through the
   assert.equal(target.sources[1].title, title);
   assert.equal(target.sources[1].description, 'A public article description');
   assert.equal(target.sources[1].headlineSource, 'json-ld');
-  assert.equal(target.linkCards, true);
-  assert.equal(target.viewOriginalDraft, true);
+  assert.equal(target.linkCards, undefined);
+  assert.equal(target.viewOriginalDraft, undefined);
   assert.equal(ui.context.projects.find(project => project.id === 'other').sources.length, 0);
   assert.equal(ui.context.sourceTargetProjectId, null);
   assert.equal(ui.calls.saved.at(-1).find(project => project.id === 'target').sources[1].title, title);
@@ -398,4 +398,39 @@ test('a multi-source import passes only the unique new-source count to the anima
   assert.equal(ui.context.projects[0].sources[1].selected, true);
   assert.equal(ui.context.projects[0].sources[2].selected, true);
   assert.equal(ui.calls.sourceRenderOptions[0].forNewDraft, true);
+});
+
+
+test('a new pasted-link project opens Project Sources before loading and selects every added source', async t => {
+  const ui = setup(t, { holdAddition: true });
+  const second = 'https://example.com/second-story';
+  const work = ui.submit(`${url}\n${second}`);
+  ui.pending.resolve([metadata(), metadata(second, 'Second story')]);
+  await flush();
+  const project = ui.context.projects[0];
+  assert.equal(project.title, title);
+  assert.deepEqual(clone(project.sources), [], 'source rows wait for the adding animation');
+  assert.deepEqual(ui.calls.shown, [project.id], 'open the new workspace once');
+  assert.deepEqual(ui.calls.sourcePanels, ['sources']);
+  assert.deepEqual(ui.calls.additionCounts, [2]);
+  assert.equal(ui.get('dialog').open, false);
+  assert.ok(ui.context.sourceImport);
+  ui.addition.resolve(true);
+  assert.equal(await work, true);
+  assert.deepEqual(clone(project.sources.map(source => [source.url, source.selected])), [[url, true], [second, true]]);
+  assert.equal(ui.calls.sourceRenderOptions[0].forNewDraft, true);
+  assert.equal(project.sourceStory, undefined, 'import does not generate a draft');
+});
+
+test('adding a link preserves the current draft and its captured source snapshots', async t => {
+  const output = { id: 'saved-draft', title: 'Saved draft', status: 'ready', draftText: 'Keep my edits.', sourceSnapshots: [{ type: 'text', title: 'Captured', text: 'Original material' }] };
+  const project = { id: 'target', title: 'Existing story', sources: [], outputs: [output], selectedOutputId: output.id, viewOriginalDraft: false };
+  const ui = setup(t, { target: project.id, active: project.id, projects: [project] });
+  const work = ui.submit();
+  ui.pending.resolve([metadata()]);
+  assert.equal(await work, true);
+  const saved = ui.context.projects[0];
+  assert.equal(saved.selectedOutputId, output.id);
+  assert.equal(saved.viewOriginalDraft, false);
+  assert.deepEqual(clone(saved.outputs), [output]);
 });

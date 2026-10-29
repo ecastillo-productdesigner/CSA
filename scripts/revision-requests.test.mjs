@@ -12,6 +12,7 @@ class Control {
   disabled = false;
   hidden = false;
   append(...children) { this.children.push(...children); }
+  replaceChildren(...children) { this.children = children; }
   setAttribute(name, value) { this.attributes.set(name, String(value)); }
   getAttribute(name) { return this.attributes.get(name); }
   removeAttribute(name) { this.attributes.delete(name); }
@@ -23,7 +24,7 @@ class Control {
 
 function setup(t) {
   const previous = globalThis.document;
-  const nodes = Object.fromEntries(['dialog', 'form', 'instructions', 'submit', 'error'].map(name => [name, new Control()]));
+  const nodes = Object.fromEntries(['dialog', 'form', 'instructions', 'submit', 'error', 'history-toggle', 'history-panel', 'history-list', 'history-label'].map(name => [name, new Control()]));
   const fallback = new Control();
   const buttons = [];
   globalThis.document = {
@@ -70,6 +71,7 @@ test('opening focuses instructions and rejects blank or over-limit input before 
   ui.api.open(ui.project, ui.output);
   assert.equal(ui.closes(), 1);
   assert.equal(ui.dialog.open, true);
+  assert.equal(ui['history-toggle'].hidden, true);
   assert.equal(document.activeElement, ui.instructions);
   assert.equal(ui.trigger.getAttribute('aria-expanded'), 'true');
   for (const text of ['', '   ', 'x'.repeat(8001)]) {
@@ -157,4 +159,68 @@ test('opening Request Revision acknowledges its dot while preserving the capture
   ui.dialog.close();
   ui.api.open(ui.project, ui.output);
   assert.equal(ui.reads.length, 1, 'a viewed revision is not acknowledged twice');
+});
+
+
+const contents = element => element.textContent + element.children.map(contents).join('');
+
+test('Revision History expands saved requests chronologically without submitting or losing typed instructions', t => {
+  const ui = setup(t);
+  ui.output.revisionRequests = [
+    { instructions: 'Second request', completedAt: 2000 },
+    { instructions: 'First request\nKeep the quote', completedAt: 1000 },
+  ];
+  const saved = structuredClone(ui.output.revisionRequests);
+  ui.api.open(ui.project, ui.output);
+  assert.equal(ui['history-panel'].hidden, true);
+  assert.equal(ui['history-toggle'].getAttribute('aria-expanded'), 'false');
+  ui.instructions.value = 'An unsent request';
+  ui.instructions.fire('input');
+  ui['history-toggle'].fire('click');
+  assert.equal(ui['history-panel'].hidden, false);
+  assert.equal(ui['history-toggle'].getAttribute('aria-expanded'), 'true');
+  assert.equal(ui['history-toggle'].hidden, false);
+  assert.equal(ui['history-label'].textContent, 'Revision History (2)');
+  const entries = ui['history-list'].children.map(contents);
+  assert.match(entries[0], /Revision 1.*Requested Change: First request\nKeep the quote/s);
+  assert.match(entries[1], /Revision 2.*Requested Change: Second request/s);
+  ui['history-toggle'].fire('click');
+  assert.equal(ui['history-panel'].hidden, true);
+  assert.equal(ui.instructions.value, 'An unsent request');
+  assert.equal(ui.submit.disabled, false);
+  assert.deepEqual(ui.calls, []);
+  assert.deepEqual(ui.output.revisionRequests, saved);
+});
+
+test('closing history and changing drafts resets the disclosure without leaking earlier requests', t => {
+  const ui = setup(t);
+  ui.output.revisionRequests = [{ instructions: 'Only for draft A', completedAt: 1000 }];
+  ui.api.open(ui.project, ui.output);
+  ui['history-toggle'].fire('click');
+  ui.dialog.close();
+  assert.equal(ui['history-panel'].hidden, true);
+  assert.equal(ui['history-toggle'].getAttribute('aria-expanded'), 'false');
+  assert.equal(ui['history-list'].children.length, 0);
+  ui.api.open(ui.project, { id: 'draft-b', revisionRequests: [{ instructions: ' ' }] });
+  ui['history-toggle'].fire('click');
+  assert.equal(ui['history-toggle'].hidden, true);
+  assert.equal(ui['history-list'].children.length, 0);
+  assert.equal(ui['history-panel'].hidden, true);
+  ui.dialog.close();
+  ui.api.open(ui.project, ui.output);
+  assert.equal(ui['history-panel'].hidden, true);
+  assert.match(contents(ui['history-list']), /Only for draft A/);
+  assert.equal(ui['history-toggle'].hidden, false);
+});
+
+
+test('Revision History count includes only saved requests with actual instructions', t => {
+  const ui = setup(t);
+  ui.output.revisionRequests = [
+    { instructions: 'First' }, { instructions: '' }, null,
+    { instructions: 'Second' }, { instructions: 'Third' },
+  ];
+  ui.api.open(ui.project, ui.output);
+  assert.equal(ui['history-label'].textContent, 'Revision History (3)');
+  assert.equal(ui['history-list'].children.length, 3);
 });

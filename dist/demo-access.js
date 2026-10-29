@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261029-revision-indicator-location');
+  await import('./app.js?v=20261029-revision-history');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

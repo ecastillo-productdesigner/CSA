@@ -14,6 +14,37 @@ export function revisionRequestLabel(count) { return count > 1 ? 'Requested Revi
 export function latestRevisionDetails(output) { return revisionHistory(output).at(-1) || null; }
 export function latestRevisionNote(output) { return latestRevisionDetails(output)?.instructions || ''; }
 
+export function renderRevisionHistory(list, notes) {
+  list.replaceChildren(...notes.map((details, index) => {
+    const entry = document.createElement('li');
+    const heading = document.createElement('h3');
+    heading.textContent = `Revision ${index + 1}`;
+    const fields = document.createElement('dl');
+    fields.className = 'editor-seo-metadata';
+    const dateRow = document.createElement('div');
+    const dateLabel = document.createElement('dt');
+    dateLabel.textContent = 'Revised: ';
+    const dateValue = document.createElement('dd');
+    const time = document.createElement('time');
+    if (details.completedAt != null) {
+      time.textContent = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }).format(details.completedAt);
+      time.dateTime = new Date(details.completedAt).toISOString();
+    } else time.textContent = 'Time unavailable';
+    dateValue.append(time);
+    dateRow.append(dateLabel, dateValue);
+    const noteRow = document.createElement('div');
+    const noteLabel = document.createElement('dt');
+    noteLabel.textContent = 'Requested Change: ';
+    const copy = document.createElement('dd');
+    copy.className = 'editor-direction-copy';
+    copy.textContent = details.instructions;
+    noteRow.append(noteLabel, copy);
+    fields.append(dateRow, noteRow);
+    entry.append(heading, fields);
+    return entry;
+  }));
+}
+
 export function createLastRevisionNote({ container = document.querySelector('#material-editor'), closePanels = () => {} } = {}) {
   const trigger = document.querySelector('#editor-revision-note-button');
   const popover = document.querySelector('#editor-revision-note-popover');
@@ -27,34 +58,7 @@ export function createLastRevisionNote({ container = document.querySelector('#ma
     label.textContent = title;
     heading.textContent = title;
     dismiss.setAttribute('aria-label', `Close ${title}`);
-    list.replaceChildren(...notes.map((details, index) => {
-      const entry = document.createElement('li');
-      const heading = document.createElement('h3');
-      heading.textContent = `Revision ${index + 1}`;
-      const fields = document.createElement('dl');
-      fields.className = 'editor-seo-metadata';
-      const dateRow = document.createElement('div');
-      const dateLabel = document.createElement('dt');
-      dateLabel.textContent = 'Revised: ';
-      const dateValue = document.createElement('dd');
-      const time = document.createElement('time');
-      if (details.completedAt != null) {
-        time.textContent = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }).format(details.completedAt);
-        time.dateTime = new Date(details.completedAt).toISOString();
-      } else time.textContent = 'Time unavailable';
-      dateValue.append(time);
-      dateRow.append(dateLabel, dateValue);
-      const noteRow = document.createElement('div');
-      const noteLabel = document.createElement('dt');
-      noteLabel.textContent = 'Requested Change: ';
-      const copy = document.createElement('dd');
-      copy.className = 'editor-direction-copy';
-      copy.textContent = details.instructions;
-      noteRow.append(noteLabel, copy);
-      fields.append(dateRow, noteRow);
-      entry.append(heading, fields);
-      return entry;
-    }));
+    renderRevisionHistory(list, notes);
   }
   const controller = createEditorPopover({ container, trigger, popover, dismiss, onOpen() { closePanels(); render(); } });
   function update(output) {

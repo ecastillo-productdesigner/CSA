@@ -1,3 +1,4 @@
+import { revisionHistory, renderRevisionHistory } from './last-revision-note.js?v=20261029-revision-history';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 
 export function createRevisionButton(output, disabled = false) {
@@ -31,6 +32,15 @@ export function createRevisionRequests({ onSubmit, closePanels, onRevisionRead =
   const instructions = document.querySelector('#revision-request-instructions');
   const submit = document.querySelector('#revision-request-submit');
   const error = document.querySelector('#revision-request-error');
+  const historyToggle = document.querySelector('#revision-request-history-toggle');
+  const historyPanel = document.querySelector('#revision-request-history-panel');
+  const historyLabel = document.querySelector('#revision-request-history-label');
+  const historyList = document.querySelector('#revision-request-history-list');
+  function setHistoryOpen(open) {
+    historyPanel.hidden = !open;
+    historyToggle.setAttribute('aria-expanded', String(open));
+  }
+  historyToggle.addEventListener('click', () => { if (!historyToggle.hidden) setHistoryOpen(historyPanel.hidden); });
   let target = null;
   const trigger = () => target && [...document.querySelectorAll('[data-request-revision]')].find(button => button.dataset.requestRevision === target.outputId);
 
@@ -54,6 +64,9 @@ export function createRevisionRequests({ onSubmit, closePanels, onRevisionRead =
     const button = trigger();
     button?.setAttribute('aria-expanded', 'false');
     target = null;
+    setHistoryOpen(false);
+    historyToggle.hidden = true;
+    historyList.replaceChildren();
     form.reset();
     refresh();
     if (button && !button.disabled) button.focus({ preventScroll: true });
@@ -64,6 +77,11 @@ export function createRevisionRequests({ onSubmit, closePanels, onRevisionRead =
     open(project, output) {
       closePanels();
       target = { projectId: project.id, outputId: output.id };
+      setHistoryOpen(false);
+      const notes = revisionHistory(output);
+      renderRevisionHistory(historyList, notes);
+      historyToggle.hidden = !notes.length;
+      historyLabel.textContent = notes.length > 1 ? `Revision History (${notes.length})` : 'Revision History';
       form.reset();
       error.hidden = true;
       refresh();

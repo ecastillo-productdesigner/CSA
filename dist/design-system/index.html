@@ -10,15 +10,15 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,chevron_forward,close,delete,description,draw,edit,edit_document,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,unfold_less,upload,view_module,visibility&amp;display=block">
   <link rel="stylesheet" href="tokens.css?v=20261029-revision-indicator-location">
-  <link rel="stylesheet" href="../styles.css?v=20261030-mobile-panel-refinements">
-  <link rel="stylesheet" href="guide.css?v=20261030-copy-alignment">
-  <script src="guide.js?v=20261030-mobile-panel-refinements" type="module"></script>
+  <link rel="stylesheet" href="../styles.css?v=20261030-spacing-reference">
+  <link rel="stylesheet" href="guide.css?v=20261030-spacing-reference">
+  <script src="guide.js?v=20261030-spacing-reference" type="module"></script>
 </head>
 <body class="ds-page">
   <a class="ds-skip" href="#overview">Skip to reference</a>
   <header class="ds-header">
     <a class="ds-brand" href="../">CSA <span>Design system</span></a>
-    <nav aria-label="Design system sections"><a href="#foundations">Foundations</a><a href="#iconography">Icons</a><a href="#components">Components</a><a href="#content-microcopy">Content &amp; Microcopy</a><a href="#tokens">Tokens</a><a href="#handoff">Handoff</a></nav>
+    <nav aria-label="Design system sections"><a href="#foundations">Foundations</a><a href="#iconography">Icons</a><a href="#spacing">Spacing</a><a href="#components">Components</a><a href="#content-microcopy">Content &amp; Microcopy</a><a href="#tokens">Tokens</a><a href="#handoff">Handoff</a></nav>
     <span class="ds-version">v1.0</span>
   </header>
   <main class="ds-main">
@@ -39,18 +39,54 @@
         <div id="ds-type-specimens"></div>
         <p class="ds-caption">Role-based organization follows <a href="https://m3.material.io/styles/typography/applying-type">Material typography guidance</a> and <a href="https://www.carbondesignsystem.com/building-blocks/foundations/typography/style-strategies">Carbon typography strategies</a>. Samples use the app’s shared typography roles. Project grid-card headings use 16 px Semibold, dropdown values use 14 px Regular, and status badges match settings chips at 12 px Medium with a 20 px line height.</p>
       </article>
-      <div class="ds-two-column">
-        <article class="ds-panel" id="spacing" aria-labelledby="ds-spacing-title"><div class="ds-panel-heading"><h3 id="ds-spacing-title">Spacing</h3><span>Padding &amp; gaps</span></div><p class="ds-foundation-intro">Use shared spacing values for padding and gaps to keep controls and sections consistent.</p><div class="ds-spacing" id="ds-spacing"></div><p class="ds-caption">The primary rhythm is 4 px. Smaller refinements are available in the token inventory.</p></article>
-        <article class="ds-panel" id="radius" aria-labelledby="ds-radius-title"><div class="ds-panel-heading"><h3 id="ds-radius-title">Corner radius</h3><span>4 shared shapes</span></div><p class="ds-foundation-intro">Use the component’s assigned radius to keep corners consistent.</p><div class="ds-radius-row"><div style="border-radius:var(--csa-foundation-radius-4)"><strong>4 px</strong><span>Status · checkboxes · tooltips</span></div><div style="border-radius:var(--csa-foundation-radius-8)"><strong>8 px</strong><span>Fields · menus · content cards · layout switch</span></div><div style="border-radius:var(--csa-foundation-radius-16)"><strong>16 px</strong><span>Buttons · dialogs · project cards · navigation</span></div><div style="border-radius:var(--csa-foundation-radius-999)"><strong>999 px</strong><span>Chips · avatars · round controls</span></div></div></article>
-      </div>
+      <article class="ds-panel" id="radius" aria-labelledby="ds-radius-title"><div class="ds-panel-heading"><h3 id="ds-radius-title">Corner radius</h3><span>4 shared shapes</span></div><p class="ds-foundation-intro">Use the component’s assigned radius to keep corners consistent.</p><div class="ds-radius-row"><div style="border-radius:var(--csa-foundation-radius-4)"><strong>4 px</strong><span>Status · checkboxes · tooltips</span></div><div style="border-radius:var(--csa-foundation-radius-8)"><strong>8 px</strong><span>Fields · menus · content cards · layout switch</span></div><div style="border-radius:var(--csa-foundation-radius-16)"><strong>16 px</strong><span>Buttons · dialogs · project cards · navigation</span></div><div style="border-radius:var(--csa-foundation-radius-999)"><strong>999 px</strong><span>Chips · avatars · round controls</span></div></div></article>
       <div class="ds-stack">
         <article class="ds-panel"><div class="ds-panel-heading"><h3>Surfaces</h3><span>Subtle menu elevation</span></div><div class="ds-elevations"><div class="ds-menu-surface">Dropdown</div><div class="ds-menu-surface">Popover</div><div>Dialog</div></div><p class="ds-caption">Structural navigation/sidebar, New Draft, Content, editor, and source panels use white. The selected joined editor tab matches its panel; inner cards, fields, menus, and dialogs remain white. Dropdowns and popovers share a white surface, 1 px neutral border, 8 px corners, and a 0px 4px 12px shadow at 8% opacity on desktop and 16% on mobile. Mobile dialogs and open workspace panels share New Project’s 16% backdrop and 2px blur. Grid project cards and list rows gain a subtle 0px 3px 10px black shadow at 7% opacity on hover. Their hover surfaces remain white with dark text. List rows retain ordinary neutral dividers, white surfaces, and dark text, with subtle elevation on hover. Keyboard-focus outlines remain visible on row controls.</p></article>
         <article class="ds-panel ds-iconography" id="iconography" aria-labelledby="ds-iconography-title"><div class="ds-panel-heading"><h3 id="ds-iconography-title">Iconography</h3><span id="ds-icon-count">CSA icon library</span></div><p class="ds-caption"><strong>Unselected: outlined (<code>FILL 0</code>).</strong> <strong>Selected: filled (<code>FILL 1</code>).</strong> Apply this rule to icons in selection controls, including view switches, source folders, and formatting toggles. Actions without a selected state use filled icons.</p><p class="ds-caption">The gallery includes current and legacy app icons. Continue and Upload appear in New Project, and Search marks article URL entry. Document and Source Link remain available from older flows. The legacy result-thumbnail photo_camera glyph remains app-only and is excluded from this gallery. Each icon shows both states and its Material Symbols name. Glyph sizes use a separate 16, 20, 24, and 40 px scale. The default is 24 px; status badge icons use 16 px.</p><div class="ds-icon-grid" id="ds-icon-grid"></div></article>
       </div>
     </section>
 
+    <section class="ds-section" id="spacing" aria-labelledby="ds-spacing-title">
+      <div class="ds-section-heading"><p class="ds-eyebrow">02 / SPACING</p><h2 id="ds-spacing-title">Spacing</h2><p>Use shared values for the space inside controls, between related items, and around panels. These examples show the spacing used in CSA.</p></div>
+      <div class="ds-two-column">
+        <article class="ds-panel" aria-labelledby="ds-mobile-spacing-title">
+          <div class="ds-panel-heading"><h3 id="ds-mobile-spacing-title">Mobile Header</h3><span>New Project &amp; avatar</span></div>
+          <div class="ds-spacing-stage" role="img" aria-label="New Project has a 6 pixel gap between its icon and label. A 48 pixel gap separates the New Project and avatar controls.">
+            <div class="ds-spacing-controls" aria-hidden="true">
+              <div class="ds-spacing-new-project"><span class="material-symbols-outlined">add_circle</span><span>New Project</span></div>
+              <div class="ds-spacing-gap"><span data-space-value="48">48 px</span></div>
+              <div class="ds-spacing-avatar"><span class="profile-avatar">A</span></div>
+            </div>
+          </div>
+          <dl class="ds-spacing-measurements">
+            <div><dt>Icon to label</dt><dd data-space-value="6">6 px</dd></div>
+            <div><dt>New Project to avatar</dt><dd data-space-value="48">48 px</dd></div>
+            <div><dt>Workspace header padding</dt><dd data-space-value="12">12 px</dd></div>
+          </dl>
+          <p class="ds-caption">Measure gaps between the control boxes, including their padding. The space between visible text and the avatar circle is larger. Dashed outlines mark the control boxes; the shaded band marks the gap.</p>
+        </article>
+        <article class="ds-panel" aria-labelledby="ds-spacing-scale-title">
+          <div class="ds-panel-heading"><h3 id="ds-spacing-scale-title">Spacing Scale</h3><span>Common values</span></div>
+          <div class="ds-spacing" id="ds-spacing"></div>
+          <p class="ds-caption">Bars show the values at their actual CSS width. Start with the 4 px rhythm; use existing 6 px and 10 px refinements where a component calls for them. See <a href="#tokens">Tokens</a> for the full inventory.</p>
+        </article>
+      </div>
+      <article class="ds-panel" aria-labelledby="ds-spacing-usage-title">
+        <div class="ds-panel-heading"><h3 id="ds-spacing-usage-title">Spacing in Use</h3><span>Mobile workspace</span></div>
+        <dl class="ds-spacing-usage">
+          <div><dt>Icon and label</dt><dd><strong data-space-value="6">6 px</strong><span>New Project and the New Draft, Content, and Sources controls.</span></dd></div>
+          <div><dt>New Project and avatar</dt><dd><strong data-space-value="48">48 px</strong><span>Between the two control boxes in the top row.</span></dd></div>
+          <div><dt>Log Out menu</dt><dd><strong data-space-value="8">8 px</strong><span>Below the avatar control.</span></dd></div>
+          <div><dt>Header divider</dt><dd><strong data-space-value="10">10 px</strong><span>Above and below the divider between the two navigation rows.</span></dd></div>
+          <div><dt>Header padding</dt><dd><strong data-space-value="12">12 px</strong><span>Inside the two-row workspace header. The homepage uses 8 px vertically and 12 px horizontally.</span></dd></div>
+          <div><dt>Window edge and panel gap</dt><dd><strong data-space-value="16">16 px</strong><span>From the header to the window edge, and between the header and the content below it.</span></dd></div>
+        </dl>
+        <p class="ds-caption">Use the matching spacing token in CSS, for example <code>gap: var(--csa-foundation-space-48)</code>. Control heights and icon sizes are separate dimensions.</p>
+      </article>
+    </section>
+
     <section class="ds-section" id="components" aria-labelledby="components-title">
-      <div class="ds-section-heading"><p class="ds-eyebrow">02 / COMPONENTS</p><h2 id="components-title">The pieces of the workspace.</h2><p>These specimens reuse the app’s production classes, tokens, and shared helpers. Try the controls with isolated example data.</p></div>
+      <div class="ds-section-heading"><p class="ds-eyebrow">03 / COMPONENTS</p><h2 id="components-title">The pieces of the workspace.</h2><p>These specimens reuse the app’s production classes, tokens, and shared helpers. Try the controls with isolated example data.</p></div>
       <article class="ds-panel" id="button-hierarchy">
         <div class="ds-panel-heading"><h3>Button hierarchy</h3><span>46 px height · 16 px labels · 16 px radius</span></div>
         <div class="ds-button-matrix" role="group" aria-label="Primary, secondary, tertiary, and destructive button states">
@@ -148,7 +184,7 @@
     </section>
 
     <section class="ds-section" id="content-microcopy" aria-labelledby="content-microcopy-title">
-      <div class="ds-section-heading"><p class="ds-eyebrow">03 / CONTENT &amp; MICROCOPY</p><h2 id="content-microcopy-title">UX Writing Style Guide, CSA 2.0</h2><p>Be clear. Be easy to use. Respect the user.</p></div>
+      <div class="ds-section-heading"><p class="ds-eyebrow">04 / CONTENT &amp; MICROCOPY</p><h2 id="content-microcopy-title">UX Writing Style Guide, CSA 2.0</h2><p>Be clear. Be easy to use. Respect the user.</p></div>
       <div class="ds-two-column">
         <article class="ds-panel"><h3>Scope</h3><p>This guide applies to text users see in CSA and communication with users outside CSA. Back-end terminology is up to the engineers and may differ from this guide.</p><a class="ds-text-link" href="UX-WRITING.txt" download>Download Writing Guide <span class="material-symbols-outlined" aria-hidden="true">open_in_new</span></a></article>
         <article class="ds-panel"><h3>CSA voice</h3><p>Trustworthy, professional, contemporary, and humane.</p><p>Keep people informed, involved, and in control of their work.</p></article>
@@ -159,13 +195,13 @@
     </section>
 
     <section class="ds-section" id="tokens" aria-labelledby="tokens-title">
-      <div class="ds-section-heading"><p class="ds-eyebrow">04 / TOKEN EXPLORER</p><h2 id="tokens-title">One value. A clear purpose.</h2><p>Foundation stores the raw value. Semantic gives it a role. Component connects it to the interface.</p></div>
+      <div class="ds-section-heading"><p class="ds-eyebrow">05 / TOKEN EXPLORER</p><h2 id="tokens-title">One value. A clear purpose.</h2><p>Foundation stores the raw value. Semantic gives it a role. Component connects it to the interface.</p></div>
       <div class="ds-alias-chain"><div><small>FOUNDATION</small><code>color.teal.700</code><strong>#00786F</strong></div><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span><div><small>SEMANTIC</small><code>color.action.primary</code><strong>Primary action</strong></div><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span><div><small>COMPONENT</small><code>button.primary.background</code><strong>Button background</strong></div></div>
       <article class="ds-panel ds-token-panel"><div class="ds-token-controls"><label for="ds-token-search">Find a token<input id="ds-token-search" type="search" placeholder="Search primary, radius, chip…"></label><label for="ds-token-layer">Layer<select id="ds-token-layer"><option value="semantic">Semantic</option><option value="component">Component</option><option value="foundation">Foundation</option><option value="all">All tokens</option></select></label><span id="ds-token-count" role="status"></span></div><div class="ds-table-wrap" tabindex="0" aria-label="Design token table"><table><thead><tr><th scope="col">Token / CSS variable</th><th scope="col">Resolved value</th><th scope="col">Purpose</th><th scope="col">Copy</th></tr></thead><tbody id="ds-token-rows"></tbody></table></div><p class="ds-caption" id="ds-token-empty" hidden>No matching tokens. Try another term or choose All tokens.</p><p class="ds-caption">“Observed exception” preserves a value unique to an existing component. Prefer a semantic or component token for new work.</p></article>
     </section>
 
     <section class="ds-section" id="handoff" aria-labelledby="handoff-title">
-      <div class="ds-section-heading"><p class="ds-eyebrow">05 / HANDOFF</p><h2 id="handoff-title">Ready to use and maintain.</h2><p>The app now reads its shared values from the same token source as this reference.</p></div>
+      <div class="ds-section-heading"><p class="ds-eyebrow">06 / HANDOFF</p><h2 id="handoff-title">Ready to use and maintain.</h2><p>The app now reads its shared values from the same token source as this reference.</p></div>
       <div class="ds-two-column"><article class="ds-panel"><h3>Use the system</h3><ol class="ds-steps"><li>Edit <code>dist/design-system/tokens.json</code>.</li><li>Run <code>npm run design-system:build</code>.</li><li>Use a semantic or component CSS variable.</li><li>Run <code>npm run check</code> and review desktop and mobile.</li></ol><pre><code>.primary-action {
   background: var(--csa-component-button-primary-background);
   color: var(--csa-component-button-primary-label);

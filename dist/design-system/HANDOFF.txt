@@ -142,3 +142,5 @@ Current approved behavior · 2026-10-26
 2026-10-30: On mobile, Sources closes on an outside tap using the same behavior as Content and New Draft. Taps inside the panel or its child menus keep it open. The mobile Log Out menu is aligned beneath the avatar utility control with an 8 px gap and the shared 200 px profile-menu width, above the second navigation row.
 
 2026-10-30: On mobile, New Project stacks its plus icon above the complete New Project label on one line, with a 6 px gap. The utility row is 60 px high; the homepage top bar is 78 px high and the two-row workspace header is 167 px high. Content offsets and the opaque header backing follow those heights. The avatar remains centered in the utility row, and Log Out retains an 8 px gap beneath its 44 px control.
+
+2026-10-30: Mobile top bars use a 48 px gap between the New Project and account control boxes, through foundation.space.48. New Project keeps its 6 px icon-to-label gap, and the avatar menu keeps its 8 px gap below the account control. The dedicated Spacing section documents these uses alongside shared header padding, outer insets, and panel gaps. No other app spacing changes.

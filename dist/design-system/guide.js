@@ -4,7 +4,7 @@ import { bindTabSelection } from '../selection-controls.js?v=20261026-drafting-c
 import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261030-revision-headings';
 import { mountProjectSpecimens } from './project-specimens.js?v=20261029-delete-project-dialog';
 import { mountFormSpecimens } from './form-specimens.js?v=20261026-drafting-card-size';
-import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261030-mobile-panel-refinements';
+import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261030-spacing-reference';
 import { colorRoleGroups } from './color-roles.js?v=20261028-revision-indicator';
 import { typographyRoleGroups } from './typography-roles.js?v=20261026-drafting-card-size';
 import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-drafting-card-size';
@@ -333,11 +333,17 @@ try {
     }
     $('#ds-type-specimens').append(section);
   }
-  for (const value of [4,8,12,16,24,32,48,64]) {
-    const row=element('div','ds-space'); const bar=element('i');
-    bar.style.width=`calc(var(--csa-foundation-space-${value}) * 3)`;
-    row.append(element('span','',value+' px'),bar,element('code','',`space.${value}`));
+  for (const value of [4,6,8,10,12,16,20,24,32,40,48,64]) {
+    const token = byName.get(`foundation.space.${value}`);
+    const row = element('div', 'ds-space');
+    const bar = element('i');
+    bar.style.width = `var(${token.cssVariable})`;
+    bar.setAttribute('aria-hidden', 'true');
+    row.append(element('span', '', token.value.replace('px', ' px')), bar, element('code', '', `space.${value}`));
     $('#ds-spacing').append(row);
+  }
+  for (const label of document.querySelectorAll('[data-space-value]')) {
+    label.textContent = byName.get(`foundation.space.${label.dataset.spaceValue}`).value.replace('px', ' px');
   }
   $('#ds-muted-contrast').textContent=ratio(byName.get('semantic.color.text.muted').value,byName.get('semantic.color.surface.default').value);
   $('#ds-primary-contrast').textContent=ratio(byName.get('semantic.color.surface.default').value,byName.get('semantic.color.action.primary').value);

@@ -1,10 +1,10 @@
-import { mentionsElephant, revisionChangeSummary } from './revision-change-summary.js?v=20261029-revision-change-summary';
+import { mentionsElephant, revisionChangeSummary } from './revision-change-summary.js?v=20261030-draft-status-and-history';
 import { syncSelection } from './selection-controls.js?v=20261026-drafting-card-size';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { normalizeWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
 import { countPreviewWords } from './content-preview.js?v=20261026-drafting-card-size';
 import { createContentCardActions } from './content-card-editing.js?v=20261026-drafting-card-size';
-import { createRevisionAnimation } from './drafting-animation.js?v=20261026-drafting-card-size';
+import { createRevisionAnimation } from './drafting-animation.js?v=20261030-draft-status-and-history';
 import { topicDraftContent } from './topic-draft.js?v=20261026-drafting-card-size';
 import { formatDraftContent } from './draft-format.js?v=20261026-drafting-card-size';
 const sampleHeadlines = [
@@ -419,15 +419,16 @@ export function renderOutputs(project, requestedView) {
   document.querySelector('#output-status-content').setAttribute('aria-labelledby', `output-${state.view}-tab`);
   document.querySelector('.outputs-footer').hidden = state.view !== 'pending';
   const processing = Boolean(project?.outputProcessing);
+  const processingLabel = project?.outputProcessing?.kind === 'revision' ? 'Revising Draft' : 'Creating Draft';
   const selectedPending = selectedPendingOutputs(project);
   const selectedIds = new Set(selectedOutputs(project).map(output => output.id));
   const list = document.querySelector('#output-list');
   document.querySelector('.composer-outputs').setAttribute('aria-busy', String(processing));
   const create = document.querySelector('#create-output');
   create.disabled = processing || !selectedPending.length;
-  create.title = processing ? 'Drafting Selected Content' : selectedPending.length ? 'Draft Selected Content' : 'Select Content to Draft';
+  create.title = processing ? processingLabel : selectedPending.length ? 'Draft Selected Content' : 'Select Content to Draft';
   document.querySelector('#create-output-label').textContent = 'Draft';
-  document.querySelector('#output-processing-status').textContent = project?.outputProcessing?.kind === 'revision' ? 'Revising Draft' : processing ? 'Drafting your selected content. This takes about 15 seconds.' : `${selectedPending.length} pending draft${selectedPending.length === 1 ? '' : 's'} selected.`;
+  document.querySelector('#output-processing-status').textContent = processing ? processingLabel : `${selectedPending.length} pending draft${selectedPending.length === 1 ? '' : 's'} selected.`;
   const empty = document.querySelector('#outputs-empty');
   empty.hidden = state.outputs.length > 0;
   empty.querySelector('p').textContent = state.view === 'pending' ? 'Your draft recipes will appear here.' : 'Your draft requests will appear here.';
@@ -510,7 +511,7 @@ export function renderOutputs(project, requestedView) {
     badges.inert = revising;
     card.append(badges);
     if (revising) {
-      const animation = createRevisionAnimation({ selectionKeys: outputLoadingSelectionKeys(output) });
+      const animation = createRevisionAnimation({ selectionKeys: outputLoadingSelectionKeys(output), label: processingLabel });
       animation.element.classList.add('output-revision-overlay');
       draftingAnimations.add(animation);
       card.append(animation.element);

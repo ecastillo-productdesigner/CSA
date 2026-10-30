@@ -9,7 +9,7 @@ Guide:
 
 Capitalization
 Capitalize key words in buttons and headings, keep short connecting words such as “to” lowercase, and preserve acronyms. Follow exact approved labels.
-Approved casing: Add to List, SEO Title, and Send to your CMS. Status messages and full sentences use sentence case.
+Approved casing: Add to List, SEO Title, Send to your CMS, Creating Draft, and Revising Draft. Other status messages and full sentences use sentence case.
 Yes: Add to List
 Yes: SEO Title
 No: Add To List
@@ -57,17 +57,17 @@ No: CSA is reading your article
 
 Match the actual task
 Text should match reality. Be trustworthy rather than engaging in theater.
-Yes: Drafting Content [with gentle animation]
+Yes: Creating Draft [with gentle animation]
 No: Checking your style [when it is not, at that moment, checking your style]
 
 Speak, don’t shout
 Use a calm, professional tone.
-Yes: Drafting Content
+Yes: Creating Draft
 No: Coming right up!
 
 Use active voice
 Make the action clear.
-Yes: Drafting Content
+Yes: Creating Draft
 No: Content is Drafting
 
 The following concepts will become obsolete with CSA 2.0 and should be avoided:
@@ -81,3 +81,5 @@ No: Geographic Audience
 No: Market Variant
 No: Content Scaling
 No: CSA Combine
+
+Product status labels: Creating Draft for new drafts; Revising Draft for revision requests.

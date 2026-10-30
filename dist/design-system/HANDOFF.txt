@@ -120,3 +120,11 @@ Current approved behavior · 2026-10-26
 2026-10-30: Both revision history views use one Requested Revision description combining the quoted original instructions with the saved completion summary. Older entries without a summary include Result not recorded. Multiline copy, newest-first display, original revision numbers, and existing revision notification behavior are preserved.
 
 2026-10-30: Requested Revision descriptions now begin You asked for, followed by the quoted request and saved outcome. Display copy trims surrounding whitespace and adds terminal punctuation when needed; saved instructions and results remain unchanged.
+
+2026-10-30: Both revision history views omit the Revision 1 heading when there is only one entry. With two or more entries, each keeps its original numbered heading in newest-first order. The completion time and Requested Revision description remain visible for every entry.
+
+2026-10-30: New revision outcomes describe observed before-and-after edits and their locations instead of the generic Updated the draft body message. Notes identify paragraph splits/merges, localized text edits and formatting changes when supported by the content, then end with No other changes. Submitted instructions remain visible in the combined You asked for description; elephant refusal wording and prior saved outcomes are preserved.
+
+2026-10-30: Removed the duplicate Requested Revision link and popover from the editor footer in the app and DS preview. Saved requests and outcomes remain available through Revision History inside Request Revision.
+
+2026-10-30: New-draft loading uses the approved label Creating Draft, while revision loading uses Revising Draft. Content-card processing labels follow the job kind, and generic drafting previews and status guidance use the same wording. Animation timing, category colors, and source-loading labels are unchanged.

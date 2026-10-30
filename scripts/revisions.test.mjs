@@ -11,7 +11,7 @@ test('demo revision replaces the body while preserving the variant identity and 
   assert.notEqual(output.draftText, before.draftText);
   assert.equal(output.document.ops.map(op => op.insert).join('').replace(/\s+/g, ' ').trim(), output.draftText.replace(/\s+/g, ' ').trim());
   for (const key of ['id', 'title', 'shareText', 'name', 'nameEdited', 'isFavorite', 'createdAt', 'labels', 'selectedSourceIndexes', 'sourceSnapshots', 'metadata']) assert.deepEqual(output[key], before[key]);
-  assert.deepEqual(output.revisionRequests, [{ instructions: 'Shorten the intro', changeSummary: 'Updated the draft body. No other changes.', requestedAt: 10, completedAt: 20, status: 'complete' }]);
+  assert.deepEqual(output.revisionRequests, [{ instructions: 'Shorten the intro', changeSummary: 'Replaced the draft body with 7 paragraphs. No other changes.', requestedAt: 10, completedAt: 20, status: 'complete' }]);
   assert.equal(output.updatedAt, 20);
   assert.equal(output.revisionUnread, true);
   assert.equal(output.revisionRequestUnread, true);
@@ -99,7 +99,7 @@ test('elephantine does not trigger the elephant refusal', () => {
   const before = output.draftText;
   reviseSampleOutput(output, 'Reduce the elephantine introduction', 10, 20);
   assert.notEqual(output.draftText, before);
-  assert.equal(output.revisionRequests[0].changeSummary, 'Updated the draft body. No other changes.');
+  assert.equal(output.revisionRequests[0].changeSummary, 'Replaced the draft body with 7 paragraphs. No other changes.');
 });
 
 test('revision summaries include a newly initialized share text instead of claiming only the body changed', () => {
@@ -107,5 +107,5 @@ test('revision summaries include a newly initialized share text instead of claim
   delete output.shareText;
   reviseSampleOutput(output, 'Revise the opening', 10, 20);
   assert.ok(output.shareText.trim());
-  assert.equal(output.revisionRequests[0].changeSummary, 'Updated the draft body. Updated the share text. No other changes.');
+  assert.equal(output.revisionRequests[0].changeSummary, 'Replaced the draft body with 7 paragraphs. Updated the share text. No other changes.');
 });

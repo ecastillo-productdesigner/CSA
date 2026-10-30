@@ -206,6 +206,16 @@ test('closing history and changing drafts resets the disclosure without leaking 
   ui.output.revisionRequests = [{ instructions: 'Only for draft A', completedAt: 1000 }];
   ui.api.open(ui.project, ui.output);
   ui['history-toggle'].fire('click');
+  assert.equal(ui['history-list'].children.length, 1);
+  const entry = ui['history-list'].children[0];
+  assert.equal(entry.children.some(child => child.tagName === 'h3'), false, 'a single revision does not have a numbered heading');
+  const fields = revisionFields(entry);
+  assert.deepEqual(Object.keys(fields), ['Revised:', 'Requested Revision:']);
+  const time = fields['Revised:'].children[0];
+  assert.equal(time.tagName, 'time');
+  assert.equal(time.dateTime, new Date(1000).toISOString());
+  assert.ok(time.textContent, 'the single revision retains its readable completion date');
+  assert.equal(fields['Requested Revision:'].textContent, 'You asked for “Only for draft A.” Result not recorded.');
   ui.dialog.close();
   assert.equal(ui['history-panel'].hidden, true);
   assert.equal(ui['history-toggle'].getAttribute('aria-expanded'), 'false');

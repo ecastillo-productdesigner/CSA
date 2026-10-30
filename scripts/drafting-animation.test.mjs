@@ -148,7 +148,7 @@ test('the shared component has three decorative white-sheet layers and one stati
   assert.equal(ui.message.getAttribute('role'), 'status');
   assert.equal(ui.message.getAttribute('aria-live'), 'polite');
   assert.equal(ui.message.className, 'drafting-message');
-  assert.equal(ui.message.textContent, 'Drafting Content');
+  assert.equal(ui.message.textContent, 'Creating Draft');
   assert.equal(ui.message.textWrites, 1);
   assert.equal(env.timers.size, 0, 'a detached component must not start a loop');
   ui.controller.destroy();
@@ -270,9 +270,9 @@ test('each visual phase brings the back sheet forward without changing or animat
   assert.equal(ui.root.dataset.playing, 'true');
   assert.equal(env.timers.size, 1);
   env.tick(4999);
-  assert.equal(ui.message.textContent, 'Drafting Content');
+  assert.equal(ui.message.textContent, 'Creating Draft');
   env.tick(1);
-  assert.equal(ui.message.textContent, 'Drafting Content');
+  assert.equal(ui.message.textContent, 'Creating Draft');
   assert.deepEqual(ui.papers.map(paper => paper.dataset.depth), ['front', 'back', 'middle']);
   assert.equal(ui.papers[0].classList.contains('is-drawing'), true);
   assert.equal(ui.papers[2].classList.contains('is-drawing'), false);
@@ -288,7 +288,7 @@ test('each visual phase brings the back sheet forward without changing or animat
   assert.equal(env.timers.size, 1);
   for (let next = 2; next <= 6; next += 1) {
     env.tick(5000);
-    assert.equal(ui.message.textContent, 'Drafting Content');
+    assert.equal(ui.message.textContent, 'Creating Draft');
     assert.equal(ui.message.textWrites, 1);
     allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
     await flush();
@@ -329,7 +329,7 @@ test('a 15-second drafting job keeps one status label while visual phases advanc
   env.tick(3400);
   assert.equal(ui.root.dataset.phaseIndex, '2', 'the third visual phase remains active when the 15-second job finishes');
   assert.deepEqual(seen, ['0', '1', '2']);
-  assert.equal(ui.message.textContent, 'Drafting Content');
+  assert.equal(ui.message.textContent, 'Creating Draft');
   assert.equal(ui.message.textWrites, 1, 'paper/color steps must not reannounce identical status text');
   assert.equal(Math.min(...[...env.timers.values()].map(task => task.at)), 16600, 'no fourth transition can start before the app finishes');
   ui.controller.destroy();
@@ -345,7 +345,7 @@ test('the reference repeats three visual phases while its status text is written
   for (const expected of [1, 2, 0, 1]) {
     env.tick(5000);
     assert.equal(ui.root.dataset.phaseIndex, String(expected));
-    assert.equal(ui.message.textContent, 'Drafting Content');
+    assert.equal(ui.message.textContent, 'Creating Draft');
     assert.equal(ui.message.textWrites, 1);
     env.tick(800);
     allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
@@ -383,7 +383,7 @@ test('offscreen or hidden animation cancels current motion and resumes without a
   await flush();
   assert.equal(env.timers.size, 0);
   env.tick(100000);
-  assert.equal(ui.message.textContent, 'Drafting Content');
+  assert.equal(ui.message.textContent, 'Creating Draft');
   env.intersections[0].visible(true);
   assert.equal(env.timers.size, 1);
   env.document.hidden = true;
@@ -496,7 +496,7 @@ test('reduced motion is static and changing the preference stops and restarts th
   assert.equal(ui.root.dataset.playing, 'false');
   assert.equal(env.timers.size, 0);
   env.tick(100000);
-  assert.equal(ui.message.textContent, 'Drafting Content');
+  assert.equal(ui.message.textContent, 'Creating Draft');
   env.motion.matches = false;
   env.motion.fire('change');
   assert.equal(ui.root.dataset.reducedMotion, 'false');
@@ -547,7 +547,7 @@ test('browsers without animation or observer APIs still rotate papers while keep
   ui.papers.forEach(paper => { paper.animate = undefined; });
   ui.mount();
   env.tick(5000);
-  assert.equal(ui.message.textContent, 'Drafting Content');
+  assert.equal(ui.message.textContent, 'Creating Draft');
   assert.equal(env.timers.size, 1);
   ui.root.hasLayout = false;
   env.document.fire('visibilitychange');
@@ -576,6 +576,20 @@ test('revision progress keeps the paper stack, neutral fallback and a fixed acce
   assert.equal(env.document.listenerCount(), 0);
   assert.equal(env.window.listenerCount(), 0);
   assert.equal(env.motion.listenerCount(), 0);
+});
+
+test('new draft cards use Creating Draft with the same shared loading animation', t => {
+  const env = setup(t);
+  const ui = env.create({ selectionKeys: ['audience'], label: 'Creating Draft' }, createRevisionAnimation);
+  assert.equal(ui.root.dataset.variant, 'revision', 'the existing overlay layout and motion are retained');
+  assertActiveShimmer(ui, 'audience');
+  assert.equal(ui.message.textContent, 'Creating Draft');
+  assert.equal(ui.message.getAttribute('role'), 'status');
+  ui.mount();
+  env.motion.matches = true;
+  env.motion.fire('change');
+  assert.equal(ui.message.textContent, 'Creating Draft');
+  ui.controller.destroy();
 });
 
 test('revision colors follow saved categories in canonical order, never the source-adding mint', t => {

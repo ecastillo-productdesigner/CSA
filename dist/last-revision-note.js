@@ -1,5 +1,3 @@
-import { createEditorPopover } from './editor-popover.js?v=20261029-newest-revision-first';
-
 const validTime = value => typeof value === 'number' && value > 0 && Number.isFinite(new Date(value).getTime()) ? value : null;
 
 export function revisionHistory(output) {
@@ -22,8 +20,11 @@ export function latestRevisionNote(output) {
 export function renderRevisionHistory(list, notes) {
   list.replaceChildren(...notes.map((details, index) => {
     const entry = document.createElement('li');
-    const heading = document.createElement('h3');
-    heading.textContent = `Revision ${index + 1}`;
+    if (notes.length > 1) {
+      const heading = document.createElement('h3');
+      heading.textContent = `Revision ${index + 1}`;
+      entry.append(heading);
+    }
     const fields = document.createElement('dl');
     fields.className = 'editor-seo-metadata';
     const dateRow = document.createElement('div');
@@ -47,33 +48,7 @@ export function renderRevisionHistory(list, notes) {
     copy.textContent = `You asked for “${request}${ending}” ${details.changeSummary || 'Result not recorded.'}`;
     noteRow.append(noteLabel, copy);
     fields.append(dateRow, noteRow);
-    entry.append(heading, fields);
+    entry.append(fields);
     return entry;
   }).reverse());
-}
-
-export function createLastRevisionNote({ container = document.querySelector('#material-editor'), closePanels = () => {} } = {}) {
-  const trigger = document.querySelector('#editor-revision-note-button');
-  const popover = document.querySelector('#editor-revision-note-popover');
-  const list = document.querySelector('#editor-revision-history');
-  const label = document.querySelector('#editor-revision-note-label');
-  const heading = document.querySelector('#editor-revision-note-heading');
-  const dismiss = document.querySelector('#editor-revision-note-close');
-  let notes = [];
-  function render() {
-    const title = revisionRequestLabel(notes.length);
-    label.textContent = title;
-    heading.textContent = title;
-    dismiss.setAttribute('aria-label', `Close ${title}`);
-    renderRevisionHistory(list, notes);
-  }
-  const controller = createEditorPopover({ container, trigger, popover, dismiss, resetScroll: true, onOpen() { closePanels(); render(); } });
-  function update(output) {
-    controller.close();
-    notes = revisionHistory(output);
-    render();
-    trigger.hidden = !notes.length;
-  }
-  update(null);
-  return { update, close: controller.close };
 }

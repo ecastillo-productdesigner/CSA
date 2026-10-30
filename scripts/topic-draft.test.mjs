@@ -197,7 +197,7 @@ test('topic revisions remain on the captured headline and preserve edited headin
   assert.deepEqual(output.toolPreferences, preferences);
   assert.equal(output.cmsSentAt, undefined);
   assert.equal(output.cmsSentContent, undefined);
-  assert.deepEqual(output.revisionRequests, [{ instructions: 'Make the reader questions clearer', changeSummary: 'Updated the draft body. No other changes.', requestedAt: 20, completedAt: 30, status: 'complete' }]);
+  assert.deepEqual(output.revisionRequests, [{ instructions: 'Make the reader questions clearer', changeSummary: 'Reworked the draft body. No other changes.', requestedAt: 20, completedAt: 30, status: 'complete' }]);
   const firstRevision = output.draftText;
   reviseSampleOutput(output, 'Try another opening', 40, 50);
   assert.notEqual(output.draftText, firstRevision);
@@ -219,7 +219,7 @@ test('topic revision summaries distinguish formatting changes from an identical 
     assert.equal(output.shareText, beforeShareText);
     if (formattingChanged) assert.notDeepEqual(output.document, beforeDocument);
     else assert.deepEqual(output.document, beforeDocument);
-    assert.equal(output.revisionRequests[0].changeSummary, formattingChanged ? 'Updated the draft formatting. No other changes.' : 'No other changes.');
+    assert.equal(output.revisionRequests[0].changeSummary, formattingChanged ? 'Removed italic formatting. No other changes.' : 'No other changes.');
   }
 });
 

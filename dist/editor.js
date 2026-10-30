@@ -1,8 +1,7 @@
 import { documentStyles } from './design-system/export-styles.js?v=20261026-drafting-card-size';
 import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-drafting-card-size';
-import { initializeOutputShareText } from './outputs.js?v=20261030-copy-alignment';
+import { initializeOutputShareText } from './outputs.js?v=20261030-draft-status-and-history';
 import { createRevisionLoading } from './revision-loading.js?v=20261027-revision-loading';
-import { createLastRevisionNote } from './last-revision-note.js?v=20261030-you-asked-for';
 import { createStoryMetadata, storyMetadata } from './story-metadata.js?v=20261027-metadata';
 import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261026-drafting-card-size';
 import { draftPreferenceValue } from './draft-options.js?v=20261026-drafting-card-size';
@@ -56,7 +55,6 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     content: [root.querySelector('.editor-document-header'), $('#editor-toolbar'), $('#rich-text-editor'), root.querySelector('.editor-footer')],
   });
   const metadata = createStoryMetadata({ read: currentStoryMetadata, closePanels() { setPanel('', false); directionMetadata.close(); } });
-  const revisionNote = createLastRevisionNote({ closePanels() { setPanel('', false); directionMetadata.close(); metadata.close(); } });
   let quill = null;
   let project = null;
   let loading = false;
@@ -97,7 +95,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   function setRevisionBusy(value, selectionKeys = []) {
     revisionBusy = Boolean(value);
     revisionLoading.setBusy(revisionBusy, selectionKeys);
-    if (revisionBusy) { setPanel('', false); directionMetadata.close(); metadata.close(); revisionNote.close(); }
+    if (revisionBusy) { setPanel('', false); directionMetadata.close(); metadata.close(); }
     quill?.enable(!revisionBusy);
     title.disabled = revisionBusy;
     shareText.disabled = revisionBusy;
@@ -236,7 +234,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     const active = name === 'find' && open;
     $('#editor-find').hidden = !active;
     $('#editor-find-button').setAttribute('aria-expanded', String(active));
-    if (active) { directionMetadata.close(); metadata.close(); revisionNote.close(); $('#editor-find-text').focus(); }
+    if (active) { directionMetadata.close(); metadata.close(); $('#editor-find-text').focus(); }
   }
   $('#editor-find-button').addEventListener('click', () => setPanel('find', $('#editor-find').hidden));
   for (const button of root.querySelectorAll('[data-editor-close]')) button.addEventListener('click', () => { setPanel(button.dataset.editorClose, false); $(`#editor-${button.dataset.editorClose}-button`).focus(); });
@@ -351,7 +349,6 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     open(next) {
       flush(); metadata.close(); project = next; loading = true; root.hidden = false;
       directionMetadata.update(next.editorialDirection);
-      revisionNote.update(next);
       initialize();
       setRevisionBusy(false);
       quill.enable(true);
@@ -386,9 +383,9 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       if (initializedShareText) scheduleSave();
       if (!next.draftText) title.focus(); else quill.setSelection(0, 0, 'silent');
     },
-    close() { flush(); metadata.close(); revisionNote.close(); directionMetadata.close(); setRevisionBusy(false); title.disabled = false; quill?.enable(true); project = null; root.hidden = true; setPanel('', false); if (linkDialog.open) linkDialog.close(); $('#editor-download').open = false; },
+    close() { flush(); metadata.close(); directionMetadata.close(); setRevisionBusy(false); title.disabled = false; quill?.enable(true); project = null; root.hidden = true; setPanel('', false); if (linkDialog.open) linkDialog.close(); $('#editor-download').open = false; },
     setRevisionBusy,
-    closePanels() { setPanel('', false); directionMetadata.close(); metadata.close(); revisionNote.close(); },
+    closePanels() { setPanel('', false); directionMetadata.close(); metadata.close(); },
     hasContent() { return Boolean(project && quill && quill.getText().replace(/[\s\u200B-\u200D\uFEFF]/gu, '')); },
     canSend,
     markSent() {

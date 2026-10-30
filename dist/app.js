@@ -1,7 +1,7 @@
 import { partitionSourceAdditions, sourceIdentityKey, findDuplicateSource } from './source-model.js?v=20261026-drafting-card-size';
 import { createSourceAlreadyAddedDialog } from './source-already-added.js?v=20261026-drafting-card-size';
 import { createToast } from './toast.js?v=20261027-toast-timing';
-import { updatePresetPreferences } from './preset-settings.js?v=20261030-copy-alignment';
+import { updatePresetPreferences } from './preset-settings.js?v=20261030-draft-status-and-history';
 import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
 import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261029-revision-indicator-location';
 import { createIcon as icon } from './icons.js?v=20261026-drafting-card-size';
@@ -14,7 +14,7 @@ import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261026-
 import { createProfile } from './profile.js?v=20261026-drafting-card-size';
 import { createSearchExperience } from './search.js?v=20261029-source-workspace';
 import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261029-delete-project-dialog';
-import { createMaterialEditor } from './editor.js?v=20261030-you-asked-for';
+import { createMaterialEditor } from './editor.js?v=20261030-draft-status-and-history';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-drafting-card-size';
 import { removeProjectContent } from './project-deletion.js?v=20261026-drafting-card-size';
 import { createContentPreview } from './content-preview.js?v=20261026-drafting-card-size';
@@ -24,12 +24,12 @@ import { createNewProjectUpload } from './new-project-upload.js?v=20261026-draft
 import { createRailNavigation } from './navigation.js?v=20261029-source-panel-open';
 import { createProjectSources } from './sources.js?v=20261029-preview-direction';
 import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261026-drafting-card-size';
-import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261030-copy-alignment';
+import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261030-draft-status-and-history';
 import { createEditorTabs } from './editor-tabs.js?v=20261029-revision-indicator-location';
 import { createContentCardEditing } from './content-card-editing.js?v=20261026-drafting-card-size';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-drafting-card-size';
 import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261026-drafting-card-size';
-import { createRevisionButton, updateRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261030-you-asked-for';
+import { createRevisionButton, updateRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261030-draft-status-and-history';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -777,20 +777,21 @@ function updateComposerActions() {
   const project = projects.find(project => project.id === activeProjectId);
   const hasSources = hasSelectedSources(project);
   const hasContent = $('#composer').classList.contains('has-link-cards') ? hasSources : !$('#material-editor').hidden ? richEditor.hasContent() : !$('#output-placeholder').hidden && ($('#content-preview').hidden || contentPreview.hasContent());
-  const processing = Boolean(projects.find(project => project.id === activeProjectId)?.outputProcessing);
+  const processing = Boolean(project?.outputProcessing);
+  const processingLabel = project?.outputProcessing?.kind === 'revision' ? 'Revising Draft' : 'Creating Draft';
   const canConfigure = hasContent && !processing;
   let changed = false;
   for (const key of ['format', 'audience', 'voice']) {
     const select = $(`#composer-${key}`);
     if (select.disabled !== !canConfigure) changed = true;
     select.disabled = !canConfigure;
-    select.title = canConfigure ? '' : processing ? 'Drafting content…' : 'Add content first';
+    select.title = canConfigure ? '' : processing ? processingLabel : 'Add content first';
   }
   if (changed) toolDropdowns.refresh();
   const hasSelection = hasDraftSelection(Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, $(`#composer-${key}`).value])));
   const enabled = hasSources && hasContent && hasSelection && !processing;
   $('.create-variant').disabled = !enabled;
-  $('.create-variant').title = processing ? 'Drafting content…' : !hasSources || !hasContent ? 'Select a source first' : !hasSelection ? 'Select a setting first' : 'Add to List';
+  $('.create-variant').title = processing ? processingLabel : !hasSources || !hasContent ? 'Select a source first' : !hasSelection ? 'Select a setting first' : 'Add to List';
 }
 
 function ensureComposerProject(allowEmpty = false) {

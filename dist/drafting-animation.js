@@ -51,7 +51,7 @@ export function createDraftingAnimation({ compact = true, selectionKeys = [], va
   message.setAttribute('role', 'status');
   message.setAttribute('aria-live', 'polite');
   message.setAttribute('aria-atomic', 'true');
-  message.textContent = label ?? (addingSource ? 'Adding Source' : revising ? 'Revising Draft' : 'Drafting Content');
+  message.textContent = label ?? (addingSource ? 'Adding Source' : revising ? 'Revising Draft' : 'Creating Draft');
   if (revising) {
     const content = document.createElement('div');
     content.className = 'revision-animation-content';
@@ -271,6 +271,6 @@ export function createSourceAddingAnimation({ label = 'Adding Source' } = {}) {
   return createDraftingAnimation({ compact: true, variant: 'source', label });
 }
 
-export function createRevisionAnimation({ selectionKeys = [] } = {}) {
-  return createDraftingAnimation({ compact: true, variant: 'revision', selectionKeys });
+export function createRevisionAnimation({ selectionKeys = [], label = 'Revising Draft' } = {}) {
+  return createDraftingAnimation({ compact: true, variant: 'revision', selectionKeys, label });
 }

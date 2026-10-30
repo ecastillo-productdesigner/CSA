@@ -1,7 +1,7 @@
 import { createToast } from '../toast.js?v=20261027-toast-timing';
 import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-drafting-card-size';
 import { bindTabSelection } from '../selection-controls.js?v=20261026-drafting-card-size';
-import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261030-revision-description';
+import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261030-you-asked-for';
 import { mountProjectSpecimens } from './project-specimens.js?v=20261029-delete-project-dialog';
 import { mountFormSpecimens } from './form-specimens.js?v=20261026-drafting-card-size';
 import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261029-preview-direction';

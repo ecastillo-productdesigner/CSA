@@ -185,11 +185,11 @@ test('Revision History displays newest first with original numbering without sub
   assert.equal(ui['history-toggle'].hidden, false);
   assert.equal(ui['history-label'].textContent, 'Revision History (2)');
   const entries = ui['history-list'].children.map(contents);
-  assert.match(entries[1], /Revision 1.*Requested Revision: “First request\nKeep the quote” — Result not recorded\./s);
-  assert.match(entries[0], /Revision 2.*Requested Revision: “Second request” — Result not recorded\./s);
+  assert.match(entries[1], /Revision 1.*Requested Revision: You asked for “First request\nKeep the quote\.” Result not recorded\./s);
+  assert.match(entries[0], /Revision 2.*Requested Revision: You asked for “Second request\.” Result not recorded\./s);
   const fields = ui['history-list'].children.map(revisionFields);
-  assert.equal(fields[1]['Requested Revision:'].textContent, '“First request\nKeep the quote” — Result not recorded.');
-  assert.equal(fields[0]['Requested Revision:'].textContent, '“Second request” — Result not recorded.');
+  assert.equal(fields[1]['Requested Revision:'].textContent, 'You asked for “First request\nKeep the quote.” Result not recorded.');
+  assert.equal(fields[0]['Requested Revision:'].textContent, 'You asked for “Second request.” Result not recorded.');
   for (const entry of fields) {
     assert.deepEqual(Object.keys(entry), ['Revised:', 'Requested Revision:'], 'legacy requests use one description with an explicit missing-result fallback');
   }
@@ -235,7 +235,7 @@ test('Revision History count includes only saved requests with actual instructio
 });
 
 
-test('revision history combines quoted original requests and saved outcomes in one read-only description', t => {
+test('revision history combines You asked for with the quoted request and saved outcome in one read-only description', t => {
   const ui = setup(t);
   const instructions = '  Shorten the intro.\nKeep <script>alert("source")</script> as quoted text.  ';
   const ordinarySummary = 'Updated the draft body.\nNo other changes.';
@@ -251,8 +251,8 @@ test('revision history combines quoted original requests and saved outcomes in o
   assert.equal(entries[0].children[0].textContent, 'Revision 2');
   assert.equal(entries[1].children[0].textContent, 'Revision 1');
   const fields = entries.map(revisionFields);
-  assert.equal(fields[0]['Requested Revision:'].textContent, `“Add an elephant” — ${changeSummary}`);
-  assert.equal(fields[1]['Requested Revision:'].textContent, `“${instructions}” — ${ordinarySummary}`);
+  assert.equal(fields[0]['Requested Revision:'].textContent, `You asked for “Add an elephant.” ${changeSummary}`, 'requests without ending punctuation receive a display-only period');
+  assert.equal(fields[1]['Requested Revision:'].textContent, `You asked for “${instructions.trim()}” ${ordinarySummary}`, 'edge whitespace is trimmed and existing ending punctuation is preserved');
   for (const entry of fields) {
     assert.deepEqual(Object.keys(entry), ['Revised:', 'Requested Revision:']);
     const description = entry['Requested Revision:'];

@@ -141,24 +141,71 @@ test('an unread revision uses a small decorative dot beside Request Revision wit
   assert.equal(ui.trigger.getAttribute('aria-description'), undefined);
 });
 
-test('opening Request Revision acknowledges its dot while preserving the captured revision history', t => {
+test('opening an unread Request Revision expands history after the tab is read and acknowledges its dot', t => {
   const ui = setup(t);
   ui.output.revisionUnread = false;
   ui.output.revisionRequestUnread = true;
   ui.output.revisionRequests = [{ instructions: 'Keep this request', completedAt: 1 }];
   const before = structuredClone(ui.output.revisionRequests);
   updateRevisionButton(ui.trigger, ui.output);
+  ui['history-panel'].scrollTop = 100;
   ui.api.open(ui.project, ui.output);
   assert.equal(ui.dialog.open, true);
+  assert.equal(ui['history-panel'].hidden, false);
+  assert.equal(ui['history-panel'].scrollTop, 0);
+  assert.equal(ui['history-toggle'].getAttribute('aria-expanded'), 'true');
   assert.equal(ui.output.revisionUnread, false);
   assert.equal(ui.output.revisionRequestUnread, false);
   assert.equal(ui.trigger.querySelector('.revision-request-dot').hidden, true);
   assert.deepEqual(ui.output.revisionRequests, before);
   assert.deepEqual(ui.reads, [['project-a', 'draft-a']]);
   assert.equal(document.activeElement, ui.instructions);
+  ui['history-toggle'].fire('click');
+  assert.equal(ui['history-panel'].hidden, true, 'automatically opened history can still be collapsed manually');
+  ui['history-toggle'].fire('click');
+  assert.equal(ui['history-panel'].hidden, false);
   ui.dialog.close();
+  assert.equal(ui['history-panel'].hidden, true);
+  assert.equal(ui['history-list'].children.length, 0);
   ui.api.open(ui.project, ui.output);
+  assert.equal(ui['history-panel'].hidden, true, 'an acknowledged revision reopens with history collapsed');
+  assert.equal(ui['history-toggle'].getAttribute('aria-expanded'), 'false');
   assert.equal(ui.reads.length, 1, 'a viewed revision is not acknowledged twice');
+});
+
+test('history auto-expansion uses the action unread flag with the legacy fallback', t => {
+  const ui = setup(t);
+  ui.output.revisionUnread = true;
+  ui.output.revisionRequests = [{ instructions: 'A legacy request', completedAt: 1 }];
+  updateRevisionButton(ui.trigger, ui.output);
+  assert.equal(ui.trigger.querySelector('.revision-request-dot').hidden, false);
+  ui.api.open(ui.project, ui.output);
+  assert.equal(ui['history-panel'].hidden, false, 'legacy unread revisions expand their recorded history');
+  assert.equal(ui['history-toggle'].getAttribute('aria-expanded'), 'true');
+  assert.equal(ui.output.revisionRequestUnread, false);
+  assert.equal(ui.output.revisionUnread, false);
+  ui.dialog.close();
+  ui.output.revisionUnread = true;
+  updateRevisionButton(ui.trigger, ui.output);
+  assert.equal(ui.trigger.querySelector('.revision-request-dot').hidden, true, 'an explicitly read action overrides the tab unread flag');
+  ui.api.open(ui.project, ui.output);
+  assert.equal(ui['history-panel'].hidden, true, 'an action without a dot opens collapsed even if the tab remains unread');
+  assert.equal(ui['history-toggle'].getAttribute('aria-expanded'), 'false');
+});
+
+test('an unread action without valid history stays collapsed while acknowledging the revision', t => {
+  const ui = setup(t);
+  ui.output.revisionRequestUnread = true;
+  ui.output.revisionUnread = true;
+  ui.output.revisionRequests = [null, { instructions: ' ' }];
+  ui.api.open(ui.project, ui.output);
+  assert.equal(ui['history-toggle'].hidden, true);
+  assert.equal(ui['history-panel'].hidden, true);
+  assert.equal(ui['history-toggle'].getAttribute('aria-expanded'), 'false');
+  assert.equal(ui['history-list'].children.length, 0);
+  assert.equal(ui.output.revisionRequestUnread, false);
+  assert.equal(ui.output.revisionUnread, false);
+  assert.deepEqual(ui.reads, [['project-a', 'draft-a']]);
 });
 
 
@@ -185,11 +232,11 @@ test('Revision History displays newest first with original numbering without sub
   assert.equal(ui['history-toggle'].hidden, false);
   assert.equal(ui['history-label'].textContent, 'Revision History (2)');
   const entries = ui['history-list'].children.map(contents);
-  assert.match(entries[1], /Revision 1.*Requested Revision: You asked for “First request\nKeep the quote\.” Result not recorded\./s);
-  assert.match(entries[0], /Revision 2.*Requested Revision: You asked for “Second request\.” Result not recorded\./s);
+  assert.match(entries[1], /Revision 1.*Requested Revision: Requested “First request\nKeep the quote\.” The result was not recorded\./s);
+  assert.match(entries[0], /Revision 2.*Requested Revision: Requested “Second request\.” The result was not recorded\./s);
   const fields = ui['history-list'].children.map(revisionFields);
-  assert.equal(fields[1]['Requested Revision:'].textContent, 'You asked for “First request\nKeep the quote.” Result not recorded.');
-  assert.equal(fields[0]['Requested Revision:'].textContent, 'You asked for “Second request.” Result not recorded.');
+  assert.equal(fields[1]['Requested Revision:'].textContent, 'Requested “First request\nKeep the quote.” The result was not recorded.');
+  assert.equal(fields[0]['Requested Revision:'].textContent, 'Requested “Second request.” The result was not recorded.');
   for (const entry of fields) {
     assert.deepEqual(Object.keys(entry), ['Revised:', 'Requested Revision:'], 'legacy requests use one description with an explicit missing-result fallback');
   }
@@ -215,7 +262,7 @@ test('closing history and changing drafts resets the disclosure without leaking 
   assert.equal(time.tagName, 'time');
   assert.equal(time.dateTime, new Date(1000).toISOString());
   assert.ok(time.textContent, 'the single revision retains its readable completion date');
-  assert.equal(fields['Requested Revision:'].textContent, 'You asked for “Only for draft A.” Result not recorded.');
+  assert.equal(fields['Requested Revision:'].textContent, 'Requested “Only for draft A.” The result was not recorded.');
   ui.dialog.close();
   assert.equal(ui['history-panel'].hidden, true);
   assert.equal(ui['history-toggle'].getAttribute('aria-expanded'), 'false');
@@ -245,10 +292,10 @@ test('Revision History count includes only saved requests with actual instructio
 });
 
 
-test('revision history combines You asked for with the quoted request and saved outcome in one read-only description', t => {
+test('revision history leads with the saved specific result in one read-only description', t => {
   const ui = setup(t);
   const instructions = '  Shorten the intro.\nKeep <script>alert("source")</script> as quoted text.  ';
-  const ordinarySummary = 'Updated the draft body.\nNo other changes.';
+  const ordinarySummary = 'Converted the second paragraph into a bulleted list with two items; left all other content unchanged.\nKept <script>alert("source")</script> as quoted text.';
   const changeSummary = 'Could not add a mention of an elephant. No elephant appears in the source material, and inserting one would introduce a fabricated, irrelevant and inappropriate detail into a factual news report about The draft being revised.';
   ui.output.revisionRequests = [
     { instructions, completedAt: 1000, changeSummary: ordinarySummary },
@@ -261,8 +308,8 @@ test('revision history combines You asked for with the quoted request and saved 
   assert.equal(entries[0].children[0].textContent, 'Revision 2');
   assert.equal(entries[1].children[0].textContent, 'Revision 1');
   const fields = entries.map(revisionFields);
-  assert.equal(fields[0]['Requested Revision:'].textContent, `You asked for “Add an elephant.” ${changeSummary}`, 'requests without ending punctuation receive a display-only period');
-  assert.equal(fields[1]['Requested Revision:'].textContent, `You asked for “${instructions.trim()}” ${ordinarySummary}`, 'edge whitespace is trimmed and existing ending punctuation is preserved');
+  assert.equal(fields[0]['Requested Revision:'].textContent, changeSummary, 'the refusal appears directly without repeating the prompt');
+  assert.equal(fields[1]['Requested Revision:'].textContent, ordinarySummary, 'the specific saved result appears directly without repeating the prompt');
   for (const entry of fields) {
     assert.deepEqual(Object.keys(entry), ['Revised:', 'Requested Revision:']);
     const description = entry['Requested Revision:'];

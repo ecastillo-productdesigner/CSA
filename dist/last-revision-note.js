@@ -45,7 +45,7 @@ export function renderRevisionHistory(list, notes) {
     copy.className = 'editor-direction-copy';
     const request = details.instructions.trim();
     const ending = /[.!?…]$/.test(request) ? '' : '.';
-    copy.textContent = `You asked for “${request}${ending}” ${details.changeSummary || 'Result not recorded.'}`;
+    copy.textContent = details.changeSummary || `Requested “${request}${ending}” The result was not recorded.`;
     noteRow.append(noteLabel, copy);
     fields.append(dateRow, noteRow);
     entry.append(fields);

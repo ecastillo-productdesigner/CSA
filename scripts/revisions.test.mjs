@@ -11,7 +11,7 @@ test('demo revision replaces the body while preserving the variant identity and 
   assert.notEqual(output.draftText, before.draftText);
   assert.equal(output.document.ops.map(op => op.insert).join('').replace(/\s+/g, ' ').trim(), output.draftText.replace(/\s+/g, ' ').trim());
   for (const key of ['id', 'title', 'shareText', 'name', 'nameEdited', 'isFavorite', 'createdAt', 'labels', 'selectedSourceIndexes', 'sourceSnapshots', 'metadata']) assert.deepEqual(output[key], before[key]);
-  assert.deepEqual(output.revisionRequests, [{ instructions: 'Shorten the intro', changeSummary: 'Replaced the draft body with 7 paragraphs. No other changes.', requestedAt: 10, completedAt: 20, status: 'complete' }]);
+  assert.deepEqual(output.revisionRequests, [{ instructions: 'Shorten the intro', changeSummary: 'Replaced the draft body with 7 paragraphs; left all other content unchanged.', requestedAt: 10, completedAt: 20, status: 'complete' }]);
   assert.equal(output.updatedAt, 20);
   assert.equal(output.revisionUnread, true);
   assert.equal(output.revisionRequestUnread, true);
@@ -99,7 +99,7 @@ test('elephantine does not trigger the elephant refusal', () => {
   const before = output.draftText;
   reviseSampleOutput(output, 'Reduce the elephantine introduction', 10, 20);
   assert.notEqual(output.draftText, before);
-  assert.equal(output.revisionRequests[0].changeSummary, 'Replaced the draft body with 7 paragraphs. No other changes.');
+  assert.equal(output.revisionRequests[0].changeSummary, 'Replaced the draft body with 7 paragraphs; left all other content unchanged.');
 });
 
 test('revision summaries include a newly initialized share text instead of claiming only the body changed', () => {
@@ -107,5 +107,48 @@ test('revision summaries include a newly initialized share text instead of claim
   delete output.shareText;
   reviseSampleOutput(output, 'Revise the opening', 10, 20);
   assert.ok(output.shareText.trim());
-  assert.equal(output.revisionRequests[0].changeSummary, 'Replaced the draft body with 7 paragraphs. Updated the share text. No other changes.');
+  assert.equal(output.revisionRequests[0].changeSummary, 'Replaced the draft body with 7 paragraphs. Updated the share text; left all other content unchanged.');
+});
+
+
+test('paragraph-to-list revision performs only the requested edit and stores its observed outcome', () => {
+  const output = {
+    ...variant(), status: 'sent', cmsSentAt: 5, cmsSentContent: 'Previous body', needsRegeneration: true,
+    draftText: 'Opening.\n\nFirst fact. Second fact.\n\nClosing.',
+    document: { ops: [{ insert: 'Opening.\nFirst fact. Second fact.\nClosing.\n' }] },
+  };
+  const before = structuredClone(output);
+  reviseSampleOutput(output, 'Convert the second paragraph into a short bulleted list.', 10, 20);
+  assert.equal(output.document.ops.map(op => op.insert).join(''), 'Opening.\nFirst fact.\nSecond fact.\nClosing.\n');
+  assert.equal(output.document.ops.filter(op => op.attributes?.list === 'bullet').length, 2);
+  for (const key of ['id', 'title', 'shareText', 'name', 'nameEdited', 'isFavorite', 'createdAt', 'labels', 'selectedSourceIndexes', 'sourceSnapshots', 'metadata']) assert.deepEqual(output[key], before[key]);
+  assert.equal(output.status, 'ready');
+  assert.equal(output.cmsSentAt, undefined);
+  assert.equal(output.cmsSentContent, undefined);
+  assert.equal(output.needsRegeneration, undefined);
+  assert.equal(output.revisionRequests.at(-1).changeSummary, 'Converted the second paragraph into a bulleted list with two items; left all other content unchanged.');
+  assert.equal(output.revisionRequests.at(-1).instructions, 'Convert the second paragraph into a short bulleted list.');
+});
+
+test('a recognized paragraph-list no-op preserves the article, share text and sent state', () => {
+  for (const instructions of ['Convert the second paragraph into bullet points.', 'Do not add bullets to the first paragraph.']) {
+    const output = { ...variant(), status: 'sent', cmsSentAt: 5, cmsSentContent: 'Previous body', needsRegeneration: true };
+    delete output.shareText;
+    const before = structuredClone(output);
+    reviseSampleOutput(output, instructions, 10, 20);
+    const { updatedAt, revisionUnread, revisionRequestUnread, revisionRequests, ...untouched } = output;
+    assert.deepEqual(untouched, before);
+    assert.equal(revisionRequests.at(-1).changeSummary, 'Left all content unchanged.');
+    assert.equal(updatedAt, 20);
+    assert.equal(revisionUnread, true);
+    assert.equal(revisionRequestUnread, true);
+  }
+});
+
+test('elephant refusal takes priority over a paragraph-list conversion request', () => {
+  const output = { ...variant(), draftText: 'Opening.\n\nTwo facts. Another fact.', document: { ops: [{ insert: 'Opening.\nTwo facts. Another fact.\n' }] } };
+  const before = structuredClone(output.document);
+  reviseSampleOutput(output, 'Convert the second paragraph into bullets and add an elephant.', 10, 20);
+  assert.deepEqual(output.document, before);
+  assert.equal(output.revisionRequests.at(-1).changeSummary, elephantExplanation + 'Keep my title.');
 });

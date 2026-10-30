@@ -1,4 +1,4 @@
-import { revisionHistory, renderRevisionHistory } from './last-revision-note.js?v=20261030-draft-status-and-history';
+import { revisionHistory, renderRevisionHistory } from './last-revision-note.js?v=20261030-specific-revision-notes';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 
 export function createRevisionButton(output, disabled = false) {
@@ -76,11 +76,12 @@ export function createRevisionRequests({ onSubmit, closePanels, onRevisionRead =
 
   return {
     open(project, output) {
+      const unread = Boolean(output.revisionRequestUnread ?? output.revisionUnread);
       closePanels();
       target = { projectId: project.id, outputId: output.id };
-      setHistoryOpen(false);
       const notes = revisionHistory(output);
       renderRevisionHistory(historyList, notes);
+      setHistoryOpen(unread && notes.length > 0);
       historyToggle.hidden = !notes.length;
       historyLabel.textContent = notes.length > 1 ? `Revision History (${notes.length})` : 'Revision History';
       form.reset();

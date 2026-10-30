@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261030-draft-status-and-history');
+  await import('./app.js?v=20261030-specific-revision-notes');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

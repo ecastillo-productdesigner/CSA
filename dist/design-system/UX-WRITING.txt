@@ -83,3 +83,7 @@ No: Content Scaling
 No: CSA Combine
 
 Product status labels: Creating Draft for new drafts; Revising Draft for revision requests.
+
+Revision notes
+Describe the edit that actually happened, its location, and the resulting form. Lead with the action instead of repeating the request. For example: Converted the second paragraph into a bulleted list with two items; left all other content unchanged.
+End completed-edit notes with “left all other content unchanged.” If nothing changed, say “Left all content unchanged.” Explain a declined request when a reason is available. Do not claim an edit happened based only on what was requested; use the saved before-and-after content. Preserve previously recorded outcomes.

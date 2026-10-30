@@ -1,11 +1,12 @@
-import { revisionChangeSummary } from '../revision-change-summary.js?v=20261030-draft-status-and-history';
+import { applyParagraphListRevision } from '../paragraph-list-revision.js?v=20261030-specific-revision-notes';
+import { mentionsElephant, revisionChangeSummary } from '../revision-change-summary.js?v=20261030-specific-revision-notes';
 import { createFeedbackPill, createVariantFeedback } from '../variant-feedback.js?v=20261026-drafting-card-size';
-import { createRevisionButton, updateRevisionButton, createRevisionRequests } from '../revision-requests.js?v=20261030-draft-status-and-history';
+import { createRevisionButton, updateRevisionButton, createRevisionRequests } from '../revision-requests.js?v=20261030-specific-revision-notes';
 import { createEditorTabs } from '../editor-tabs.js?v=20261029-revision-indicator-location';
 import { createStoryMetadata, storyMetadata } from '../story-metadata.js?v=20261027-metadata';
 import { createRevisionLoading } from '../revision-loading.js?v=20261027-revision-loading';
 import { tokenNumber } from './runtime.js?v=20261029-revision-indicator-location';
-import { createOutputBadges, outputLoadingSelectionKeys } from '../outputs.js?v=20261030-draft-status-and-history';
+import { createOutputBadges, outputLoadingSelectionKeys } from '../outputs.js?v=20261030-specific-revision-notes';
 import { sendDestinations } from '../send-destination.js?v=20261026-drafting-card-size';
 
 // The app controller operates on isolated in-memory drafts here. No project storage,
@@ -15,8 +16,10 @@ export function mountFeedbackSpecimens(root, dropdowns) {
   const document = root.ownerDocument;
   const dialog = document.querySelector('#experience-feedback-dialog');
   const project = { id: 'ds-feedback-project', updatedAt: Date.now() };
-  const variant = { id: 'ds-feedback-draft', title: 'A Local Business Finds a Fresh Way to Connect', status: 'ready', labels: [{ key: 'format', label: 'Standard Format' }, { key: 'audience', label: 'General Audience' }, { key: 'voice', label: 'Us Weekly' }] };
-  const otherVariant = { id: 'ds-feedback-other-draft', title: 'Neighbors Turn a Shared Idea Into a New Tradition', status: 'ready', labels: [{ key: 'format', label: 'Listicle' }] };
+  const sampleParagraphs = ['The library opens on Saturday.', 'Visitors can join a guided tour. Families can register for the reading club.', 'Registration is free.'];
+  const sampleContent = paragraphs => ({ draftText: paragraphs.join('\n\n'), document: { ops: paragraphs.map(text => ({ insert: `${text}\n` })) } });
+  const variant = { id: 'ds-feedback-draft', title: 'The Town Library Opens Its Doors', ...sampleContent(sampleParagraphs), status: 'ready', labels: [{ key: 'format', label: 'Standard Format' }, { key: 'audience', label: 'General Audience' }, { key: 'voice', label: 'Us Weekly' }] };
+  const otherVariant = { id: 'ds-feedback-other-draft', title: 'Neighbors Turn a Shared Idea Into a New Tradition', ...sampleContent(['Neighbors are planning a weekend book exchange.', 'Readers can bring a book and choose another to take home. Volunteers will arrange the books on shared tables.', 'The exchange will take place in the community hall.']), status: 'ready', labels: [{ key: 'format', label: 'Listicle' }] };
   project.outputs = [variant, otherVariant];
   project.selectedOutputId = variant.id;
   let invokingControl = null;
@@ -27,7 +30,7 @@ export function mountFeedbackSpecimens(root, dropdowns) {
   heading.textContent = 'Draft Feedback & Revision';
   const guidance = document.createElement('p');
   guidance.className = 'ds-caption';
-  guidance.textContent = 'Request Revision uses edit_document, outlined when closed and filled while its popup is open, matching Sources. Revision History sits at the left of the dialog footer, aligned with its buttons, and expands the selected draft’s saved requests with the shared closed chevron; it appears only after that draft has a saved revision. One revision uses Revision History; multiple revisions add a count, such as Revision History (3). Submitting the popup previews the editor’s Revising Draft state below. The matching Content card also says Revising Draft and uses the same shared revision animation. Its shimmer follows the saved draft settings: Format is pink, Audience is lavender, and Voice is peach. Only selected categories cycle, in that order; a single category keeps its color and drafts without settings use neutral. The 5-second revision cycle shows each selected color before completion. The loading layer aligns with the settings and text edges, covers their full height without collapsing the layout, and uses 8 px corners. Metadata opens the sample draft’s SEO Title, Meta Description, and SEO Keywords. Revision History in Request Revision is the place to review saved revisions; the editor footer has no duplicate revision link. Entries show the completion time and a single Requested Revision description that begins You asked for, quotes the original request, and then states its saved outcome. A single revision has no numbered heading; two or more revisions show their original numbered headings, newest first. Older entries without a saved outcome include Result not recorded. Results name the observed edit and where it happened, such as splitting the opening paragraph, shortening a paragraph, or changing a list format. They come from before-and-after content, not assumptions that the request was fulfilled, and end with No other changes. Previously saved notes retain the outcome recorded at the time. Elephant requests leave the draft untouched and explain why the detail could not be added, including the story title. This isolated animation preview changes no article text, so ordinary requests report No other changes. Switch to the second tab while revising to see the first tab’s paper animation, category shimmer, and Revising Draft label. Completion keeps your current tab selected. For the open revised draft, an 8 px blue (#3B82F6) dot appears at the top right of Request Revision and stays until that action is opened. The tab notification keeps its existing acknowledgement rules: inactive tabs keep their dot until opened, and a draft that remains selected acknowledges its tab notification after 10 seconds. Opening a tab clears only its tab notification; the separate Request Revision dot stays until clicked. Loading labels use Inter Medium Italic (500). Tabs and Send to your CMS remain visible; editing and sending resume when the revision completes. This sample keeps requests only while this page is open. Choose a thumb to open the app’s feedback form. Rating, Category, and Describe the issue are required. Severity is required only for Could be better; it is optional for Good feedback. Additional comments are optional. The issue summary allows 500 characters. Description and comment fields use the white field surface. The export heading-to-button and button-to-divider gaps are both 32 px.';
+  guidance.textContent = 'Request Revision uses edit_document, outlined when closed and filled while its popup is open, matching Sources. Revision History sits at the left of the dialog footer, aligned with its buttons, and expands the selected draft’s saved requests with the shared closed chevron; it appears only after that draft has a saved revision. One revision uses Revision History; multiple revisions add a count, such as Revision History (3). Submitting the popup previews the editor’s Revising Draft state below. The matching Content card also says Revising Draft and uses the same shared revision animation. Its shimmer follows the saved draft settings: Format is pink, Audience is lavender, and Voice is peach. Only selected categories cycle, in that order; a single category keeps its color and drafts without settings use neutral. The 5-second revision cycle shows each selected color before completion. The loading layer aligns with the settings and text edges, covers their full height without collapsing the layout, and uses 8 px corners. Metadata opens the sample draft’s SEO Title, Meta Description, and SEO Keywords. Revision History in Request Revision is the place to review saved revisions; the editor footer has no duplicate revision link. Entries show the completion time and a single Requested Revision description with the saved outcome directly. A single revision has no numbered heading; two or more revisions show their original numbered headings, newest first. Older entries without a saved outcome show the original request and explain that the result was not recorded. Results name the observed edit and where it happened, such as splitting the opening paragraph, shortening a paragraph, or changing a list format. They come from before-and-after content, not assumptions that the request was fulfilled, and finish with “; left all other content unchanged.” A request that changes nothing reports “Left all content unchanged.” Previously saved notes retain the outcome recorded at the time. Elephant requests leave the draft untouched and explain why the detail could not be added, including the story title. This isolated sample supports converting a specified paragraph into a bulleted or numbered list. Try “add bullet points to the second paragraph” to turn its two sentences into two visible list items. Other ordinary requests leave its content unchanged. Switch to the second tab while revising to see the first tab’s paper animation, category shimmer, and Revising Draft label. Completion keeps your current tab selected. For the open revised draft, an 8 px blue (#3B82F6) dot appears at the top right of Request Revision and stays until that action is opened. The tab notification keeps its existing acknowledgement rules: inactive tabs keep their dot until opened, and a draft that remains selected acknowledges its tab notification after 10 seconds. Opening a tab clears only its tab notification; the separate Request Revision dot stays until clicked. Opening an unread Request Revision action automatically expands Revision History when saved entries exist and acknowledges the dot. Opening the action again starts with history collapsed; the chevron still toggles it manually. Loading labels use Inter Medium Italic (500). Tabs and Send to your CMS remain visible; editing and sending resume when the revision completes. This sample keeps requests only while this page is open. Choose a thumb to open the app’s feedback form. Rating, Category, and Describe the issue are required. Severity is required only for Could be better; it is optional for Good feedback. Additional comments are optional. The issue summary allows 500 characters. Description and comment fields use the white field surface. The export heading-to-button and button-to-divider gaps are both 32 px.';
   const noteExamples = document.createElement('details');
   noteExamples.className = 'ds-writing-rule';
   noteExamples.id = 'ds-revision-note-examples';
@@ -40,7 +43,11 @@ export function mountFeedbackSpecimens(root, dropdowns) {
   const examplesList = document.createElement('dl');
   examplesList.className = 'editor-seo-metadata';
   const sampleOpening = 'The library opens on Saturday. Visitors can join a guided tour.';
+  const listExampleBefore = sampleContent(sampleParagraphs);
+  const listExampleAfter = structuredClone(listExampleBefore);
+  applyParagraphListRevision(listExampleAfter, 'Add bullet points to the second paragraph');
   for (const example of [
+    { label: 'Bulleted Paragraph: ', instructions: 'Add bullet points to the second paragraph', before: listExampleBefore, after: listExampleAfter },
     { label: 'Paragraph Split: ', instructions: 'Split the opening paragraph.', before: { draftText: sampleOpening + '\n\nRegistration is free.' }, after: { draftText: 'The library opens on Saturday.\n\nVisitors can join a guided tour.\n\nRegistration is free.' } },
     { label: 'Shorter Opening: ', instructions: 'Shorten the opening.', before: { draftText: 'The public library will open its doors to visitors on Saturday.\n\nRegistration is free.' }, after: { draftText: 'The library opens on Saturday.\n\nRegistration is free.' } },
   ]) {
@@ -76,8 +83,40 @@ export function mountFeedbackSpecimens(root, dropdowns) {
   previewContent.className = 'ds-revision-preview-content';
   const previewTitle = document.createElement('h5');
   previewTitle.textContent = variant.title;
-  const previewCopy = document.createElement('p');
-  previewCopy.textContent = 'Submit Request Revision to preview the loading state in this draft area.';
+  const previewCopy = document.createElement('div');
+  function renderPreviewCopy(output) {
+    previewCopy.replaceChildren();
+    let line = '', list = null, listType = null;
+    const appendLine = (attributes = {}) => {
+      if (!line.trim()) { line = ''; list = null; listType = null; return; }
+      const type = attributes.list === 'bullet' ? 'ul' : attributes.list === 'ordered' ? 'ol' : null;
+      const block = document.createElement(type ? 'li' : 'p');
+      block.textContent = line;
+      if (type) {
+        if (!list || listType !== type) {
+          list = document.createElement(type);
+          listType = type;
+          previewCopy.append(list);
+        }
+        list.append(block);
+      } else {
+        list = null;
+        listType = null;
+        previewCopy.append(block);
+      }
+      line = '';
+    };
+    const ops = Array.isArray(output.document?.ops) ? output.document.ops : [{ insert: output.draftText || '' }];
+    for (const op of ops) {
+      if (typeof op.insert !== 'string') continue;
+      for (const part of op.insert.split(/(\n)/)) {
+        if (part === '\n') appendLine(op.attributes);
+        else line += part;
+      }
+    }
+    if (line) appendLine();
+  }
+  renderPreviewCopy(variant);
   const previewLabels = document.createElement('div');
   previewLabels.className = 'editor-variant-labels';
   previewLabels.append(...createOutputBadges(variant, { includeWordCount: false }));
@@ -108,9 +147,7 @@ export function mountFeedbackSpecimens(root, dropdowns) {
     const busy = project.outputProcessing?.kind === 'revision';
     previewTitle.textContent = selected.title;
     previewLabels.replaceChildren(...createOutputBadges(selected, { includeWordCount: false }));
-    previewCopy.textContent = selected === variant
-      ? 'Submit Request Revision to preview the loading state, then switch to the other draft tab.'
-      : 'The first draft keeps revising while you review this draft. Return to its tab to see the full loading area.';
+    renderPreviewCopy(selected);
     revisionLoading.setBusy(busy && selected === variant, outputLoadingSelectionKeys(variant));
     updateRevisionButton(revisionButton, variant, busy || selected !== variant);
     for (const button of pill.querySelectorAll('button')) button.disabled = selected !== variant;
@@ -121,7 +158,15 @@ export function mountFeedbackSpecimens(root, dropdowns) {
   function finishRevisionPreview() {
     clearTimeout(revisionTimer);
     const latest = variant.revisionRequests?.at(-1);
-    if (latest?.status === 'processing') { latest.changeSummary = revisionChangeSummary(variant, variant, latest.instructions); latest.completedAt = Date.now(); latest.status = 'complete'; variant.revisionUnread = true; variant.revisionRequestUnread = true; }
+    if (latest?.status === 'processing') {
+      const before = structuredClone(variant);
+      if (!mentionsElephant(latest.instructions)) applyParagraphListRevision(variant, latest.instructions);
+      latest.changeSummary = revisionChangeSummary(before, variant, latest.instructions);
+      latest.completedAt = Date.now();
+      latest.status = 'complete';
+      variant.revisionUnread = true;
+      variant.revisionRequestUnread = true;
+    }
     delete project.outputProcessing;
     refreshPreview();
   }
@@ -143,7 +188,10 @@ export function mountFeedbackSpecimens(root, dropdowns) {
     refreshPreview();
   } });
   previewTabs.render(project);
-  const metadata = createStoryMetadata({ container: preview, closePanels: () => dropdowns.close(), read: () => storyMetadata(previewTitle.textContent, 'A neighborhood café is bringing local musicians and listeners together for an afternoon of unfinished songs. The sessions give neighbors a chance to exchange ideas and enjoy music.') });
+  const metadata = createStoryMetadata({ container: preview, closePanels: () => dropdowns.close(), read: () => {
+    const selected = project.outputs.find(output => output.id === project.selectedOutputId) || variant;
+    return storyMetadata(selected.title, selected.draftText || '');
+  } });
 
   const revisionDialog = document.querySelector('#revision-request-dialog');
   const revisions = createRevisionRequests({
@@ -158,7 +206,7 @@ export function mountFeedbackSpecimens(root, dropdowns) {
       status.textContent = '';
       revisionTimer = setTimeout(() => {
         finishRevisionPreview();
-        status.textContent = 'Sample revision complete: ' + request.instructions;
+        status.textContent = 'Sample revision complete. ' + variant.revisionRequests.at(-1).changeSummary;
       }, tokenNumber('component.drafting.revision-duration'));
       return true;
     },

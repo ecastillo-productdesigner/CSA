@@ -1,3 +1,5 @@
+import { revisionDocumentBlocks, revisionParagraphBlocks } from './paragraph-list-revision.js?v=20261030-specific-revision-notes';
+
 export function mentionsElephant(instructions) {
   return /\belephants?\b/i.test(instructions || '');
 }
@@ -46,7 +48,7 @@ function bodyChanges(before, after) {
     }
     if (changed.length < old.length) return [`Rewrote ${quantity(changed.length)} paragraphs.`];
   }
-  return [old.some(text => next.includes(text)) ? 'Reworked the draft body.' : `Replaced the draft body with ${next.length} ${next.length === 1 ? 'paragraph' : 'paragraphs'}.`];
+  return [old.some(text => next.includes(text)) ? `Replaced the passage beginning “${excerpt(removed[0])}” with ${quantity(added.length)} ${added.length === 1 ? 'paragraph' : 'paragraphs'} beginning “${excerpt(added[0])}”.` : `Replaced the draft body with ${next.length} ${next.length === 1 ? 'paragraph' : 'paragraphs'}.`];
 }
 
 // Canonical runs prevent equivalent Quill op boundaries or attribute order from looking like edits.
@@ -70,7 +72,7 @@ function documentDetails(document) {
     text += insert;
     offset += insert.length;
   }
-  return { text, runs, formats };
+  return { text, runs, formats, ops: document.ops };
 }
 
 function formatProfile(document, key) {
@@ -84,11 +86,26 @@ function formatProfile(document, key) {
   });
 }
 
-function formattingChanges(before, after) {
+function formattingChanges(before, after, ignoredKeys = new Set()) {
   if (!before || !after || same(before.runs, after.runs)) return [];
   const changes = [], sameText = before.text === after.text;
+  const sameCharacters = before.text.replace(/\s/g, '') === after.text.replace(/\s/g, '');
+  const inlineProfile = (document, key) => {
+    const runs = [];
+    for (const [start, end, value] of document.formats[key] || []) {
+      const from = document.text.slice(0, start).replace(/\s/g, '').length;
+      const to = from + document.text.slice(start, end).replace(/\s/g, '').length;
+      if (from === to) continue;
+      const last = runs.at(-1);
+      if (last && last[1] === from && same(last[2], value)) last[1] = to;
+      else runs.push([from, to, value]);
+    }
+    return runs;
+  };
   const values = (document, key) => [...new Set((document.formats[key] || []).map(range => range[2]))].sort();
-  const changed = key => !same(sameText ? before.formats[key] || [] : formatProfile(before, key), sameText ? after.formats[key] || [] : formatProfile(after, key));
+  const changed = key => !ignoredKeys.has(key) && (sameCharacters && ['bold', 'italic', 'underline', 'strike', 'link', 'color', 'background', 'font', 'size', 'script'].includes(key)
+    ? !same(inlineProfile(before, key), inlineProfile(after, key))
+    : !same(sameText ? before.formats[key] || [] : formatProfile(before, key), sameText ? after.formats[key] || [] : formatProfile(after, key)));
   for (const [key, name] of [['list', 'list'], ['header', 'heading'], ['bold', 'bold'], ['italic', 'italic']]) {
     if (!changed(key)) continue;
     const old = values(before, key), next = values(after, key);
@@ -99,8 +116,34 @@ function formattingChanges(before, after) {
   }
   const known = new Set(['list', 'header', 'bold', 'italic']);
   if (Object.keys({ ...before.formats, ...after.formats }).some(key => !known.has(key) && changed(key))) changes.push('Updated other draft formatting.');
-  if (!changes.length && sameText && !same(before.runs, after.runs)) changes.push('Updated the draft content.');
+  if (!ignoredKeys.size && !changes.length && sameText && !same(before.runs, after.runs)) changes.push('Updated the draft content.');
   return changes;
+}
+
+// Compare rendered blocks, rather than inferring a conversion from the request.
+function documentBlocks(document) {
+  return document ? revisionDocumentBlocks(document.ops) || [] : [];
+}
+
+function listConversion(before, after) {
+  const old = documentBlocks(before), next = documentBlocks(after);
+  const equal = (a, b) => a.text === b.text && same(a.attributes, b.attributes);
+  let start = 0, end = 0;
+  while (start < Math.min(old.length, next.length) && equal(old[start], next[start])) start++;
+  while (end < Math.min(old.length, next.length) - start && equal(old.at(-1 - end), next.at(-1 - end))) end++;
+  const removed = old.slice(start, old.length - end), added = next.slice(start, next.length - end);
+  if (removed.length !== 1 || removed[0].attributes.header || removed[0].attributes.list || !added.length) return null;
+  const type = added[0].attributes.list;
+  if (!['bullet', 'ordered'].includes(type) || added.some(block => block.attributes.list !== type)) return null;
+  if (normalize(removed[0].text) !== normalize(added.map(block => block.text).join(' '))) return null;
+  const paragraph = revisionParagraphBlocks(old).indexOf(removed[0]);
+  if (paragraph < 0) return null;
+  const preserved = ['header', 'align', 'direction', 'indent', 'blockquote', 'code-block']
+    .filter(key => added.every(block => same(block.attributes[key], removed[0].attributes[key])));
+  return {
+    description: `Converted ${position(paragraph)} into a ${type === 'bullet' ? 'bulleted' : 'numbered'} list with ${quantity(added.length)} ${added.length === 1 ? 'item' : 'items'}.`,
+    ignoredFormats: new Set(['list', ...preserved]),
+  };
 }
 
 export function revisionChangeSummary(before, after, instructions) {
@@ -109,14 +152,34 @@ export function revisionChangeSummary(before, after, instructions) {
     const ending = /[.!?]$/.test(title) ? '' : '.';
     return `Could not add a mention of an elephant. No elephant appears in the source material, and inserting one would introduce a fabricated, irrelevant and inappropriate detail into a factual news report about ${title}${ending}`;
   }
-  const oldDocument = documentDetails(before.document), newDocument = documentDetails(after.document);
+  const details = output => {
+    const text = output.draftText || '';
+    return documentDetails(output.document) || documentDetails({ ops: [{ insert: text.endsWith('\n') ? text : `${text}\n` }] });
+  };
+  const oldDocument = details(before), newDocument = details(after);
   // The editor renders Quill content; draftText is a cache and may use different separators or lag behind it.
   const text = (output, document) => document ? document.text.replace(/\n$/, '') : output.draftText || '';
-  let changes = bodyChanges(text(before, oldDocument), text(after, newDocument));
+  const oldText = text(before, oldDocument), newText = text(after, newDocument);
+  const conversion = listConversion(oldDocument, newDocument);
+  let changes = conversion ? [conversion.description] : bodyChanges(oldText, newText);
   const structured = [oldDocument, newDocument].some(document => document && (document.formats.header?.length || document.formats.list?.length));
-  if (structured && changes.some(change => /paragraph/.test(change))) changes = ['Reworked the draft body.'];
-  changes.push(...formattingChanges(oldDocument, newDocument));
+  if (!conversion && structured && !same(paragraphs(oldText), paragraphs(newText))) {
+    const old = documentBlocks(oldDocument), next = documentBlocks(newDocument);
+    const plain = blocks => blocks.filter(block => !block.attributes.header && !block.attributes.list && !block.attributes['code-block']).map(block => block.text).join('\n');
+    changes = bodyChanges(plain(old), plain(next));
+    for (const [key, name] of [['header', 'heading'], ['list', 'list item']]) {
+      const previous = old.filter(block => block.attributes[key]).map(block => block.text);
+      const current = next.filter(block => block.attributes[key]).map(block => block.text);
+      if (same(previous, current)) continue;
+      if (previous.length === current.length) {
+        previous.forEach((text, index) => {
+          if (text !== current[index]) changes.push(`Changed ${name} ${index + 1} from “${excerpt(text)}” to “${excerpt(current[index])}”.`);
+        });
+      } else changes.push(`Changed the ${name === 'heading' ? 'headings' : 'lists'} from ${quantity(previous.length)} to ${quantity(current.length)} ${name}s.`);
+    }
+  }
+  changes.push(...formattingChanges(oldDocument, newDocument, conversion?.ignoredFormats));
   if ((before.title || '') !== (after.title || '')) changes.push('Updated the title.');
   if ((before.shareText || '') !== (after.shareText || '')) changes.push('Updated the share text.');
-  return [...changes, 'No other changes.'].join(' ');
+  return changes.length ? `${changes.join(' ').replace(/\.$/, '')}; left all other content unchanged.` : 'Left all content unchanged.';
 }

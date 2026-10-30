@@ -63,6 +63,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   let sentContent = null;
   let saveTimer;
   let selection = { index: 0, length: 0 };
+  let toolbarSelectionActive = false;
   let linkSelection = selection;
   let findIndex = -1;
 
@@ -74,7 +75,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     quill.root.setAttribute('aria-multiline', 'true');
     quill.root.setAttribute('spellcheck', 'true');
     quill.on('text-change', () => { if (!loading) { updateCounts(); updateToolbar(); updateFind(); scheduleSave(); metadata.refresh(); onContentChange(); } });
-    quill.on('selection-change', (range) => { if (range) { selection = range; updateToolbar(); } });
+    quill.on('selection-change', (range) => { if (range) { selection = range; toolbarSelectionActive = true; updateToolbar(); } });
 
   }
 
@@ -156,7 +157,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
 
   function updateToolbar() {
     if (!quill || !project) return;
-    const value = quill.getFormat(selection.index, selection.length);
+    const value = toolbarSelectionActive ? quill.getFormat(selection.index, selection.length) : {};
     for (const button of $('#editor-toolbar').querySelectorAll('[data-format]')) button.setAttribute('aria-pressed', String(value[button.dataset.format] === true));
     for (const button of $('#editor-toolbar').querySelectorAll('[data-list]')) button.setAttribute('aria-pressed', String(value.list === button.dataset.list));
     for (const button of $('#editor-toolbar').querySelectorAll('[data-header]')) button.setAttribute('aria-pressed', String(value.header === Number(button.dataset.header)));
@@ -170,6 +171,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
 
   function restoreSelection() {
     if (!quill) return;
+    toolbarSelectionActive = true;
     const index = Math.min(selection.index, quill.getLength() - 1);
     quill.setSelection(index, Math.min(selection.length, quill.getLength() - 1 - index), 'silent');
   }
@@ -374,6 +376,9 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
         ? (typeof next.cmsSentContent === 'string' ? next.cmsSentContent : contentSignature()) : null;
       updateSendButton();
       quill.history.clear(); selection = { index: 0, length: 0 }; findIndex = -1;
+      // Loading a draft is not a text selection; keep its formatting intact and its toolbar neutral.
+      quill.setSelection(null, 'silent');
+      toolbarSelectionActive = false;
       $('#editor-find-text').value = ''; $('#editor-replace-text').value = '';
       status.textContent = ''; status.hidden = true; status.classList.remove('editor-save-error');
       for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = draftPreferenceValue(key, next.toolPreferences?.[key]);
@@ -381,7 +386,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       quill.root.scrollTop = 0;
       loading = false; dirty = false;
       if (initializedShareText) scheduleSave();
-      if (!next.draftText) title.focus(); else quill.setSelection(0, 0, 'silent');
+      if (!next.draftText) title.focus();
     },
     close() { flush(); metadata.close(); directionMetadata.close(); setRevisionBusy(false); title.disabled = false; quill?.enable(true); project = null; root.hidden = true; setPanel('', false); if (linkDialog.open) linkDialog.close(); $('#editor-download').open = false; },
     setRevisionBusy,

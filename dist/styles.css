@@ -1393,7 +1393,7 @@ html:has(#home:not([hidden])) { scrollbar-gutter: stable; }
 
 .editor-revision-history { display: grid; gap: var(--csa-foundation-space-20); margin: 0; padding: 0; list-style: none; }
 .editor-revision-history > li + li { padding-top: var(--csa-foundation-space-20); border-top: var(--csa-foundation-border-width-1) solid var(--line); }
-.editor-revision-history h3 { margin: 0 0 var(--csa-foundation-space-12); font-size: var(--csa-foundation-font-size-14); line-height: var(--csa-foundation-line-height-20); font-weight: var(--csa-foundation-font-weight-600); }
+.editor-revision-history > li > time { display: block; margin-bottom: var(--csa-foundation-space-14); font-size: var(--csa-foundation-font-size-14); line-height: var(--csa-foundation-line-height-20); }
 
 .source-already-added-heading { margin-bottom: 0; }
 .sources-panel #editor-source-list > li.is-adding-source { display: block; }

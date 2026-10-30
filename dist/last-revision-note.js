@@ -19,42 +19,29 @@ export function latestRevisionNote(output) {
 }
 
 export function renderRevisionHistory(list, notes) {
-  list.replaceChildren(...notes.map((details, index) => {
+  list.replaceChildren(...notes.map(details => {
     const entry = document.createElement('li');
-    if (notes.length > 1) {
-      const heading = document.createElement('h3');
-      heading.textContent = `Revision ${index + 1}`;
-      entry.append(heading);
-    }
-    const fields = document.createElement('dl');
-    fields.className = 'editor-seo-metadata';
-    const dateRow = document.createElement('div');
-    const dateLabel = document.createElement('dt');
-    dateLabel.textContent = 'Revised: ';
-    const dateValue = document.createElement('dd');
     const time = document.createElement('time');
     if (details.completedAt != null) {
       time.textContent = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }).format(details.completedAt);
       time.dateTime = new Date(details.completedAt).toISOString();
     } else time.textContent = 'Time unavailable';
-    dateValue.append(time);
-    dateRow.append(dateLabel, dateValue);
-    const noteRow = document.createElement('div');
-    const noteLabel = document.createElement('dt');
-    noteLabel.textContent = 'Requested Revision: ';
-    const copy = document.createElement('dd');
-    copy.className = 'editor-direction-copy';
-    const request = details.instructions.trim();
-    const ending = /[.!?…]$/.test(request) ? '' : '.';
-    const result = details.changeSummary;
-    // Older saved records lack an applied flag; recognize their explicit no-change explanations.
-    const unapplied = details.applied === false || (details.applied == null && /^(?:Could not|Did not|Left all content unchanged)|; left all content unchanged\.$/.test(result || ''));
-    copy.textContent = result
-      ? unapplied ? `${request}\n\n${result}` : result
-      : `Requested “${request}${ending}” The result was not recorded.`;
-    noteRow.append(noteLabel, copy);
-    fields.append(dateRow, noteRow);
-    entry.append(fields);
+    const fields = document.createElement('dl');
+    fields.className = 'editor-seo-metadata';
+    for (const [label, text] of [
+      ['Requested Revision: ', details.instructions.trim()],
+      ['Result: ', details.changeSummary || 'The result was not recorded.'],
+    ]) {
+      const row = document.createElement('div');
+      const term = document.createElement('dt');
+      term.textContent = label;
+      const copy = document.createElement('dd');
+      copy.className = 'editor-direction-copy';
+      copy.textContent = text;
+      row.append(term, copy);
+      fields.append(row);
+    }
+    entry.append(time, fields);
     return entry;
   }).reverse());
 }

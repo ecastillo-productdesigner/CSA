@@ -212,7 +212,7 @@ test('an unread action without valid history stays collapsed while acknowledging
 const contents = element => element.textContent + element.children.map(contents).join('');
 const revisionFields = entry => Object.fromEntries(entry.children.find(child => child.tagName === 'dl').children.map(row => [row.children[0].textContent.trim(), row.children[1]]));
 
-test('Revision History displays newest first with original numbering without submitting or losing typed instructions', t => {
+test('Revision History displays dates newest first without submitting or losing typed instructions', t => {
   const ui = setup(t);
   ui.output.revisionRequests = [
     { instructions: 'Second request', completedAt: 2000, changeSummary: '  \n  ' },
@@ -232,13 +232,14 @@ test('Revision History displays newest first with original numbering without sub
   assert.equal(ui['history-toggle'].hidden, false);
   assert.equal(ui['history-label'].textContent, 'Revision History (2)');
   const entries = ui['history-list'].children.map(contents);
-  assert.match(entries[1], /Revision 1.*Requested Revision: Requested “First request\nKeep the quote\.” The result was not recorded\./s);
-  assert.match(entries[0], /Revision 2.*Requested Revision: Requested “Second request\.” The result was not recorded\./s);
+  assert.match(entries[1], /Requested Revision: First request\nKeep the quoteResult: The result was not recorded\./s);
+  assert.match(entries[0], /Requested Revision: Second requestResult: The result was not recorded\./s);
   const fields = ui['history-list'].children.map(revisionFields);
-  assert.equal(fields[1]['Requested Revision:'].textContent, 'Requested “First request\nKeep the quote.” The result was not recorded.');
-  assert.equal(fields[0]['Requested Revision:'].textContent, 'Requested “Second request.” The result was not recorded.');
+  assert.equal(fields[1]['Requested Revision:'].textContent, 'First request\nKeep the quote');
+  assert.equal(fields[0]['Requested Revision:'].textContent, 'Second request');
   for (const entry of fields) {
-    assert.deepEqual(Object.keys(entry), ['Revised:', 'Requested Revision:'], 'legacy requests use one description with an explicit missing-result fallback');
+    assert.deepEqual(Object.keys(entry), ['Requested Revision:', 'Result:'], 'request and result are separate fields');
+    assert.equal(entry['Result:'].textContent, 'The result was not recorded.');
   }
   ui['history-toggle'].fire('click');
   assert.equal(ui['history-panel'].hidden, true);
@@ -257,12 +258,12 @@ test('closing history and changing drafts resets the disclosure without leaking 
   const entry = ui['history-list'].children[0];
   assert.equal(entry.children.some(child => child.tagName === 'h3'), false, 'a single revision does not have a numbered heading');
   const fields = revisionFields(entry);
-  assert.deepEqual(Object.keys(fields), ['Revised:', 'Requested Revision:']);
-  const time = fields['Revised:'].children[0];
+  assert.deepEqual(Object.keys(fields), ['Requested Revision:', 'Result:']);
+  const time = entry.children[0];
   assert.equal(time.tagName, 'time');
   assert.equal(time.dateTime, new Date(1000).toISOString());
   assert.ok(time.textContent, 'the single revision retains its readable completion date');
-  assert.equal(fields['Requested Revision:'].textContent, 'Requested “Only for draft A.” The result was not recorded.');
+  assert.equal(fields['Requested Revision:'].textContent, 'Only for draft A');
   ui.dialog.close();
   assert.equal(ui['history-panel'].hidden, true);
   assert.equal(ui['history-toggle'].getAttribute('aria-expanded'), 'false');
@@ -292,7 +293,7 @@ test('Revision History count includes only saved requests with actual instructio
 });
 
 
-test('revision history leads with the saved specific result in one read-only description', t => {
+test('revision history separates the original request from the saved specific result', t => {
   const ui = setup(t);
   const instructions = '  Shorten the intro.\nKeep <script>alert("source")</script> as quoted text.  ';
   const ordinarySummary = 'Converted the second paragraph into a bulleted list with two items; left all other content unchanged.\nKept <script>alert("source")</script> as quoted text.';
@@ -305,17 +306,21 @@ test('revision history leads with the saved specific result in one read-only des
   ui.api.open(ui.project, ui.output);
   ui['history-toggle'].fire('click');
   const entries = ui['history-list'].children;
-  assert.equal(entries[0].children[0].textContent, 'Revision 2');
-  assert.equal(entries[1].children[0].textContent, 'Revision 1');
+  assert.equal(entries[0].children[0].dateTime, new Date(2000).toISOString());
+  assert.equal(entries[1].children[0].dateTime, new Date(1000).toISOString());
+  for (const entry of entries) assert.equal(entry.children.some(child => child.tagName === 'h3'), false, 'multiple revisions also omit numbered headings');
   const fields = entries.map(revisionFields);
-  assert.equal(fields[0]['Requested Revision:'].textContent, `Add an elephant\n\n${changeSummary}`, 'the refusal follows the original request on a separate paragraph');
-  assert.equal(fields[1]['Requested Revision:'].textContent, ordinarySummary, 'the specific saved result appears directly without repeating the prompt');
+  assert.equal(fields[0]['Requested Revision:'].textContent, 'Add an elephant');
+  assert.equal(fields[0]['Result:'].textContent, changeSummary);
+  assert.equal(fields[1]['Requested Revision:'].textContent, instructions.trim());
+  assert.equal(fields[1]['Result:'].textContent, ordinarySummary);
   for (const entry of fields) {
-    assert.deepEqual(Object.keys(entry), ['Revised:', 'Requested Revision:']);
-    const description = entry['Requested Revision:'];
-    assert.equal(description.children.length, 0, 'saved request and outcome are rendered as plain text');
-    assert.equal(description.className, 'editor-direction-copy', 'the combined description preserves saved line breaks');
-    assert.notEqual(description.getAttribute('contenteditable'), 'true');
+    assert.deepEqual(Object.keys(entry), ['Requested Revision:', 'Result:']);
+    for (const description of Object.values(entry)) {
+      assert.equal(description.children.length, 0, 'saved request and outcome are rendered as plain text');
+      assert.equal(description.className, 'editor-direction-copy', 'each field preserves saved line breaks');
+      assert.notEqual(description.getAttribute('contenteditable'), 'true');
+    }
   }
   assert.deepEqual(ui.output.revisionRequests, saved);
 });
@@ -329,7 +334,8 @@ test('unapplied revisions show the original request above the reason without edi
   const saved = structuredClone(ui.output.revisionRequests);
   ui.api.open(ui.project, ui.output);
   const copy = revisionFields(ui['history-list'].children[0])['Requested Revision:'];
-  assert.equal(copy.textContent, `${original.trim()}\n\n${explanation}`);
+  assert.equal(copy.textContent, original.trim());
+  assert.equal(revisionFields(ui['history-list'].children[0])['Result:'].textContent, explanation);
   assert.equal(copy.children.length, 0, 'both the request and explanation are safely rendered as text');
   assert.equal(copy.className, 'editor-direction-copy');
   assert.deepEqual(ui.output.revisionRequests, saved);

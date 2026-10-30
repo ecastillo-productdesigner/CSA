@@ -29,7 +29,7 @@ function setup(t) {
   const buttons = [];
   globalThis.document = {
     activeElement: null,
-    createElement: () => new Control(),
+    createElement: tagName => Object.assign(new Control(), { tagName }),
     createTextNode: textContent => Object.assign(new Control(), { textContent }),
     querySelector: selector => selector.startsWith('#revision-request-') ? nodes[selector.slice('#revision-request-'.length)] : fallback,
     querySelectorAll: () => buttons,
@@ -163,11 +163,12 @@ test('opening Request Revision acknowledges its dot while preserving the capture
 
 
 const contents = element => element.textContent + element.children.map(contents).join('');
+const revisionFields = entry => Object.fromEntries(entry.children.find(child => child.tagName === 'dl').children.map(row => [row.children[0].textContent.trim(), row.children[1]]));
 
 test('Revision History displays newest first with original numbering without submitting or losing typed instructions', t => {
   const ui = setup(t);
   ui.output.revisionRequests = [
-    { instructions: 'Second request', completedAt: 2000 },
+    { instructions: 'Second request', completedAt: 2000, changeSummary: '  \n  ' },
     { instructions: 'First request\nKeep the quote', completedAt: 1000 },
   ];
   const saved = structuredClone(ui.output.revisionRequests);
@@ -184,8 +185,14 @@ test('Revision History displays newest first with original numbering without sub
   assert.equal(ui['history-toggle'].hidden, false);
   assert.equal(ui['history-label'].textContent, 'Revision History (2)');
   const entries = ui['history-list'].children.map(contents);
-  assert.match(entries[1], /Revision 1.*Requested Change: First request\nKeep the quote/s);
-  assert.match(entries[0], /Revision 2.*Requested Change: Second request/s);
+  assert.match(entries[1], /Revision 1.*Requested Revision: “First request\nKeep the quote” — Result not recorded\./s);
+  assert.match(entries[0], /Revision 2.*Requested Revision: “Second request” — Result not recorded\./s);
+  const fields = ui['history-list'].children.map(revisionFields);
+  assert.equal(fields[1]['Requested Revision:'].textContent, '“First request\nKeep the quote” — Result not recorded.');
+  assert.equal(fields[0]['Requested Revision:'].textContent, '“Second request” — Result not recorded.');
+  for (const entry of fields) {
+    assert.deepEqual(Object.keys(entry), ['Revised:', 'Requested Revision:'], 'legacy requests use one description with an explicit missing-result fallback');
+  }
   ui['history-toggle'].fire('click');
   assert.equal(ui['history-panel'].hidden, true);
   assert.equal(ui.instructions.value, 'An unsent request');
@@ -228,18 +235,30 @@ test('Revision History count includes only saved requests with actual instructio
 });
 
 
-test('Requested Change renders the completion result rather than claiming the raw request was performed', t => {
+test('revision history combines quoted original requests and saved outcomes in one read-only description', t => {
   const ui = setup(t);
+  const instructions = '  Shorten the intro.\nKeep <script>alert("source")</script> as quoted text.  ';
+  const ordinarySummary = 'Updated the draft body.\nNo other changes.';
   const changeSummary = 'Could not add a mention of an elephant. No elephant appears in the source material, and inserting one would introduce a fabricated, irrelevant and inappropriate detail into a factual news report about The draft being revised.';
   ui.output.revisionRequests = [
-    { instructions: 'Shorten the intro', completedAt: 1000, changeSummary: 'Updated the draft body. No other changes.' },
+    { instructions, completedAt: 1000, changeSummary: ordinarySummary },
     { instructions: 'Add an elephant', completedAt: 2000, changeSummary },
   ];
+  const saved = structuredClone(ui.output.revisionRequests);
   ui.api.open(ui.project, ui.output);
   ui['history-toggle'].fire('click');
-  const entries = ui['history-list'].children.map(contents);
-  assert.match(entries[1], /Requested Change: Updated the draft body\. No other changes\./);
-  assert.ok(entries[0].includes('Requested Change: ' + changeSummary));
-  assert.ok(!entries[0].includes('Requested Change: Add an elephant'));
-  assert.equal(ui.output.revisionRequests[1].instructions, 'Add an elephant');
+  const entries = ui['history-list'].children;
+  assert.equal(entries[0].children[0].textContent, 'Revision 2');
+  assert.equal(entries[1].children[0].textContent, 'Revision 1');
+  const fields = entries.map(revisionFields);
+  assert.equal(fields[0]['Requested Revision:'].textContent, `“Add an elephant” — ${changeSummary}`);
+  assert.equal(fields[1]['Requested Revision:'].textContent, `“${instructions}” — ${ordinarySummary}`);
+  for (const entry of fields) {
+    assert.deepEqual(Object.keys(entry), ['Revised:', 'Requested Revision:']);
+    const description = entry['Requested Revision:'];
+    assert.equal(description.children.length, 0, 'saved request and outcome are rendered as plain text');
+    assert.equal(description.className, 'editor-direction-copy', 'the combined description preserves saved line breaks');
+    assert.notEqual(description.getAttribute('contenteditable'), 'true');
+  }
+  assert.deepEqual(ui.output.revisionRequests, saved);
 });

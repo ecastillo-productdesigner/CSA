@@ -11,6 +11,7 @@ class Node {
     this.children = [];
     this.listeners = new Map();
     this.isConnected = true;
+    this.animations = [];
     const classes = new Set();
     this.classList = {
       contains: name => classes.has(name),
@@ -27,24 +28,40 @@ class Node {
     if (child.parentElement) child.parentElement.children = child.parentElement.children.filter(node => node !== child);
     this.children.push(child); child.parentElement = this;
   }
-  before(child) {
-    this.parentElement?.append(child);
+  insertSibling(child, offset) {
+    const parent = this.parentElement;
+    if (!parent) return;
+    if (child.parentElement) child.parentElement.children = child.parentElement.children.filter(node => node !== child);
+    parent.children.splice(parent.children.indexOf(this) + offset, 0, child);
+    child.parentElement = parent;
   }
-  after(child) { this.parentElement?.append(child); }
+  before(child) { this.insertSibling(child, 0); }
+  after(child) { this.insertSibling(child, 1); }
+  animate(frames, options) {
+    let finish;
+    const animation = {
+      frames, options, cancelled: false,
+      finished: new Promise(resolve => { finish = resolve; }),
+      finish() { finish(); },
+      cancel() { this.cancelled = true; },
+    };
+    this.animations.push(animation);
+    return animation;
+  }
   contains(node) { return node === this || this.children.some(child => child.contains(node)); }
   matches(selector) { return selector.split(',').some(part => this.classList.contains(part.trim().slice(1))); }
   querySelector() { return null; }
   focus() { this.ownerDocument.activeElement = this; }
 }
 
-function setup(t, { mobile = false, workspace = false } = {}) {
+function setup(t, { mobile = false, workspace = false, reducedMotion = true } = {}) {
   const previous = Object.fromEntries(['document', 'window', 'MutationObserver', 'getComputedStyle'].map(key => [key, globalThis[key]]));
   t.after(() => Object.assign(globalThis, previous));
   const selectors = ['show-sources', 'editor-sources', 'show-new-variant', 'composer-tools', 'show-variants', 'composer-outputs', 'show-profile', 'profile-menu', 'navigation-drawer', 'toggle-navigation-drawer', 'new-project', 'home', 'new-project-tooltip', 'sources-tooltip', 'account-tooltip', 'workspace-app', 'mobile-workspace-utilities', 'sidebar-header', 'workspace-navigation'];
   const nodes = Object.fromEntries(selectors.map(id => [`#${id}`, new Node()]));
   const doc = new Node();
   doc.body = new Node(); doc.documentElement = new Node();
-  doc.defaultView = { matchMedia: () => ({ matches: true }) };
+  doc.defaultView = { matchMedia: () => ({ matches: reducedMotion }) };
   doc.querySelector = selector => nodes[selector] || null;
   doc.querySelectorAll = () => [];
   doc.createComment = () => { const node = new Node(); node.ownerDocument = doc; return node; };
@@ -65,7 +82,12 @@ function setup(t, { mobile = false, workspace = false } = {}) {
   Object.assign(globalThis, {
     document: doc,
     window: Object.assign(new Node(), { matchMedia: () => media }),
-    getComputedStyle: () => ({ getPropertyValue: () => '640px' }),
+    getComputedStyle: () => ({ getPropertyValue: name => ({
+      '--csa-foundation-breakpoint-mobile': '768px',
+      '--csa-foundation-space-5': '5px',
+      '--csa-foundation-motion-duration-200': '200ms',
+      '--csa-foundation-motion-easing-ease': 'ease',
+    })[name] || '' }),
     MutationObserver: class { constructor(callback) { observers.push(callback); } observe() {} },
   });
   let opened = 0;
@@ -139,3 +161,50 @@ test('home and workspace transitions relocate utilities even when both use a mob
   assert.equal(nodes['#new-project'].parentElement, nodes['#workspace-navigation']);
   assert.equal(nodes['#show-profile'].parentElement, nodes['#navigation-drawer']);
 });
+
+for (const mobile of [true, false]) {
+  test(`Sources ${mobile ? 'matches immediate mobile panels' : 'retains desktop slide motion'} with reduced motion off`, async t => {
+    const ui = setup(t, { mobile, workspace: true, reducedMotion: false });
+    const panel = ui.nodes['#editor-sources'];
+    const trigger = ui.nodes['#show-sources'];
+    const home = ui.nodes['#workspace-navigation'];
+    const originalOrder = [...home.children];
+    ui.navigation.open('sources');
+    assert.equal(panel.hidden, false);
+    assert.equal(panel.inert, false);
+    assert.equal(panel.getAttribute('aria-hidden'), 'false');
+    assert.equal(trigger.getAttribute('aria-expanded'), 'true');
+    assert.equal(panel.parentElement, mobile ? ui.nodes['#workspace-app'] : home);
+    assert.equal(panel.animations.length, mobile ? 0 : 1);
+    if (!mobile) {
+      assert.deepEqual(panel.animations[0].frames, [{ transform: 'translateX(calc(-1 * 5px))' }, { transform: 'translateX(0)' }]);
+      assert.equal(panel.animations[0].options.duration, 200);
+      panel.animations[0].finish();
+      await Promise.resolve();
+    }
+    panel.focus();
+    ui.navigation.close('sources');
+    assert.equal(ui.doc.activeElement, trigger, 'closing returns focus before the panel becomes unavailable');
+    assert.equal(panel.inert, true);
+    assert.equal(panel.getAttribute('aria-hidden'), 'true');
+    assert.equal(trigger.getAttribute('aria-expanded'), 'false');
+    assert.equal(panel.animations.length, mobile ? 0 : 2);
+    if (!mobile) {
+      assert.equal(panel.hidden, false, 'desktop remains rendered during its exit slide');
+      assert.deepEqual(panel.animations[1].frames, [{ transform: 'translateX(0)' }, { transform: 'translateX(calc(-1 * 5px))' }]);
+      panel.animations[1].finish();
+      await Promise.resolve();
+    }
+    assert.equal(panel.hidden, true, 'mobile closes immediately; desktop closes when its animation finishes');
+    assert.equal(panel.parentElement, home);
+    assert.deepEqual(home.children, originalOrder, 'Sources returns to its original navigation position');
+    if (mobile) {
+      ui.navigation.open('sources');
+      ui.navigation.open('newVariant');
+      assert.equal(panel.hidden, true, 'direct switching closes Sources immediately');
+      assert.equal(panel.parentElement, home);
+      assert.equal(panel.animations.length, 0);
+      assert.equal(ui.nodes['#composer-tools'].dataset.mobileOpen, 'true');
+    }
+  });
+}

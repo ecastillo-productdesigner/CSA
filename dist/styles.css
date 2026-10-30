@@ -410,7 +410,7 @@ dialog::backdrop { background: var(--csa-semantic-color-overlay-scrim); backdrop
 
 .delete-project-dialog .dialog-footer { flex-wrap: wrap; }
 .danger-button .material-symbols-outlined { font-size: var(--csa-foundation-icon-size-20); width: var(--csa-foundation-icon-size-20); height: var(--csa-foundation-icon-size-20); }
-.mobile-workspace-utilities, .mobile-workspace-trigger, .mobile-nav-label, .mobile-panel-close, .mobile-panel-heading, .new-project-upload-mobile { display: none; }
+.mobile-panel-title, .mobile-workspace-utilities, .mobile-workspace-trigger, .mobile-nav-label, .mobile-panel-close, .mobile-panel-heading, .new-project-upload-mobile { display: none; }
 body:has(#new-project-dialog[open]) { overflow: hidden; }
 .new-project-dialog { position: fixed; inset: 0; margin: auto; width: min(var(--csa-foundation-size-540), calc(100vw - var(--csa-foundation-space-32))); max-height: calc(100svh - var(--csa-foundation-space-32)); padding: var(--csa-foundation-space-44) var(--csa-foundation-space-30) var(--csa-foundation-space-30); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-16); box-shadow: none; overflow-y: auto; overscroll-behavior: contain; }
 .new-project-dialog h2 { margin: 0 0 var(--csa-foundation-space-28); font-family: var(--csa-semantic-typography-dialog-heading-font-family); font-size: var(--csa-semantic-typography-dialog-heading-font-size); line-height: var(--csa-semantic-typography-dialog-heading-line-height); font-weight: var(--csa-semantic-typography-dialog-heading-font-weight); letter-spacing: var(--csa-semantic-typography-dialog-heading-letter-spacing); }
@@ -864,6 +864,8 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
 @media (max-width: 768px) {
   :root { --csa-semantic-shadow-dropdown: var(--csa-semantic-shadow-dropdown-mobile); }
   dialog::backdrop { background: var(--csa-semantic-color-overlay-scrim); backdrop-filter: blur(var(--csa-foundation-space-2)); }
+  /* Cover scrolling content throughout the fixed header area, including its outer inset. */
+  body.showing-composer:has(#workspace-app:not([hidden]))::before { content: ""; position: fixed; top: 0; right: 0; left: 0; height: var(--workspace-mobile-content-top); z-index: var(--csa-foundation-layer-20); background: var(--background); pointer-events: none; }
   /* Native dialogs supply their own backdrop; mobile workspace panels share one. */
   body.showing-composer:has(#workspace-app:not([hidden])):has(.composer-panel[data-mobile-open="true"], #editor-sources:not([hidden])):not(:has(dialog[open]))::after { content: ""; position: fixed; inset: 0; z-index: var(--csa-foundation-layer-20); background: var(--csa-semantic-color-overlay-scrim); backdrop-filter: blur(var(--csa-foundation-space-2)); }
   body:is(:has(#home:not([hidden])), .showing-results, .showing-composer) .sidebar { z-index: var(--csa-foundation-layer-20); top: var(--workspace-outer-inset); right: var(--workspace-outer-inset); bottom: auto; left: var(--workspace-outer-inset); display: flex; flex-direction: row; align-items: center; justify-content: space-between; width: auto; height: var(--csa-foundation-space-64); padding: var(--csa-foundation-space-8) var(--csa-foundation-space-12); cursor: default; transition: none; box-shadow: none; }
@@ -979,6 +981,8 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
   body.showing-composer .composer-outputs[data-mobile-open="true"] { display: flex; min-height: min(var(--csa-foundation-size-320), calc(100dvh - var(--workspace-mobile-content-top) - var(--workspace-outer-inset))); }
   body.showing-composer .composer-outputs[data-mobile-open="true"][data-collapsed="true"] { min-height: 0; }
 
+  body.showing-composer .composer-tools-toggle { display: none; }
+  body.showing-composer .mobile-panel-title { display: flex; align-items: center; gap: var(--csa-foundation-space-4); }
   body.showing-composer .mobile-panel-close { display: grid; position: relative; z-index: var(--csa-foundation-layer-2); }
   body.showing-composer .mobile-panel-close .material-symbols-outlined, body.showing-composer .mobile-panel-heading .icon-button .material-symbols-outlined { font-size: var(--csa-foundation-icon-size-20); width: var(--csa-foundation-icon-size-20); height: var(--csa-foundation-icon-size-20); }
   body.showing-composer .composer-fields { gap: var(--csa-foundation-space-12); margin-top: var(--csa-foundation-space-12); }
@@ -1202,8 +1206,8 @@ html:has(#home:not([hidden])) { scrollbar-gutter: stable; }
 .variant-feedback-trigger:focus-visible { outline-offset: calc(-1 * var(--csa-foundation-border-width-3)); }
 
 /* Source and revision icons follow their panel or popup open state. */
-:is(#show-new-variant, #show-variants, #show-sources, [data-variant-sources], [data-request-revision])[aria-expanded="false"] .material-symbols-outlined { font-variation-settings: "FILL" var(--csa-component-icon-outline-fill), "wght" var(--csa-foundation-font-weight-400), "GRAD" var(--csa-component-icon-grade), "opsz" var(--csa-component-icon-optical-size); }
-:is(#show-new-variant, #show-variants, #show-sources, [data-variant-sources], [data-request-revision])[aria-expanded="true"] .material-symbols-outlined { font-variation-settings: "FILL" var(--csa-component-icon-fill), "wght" var(--csa-foundation-font-weight-400), "GRAD" var(--csa-component-icon-grade), "opsz" var(--csa-component-icon-optical-size); }
+:is(#show-new-variant, #show-sources, [data-variant-sources], [data-request-revision])[aria-expanded="false"] .material-symbols-outlined { font-variation-settings: "FILL" var(--csa-component-icon-outline-fill), "wght" var(--csa-foundation-font-weight-400), "GRAD" var(--csa-component-icon-grade), "opsz" var(--csa-component-icon-optical-size); }
+:is(#show-new-variant, #show-sources, [data-variant-sources], [data-request-revision])[aria-expanded="true"] .material-symbols-outlined { font-variation-settings: "FILL" var(--csa-component-icon-fill), "wght" var(--csa-foundation-font-weight-400), "GRAD" var(--csa-component-icon-grade), "opsz" var(--csa-component-icon-optical-size); }
 
 #new-project .material-symbols-outlined { color: var(--csa-component-button-primary-background); }
 

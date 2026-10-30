@@ -130,7 +130,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
     if (!name || !panels[name]) return;
     const { trigger, panel, mobileOnly } = panels[name];
     if (mobileOnly) delete panel.dataset.mobileOpen;
-    else if (name === 'sources') sourcesTransition.setVisible(false, { animate });
+    else if (name === 'sources') sourcesTransition.setVisible(false, { animate: animate && !mobileTopBar() });
     else panel.hidden = true;
     trigger.setAttribute('aria-expanded', 'false');
     if (name === 'sources') onSourcesClose?.();
@@ -168,7 +168,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
     // Keep the mobile Sources panel outside the navigation layout and above the backdrop.
     if (name === 'sources' && mobileTopBar()) document.querySelector('#workspace-app').append(panels.sources.panel);
     if (panels[name].mobileOnly) panels[name].panel.dataset.mobileOpen = 'true';
-    else if (name === 'sources') sourcesTransition.setVisible(true);
+    else if (name === 'sources') sourcesTransition.setVisible(true, { animate: !mobileTopBar() });
     else panels[name].panel.hidden = false;
     panels[name].trigger.setAttribute('aria-expanded', 'true');
     active = name;

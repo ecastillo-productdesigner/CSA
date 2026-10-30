@@ -674,7 +674,16 @@ function renderSourceStory(project) {
   if (welcome) {
     contentPreview.hide();
     $('#source-story-title').textContent = 'Let’s start your story';
-    $('#source-story-body').replaceChildren(element('p', '', 'To start, choose a Format, Audience, or Voice in the New Draft panel, then select Add to List.'));
+    const guidance = element('p', '', 'To start, choose a Format, Audience, or Voice in ');
+    const newDraft = element('button', 'project-welcome-action', 'New Draft');
+    newDraft.type = 'button';
+    newDraft.setAttribute('aria-controls', 'composer-tools');
+    newDraft.addEventListener('click', () => {
+      railNavigation.open('newVariant');
+      $('#composer-tools-heading').focus({ preventScroll: true });
+    });
+    guidance.append(element('span', 'project-welcome-label', 'New Draft'), newDraft);
+    $('#source-story-body').replaceChildren(guidance);
     $('#output-placeholder').scrollTop = 0;
     return;
   }

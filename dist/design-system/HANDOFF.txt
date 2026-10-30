@@ -128,3 +128,5 @@ Current approved behavior · 2026-10-26
 2026-10-30: Removed the duplicate Requested Revision link and popover from the editor footer in the app and DS preview. Saved requests and outcomes remain available through Revision History inside Request Revision.
 
 2026-10-30: New-draft loading uses the approved label Creating Draft, while revision loading uses Revising Draft. Content-card processing labels follow the job kind, and generic drafting previews and status guidance use the same wording. Animation timing, category colors, and source-loading labels are unchanged.
+
+2026-10-30: The empty source-first canvas says “To start, choose a Format, Audience, or Voice in New Draft”. New Draft remains plain text on desktop; on mobile it is an underlined action that opens and expands New Draft, then moves focus to its heading. It uses the existing mobile navigation and shared action color.

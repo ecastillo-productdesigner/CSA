@@ -136,3 +136,7 @@ Current approved behavior · 2026-10-26
 2026-10-30: Opening a nonempty editor, including after a revision, leaves formatting toolbar controls unselected until the user selects text, edits, or uses a formatting action. This clears only the visual toolbar state; saved headings, lists, bold text, and other document formatting remain intact. Selecting or editing formatted content restores the matching toolbar state.
 
 2026-10-30: The homepage uses project cards only at the shared mobile breakpoint. Hide the Grid View / List View switcher and its toolbar space on mobile. A saved desktop List View preference cannot display the table on mobile; returning to desktop restores that preference without overwriting it. Desktop keeps both view options.
+
+2026-10-30: All mobile top bars place New Project beside the account control using the same teal plus icon, single-line 14 px label, and 44 px target as the workspace header. The homepage uses this header action instead of a separate New Project tile; project-card pagination counts only the visible cards. Desktop retains its existing New Project placement.
+
+2026-10-30: On mobile, Sources closes on an outside tap using the same behavior as Content and New Draft. Taps inside the panel or its child menus keep it open. The mobile Log Out menu is aligned beneath the avatar utility control with an 8 px gap and the shared 200 px profile-menu width, above the second navigation row.

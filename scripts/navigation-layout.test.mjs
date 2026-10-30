@@ -131,33 +131,47 @@ test('an actual responsive layout change closes the old panel and permits reopen
   assert.equal(ui.nodes['#editor-sources'].parentElement, ui.nodes['#workspace-app']);
 });
 
-test('mobile workspace utilities follow visual focus order and return to the desktop rail', t => {
-  const ui = setup(t, { mobile: true, workspace: true });
-  const { nodes } = ui;
-  const utilities = nodes['#mobile-workspace-utilities'];
-  assert.deepEqual(utilities.children, [nodes['#new-project'], nodes['#show-profile']]);
-  ui.navigation.open('profile');
-  assert.equal(nodes['#show-profile'].getAttribute('aria-expanded'), 'true');
-  assert.equal(nodes['#profile-menu'].hidden, false);
-  ui.media.matches = false;
-  ui.media.fire('change');
-  assert.equal(nodes['#new-project'].parentElement, nodes['#workspace-navigation']);
-  assert.equal(nodes['#show-profile'].parentElement, nodes['#navigation-drawer']);
-  assert.equal(utilities.children.length, 0);
-  assert.equal(nodes['#profile-menu'].hidden, true);
-});
+for (const workspace of [false, true]) {
+  test(`mobile ${workspace ? 'workspace' : 'homepage'} utilities follow visual focus order and return to their desktop positions`, t => {
+    const ui = setup(t, { workspace });
+    const { nodes } = ui;
+    const utilities = nodes['#mobile-workspace-utilities'];
+    const navigationOrder = [...nodes['#workspace-navigation'].children];
+    const sidebarOrder = [...nodes['#navigation-drawer'].children];
+    ui.media.matches = true;
+    ui.media.fire('change');
+    assert.deepEqual(utilities.children, [nodes['#new-project'], nodes['#show-profile']]);
+    ui.navigation.open('profile');
+    assert.equal(nodes['#show-profile'].getAttribute('aria-expanded'), 'true');
+    assert.equal(nodes['#profile-menu'].hidden, false);
+    ui.media.matches = false;
+    ui.media.fire('change');
+    assert.equal(nodes['#new-project'].parentElement, nodes['#workspace-navigation']);
+    assert.equal(nodes['#show-profile'].parentElement, nodes['#navigation-drawer']);
+    assert.deepEqual(nodes['#workspace-navigation'].children, navigationOrder);
+    assert.deepEqual(nodes['#navigation-drawer'].children, sidebarOrder);
+    assert.equal(utilities.children.length, 0);
+    assert.equal(nodes['#profile-menu'].hidden, true);
+  });
+}
 
-test('home and workspace transitions relocate utilities even when both use a mobile top bar', async t => {
+test('mobile homepage and workspace retain the same utility controls without duplication', async t => {
   const ui = setup(t, { mobile: true });
   const { nodes } = ui;
-  assert.equal(nodes['#mobile-workspace-utilities'].children.length, 0);
+  const utilities = nodes['#mobile-workspace-utilities'];
+  const controls = [nodes['#new-project'], nodes['#show-profile']];
+  assert.deepEqual(utilities.children, controls, 'the initial mobile homepage places New Project before the account control');
   nodes['#home'].hidden = true;
   ui.doc.body.classList.add('showing-composer');
   await ui.deliverLayoutMutation();
-  assert.deepEqual(nodes['#mobile-workspace-utilities'].children, [nodes['#new-project'], nodes['#show-profile']]);
+  assert.deepEqual(utilities.children, controls);
   nodes['#home'].hidden = false;
   ui.doc.body.classList.remove('showing-composer');
   await ui.deliverLayoutMutation();
+  assert.deepEqual(utilities.children, controls, 'returning home keeps the existing utility row');
+  nodes['#home'].hidden = true;
+  await ui.deliverLayoutMutation();
+  assert.equal(utilities.children.length, 0, 'leaving a mobile top-bar screen restores the original containers');
   assert.equal(nodes['#new-project'].parentElement, nodes['#workspace-navigation']);
   assert.equal(nodes['#show-profile'].parentElement, nodes['#navigation-drawer']);
 });
@@ -206,5 +220,40 @@ for (const mobile of [true, false]) {
       assert.equal(panel.animations.length, 0);
       assert.equal(ui.nodes['#composer-tools'].dataset.mobileOpen, 'true');
     }
+  });
+}
+
+for (const mobile of [true, false]) {
+  test(`Sources ${mobile ? 'closes on an outside mobile tap' : 'stays open on an outside desktop click'} and preserves inside interactions`, t => {
+    const ui = setup(t, { mobile, workspace: true });
+    const panel = ui.nodes['#editor-sources'];
+    const trigger = ui.nodes['#show-sources'];
+    const inside = new Node();
+    inside.ownerDocument = ui.doc;
+    panel.append(inside);
+    const outside = new Node();
+    outside.closest = () => null;
+    ui.navigation.open('sources');
+    ui.doc.fire('pointerdown', { target: inside });
+    assert.equal(panel.hidden, false, 'interacting with a source does not dismiss its panel');
+    assert.equal(trigger.getAttribute('aria-expanded'), 'true');
+    ui.doc.fire('pointerdown', { target: ui.nodes['#new-project'] });
+    assert.equal(panel.hidden, false, 'header controls retain the shared navigation behavior');
+    assert.equal(ui.closed(), 0);
+    if (mobile) {
+      ui.nodes['dialog[open]'] = new Node();
+      ui.doc.fire('pointerdown', { target: outside });
+      assert.equal(panel.hidden, false, 'a native dialog keeps ownership of outside interactions');
+      delete ui.nodes['dialog[open]'];
+    }
+    inside.focus();
+    ui.doc.fire('pointerdown', { target: outside });
+    assert.equal(panel.hidden, mobile);
+    assert.equal(panel.inert, mobile);
+    assert.equal(panel.getAttribute('aria-hidden'), String(mobile));
+    assert.equal(trigger.getAttribute('aria-expanded'), String(!mobile));
+    assert.equal(ui.closed(), mobile ? 1 : 0);
+    assert.equal(panel.parentElement, ui.nodes['#workspace-navigation'], 'a dismissed mobile Sources panel returns to its original container');
+    assert.equal(ui.doc.activeElement, mobile ? trigger : inside);
   });
 }

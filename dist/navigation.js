@@ -208,7 +208,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
   document.addEventListener('pointerdown', event => {
     if (document.querySelector('dialog[open]')) return;
     if (active === 'profile' && floatingProfile() && !panels.profile.panel.contains(event.target) && !panels.profile.trigger.contains(event.target)) { close(); return; }
-    if (active !== 'sources' && mobileTopBar() && !sidebar.contains(event.target) && !panels[active]?.panel.contains(event.target) && !event.target.closest('.output-card-menu, .editor-flyover, .draft-sources-popover, [data-variant-sources], [data-workspace-dropdown]')) close();
+    if (mobileTopBar() && !sidebar.contains(event.target) && !panels[active]?.panel.contains(event.target) && !event.target.closest('.output-card-menu, .editor-flyover, .draft-sources-popover, [data-variant-sources], [data-workspace-dropdown]')) close();
   });
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape' || event.defaultPrevented || document.querySelector('dialog[open]')) return;
@@ -223,7 +223,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
     const next = `${mobileTopBar()}:${available}`;
     if (next !== layoutMode) { hideTooltips(); close(active, false, { animate: false }); setDrawer(false); layoutMode = next; }
     // Move the existing controls so keyboard order follows the mobile visual rows.
-    const useMobileUtilities = mobile.matches && document.body.classList.contains('showing-composer');
+    const useMobileUtilities = mobileTopBar();
     for (const { control, home } of utilityHomes) {
       if (useMobileUtilities && control.parentElement !== mobileUtilities) mobileUtilities.append(control);
       else if (!useMobileUtilities && control.parentElement === mobileUtilities) home.after(control);

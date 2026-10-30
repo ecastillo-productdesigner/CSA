@@ -13,7 +13,7 @@ import { bindTabSelection } from './selection-controls.js?v=20261026-drafting-ca
 import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261026-drafting-card-size';
 import { createProfile } from './profile.js?v=20261026-drafting-card-size';
 import { createSearchExperience } from './search.js?v=20261029-source-workspace';
-import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261030-mobile-home-grid';
+import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261030-mobile-menu-behavior';
 import { createMaterialEditor } from './editor.js?v=20261030-neutral-toolbar';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-drafting-card-size';
 import { removeProjectContent } from './project-deletion.js?v=20261026-drafting-card-size';
@@ -21,7 +21,7 @@ import { createContentPreview } from './content-preview.js?v=20261026-drafting-c
 import { createToolDropdowns } from './tool-dropdowns.js?v=20261026-drafting-card-size';
 import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261026-drafting-card-size';
 import { createNewProjectUpload } from './new-project-upload.js?v=20261026-drafting-card-size';
-import { createRailNavigation } from './navigation.js?v=20261030-mobile-panel-refinements';
+import { createRailNavigation } from './navigation.js?v=20261030-mobile-menu-behavior';
 import { createProjectSources } from './sources.js?v=20261029-preview-direction';
 import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261026-drafting-card-size';
 import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261030-declined-revision-details';
@@ -479,7 +479,9 @@ function showHome(focusInput = true) {
   dashboard?.render(projects);
   document.title = 'CSA — Your creative workspace';
   window.scrollTo({ top: 0 });
-  if (focusInput) $('#dashboard-new-project')?.focus();
+  if (focusInput) queueMicrotask(() => {
+    if (!$('#home').hidden) $(window.matchMedia(breakpointQuery()).matches ? '#new-project' : '#dashboard-new-project')?.focus();
+  });
   dashboard?.reveal();
 }
 

@@ -128,7 +128,7 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
   deleteDialog.addEventListener('close', () => {
     const trigger = pendingDelete?.trigger;
     pendingDelete = null;
-    (trigger?.isConnected ? trigger : grid.querySelector('.project-card-menu-button') || home.querySelector('#dashboard-new-project'))?.focus({ preventScroll: true });
+    (trigger?.isConnected ? trigger : grid.querySelector('.project-card-menu-button') || document.querySelector(mobile.matches ? '#new-project' : '#dashboard-new-project'))?.focus({ preventScroll: true });
   });
   deleteConfirm.addEventListener('click', async () => {
     if (!pendingDelete || deleting) return;
@@ -156,7 +156,7 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
       const tracks = getComputedStyle(grid).gridTemplateColumns.match(/[\d.]+px/g);
       if (tracks?.length) columns = tracks.length;
     }
-    const limit = visibleRows * (layout === 'list' ? 3 : columns) - (layout === 'grid' ? 1 : 0);
+    const limit = visibleRows * (layout === 'list' ? 3 : columns) - (layout === 'grid' && !mobile.matches ? 1 : 0);
     projectItems.forEach((item, index) => { item.hidden = index >= limit; });
     loadMore.hidden = projectItems.length <= limit;
     if (announce || status.textContent) status.textContent = `Showing ${Math.min(projectItems.length, limit)} of ${projectItems.length} projects.`;
@@ -211,7 +211,8 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
     grid.classList.remove('is-switching-layout');
     const switchFocused = layoutSwitch.contains(document.activeElement);
     setLayout(mobile.matches ? 'grid' : preferredLayout, { persist: false, animate: false });
-    if (mobile.matches && switchFocused) home.querySelector('#dashboard-new-project')?.focus({ preventScroll: true });
+    updateVisible();
+    if (mobile.matches && switchFocused) document.querySelector('#new-project')?.focus({ preventScroll: true });
   });
   new ResizeObserver(() => updateVisible()).observe(home);
   window.addEventListener('scroll', () => {

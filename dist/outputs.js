@@ -1,5 +1,5 @@
 import { applyParagraphListRevision } from './paragraph-list-revision.js?v=20261030-bullet-request-fix';
-import { mentionsElephant, revisionChangeSummary } from './revision-change-summary.js?v=20261030-bullet-request-fix';
+import { mentionsElephant, revisionChangeSummary } from './revision-change-summary.js?v=20261030-declined-revision-details';
 import { syncSelection } from './selection-controls.js?v=20261026-drafting-card-size';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { normalizeWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
@@ -345,7 +345,7 @@ export function reviseSampleOutput(output, instructions, requestedAt, completedA
   output.revisionUnread = true;
   output.revisionRequestUnread = true;
   output.revisionRequests = [...(Array.isArray(output.revisionRequests) ? output.revisionRequests : []), {
-    instructions, requestedAt, completedAt, status: 'complete',
+    instructions, requestedAt, completedAt, status: 'complete', applied: Boolean(edit?.changed),
     changeSummary: revisionChangeSummary(before, output, instructions, edit),
   }];
 }

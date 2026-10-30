@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261030-bullet-request-fix');
+  await import('./app.js?v=20261030-declined-revision-details');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

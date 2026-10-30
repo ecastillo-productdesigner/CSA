@@ -85,8 +85,8 @@ No: CSA Combine
 Product status labels: Creating Draft for new drafts; Revising Draft for revision requests.
 
 Revision notes
-Describe the edit that actually happened, its location, and the resulting form. Lead with the action instead of repeating the request. For example: Converted the second paragraph into a bulleted list with two items; left all other content unchanged.
-End completed-edit notes with “left all other content unchanged.” If nothing changed, say “Left all content unchanged.” Explain a declined request when a reason is available. Do not claim an edit happened based only on what was requested; use the saved before-and-after content. Preserve previously recorded outcomes.
+For a successful revision, describe the edit that actually happened, its location, and the resulting form. Lead with the action instead of repeating the request. For example: Converted the second paragraph into a bulleted list with two items; left all other content unchanged.
+End completed-edit notes with “left all other content unchanged.” If nothing changed, say “Left all content unchanged.” Do not claim an edit happened based only on what was requested; use the saved before-and-after content. Preserve previously recorded outcomes.
 
 Unapplied revisions
-If a revision cannot be applied, identify what was not changed and why, followed by “left all content unchanged.” Never replace the draft with unrelated sample copy when a request is not recognized. A saved request by itself is not proof that its requested change happened.
+If a revision cannot be applied, show the original request under Requested Revision, followed by the saved refusal or limitation in a separate paragraph below. Preserve the request’s wording. Ordinary unsupported requests explain what could not be applied and finish with “left all content unchanged.” The elephant refusal keeps its exact wording and includes the title of the story being revised. Never replace the draft with unrelated sample copy when a request is not recognized. A saved request by itself is not proof that its requested change happened.

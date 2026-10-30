@@ -308,7 +308,7 @@ test('revision history leads with the saved specific result in one read-only des
   assert.equal(entries[0].children[0].textContent, 'Revision 2');
   assert.equal(entries[1].children[0].textContent, 'Revision 1');
   const fields = entries.map(revisionFields);
-  assert.equal(fields[0]['Requested Revision:'].textContent, changeSummary, 'the refusal appears directly without repeating the prompt');
+  assert.equal(fields[0]['Requested Revision:'].textContent, `Add an elephant\n\n${changeSummary}`, 'the refusal follows the original request on a separate paragraph');
   assert.equal(fields[1]['Requested Revision:'].textContent, ordinarySummary, 'the specific saved result appears directly without repeating the prompt');
   for (const entry of fields) {
     assert.deepEqual(Object.keys(entry), ['Revised:', 'Requested Revision:']);
@@ -317,5 +317,20 @@ test('revision history leads with the saved specific result in one read-only des
     assert.equal(description.className, 'editor-direction-copy', 'the combined description preserves saved line breaks');
     assert.notEqual(description.getAttribute('contenteditable'), 'true');
   }
+  assert.deepEqual(ui.output.revisionRequests, saved);
+});
+
+
+test('unapplied revisions show the original request above the reason without editing either saved value', t => {
+  const ui = setup(t);
+  const original = '  Add an elephan\nKeep <script> as literal text.  ';
+  const explanation = 'Could not add a mention of an elephant. No elephant appears in the source material, and inserting one would introduce a fabricated, irrelevant and inappropriate detail into a factual news report about A Fresh Perspective on Style, Usefulness, and Personal Preference.';
+  ui.output.revisionRequests = [{ instructions: original, changeSummary: explanation, applied: false, completedAt: 1000 }];
+  const saved = structuredClone(ui.output.revisionRequests);
+  ui.api.open(ui.project, ui.output);
+  const copy = revisionFields(ui['history-list'].children[0])['Requested Revision:'];
+  assert.equal(copy.textContent, `${original.trim()}\n\n${explanation}`);
+  assert.equal(copy.children.length, 0, 'both the request and explanation are safely rendered as text');
+  assert.equal(copy.className, 'editor-direction-copy');
   assert.deepEqual(ui.output.revisionRequests, saved);
 });

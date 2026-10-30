@@ -57,3 +57,11 @@ test('legacy and malformed summaries fall back to the saved instructions', () =>
     assert.equal(latestRevisionNote({ revisionRequests: [{ instructions: 'Original request', changeSummary }] }), 'Original request');
   }
 });
+
+
+test('revision history preserves a valid applied flag for the refusal presentation', () => {
+  for (const applied of [false, true]) {
+    assert.deepEqual(revisionHistory({ revisionRequests: [{ instructions: 'A request', completedAt: 20, applied }] }), [{ instructions: 'A request', completedAt: 20, applied }]);
+  }
+  assert.deepEqual(revisionHistory({ revisionRequests: [{ instructions: 'A request', applied: 'false' }] }), [{ instructions: 'A request', completedAt: null }]);
+});

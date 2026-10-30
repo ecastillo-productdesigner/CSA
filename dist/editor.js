@@ -1,6 +1,6 @@
 import { documentStyles } from './design-system/export-styles.js?v=20261026-drafting-card-size';
 import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-drafting-card-size';
-import { initializeOutputShareText } from './outputs.js?v=20261030-bullet-request-fix';
+import { initializeOutputShareText } from './outputs.js?v=20261030-declined-revision-details';
 import { createRevisionLoading } from './revision-loading.js?v=20261027-revision-loading';
 import { createStoryMetadata, storyMetadata } from './story-metadata.js?v=20261027-metadata';
 import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261026-drafting-card-size';

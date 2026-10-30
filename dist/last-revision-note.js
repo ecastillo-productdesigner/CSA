@@ -6,6 +6,7 @@ export function revisionHistory(output) {
     if (typeof request?.instructions !== 'string' || !request.instructions.trim()) return [];
     const completedAt = validTime(request.completedAt);
     const details = { instructions: request.instructions, completedAt };
+    if (typeof request.applied === 'boolean') details.applied = request.applied;
     if (typeof request.changeSummary === 'string' && request.changeSummary.trim()) details.changeSummary = request.changeSummary;
     return [{ details, order: completedAt ?? validTime(request.requestedAt) ?? 0, index }];
   }).sort((a, b) => a.order - b.order || a.index - b.index).map(entry => entry.details);
@@ -45,7 +46,12 @@ export function renderRevisionHistory(list, notes) {
     copy.className = 'editor-direction-copy';
     const request = details.instructions.trim();
     const ending = /[.!?…]$/.test(request) ? '' : '.';
-    copy.textContent = details.changeSummary || `Requested “${request}${ending}” The result was not recorded.`;
+    const result = details.changeSummary;
+    // Older saved records lack an applied flag; recognize their explicit no-change explanations.
+    const unapplied = details.applied === false || (details.applied == null && /^(?:Could not|Did not|Left all content unchanged)|; left all content unchanged\.$/.test(result || ''));
+    copy.textContent = result
+      ? unapplied ? `${request}\n\n${result}` : result
+      : `Requested “${request}${ending}” The result was not recorded.`;
     noteRow.append(noteLabel, copy);
     fields.append(dateRow, noteRow);
     entry.append(fields);

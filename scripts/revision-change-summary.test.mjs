@@ -96,9 +96,13 @@ test('whitespace edits are described without claiming a rewrite and unchanged dr
 test('the exact elephant refusal remains independent of the body-diff summarizer', () => {
   const before = draft(['Keep this body.'], { title: '  The town library?  ' });
   const refusal = 'Could not add a mention of an elephant. No elephant appears in the source material, and inserting one would introduce a fabricated, irrelevant and inappropriate detail into a factual news report about The town library?';
-  for (const instruction of ['Add an elephant', 'Mention ELEPHANTS']) assert.equal(summary(before, before, instruction), refusal);
-  assert.equal(mentionsElephant('an elephantine introduction'), false);
-  assert.equal(summary(before, before, 'an elephantine introduction'), 'Left all content unchanged.');
+  for (const instruction of ['Add an elephant', 'Mention ELEPHANTS', 'Add an elephan', 'Add an ELEPHAN']) assert.equal(summary(before, before, instruction), refusal);
+  const otherStory = draft(['Keep this body.'], { title: '  A different local story  ' });
+  assert.equal(summary(otherStory, otherStory, 'Add an elephan'), refusal.replace('The town library?', 'A different local story.'));
+  for (const instruction of ['an elephantine introduction', 'a telephone update', 'an elephany detail']) {
+    assert.equal(mentionsElephant(instruction), false);
+    assert.equal(summary(before, before, instruction), 'Left all content unchanged.');
+  }
 });
 
 

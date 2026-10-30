@@ -11,7 +11,7 @@ test('unsupported revision preserves all content and reports the unapplied reque
   assert.equal(output.draftText, before.draftText);
   assert.equal(output.document.ops.map(op => op.insert).join('').replace(/\s+/g, ' ').trim(), output.draftText.replace(/\s+/g, ' ').trim());
   for (const key of ['id', 'title', 'shareText', 'name', 'nameEdited', 'isFavorite', 'createdAt', 'labels', 'selectedSourceIndexes', 'sourceSnapshots', 'metadata']) assert.deepEqual(output[key], before[key]);
-  assert.deepEqual(output.revisionRequests, [{ instructions: 'Shorten the intro', changeSummary: 'Could not apply “Shorten the intro”; left all content unchanged.', requestedAt: 10, completedAt: 20, status: 'complete' }]);
+  assert.deepEqual(output.revisionRequests, [{ instructions: 'Shorten the intro', changeSummary: 'Could not apply “Shorten the intro”; left all content unchanged.', requestedAt: 10, completedAt: 20, status: 'complete', applied: false }]);
   assert.equal(output.updatedAt, 20);
   assert.equal(output.revisionUnread, true);
   assert.equal(output.revisionRequestUnread, true);
@@ -41,7 +41,7 @@ test('a revised sent draft becomes a ready draft that can be sent again', () => 
 const elephantExplanation = 'Could not add a mention of an elephant. No elephant appears in the source material, and inserting one would introduce a fabricated, irrelevant and inappropriate detail into a factual news report about ';
 
 test('elephant requests retain the exact article, settings, and sent state while recording the outcome', () => {
-  for (const instructions of ['Add an elephant', 'Add an ELEPHANT.', 'Mention elephants in the opening']) {
+  for (const instructions of ['Add an elephant', 'Add an elephan', 'Add an ELEPHANT.', 'Mention elephants in the opening']) {
     const output = {
       ...variant(),
       status: 'sent',
@@ -71,7 +71,7 @@ test('elephant requests retain the exact article, settings, and sent state while
     assert.equal(revisionUnread, true);
     assert.equal(revisionRequestUnread, true);
     assert.deepEqual(revisionRequests, [...previousRequests, {
-      instructions, changeSummary: elephantExplanation + 'A café’s new story.', requestedAt: 10, completedAt: 20, status: 'complete',
+      instructions, changeSummary: elephantExplanation + 'A café’s new story.', requestedAt: 10, completedAt: 20, status: 'complete', applied: false,
     }]);
     output.title = 'A later edited headline';
     assert.equal(output.revisionRequests.at(-1).changeSummary, elephantExplanation + 'A café’s new story.');
@@ -128,6 +128,7 @@ test('paragraph-to-list revision performs only the requested edit and stores its
   assert.equal(output.needsRegeneration, undefined);
   assert.equal(output.revisionRequests.at(-1).changeSummary, 'Converted the second paragraph into a bulleted list with two items; left all other content unchanged.');
   assert.equal(output.revisionRequests.at(-1).instructions, 'Convert the second paragraph into a short bulleted list.');
+  assert.equal(output.revisionRequests.at(-1).applied, true);
 });
 
 test('a recognized paragraph-list no-op preserves the article, share text and sent state', () => {

@@ -197,7 +197,7 @@ test('unsupported topic revisions preserve source content and edited settings wh
   assert.deepEqual(output.toolPreferences, preferences);
   assert.equal(output.cmsSentAt, 10);
   assert.equal(output.cmsSentContent, 'Previous export');
-  assert.deepEqual(output.revisionRequests, [{ instructions: 'Make the reader questions clearer', changeSummary: 'Could not apply “Make the reader questions clearer”; left all content unchanged.', requestedAt: 20, completedAt: 30, status: 'complete' }]);
+  assert.deepEqual(output.revisionRequests, [{ instructions: 'Make the reader questions clearer', changeSummary: 'Could not apply “Make the reader questions clearer”; left all content unchanged.', requestedAt: 20, completedAt: 30, status: 'complete', applied: false }]);
   const firstRevision = output.draftText;
   reviseSampleOutput(output, 'Try another opening', 40, 50);
   assert.equal(output.draftText, firstRevision);

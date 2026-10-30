@@ -1,4 +1,4 @@
-import { revisionHistory, renderRevisionHistory } from './last-revision-note.js?v=20261030-specific-revision-notes';
+import { revisionHistory, renderRevisionHistory } from './last-revision-note.js?v=20261030-declined-revision-details';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 
 export function createRevisionButton(output, disabled = false) {

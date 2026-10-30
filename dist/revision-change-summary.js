@@ -1,7 +1,7 @@
 import { revisionDocumentBlocks, revisionParagraphBlocks } from './paragraph-list-revision.js?v=20261030-bullet-request-fix';
 
 export function mentionsElephant(instructions) {
-  return /\belephants?\b/i.test(instructions || '');
+  return /\b(?:elephan|elephants?)\b/i.test(instructions || '');
 }
 
 const normalize = text => text.replace(/\s+/g, ' ').trim();

@@ -40,7 +40,7 @@ class Node {
 function setup(t, { mobile = false, workspace = false } = {}) {
   const previous = Object.fromEntries(['document', 'window', 'MutationObserver', 'getComputedStyle'].map(key => [key, globalThis[key]]));
   t.after(() => Object.assign(globalThis, previous));
-  const selectors = ['show-sources', 'editor-sources', 'show-new-variant', 'composer-tools', 'show-variants', 'composer-outputs', 'show-profile', 'profile-menu', 'navigation-drawer', 'toggle-navigation-drawer', 'new-project', 'home', 'new-project-tooltip', 'sources-tooltip', 'account-tooltip', 'workspace-app'];
+  const selectors = ['show-sources', 'editor-sources', 'show-new-variant', 'composer-tools', 'show-variants', 'composer-outputs', 'show-profile', 'profile-menu', 'navigation-drawer', 'toggle-navigation-drawer', 'new-project', 'home', 'new-project-tooltip', 'sources-tooltip', 'account-tooltip', 'workspace-app', 'mobile-workspace-utilities', 'sidebar-header', 'workspace-navigation'];
   const nodes = Object.fromEntries(selectors.map(id => [`#${id}`, new Node()]));
   const doc = new Node();
   doc.body = new Node(); doc.documentElement = new Node();
@@ -51,7 +51,12 @@ function setup(t, { mobile = false, workspace = false } = {}) {
   doc.activeElement = null;
   for (const node of [doc, doc.body, doc.documentElement, ...Object.values(nodes)]) node.ownerDocument = doc;
   nodes['#workspace-app'].append(nodes['#navigation-drawer']);
-  nodes['#navigation-drawer'].append(nodes['#editor-sources']);
+  nodes['#navigation-drawer'].append(nodes['#sidebar-header']);
+  nodes['#sidebar-header'].append(nodes['#mobile-workspace-utilities']);
+  nodes['#navigation-drawer'].append(nodes['#workspace-navigation']);
+  nodes['#workspace-navigation'].append(nodes['#new-project']);
+  nodes['#workspace-navigation'].append(nodes['#editor-sources']);
+  nodes['#navigation-drawer'].append(nodes['#show-profile']);
   nodes['#navigation-drawer'].dataset.expanded = 'false';
   nodes['#home'].hidden = workspace;
   if (workspace) doc.body.classList.add('showing-composer');
@@ -102,4 +107,35 @@ test('an actual responsive layout change closes the old panel and permits reopen
   await ui.deliverLayoutMutation();
   assert.equal(ui.nodes['#editor-sources'].hidden, false);
   assert.equal(ui.nodes['#editor-sources'].parentElement, ui.nodes['#workspace-app']);
+});
+
+test('mobile workspace utilities follow visual focus order and return to the desktop rail', t => {
+  const ui = setup(t, { mobile: true, workspace: true });
+  const { nodes } = ui;
+  const utilities = nodes['#mobile-workspace-utilities'];
+  assert.deepEqual(utilities.children, [nodes['#new-project'], nodes['#show-profile']]);
+  ui.navigation.open('profile');
+  assert.equal(nodes['#show-profile'].getAttribute('aria-expanded'), 'true');
+  assert.equal(nodes['#profile-menu'].hidden, false);
+  ui.media.matches = false;
+  ui.media.fire('change');
+  assert.equal(nodes['#new-project'].parentElement, nodes['#workspace-navigation']);
+  assert.equal(nodes['#show-profile'].parentElement, nodes['#navigation-drawer']);
+  assert.equal(utilities.children.length, 0);
+  assert.equal(nodes['#profile-menu'].hidden, true);
+});
+
+test('home and workspace transitions relocate utilities even when both use a mobile top bar', async t => {
+  const ui = setup(t, { mobile: true });
+  const { nodes } = ui;
+  assert.equal(nodes['#mobile-workspace-utilities'].children.length, 0);
+  nodes['#home'].hidden = true;
+  ui.doc.body.classList.add('showing-composer');
+  await ui.deliverLayoutMutation();
+  assert.deepEqual(nodes['#mobile-workspace-utilities'].children, [nodes['#new-project'], nodes['#show-profile']]);
+  nodes['#home'].hidden = false;
+  ui.doc.body.classList.remove('showing-composer');
+  await ui.deliverLayoutMutation();
+  assert.equal(nodes['#new-project'].parentElement, nodes['#workspace-navigation']);
+  assert.equal(nodes['#show-profile'].parentElement, nodes['#navigation-drawer']);
 });

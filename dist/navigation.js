@@ -85,6 +85,12 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
   const sidebar = document.querySelector('#navigation-drawer');
   const drawerToggle = document.querySelector('#toggle-navigation-drawer');
   const newProject = document.querySelector('#new-project');
+  const mobileUtilities = document.querySelector('#mobile-workspace-utilities');
+  const utilityHomes = mobileUtilities ? [newProject, panels.profile.trigger].map(control => {
+    const home = document.createComment('Desktop navigation control home');
+    control.before(home);
+    return { control, home };
+  }) : [];
   const home = document.querySelector('#home');
   const mobile = window.matchMedia(breakpointQuery());
   const mobileTopBar = () => mobile.matches && (!home.hidden || document.body.matches('.showing-results, .showing-composer'));
@@ -159,7 +165,7 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
     if (name === 'sources') onSourcesOpen();
     if (name === 'newVariant') onNewVariantOpen?.();
     if (name === 'variants') onVariantsOpen?.();
-    // Keep the mobile Sources panel above the backdrop without lifting its navigation bar.
+    // Keep the mobile Sources panel outside the navigation layout and above the backdrop.
     if (name === 'sources' && mobileTopBar()) document.querySelector('#workspace-app').append(panels.sources.panel);
     if (panels[name].mobileOnly) panels[name].panel.dataset.mobileOpen = 'true';
     else if (name === 'sources') sourcesTransition.setVisible(true);
@@ -216,6 +222,12 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
     const available = drawerAvailable();
     const next = `${mobileTopBar()}:${available}`;
     if (next !== layoutMode) { hideTooltips(); close(active, false, { animate: false }); setDrawer(false); layoutMode = next; }
+    // Move the existing controls so keyboard order follows the mobile visual rows.
+    const useMobileUtilities = mobile.matches && document.body.classList.contains('showing-composer');
+    for (const { control, home } of utilityHomes) {
+      if (useMobileUtilities && control.parentElement !== mobileUtilities) mobileUtilities.append(control);
+      else if (!useMobileUtilities && control.parentElement === mobileUtilities) home.after(control);
+    }
     sidebar.dataset.expandable = String(available);
     sidebar.tabIndex = available ? 0 : -1;
     sidebar.setAttribute('aria-label', !available || drawerOpen ? 'Main navigation' : 'Main navigation. Press Enter to open drawer.');

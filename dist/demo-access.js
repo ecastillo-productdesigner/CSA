@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261030-revision-headings');
+  await import('./app.js?v=20261030-mobile-two-row-navigation');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

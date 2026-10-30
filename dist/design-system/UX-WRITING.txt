@@ -1,0 +1,82 @@
+UX Writing Style Guide, CSA 2.0
+
+Scope: This guide applies to text users see in CSA and communication with users outside CSA. Back-end terminology is up to the engineers and may differ from this guide.
+
+CSA vibe: Trustworthy, professional, contemporary, and humane.
+UX copy goals: Be clear. Be easy to use. Respect the user.
+
+Guide:
+
+Capitalization
+Use sentence case for buttons, headings, etc.
+Yes: Add to List
+Yes: SEO Title
+No: Add To List
+No: Add to list
+No: ADD TO LIST
+No: SEO title
+
+Use familiar content language
+Use language that is native to content creation, rather than creating new terminology.
+Yes: Draft
+No: Variant
+
+Keep it concise
+Use the shortest phrase required to describe a concept clearly. Avoid unnecessary words.
+Yes: Format
+Yes: Audience
+No: Content Format
+No: Target Audience
+
+Describe usefulness, not technology
+Avoid tech language because CSA is defined by its usefulness, not by the technology behind the scenes. Avoid tech jargon: its meaning changes rapidly and means different things to different people.
+Yes: CSA will help format your content.
+No: AI will help format your content.
+No: LLMs will help format your content.
+
+Keep the user involved and in control
+Avoid language that suggests technology works independently of human involvement.
+Yes: CSA is drafting.
+Yes: CSA is revising.
+No: CSA is generating.
+No: CSA is creating.
+
+Use flexible language for people and organizations
+Be role- and company-agnostic. Use flexible language to describe users and their work wherever possible.
+Yes: Send to your CMS
+Yes: Hello, what are you working on today?
+No: Send to your McClatchy website
+No: Hello, what stories are you working on today?
+No: Hello, what marketing copy are you working on today?
+
+Stay platform agnostic
+Do not assume the person is working with text content, such as articles.
+Yes: CSA is digesting your sources
+No: CSA is reading your article
+
+Match the actual task
+Text should match reality. Be trustworthy rather than engaging in theater.
+Yes: Drafting Content [with gentle animation]
+No: Checking your style [when it is not, at that moment, checking your style]
+
+Speak, don’t shout
+Use a calm, professional tone.
+Yes: Drafting Content
+No: Coming right up!
+
+Use active voice
+Make the action clear.
+Yes: Drafting Content
+No: Content is Drafting
+
+The following concepts will become obsolete with CSA 2.0 and should be avoided:
+No: Audience Variant
+No: Platform Distribution
+No: Platform Variant
+No: Canonical Article
+No: Research Draft
+No: Market Audience
+No: Geographic Audience
+No: Market Variant
+No: Content Scaling
+No: CSA Combine

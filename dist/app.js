@@ -29,7 +29,7 @@ import { createEditorTabs } from './editor-tabs.js?v=20261029-revision-indicator
 import { createContentCardEditing } from './content-card-editing.js?v=20261026-drafting-card-size';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-drafting-card-size';
 import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261026-drafting-card-size';
-import { createRevisionButton, updateRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261030-revision-request-result';
+import { createRevisionButton, updateRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261030-revision-headings';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';

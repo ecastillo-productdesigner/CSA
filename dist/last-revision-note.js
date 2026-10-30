@@ -19,8 +19,13 @@ export function latestRevisionNote(output) {
 }
 
 export function renderRevisionHistory(list, notes) {
-  list.replaceChildren(...notes.map(details => {
+  list.replaceChildren(...notes.map((details, index) => {
     const entry = document.createElement('li');
+    if (notes.length > 1) {
+      const heading = document.createElement('h3');
+      heading.textContent = `Revision ${index + 1}`;
+      entry.append(heading);
+    }
     const time = document.createElement('time');
     if (details.completedAt != null) {
       time.textContent = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }).format(details.completedAt);

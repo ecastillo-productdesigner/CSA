@@ -306,9 +306,12 @@ test('revision history separates the original request from the saved specific re
   ui.api.open(ui.project, ui.output);
   ui['history-toggle'].fire('click');
   const entries = ui['history-list'].children;
-  assert.equal(entries[0].children[0].dateTime, new Date(2000).toISOString());
-  assert.equal(entries[1].children[0].dateTime, new Date(1000).toISOString());
-  for (const entry of entries) assert.equal(entry.children.some(child => child.tagName === 'h3'), false, 'multiple revisions also omit numbered headings');
+  assert.equal(entries[0].children.find(child => child.tagName === 'time').dateTime, new Date(2000).toISOString());
+  assert.equal(entries[1].children.find(child => child.tagName === 'time').dateTime, new Date(1000).toISOString());
+  assert.equal(entries[0].children[0].tagName, 'h3');
+  assert.equal(entries[0].children[0].textContent, 'Revision 2');
+  assert.equal(entries[1].children[0].tagName, 'h3');
+  assert.equal(entries[1].children[0].textContent, 'Revision 1');
   const fields = entries.map(revisionFields);
   assert.equal(fields[0]['Requested Revision:'].textContent, 'Add an elephant');
   assert.equal(fields[0]['Result:'].textContent, changeSummary);

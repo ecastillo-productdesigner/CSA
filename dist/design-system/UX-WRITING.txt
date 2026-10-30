@@ -85,7 +85,7 @@ No: CSA Combine
 Product status labels: Creating Draft for new drafts; Revising Draft for revision requests.
 
 Revision notes
-Show entries newest first. Each entry starts with the completion date and time alone, without a Revision number heading or Revised label. Follow it with Requested Revision: and the exact original request, then Result: and the saved outcome. If no outcome was recorded, Result says “The result was not recorded.” The Revision History toggle keeps its count when there are multiple entries.
+Show entries newest first. A single revision has no numbered heading. With multiple revisions, show each entry’s original Revision N heading, so Revision 2 appears above Revision 1. Use semantic.color.text.primary (#404040) for these headings, matching New Draft. Show the completion date and time without a Revised label. Follow it with Requested Revision: and the exact original request, then Result: and the saved outcome. If no outcome was recorded, Result says “The result was not recorded.” The Revision History toggle keeps its count when there are multiple entries.
 For a successful revision, Result describes the edit that actually happened, its location, and the resulting form. Lead the result with the action instead of repeating the request. For example: Converted the second paragraph into a bulleted list with two items; left all other content unchanged.
 End completed-edit notes with “left all other content unchanged.” If nothing changed, say “Left all content unchanged.” Do not claim an edit happened based only on what was requested; use the saved before-and-after content. Preserve previously recorded outcomes.
 

@@ -1,5 +1,5 @@
 import { bindRovingSelection } from './selection-controls.js?v=20261026-drafting-card-size';
-import { tokenNumber } from './design-system/runtime.js?v=20261026-drafting-card-size';
+import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261026-drafting-card-size';
 import { createIcon as icon } from './icons.js?v=20261026-drafting-card-size';
 import { projectOutputs, outputIsReady } from './outputs.js?v=20261026-drafting-card-size';
 import { sourceLinkArticles } from './source-links.js?v=20261026-drafting-card-size';
@@ -82,7 +82,9 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
   const layoutSwitch = document.querySelector('#dashboard-layout-switch');
   const layoutTools = document.querySelector('.dashboard-layout-tools');
   const layoutButtons = [...layoutSwitch.querySelectorAll('[data-dashboard-layout]')];
-  let layout = readLayout();
+  const mobile = window.matchMedia(breakpointQuery());
+  let preferredLayout = readLayout();
+  let layout = mobile.matches ? 'grid' : preferredLayout;
   let currentProjects = [];
   let projectItems = [];
   let visibleRows = 6;
@@ -165,8 +167,8 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
     updateVisible(true);
     next?.focus({ preventScroll: true });
   });
-  function setLayout(next) {
-    if (!['grid', 'list'].includes(next) || next === layout) return;
+  function setLayout(next, { persist = true, animate = true } = {}) {
+    if (!['grid', 'list'].includes(next) || (mobile.matches && next !== 'grid') || next === layout) return;
     closeMenu();
     clearTimeout(revealTimer);
     home.classList.remove('is-entering');
@@ -175,10 +177,13 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
     grid.classList.remove('is-switching-layout');
     layout = next;
     visibleRows = 6;
-    try { localStorage.setItem(layoutKey, layout); } catch { /* The layout still works for this session. */ }
+    if (persist) {
+      preferredLayout = layout;
+      try { localStorage.setItem(layoutKey, preferredLayout); } catch { /* The layout still works for this session. */ }
+    }
     render(currentProjects);
     updateVisible(true);
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (animate && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       const nextHeight = grid.getBoundingClientRect().height;
       const styles = getComputedStyle(grid);
       grid.classList.add('is-switching-layout');
@@ -198,7 +203,15 @@ export function createDashboard({ onNew, onOpen, onDelete }) {
     root: layoutSwitch,
     items: layoutButtons,
     getValue: button => button.dataset.dashboardLayout,
-    onSelect: setLayout,
+    onSelect: next => setLayout(next),
+  });
+  mobile.addEventListener('change', () => {
+    layoutAnimation?.cancel();
+    layoutAnimation = null;
+    grid.classList.remove('is-switching-layout');
+    const switchFocused = layoutSwitch.contains(document.activeElement);
+    setLayout(mobile.matches ? 'grid' : preferredLayout, { persist: false, animate: false });
+    if (mobile.matches && switchFocused) home.querySelector('#dashboard-new-project')?.focus({ preventScroll: true });
   });
   new ResizeObserver(() => updateVisible()).observe(home);
   window.addEventListener('scroll', () => {

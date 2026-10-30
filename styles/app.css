@@ -1186,16 +1186,7 @@ html:has(#home:not([hidden])) { scrollbar-gutter: stable; }
 .project-row-actions:has(.project-card-menu:not([hidden])) { z-index: var(--csa-foundation-layer-4); }
 .project-table .project-table-empty { padding: var(--csa-foundation-space-32) var(--csa-foundation-space-16); color: var(--csa-semantic-color-text-canvas-secondary); text-align: center; }
 @media (max-width: token(foundation.breakpoint.mobile)) {
-  .project-table { display: block; }
-  .project-table thead { position: absolute; width: var(--csa-foundation-space-1); height: var(--csa-foundation-space-1); overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  .project-table tbody { display: block; }
-  .project-table-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: var(--csa-foundation-space-16); padding: var(--csa-foundation-space-10) 0; border-bottom: var(--csa-foundation-border-width-1) solid var(--line); }
-  .project-table .project-table-title { grid-column: 1 / -1; padding: 0 var(--csa-foundation-space-48) 0 0; }
-  .project-table td { display: block; min-width: 0; padding: 0; border: 0; }
-  .project-table td[data-label] { font-size: var(--csa-foundation-font-size-12); overflow-wrap: anywhere; }
-  .project-table td[data-label]::before { display: block; margin-bottom: var(--csa-foundation-space-4); color: var(--csa-semantic-color-text-canvas-secondary); content: attr(data-label); font-size: var(--csa-foundation-font-size-12); font-weight: var(--csa-foundation-font-weight-600); }
-  .project-table .project-row-actions { position: absolute; top: var(--csa-foundation-space-8); right: 0; }
-  .project-row-actions .project-card-menu { top: calc(100% + var(--csa-foundation-space-4)); right: 0; }
+  .dashboard-layout-tools { display: none; }
 }
 
 /* Draft rating shares the Request Revision pill dimensions and interaction. */

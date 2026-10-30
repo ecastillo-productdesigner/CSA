@@ -61,7 +61,7 @@ export function customVariantName(output) {
 }
 
 export function savedVariantName(output) {
-  return customVariantName(output) || `Saved Variant ${output?.savedVariantNumber || 1}`;
+  return customVariantName(output) || `Saved Draft ${output?.savedVariantNumber || 1}`;
 }
 
 export function initializeVariantNames(projects) {
@@ -427,7 +427,7 @@ export function renderOutputs(project, requestedView) {
   create.disabled = processing || !selectedPending.length;
   create.title = processing ? 'Drafting Selected Content' : selectedPending.length ? 'Draft Selected Content' : 'Select Content to Draft';
   document.querySelector('#create-output-label').textContent = 'Draft';
-  document.querySelector('#output-processing-status').textContent = project?.outputProcessing?.kind === 'revision' ? 'Revising Draft' : processing ? 'Drafting your selected content. This takes about 15 seconds.' : `${selectedPending.length} pending variant${selectedPending.length === 1 ? '' : 's'} selected.`;
+  document.querySelector('#output-processing-status').textContent = project?.outputProcessing?.kind === 'revision' ? 'Revising Draft' : processing ? 'Drafting your selected content. This takes about 15 seconds.' : `${selectedPending.length} pending draft${selectedPending.length === 1 ? '' : 's'} selected.`;
   const empty = document.querySelector('#outputs-empty');
   empty.hidden = state.outputs.length > 0;
   empty.querySelector('p').textContent = state.view === 'pending' ? 'Your draft recipes will appear here.' : 'Your draft requests will appear here.';
@@ -464,16 +464,16 @@ export function renderOutputs(project, requestedView) {
     open.className = 'output-open';
     open.dataset.outputId = output.id;
     open.disabled = revising || (!ready && processing);
-    open.setAttribute('aria-label', `${!ready ? 'Select variant' : 'Open variant'}: ${output.title}`);
+    open.setAttribute('aria-label', `${!ready ? 'Select draft' : 'Open draft'}: ${output.title}`);
     if (!ready) open.setAttribute('aria-pressed', String(selected));
     if (active) open.setAttribute('aria-current', 'true');
-    open.title = !ready ? 'Select this variant to create' : active ? 'This variant is open in the editor' : 'Open this variant in the editor';
+    open.title = !ready ? 'Select this content to draft' : active ? 'This draft is open in the editor' : 'Open this draft in the editor';
     const top = document.createElement('span');
     top.className = 'output-card-top';
     const badges = document.createElement('span');
     badges.className = 'output-badges';
     badges.setAttribute('role', 'group');
-    badges.setAttribute('aria-label', 'Variant settings');
+    badges.setAttribute('aria-label', 'Draft settings');
     badges.addEventListener('scroll', () => updateBadgeOverflow(badges), { passive: true });
     let drag = null;
     let draggedBadges = false;

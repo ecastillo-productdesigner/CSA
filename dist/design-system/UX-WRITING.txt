@@ -8,7 +8,8 @@ UX copy goals: Be clear. Be easy to use. Respect the user.
 Guide:
 
 Capitalization
-Use sentence case for buttons, headings, etc.
+Capitalize key words in buttons and headings, keep short connecting words such as “to” lowercase, and preserve acronyms. Follow exact approved labels.
+Approved casing: Add to List, SEO Title, and Send to your CMS. Status messages and full sentences use sentence case.
 Yes: Add to List
 Yes: SEO Title
 No: Add To List

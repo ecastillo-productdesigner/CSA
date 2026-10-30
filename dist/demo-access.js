@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261029-newest-revision-first');
+  await import('./app.js?v=20261030-copy-alignment');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

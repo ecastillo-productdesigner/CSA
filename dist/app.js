@@ -1,7 +1,7 @@
 import { partitionSourceAdditions, sourceIdentityKey, findDuplicateSource } from './source-model.js?v=20261026-drafting-card-size';
 import { createSourceAlreadyAddedDialog } from './source-already-added.js?v=20261026-drafting-card-size';
 import { createToast } from './toast.js?v=20261027-toast-timing';
-import { updatePresetPreferences } from './preset-settings.js?v=20261026-drafting-card-size';
+import { updatePresetPreferences } from './preset-settings.js?v=20261030-copy-alignment';
 import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
 import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261029-revision-indicator-location';
 import { createIcon as icon } from './icons.js?v=20261026-drafting-card-size';
@@ -14,7 +14,7 @@ import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261026-
 import { createProfile } from './profile.js?v=20261026-drafting-card-size';
 import { createSearchExperience } from './search.js?v=20261029-source-workspace';
 import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261029-delete-project-dialog';
-import { createMaterialEditor } from './editor.js?v=20261029-newest-revision-first';
+import { createMaterialEditor } from './editor.js?v=20261030-copy-alignment';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-drafting-card-size';
 import { removeProjectContent } from './project-deletion.js?v=20261026-drafting-card-size';
 import { createContentPreview } from './content-preview.js?v=20261026-drafting-card-size';
@@ -24,7 +24,7 @@ import { createNewProjectUpload } from './new-project-upload.js?v=20261026-draft
 import { createRailNavigation } from './navigation.js?v=20261029-source-panel-open';
 import { createProjectSources } from './sources.js?v=20261029-preview-direction';
 import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261026-drafting-card-size';
-import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261029-revision-change-summary';
+import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261030-copy-alignment';
 import { createEditorTabs } from './editor-tabs.js?v=20261029-revision-indicator-location';
 import { createContentCardEditing } from './content-card-editing.js?v=20261026-drafting-card-size';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-drafting-card-size';
@@ -1060,10 +1060,10 @@ async function submitSource(input) {
   for (const [control] of controls) control.disabled = true;
   const button = $('#new-project-submit');
   const label = button.textContent;
-  button.textContent = 'Reading articles…';
+  button.textContent = 'Getting Source Details…';
   dialog.setAttribute('aria-busy', 'true');
   $('#new-project-drop-zone').setAttribute('aria-disabled', 'true');
-  $('#new-project-link-status').textContent = 'Reading article headlines';
+  $('#new-project-link-status').textContent = 'Getting source details';
   try {
     let metadata;
     try { metadata = await resolveArticleMetadata(urls, { signal: request.controller.signal }); }

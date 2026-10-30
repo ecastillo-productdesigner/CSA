@@ -266,7 +266,7 @@ body.ds-page:has(dialog[open]) { overflow: hidden; }
 .ds-writing-rule + .ds-writing-rule { border-top: var(--csa-foundation-border-width-1) solid var(--line); }
 .ds-writing-rule summary { display: flex; align-items: center; justify-content: space-between; gap: var(--csa-foundation-space-16); min-height: var(--csa-component-icon-button-minimum-target); padding-block: var(--csa-foundation-space-12); cursor: pointer; list-style: none; font-size: var(--csa-foundation-font-size-14); line-height: var(--csa-foundation-line-height-20); font-weight: var(--csa-foundation-font-weight-600); }
 .ds-writing-rule summary::-webkit-details-marker { display: none; }
-.ds-writing-rule summary .material-symbols-outlined { flex-shrink: 0; font-size: var(--csa-foundation-font-size-20); }
+.ds-writing-rule summary .material-symbols-outlined { flex-shrink: 0; font-size: var(--csa-foundation-icon-size-20); }
 .ds-writing-rule[open] summary .material-symbols-outlined { transform: rotate(90deg); }
 .ds-writing-rule-body { padding-bottom: var(--csa-foundation-space-24); font-size: var(--csa-foundation-font-size-14); line-height: var(--csa-foundation-font-leading-1-7); }
 .ds-writing-rule-body > p { margin: 0 0 var(--csa-foundation-space-16); }

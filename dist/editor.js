@@ -1,6 +1,6 @@
 import { documentStyles } from './design-system/export-styles.js?v=20261026-drafting-card-size';
 import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-drafting-card-size';
-import { initializeOutputShareText } from './outputs.js?v=20261029-revision-change-summary';
+import { initializeOutputShareText } from './outputs.js?v=20261030-copy-alignment';
 import { createRevisionLoading } from './revision-loading.js?v=20261027-revision-loading';
 import { createLastRevisionNote } from './last-revision-note.js?v=20261029-newest-revision-first';
 import { createStoryMetadata, storyMetadata } from './story-metadata.js?v=20261027-metadata';
@@ -113,11 +113,11 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   function updateSendButton() {
     const button = $('#editor-wordpress');
     button.disabled = !canSend();
-    button.title = !project?.selectedOutputId ? 'Select a generated variant to send to CMS'
-      : project.status === 'pending' || project.needsRegeneration ? 'Create this variant again to apply its updated settings before sending.'
+    button.title = !project?.selectedOutputId ? 'Select a draft to send to your CMS'
+      : project.status === 'pending' || project.needsRegeneration ? 'Draft this content again to apply its updated settings before sending.'
       : revisionBusy ? 'Wait for this draft’s revision to finish'
       : button.disabled ? 'This version has been sent. Edit the title or content to send an update.'
-        : 'Send this variant to CMS (demo)';
+        : 'Send this draft to your CMS (demo)';
   }
 
   function scheduleSave() {

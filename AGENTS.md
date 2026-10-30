@@ -6,4 +6,4 @@
 - Keep `npm run design-system:check` passing and review desktop and mobile when changing shared styles. The visual reference and handoff notes live in `dist/design-system/`.
 - Toast messages must not end with a period. Apply the same copy style in the app and design system.
 
-- For user-facing copy and user communication, follow the CSA 2.0 UX Writing Style Guide in `dist/design-system/UX-WRITING.txt` and the design system’s Content & Microcopy section. Preserve explicit approved examples such as Add to List and SEO Title; the guide’s general capitalization wording is flagged there for clarification. Engineering identifiers may differ.
+- For user-facing copy and user communication, follow the CSA 2.0 UX Writing Style Guide in `dist/design-system/UX-WRITING.txt` and the design system’s Content & Microcopy section. Preserve exact approved capitalization such as Add to List, SEO Title, and Send to your CMS. Status messages and full sentences use sentence case. Engineering identifiers may differ.

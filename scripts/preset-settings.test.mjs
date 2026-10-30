@@ -40,6 +40,6 @@ test('editing a saved preset preserves the generated variant and original settin
 });
 test('existing saved variants retain their automatic name and settings until edited', () => {
   const output = { savedVariantNumber: 3, toolPreferences: preferences, labels: [], editorialDirection: 'Existing direction' };
-  assert.equal(savedPresetName(output), 'Saved Variant 3');
+  assert.equal(savedPresetName(output), 'Saved Draft 3');
   assert.deepEqual(presetConfiguration(output), { toolPreferences: preferences, labels: [], editorialDirection: 'Existing direction', targetWordCount: 'short' });
 });

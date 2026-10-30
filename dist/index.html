@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
     <link rel="stylesheet" href="./design-system/tokens.css?v=20261029-revision-indicator-location">
     <link rel="stylesheet" href="./styles.css?v=20261029-panel-heading-color">
-    <script src="./demo-access.js?v=20261029-newest-revision-first" type="module"></script>
+    <script src="./demo-access.js?v=20261030-copy-alignment" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -89,7 +89,7 @@
       <section class="composer" id="composer" aria-labelledby="composer-heading" hidden>
         <h1 class="visually-hidden" id="composer-heading">New Project</h1>
         <div class="composer-canvas" role="region" aria-label="Project canvas">
-          <div class="editor-variant-tabs" id="editor-variant-tabs" role="tablist" aria-label="Story variants" hidden></div>
+          <div class="editor-variant-tabs" id="editor-variant-tabs" role="tablist" aria-label="Drafts" hidden></div>
           <div class="editor-canvas-content" id="editor-canvas-content">
           <article class="output-placeholder" id="output-placeholder" aria-labelledby="source-story-title" tabindex="0" hidden>
             <div id="source-story-content"><h2 id="source-story-title"></h2><div id="source-story-body"></div></div>
@@ -116,7 +116,7 @@
             </div>
             <div class="editor-sheet">
               <div class="editor-document-content">
-              <header class="editor-document-header"><div class="editor-document-status"><span class="editor-draft-badge editor-tab-draft"><span class="material-symbols-outlined" aria-hidden="true">draw</span>Draft</span></div><div class="editor-variant-labels" id="editor-variant-labels" role="group" aria-label="Variant settings" hidden></div><label class="visually-hidden" for="editor-title">Story title</label><textarea id="editor-title" rows="1" maxlength="180" placeholder="Untitled story"></textarea><div class="editor-subhead-field"><label class="visually-hidden" for="editor-share-text">Share text / Subhead</label><textarea id="editor-share-text" rows="1" maxlength="500" placeholder="Add a short share text or subhead for this draft…"></textarea></div><p class="editor-share-text-print" id="editor-share-text-print"></p></header>
+              <header class="editor-document-header"><div class="editor-document-status"><span class="editor-draft-badge editor-tab-draft"><span class="material-symbols-outlined" aria-hidden="true">draw</span>Draft</span></div><div class="editor-variant-labels" id="editor-variant-labels" role="group" aria-label="Draft settings" hidden></div><label class="visually-hidden" for="editor-title">Story title</label><textarea id="editor-title" rows="1" maxlength="180" placeholder="Untitled story"></textarea><div class="editor-subhead-field"><label class="visually-hidden" for="editor-share-text">Share text / Subhead</label><textarea id="editor-share-text" rows="1" maxlength="500" placeholder="Add a short share text or subhead for this draft…"></textarea></div><p class="editor-share-text-print" id="editor-share-text-print"></p></header>
               <div class="editor-toolbar" id="editor-toolbar" role="toolbar" aria-label="Text formatting">
                 <div class="editor-toolbar-group"><button type="button" data-format="bold" aria-pressed="false" aria-label="Bold" title="Bold"><span class="material-symbols-outlined" aria-hidden="true">format_bold</span></button><button type="button" data-format="italic" aria-pressed="false" aria-label="Italic" title="Italic"><span class="material-symbols-outlined" aria-hidden="true">format_italic</span></button><button type="button" data-format="underline" aria-pressed="false" aria-label="Underline" title="Underline"><span class="material-symbols-outlined" aria-hidden="true">format_underlined</span></button></div>
                 <div class="editor-toolbar-group"><button type="button" data-header="2" aria-pressed="false" aria-label="Heading 2" title="Heading 2"><span class="material-symbols-outlined" aria-hidden="true">format_h2</span></button><button type="button" data-header="3" aria-pressed="false" aria-label="Heading 3" title="Heading 3"><span class="material-symbols-outlined" aria-hidden="true">format_h3</span></button><button type="button" data-format="blockquote" aria-pressed="false" aria-label="Block Quote" title="Block Quote"><span class="material-symbols-outlined" aria-hidden="true">format_quote</span></button></div>
@@ -129,12 +129,12 @@
               <div id="rich-text-editor"></div>
               <div class="editor-revision-loading" id="editor-revision-loading" hidden></div>
               </div>
-              <div class="editor-publish-actions"><button class="editor-wordpress-button" id="editor-wordpress" type="button">Send to CMS</button></div>
+              <div class="editor-publish-actions"><button class="editor-wordpress-button" id="editor-wordpress" type="button">Send to your CMS</button></div>
               <footer class="editor-footer"><button class="editor-metadata-trigger" id="editor-metadata-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-metadata-popover">Metadata<span class="material-symbols-outlined editor-flyover-chevron" aria-hidden="true">chevron_forward</span></button><span id="editor-word-count">0 words</span><span id="editor-save-status" role="status" hidden></span><span class="editor-created" id="editor-created" hidden>Created: <time id="editor-created-time"></time></span><span id="editor-direction-empty">No Editorial Direction</span><button class="editor-metadata-trigger" id="editor-direction-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-direction-popover" hidden>Editorial Direction<span class="material-symbols-outlined editor-flyover-chevron" aria-hidden="true">chevron_forward</span></button><button class="editor-metadata-trigger" id="editor-revision-note-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-revision-note-popover" hidden><span id="editor-revision-note-label">Requested Revision</span><span class="material-symbols-outlined editor-flyover-chevron" aria-hidden="true">chevron_forward</span></button></footer>
             </div>
     <div class="editor-context-panel editor-flyover" id="editor-metadata-popover" role="dialog" aria-labelledby="editor-metadata-heading" tabindex="-1" hidden>
       <div class="editor-panel-heading"><h2 id="editor-metadata-heading">Metadata</h2><button class="icon-button" id="editor-metadata-close" type="button" aria-label="Close Metadata"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
-      <dl class="editor-seo-metadata"><div><dt>SEO title:</dt> <dd id="editor-seo-title">—</dd></div><div><dt>Meta Description:</dt> <dd id="editor-meta-description">—</dd></div><div><dt>SEO Keywords:</dt> <dd id="editor-seo-keywords">—</dd></div></dl>
+      <dl class="editor-seo-metadata"><div><dt>SEO Title:</dt> <dd id="editor-seo-title">—</dd></div><div><dt>Meta Description:</dt> <dd id="editor-meta-description">—</dd></div><div><dt>SEO Keywords:</dt> <dd id="editor-seo-keywords">—</dd></div></dl>
     </div>
     <div class="editor-context-panel editor-flyover" id="editor-revision-note-popover" role="dialog" aria-labelledby="editor-revision-note-heading" tabindex="-1" hidden>
       <div class="editor-panel-heading"><h2 id="editor-revision-note-heading">Requested Revision</h2><button class="icon-button" id="editor-revision-note-close" type="button" aria-label="Close Requested Revision"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>

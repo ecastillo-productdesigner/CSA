@@ -142,7 +142,8 @@ test('duplicate submission resolves each pasted URL once and creates one project
   assert.equal(ui.calls.resolve[0].options.signal.aborted, false);
   assert.equal(await ui.submit(), false);
   assert.equal(ui.calls.resolve.length, 1);
-  assert.equal(ui.get('submit').textContent, 'Reading articles…');
+  assert.equal(ui.get('submit').textContent, 'Getting Source Details…');
+  assert.equal(ui.get('link-status').textContent, 'Getting source details');
   assert.equal(ui.get('dialog').getAttribute('aria-busy'), 'true');
   assert.equal(ui.get('drop-zone').getAttribute('aria-disabled'), 'true');
   assert.equal(ui.get('query').disabled, true);

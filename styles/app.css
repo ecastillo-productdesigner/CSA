@@ -1411,8 +1411,5 @@ html:has(#home:not([hidden])) { scrollbar-gutter: stable; }
 
 @media (max-width: token(foundation.breakpoint.starter-small)) {
   body.showing-composer .sidebar#navigation-drawer { left: var(--csa-foundation-space-8); right: var(--csa-foundation-space-8); padding-inline: var(--csa-foundation-space-2); }
-  body.showing-composer .sidebar .nav-button:has(.mobile-nav-label) { grid-template-rows: var(--csa-foundation-icon-size-20) var(--csa-foundation-line-height-32); gap: var(--csa-foundation-space-4); padding-inline: var(--csa-foundation-space-2); }
-  body.showing-composer .mobile-nav-label { align-self: start; }
-  body.showing-composer #show-new-variant { width: var(--csa-foundation-space-44); }
-  body.showing-composer #show-new-variant .mobile-nav-label { white-space: normal; }
+  body.showing-composer .sidebar .nav-button:has(.mobile-nav-label) { padding-inline: var(--csa-foundation-space-2); }
 }

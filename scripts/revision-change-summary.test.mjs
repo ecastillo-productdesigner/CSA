@@ -60,9 +60,9 @@ test('single and double cached line breaks and equivalent Quill runs are not edi
 test('list summaries use Quill evidence even when the request describes another action', () => {
   const before = draft(['First item.', 'Second item.']);
   const list = type => ({ ...before, document: { ops: [{ insert: 'First item.' }, { insert: '\n', attributes: { list: type } }, { insert: 'Second item.' }, { insert: '\n', attributes: { list: type } }] } });
-  assert.equal(summary(before, list('bullet'), 'Make the headline shorter'), 'Added bulleted list formatting; left all other content unchanged.');
-  assert.equal(summary(list('bullet'), list('ordered')), 'Changed a bulleted list to a numbered list; left all other content unchanged.');
-  assert.equal(summary(list('ordered'), list('bullet')), 'Changed a numbered list to a bulleted list; left all other content unchanged.');
+  assert.equal(summary(before, list('bullet'), 'Make the headline shorter'), 'Converted the opening paragraph into a bulleted list with one item. Converted the second paragraph into a bulleted list with one item; left all other content unchanged.');
+  assert.equal(summary(list('bullet'), list('ordered')), 'Changed the bulleted list in the opening paragraph to a numbered list with two items; left all other content unchanged.');
+  assert.equal(summary(list('ordered'), list('bullet')), 'Changed the numbered list in the opening paragraph to a bulleted list with two items; left all other content unchanged.');
   assert.equal(summary(list('bullet'), before), 'Removed list formatting; left all other content unchanged.');
 });
 
@@ -217,4 +217,17 @@ test('legacy plain-text conversion summaries describe the existing paragraph rat
     assert.equal(applyParagraphListRevision(after, 'Convert the second paragraph into bullets.').changed, true);
     assert.equal(summary(before, after), 'Converted the second paragraph into a bulleted list with two items; left all other content unchanged.');
   }
+});
+
+
+test('adjacent paragraph conversions name every original paragraph without reporting removed text', () => {
+  const before = draft(['Opening.', 'First fact. Second fact.', 'Third fact. Fourth fact.', 'Closing.']);
+  const after = { ...before, document: { ops: [
+    { insert: 'Opening.\nFirst fact.' }, { insert: '\n', attributes: { list: 'bullet' } },
+    { insert: 'Second fact.' }, { insert: '\n', attributes: { list: 'bullet' } },
+    { insert: 'Third fact.' }, { insert: '\n', attributes: { list: 'bullet' } },
+    { insert: 'Fourth fact.' }, { insert: '\n', attributes: { list: 'bullet' } },
+    { insert: 'Closing.\n' },
+  ] } };
+  assert.equal(summary(before, after), 'Converted the second paragraph into a bulleted list with two items. Converted the third paragraph into a bulleted list with two items; left all other content unchanged.');
 });

@@ -57,7 +57,7 @@ test('Listicle works with pasted or uploaded material that uses the fallback sto
   assertListicle(output);
 });
 
-test('Listicle regenerations retain four headings, updated topic prose, and the saved recipe', () => {
+test('unsupported Listicle revisions retain four headings, source prose, and the saved recipe', () => {
   const output = sampleVariant(project([source]), recipe('listicle'));
   populateOutputContent(output);
   output.title = 'An editor-written title';
@@ -66,8 +66,9 @@ test('Listicle regenerations retain four headings, updated topic prose, and the 
     const previous = output.draftText;
     reviseSampleOutput(output, 'Try another opening', revision * 10, revision * 10 + 1);
     const blocks = assertListicle(output);
-    assert.notEqual(output.draftText, previous);
-    const expected = topicDraftContent([source], { revision });
+    assert.equal(output.draftText, previous);
+    const expected = topicDraftContent([source]);
+    assert.equal(output.revisionRequests.at(-1).changeSummary, 'Could not apply “Try another opening”; left all content unchanged.');
     assert.deepEqual(blocks.filter(block => block.header === 2).map(block => block.text), expected.sectionHeadings.map((text, index) => `${index + 1}. ${text}`));
     assert.equal(output.title, 'An editor-written title');
     assert.equal(output.toolPreferences.format, 'listicle');

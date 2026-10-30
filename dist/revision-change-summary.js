@@ -1,4 +1,4 @@
-import { revisionDocumentBlocks, revisionParagraphBlocks } from './paragraph-list-revision.js?v=20261030-specific-revision-notes';
+import { revisionDocumentBlocks, revisionParagraphBlocks } from './paragraph-list-revision.js?v=20261030-bullet-request-fix';
 
 export function mentionsElephant(instructions) {
   return /\belephants?\b/i.test(instructions || '');
@@ -127,26 +127,47 @@ function documentBlocks(document) {
 
 function listConversion(before, after) {
   const old = documentBlocks(before), next = documentBlocks(after);
+  const slots = revisionParagraphBlocks(old);
   const equal = (a, b) => a.text === b.text && same(a.attributes, b.attributes);
-  let start = 0, end = 0;
-  while (start < Math.min(old.length, next.length) && equal(old[start], next[start])) start++;
-  while (end < Math.min(old.length, next.length) - start && equal(old.at(-1 - end), next.at(-1 - end))) end++;
-  const removed = old.slice(start, old.length - end), added = next.slice(start, next.length - end);
-  if (removed.length !== 1 || removed[0].attributes.header || removed[0].attributes.list || !added.length) return null;
-  const type = added[0].attributes.list;
-  if (!['bullet', 'ordered'].includes(type) || added.some(block => block.attributes.list !== type)) return null;
-  if (normalize(removed[0].text) !== normalize(added.map(block => block.text).join(' '))) return null;
-  const paragraph = revisionParagraphBlocks(old).indexOf(removed[0]);
-  if (paragraph < 0) return null;
-  const preserved = ['header', 'align', 'direction', 'indent', 'blockquote', 'code-block']
-    .filter(key => added.every(block => same(block.attributes[key], removed[0].attributes[key])));
-  return {
-    description: `Converted ${position(paragraph)} into a ${type === 'bullet' ? 'bulleted' : 'numbered'} list with ${quantity(added.length)} ${added.length === 1 ? 'item' : 'items'}.`,
-    ignoredFormats: new Set(['list', ...preserved]),
-  };
+  const converted = [];
+  const preserved = new Set(['header', 'align', 'direction', 'indent', 'blockquote', 'code-block']);
+  let index = 0, cursor = 0;
+  while (index < old.length && cursor < next.length) {
+    const source = old[index], destination = next[cursor];
+    if (equal(source, destination)) { index++; cursor++; continue; }
+    const paragraph = slots.indexOf(source), type = destination.attributes.list;
+    if (paragraph < 0 || !['bullet', 'ordered'].includes(type)) return null;
+    let originals = [source], items = [], consumed = 1;
+    if (source.attributes.list) {
+      if (source.attributes.list === type) return null;
+      while (old[index + consumed]?.attributes.list === source.attributes.list && old[index + consumed].text.trim()) originals.push(old[index + consumed++]);
+      items = next.slice(cursor, cursor + originals.length);
+      if (items.length !== originals.length || items.some((item, offset) => item.attributes.list !== type || item.text !== originals[offset].text)) return null;
+    } else {
+      const originalText = normalize(source.text);
+      for (let item = cursor; item < next.length && next[item].attributes.list === type; item++) {
+        items.push(next[item]);
+        const joined = normalize(items.map(block => block.text).join(' '));
+        if (joined === originalText) break;
+        if (!originalText.startsWith(joined)) return null;
+      }
+      if (!items.length || normalize(items.map(block => block.text).join(' ')) !== originalText) return null;
+    }
+    for (const key of [...preserved]) {
+      if (items.some((item, offset) => !same(item.attributes[key], originals[source.attributes.list ? offset : 0].attributes[key]))) preserved.delete(key);
+    }
+    const count = `${quantity(items.length)} ${items.length === 1 ? 'item' : 'items'}`;
+    converted.push(source.attributes.list
+      ? `Changed the ${source.attributes.list === 'bullet' ? 'bulleted' : 'numbered'} list in ${position(paragraph)} to a ${type === 'bullet' ? 'bulleted' : 'numbered'} list with ${count}.`
+      : `Converted ${position(paragraph)} into a ${type === 'bullet' ? 'bulleted' : 'numbered'} list with ${count}.`);
+    index += consumed;
+    cursor += items.length;
+  }
+  if (!converted.length || index !== old.length || cursor !== next.length) return null;
+  return { descriptions: converted, ignoredFormats: new Set(['list', ...preserved]) };
 }
 
-export function revisionChangeSummary(before, after, instructions) {
+export function revisionChangeSummary(before, after, instructions, result = null) {
   if (mentionsElephant(instructions)) {
     const title = (before.title || '').trim() || 'this story';
     const ending = /[.!?]$/.test(title) ? '' : '.';
@@ -161,7 +182,7 @@ export function revisionChangeSummary(before, after, instructions) {
   const text = (output, document) => document ? document.text.replace(/\n$/, '') : output.draftText || '';
   const oldText = text(before, oldDocument), newText = text(after, newDocument);
   const conversion = listConversion(oldDocument, newDocument);
-  let changes = conversion ? [conversion.description] : bodyChanges(oldText, newText);
+  let changes = conversion ? conversion.descriptions : bodyChanges(oldText, newText);
   const structured = [oldDocument, newDocument].some(document => document && (document.formats.header?.length || document.formats.list?.length));
   if (!conversion && structured && !same(paragraphs(oldText), paragraphs(newText))) {
     const old = documentBlocks(oldDocument), next = documentBlocks(newDocument);
@@ -181,5 +202,10 @@ export function revisionChangeSummary(before, after, instructions) {
   changes.push(...formattingChanges(oldDocument, newDocument, conversion?.ignoredFormats));
   if ((before.title || '') !== (after.title || '')) changes.push('Updated the title.');
   if ((before.shareText || '') !== (after.shareText || '')) changes.push('Updated the share text.');
-  return changes.length ? `${changes.join(' ').replace(/\.$/, '')}; left all other content unchanged.` : 'Left all content unchanged.';
+  if (changes.length) return `${changes.join(' ').replace(/\.$/, '')}; left all other content unchanged.`;
+  if (result && !result.changed) {
+    const reason = result.reason || `Could not apply “${(instructions || '').trim().replace(/[.!?]+$/, '')}”`;
+    return `${reason.replace(/[.!?]+$/, '')}; left all content unchanged.`;
+  }
+  return 'Left all content unchanged.';
 }

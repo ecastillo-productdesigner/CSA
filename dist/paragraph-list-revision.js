@@ -11,17 +11,51 @@ const ordinalPattern = `(?:${[...ordinals.keys()].join('|')}|[1-9]\\d*(?:st|nd|r
 
 function requestDetails(instructions) {
   if (typeof instructions !== 'string') return null;
-  const text = instructions.toLowerCase();
-  const bulleted = /\bbullet(?:ed|s)?(?:\s+points?)?\b/.test(text);
-  const numbered = /\b(?:numbered|ordered)\s+list\b/.test(text);
-  if (bulleted === numbered) return null;
-  const negative = /\b(?:do\s+not|don['’]t|never|avoid|without|remove)\b[^.!?;]*(?:bullet|numbered\s+list|ordered\s+list)/.test(text);
-  if (!negative && !/\b(?:add|convert|turn|make|format|change|use|put|rewrite|split|break)\b/.test(text)) return null;
-  const targetPattern = new RegExp(`\\b(${ordinalPattern})\\s+paragraph\\b|\\bparagraph\\s+(?:number\\s+)?(${ordinalPattern})\\b`, 'g');
-  const targets = [...text.matchAll(targetPattern)].map(match => ordinals.get(match[1] || match[2]) || Number.parseInt(match[1] || match[2], 10));
-  const multiple = new RegExp(`\\b${ordinalPattern}\\s*(?:,|and|or|through|to|-)\\s*(?:the\\s+)?${ordinalPattern}\\s+paragraphs?\\b`);
-  if (!targets.length || new Set(targets).size !== 1 || multiple.test(text)) return null;
-  return { index: targets[0] - 1, list: numbered ? 'ordered' : 'bullet', negative };
+  const text = instructions.toLowerCase()
+    .replace(/bullet[\s-]*point(?:s|a)?\b/g, 'bullets')
+    .replace(/\bbulleted\b/g, 'bullets')
+    .replace(/paragrah/g, 'paragraph')
+    .replace(new RegExp(`(${ordinalPattern})(?=paragraph|para\\b)`, 'g'), '$1 ')
+    .replace(/\b(paragraphs?|paras?)(?=#?\d)/g, '$1 ');
+  const bulleted = /\bbullets?\b/.test(text);
+  const numbered = /\b(?:numbered|ordered)\s+lists?\b/.test(text);
+  if (!bulleted && !numbered && !/\blist\b/.test(text)) return null;
+  const unclear = { reason: 'Could not determine which paragraph to turn into a list.' };
+  if (!bulleted && !numbered) return { reason: 'Could not determine whether to use bullet points or a numbered list.' };
+  let list = numbered ? 'ordered' : 'bullet';
+  if (bulleted && numbered) {
+    const wanted = text.match(/\b(?:add|use)\s+(?:a\s+)?(bullets?|(?:numbered|ordered)\s+lists?)\b/)
+      || [...text.matchAll(/\b(?:to|into|as|with)\s+(?:a\s+)?(bullets?|(?:numbered|ordered)\s+lists?)\b/g)].at(-1);
+    if (!wanted) return { reason: 'Could not determine whether to use bullet points or a numbered list.' };
+    list = wanted[1].startsWith('bullet') ? 'bullet' : 'ordered';
+  }
+  if (/\b(?:do\s+not|don['’]?t|never|avoid|without|remove)\b[^.!?;]*(?:bullet|numbered\s+list|ordered\s+list)/.test(text)) {
+    return { reason: 'Did not change list formatting because your request said not to add or keep it.' };
+  }
+  if (/\b(?:shorten|summarize|condense|expand|translate|rephrase|correct|fix|delete)\b/.test(text)
+      || /\b(?:and|also|then)\s+(?:please\s+)?(?:rewrite|change|make|add|remove|bold|italicize)\b/.test(text)) {
+    return { reason: 'Could not apply this combined request. Request the list formatting separately from other edits.' };
+  }
+  if (!/\b(?:add|convert|turn|make|format|change|use|put|rewrite|split|break|replace)\b/.test(text)
+      && !/^\s*(?:please\s+)?bullets?(?:\s+please)?[.!?\s]*$/.test(text)) return unclear;
+  const para = '(?:paragraphs?|paras?)';
+  const index = `(?:${ordinalPattern}|last|final)`;
+  const targetPattern = new RegExp(`\\b(${index})\\s+${para}\\b|\\b${para}\\s*(?:number\\s*)?#?\\s*(${index})\\b`, 'g');
+  const targets = [...text.matchAll(targetPattern)].map(match => {
+    const value = match[1] || match[2];
+    return ['last', 'final'].includes(value) ? 'last' : ordinals.get(value) || Number.parseInt(value, 10);
+  });
+  const multiple = new RegExp(`\\b${index}\\s*(?:,|and|or|through|to|-)\\s*(?:the\\s+)?${index}\\s+${para}\\b|\\b${para}\\s*#?${index}\\s*(?:,|and|or|through|to|-)\\s*#?${index}\\b`);
+  const counted = new RegExp(`\\b(?:first|last)\\s+${index}\\s+${para}\\b`);
+  const combined = new RegExp(`(?:,|\\band\\b|\\bor\\b)\\s*(?:the\\s+)?#?${index}\\s+${para}\\b|\\b${para}\\s*#?${index}\\s*(?:,|and|or|through|to|-)`);
+  if (new Set(targets).size > 1 || multiple.test(text) || counted.test(text) || combined.test(text)) return { reason: 'Could not apply multiple paragraph targets in one request. Request one paragraph or all paragraphs.' };
+  if (targets.length) return { index: targets[0], list };
+  const all = /\b(?:all|every|each)\s+(?:of\s+)?(?:the\s+)?(?:paragraphs?|paras?|text|content)\b|\b(?:whole|entire|full)\s+(?:body|draft|article|text|story)\b|\bthroughout\s+(?:the\s+)?(?:body|draft|article|text|story)\b/.test(text);
+  if (all) return { all: true, includeLists: true, list };
+  if (bulleted && numbered) return { sourceList: list === 'bullet' ? 'ordered' : 'bullet', plural: /\blists\b/.test(text), list };
+  if (new RegExp(`\\b${para}\\b|\\b(?:sentence|line|section|heading|title|headline|intro|introduction|conclusion|opening|closing|part|passage|quote|highlighted|selected|above|below|specific)\\b`).test(text)
+      || /\b(?:this|that|these|those)\s+(?:part|passage|list)\b/.test(text)) return unclear;
+  return { all: true, includeLists: false, list };
 }
 
 export function revisionDocumentBlocks(ops) {
@@ -95,35 +129,65 @@ export function revisionParagraphBlocks(blocks) {
   return paragraphs;
 }
 
-// Returns a handled no-op when the requested paragraph cannot safely be converted.
-// Existing list groups occupy one paragraph slot so repeating a conversion is harmless.
+// Existing list groups occupy one paragraph slot; every target is validated before editing.
 export function applyParagraphListRevision(output, instructions) {
   const request = requestDetails(instructions);
   if (!request) return { handled: false, changed: false };
-  const unchanged = { handled: true, changed: false };
-  if (request.negative) return unchanged;
+  const unchanged = reason => ({ handled: true, changed: false, reason });
+  if (request.reason) return unchanged(request.reason);
   const richText = Array.isArray(output.document?.ops);
   const text = typeof output.draftText === 'string' ? output.draftText : '';
   const ops = richText ? output.document.ops : [{ insert: text.endsWith('\n') ? text : `${text}\n` }];
   const blocks = revisionDocumentBlocks(ops);
-  if (!blocks) return unchanged;
+  if (!blocks) return unchanged('Could not read the draft formatting safely.');
   const paragraphs = revisionParagraphBlocks(blocks);
-  const target = paragraphs[request.index];
-  if (!target || target.embedded || target.attributes.list) return unchanged;
-  const ranges = sentenceRanges(target.text);
-  if (!ranges.length) return unchanged;
-  const attributes = { ...target.attributes, list: request.list };
-  delete attributes.header;
-  const replacement = ranges.flatMap(([start, end]) => [
-    ...sliceOps(ops, target.start + start, target.start + end),
-    { insert: '\n', attributes: { ...attributes } },
-  ]);
-  const nextOps = [
-    ...sliceOps(ops, 0, target.start),
-    ...replacement,
-    ...sliceOps(ops, target.end + Number(target.terminated), Infinity),
-  ];
+  let targets;
+  if (request.all) targets = paragraphs.filter(block => !block.embedded && (request.includeLists || !block.attributes.list));
+  else if (request.sourceList) {
+    targets = paragraphs.filter(block => block.attributes.list === request.sourceList);
+    if (targets.length > 1 && !request.plural) return unchanged('Could not determine which existing list to change.');
+  } else {
+    const index = request.index === 'last' ? paragraphs.length - 1 : request.index - 1;
+    const target = paragraphs[index];
+    if (!target) return unchanged(`Could not find ${request.index === 'last' ? 'the last paragraph' : `paragraph ${request.index}`} in the draft.`);
+    targets = [target];
+  }
+  if (!targets.length) return unchanged('Could not find any paragraphs to turn into a list.');
+  const edits = [], changes = [];
+  for (const target of targets) {
+    const start = blocks.indexOf(target), members = [target];
+    if (target.attributes.list) {
+      for (let index = start + 1; index < blocks.length && blocks[index].text.trim() && blocks[index].attributes.list === target.attributes.list; index++) members.push(blocks[index]);
+    }
+    if (members.some(block => block.embedded)) {
+      if (request.all) continue;
+      return unchanged('Could not change this paragraph without affecting its embedded content.');
+    }
+    if (target.attributes.list === request.list) continue;
+    const ranges = target.attributes.list ? null : sentenceRanges(target.text);
+    if (!target.attributes.list && !ranges.length) return unchanged('Could not find text in the requested paragraph.');
+    const replacement = target.attributes.list
+      ? members.flatMap(block => [
+        ...sliceOps(ops, block.start, block.end),
+        { insert: '\n', attributes: { ...block.attributes, list: request.list } },
+      ])
+      : ranges.flatMap(([start, end]) => [
+        ...sliceOps(ops, target.start + start, target.start + end),
+        { insert: '\n', attributes: { ...target.attributes, list: request.list } },
+      ]);
+    const last = members.at(-1);
+    edits.push({ start: target.start, end: last.end + Number(last.terminated), replacement });
+    changes.push({ paragraphIndex: paragraphs.indexOf(target), list: request.list, itemCount: members.length > 1 || target.attributes.list ? members.length : ranges.length, previousList: target.attributes.list || null });
+  }
+  if (!edits.length) return unchanged(`The selected content already uses ${request.list === 'bullet' ? 'bullet points' : 'numbered lists'}, or contains no paragraphs that can be changed safely.`);
+  const nextOps = [];
+  let offset = 0;
+  for (const edit of edits) {
+    nextOps.push(...sliceOps(ops, offset, edit.start), ...edit.replacement);
+    offset = edit.end;
+  }
+  nextOps.push(...sliceOps(ops, offset, Infinity));
   output.document = { ...(richText ? output.document : {}), ops: nextOps };
   output.draftText = nextOps.map(op => typeof op.insert === 'string' ? op.insert : '\ufffc').join('').replace(/\n$/, '');
-  return { handled: true, changed: true };
+  return { handled: true, changed: true, changes };
 }

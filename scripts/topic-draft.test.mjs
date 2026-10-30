@@ -173,7 +173,7 @@ test('initializing linked legacy outputs does not overwrite existing edited rich
   }
 });
 
-test('topic revisions remain on the captured headline and preserve edited headings, cleared subheads, settings, and revision history', () => {
+test('unsupported topic revisions preserve source content and edited settings while recording the request', () => {
   const output = sampleVariant(project(), settings);
   populateOutputContent(output);
   output.title = 'An editor’s early-voting explainer';
@@ -186,7 +186,7 @@ test('topic revisions remain on the captured headline and preserve edited headin
   const snapshots = structuredClone(output.sourceSnapshots);
   const preferences = structuredClone(output.toolPreferences);
   reviseSampleOutput(output, 'Make the reader questions clearer', 20, 30);
-  assert.notEqual(output.draftText, previousBody);
+  assert.equal(output.draftText, previousBody);
   assert.ok(output.draftText.includes(votingHeadline));
   assert.equal(output.title, 'An editor’s early-voting explainer');
   assert.equal(output.shareText, '');
@@ -195,17 +195,17 @@ test('topic revisions remain on the captured headline and preserve edited headin
   assert.equal(output.editorialDirection, 'Focus on reader questions.');
   assert.deepEqual(output.sourceSnapshots, snapshots);
   assert.deepEqual(output.toolPreferences, preferences);
-  assert.equal(output.cmsSentAt, undefined);
-  assert.equal(output.cmsSentContent, undefined);
-  assert.deepEqual(output.revisionRequests, [{ instructions: 'Make the reader questions clearer', changeSummary: 'Rewrote the opening paragraph and reordered the remaining paragraphs. Changed heading 1 from “1. Making Early Voting Fit a Busy Calendar” to “1. Comparing Local Options With Everyday Needs”. Changed heading 2 from “2. Comparing Local Options With Everyday Needs” to “2. Checking Dates, Locations, and Procedures”. Changed heading 3 from “3. Checking Dates, Locations, and Procedures” to “3. Making Early Voting Fit a Busy Calendar”; left all other content unchanged.', requestedAt: 20, completedAt: 30, status: 'complete' }]);
+  assert.equal(output.cmsSentAt, 10);
+  assert.equal(output.cmsSentContent, 'Previous export');
+  assert.deepEqual(output.revisionRequests, [{ instructions: 'Make the reader questions clearer', changeSummary: 'Could not apply “Make the reader questions clearer”; left all content unchanged.', requestedAt: 20, completedAt: 30, status: 'complete' }]);
   const firstRevision = output.draftText;
   reviseSampleOutput(output, 'Try another opening', 40, 50);
-  assert.notEqual(output.draftText, firstRevision);
+  assert.equal(output.draftText, firstRevision);
   assert.ok(output.draftText.includes(votingHeadline));
   assert.equal(output.revisionRequests.length, 2);
 });
 
-test('topic revision summaries distinguish formatting changes from an identical article', () => {
+test('unsupported topic revisions preserve existing formatting', () => {
   for (const formattingChanged of [true, false]) {
     const output = sampleVariant(project(), settings);
     const topic = topicDraftContent(output.sourceSnapshots, { revision: 1 });
@@ -217,9 +217,8 @@ test('topic revision summaries distinguish formatting changes from an identical 
     reviseSampleOutput(output, 'Review this draft', 10, 20);
     assert.equal(output.draftText, beforeText);
     assert.equal(output.shareText, beforeShareText);
-    if (formattingChanged) assert.notDeepEqual(output.document, beforeDocument);
-    else assert.deepEqual(output.document, beforeDocument);
-    assert.equal(output.revisionRequests[0].changeSummary, formattingChanged ? 'Removed italic formatting; left all other content unchanged.' : 'Left all content unchanged.');
+    assert.deepEqual(output.document, beforeDocument);
+    assert.equal(output.revisionRequests[0].changeSummary, 'Could not apply “Review this draft”; left all content unchanged.');
   }
 });
 

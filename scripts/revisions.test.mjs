@@ -4,33 +4,33 @@ import { reviseSampleOutput, variantPanelState } from '../dist/outputs.js';
 
 const variant = () => ({ id: 'draft', title: 'Keep my title', shareText: 'Keep this draft’s share text.', status: 'ready', draftText: 'Original draft.', document: { ops: [{ insert: 'Original draft.\n' }] }, labels: [{ key: 'format', label: 'What to Know' }], name: 'My saved variant', nameEdited: true, isFavorite: true, createdAt: 1, selectedSourceIndexes: [1], sourceSnapshots: [{ title: 'Approved source' }], metadata: { author: 'Julia' } });
 
-test('demo revision replaces the body while preserving the variant identity and settings', () => {
+test('unsupported revision preserves all content and reports the unapplied request', () => {
   const output = variant();
   const before = structuredClone(output);
   reviseSampleOutput(output, 'Shorten the intro', 10, 20);
-  assert.notEqual(output.draftText, before.draftText);
+  assert.equal(output.draftText, before.draftText);
   assert.equal(output.document.ops.map(op => op.insert).join('').replace(/\s+/g, ' ').trim(), output.draftText.replace(/\s+/g, ' ').trim());
   for (const key of ['id', 'title', 'shareText', 'name', 'nameEdited', 'isFavorite', 'createdAt', 'labels', 'selectedSourceIndexes', 'sourceSnapshots', 'metadata']) assert.deepEqual(output[key], before[key]);
-  assert.deepEqual(output.revisionRequests, [{ instructions: 'Shorten the intro', changeSummary: 'Replaced the draft body with 7 paragraphs; left all other content unchanged.', requestedAt: 10, completedAt: 20, status: 'complete' }]);
+  assert.deepEqual(output.revisionRequests, [{ instructions: 'Shorten the intro', changeSummary: 'Could not apply “Shorten the intro”; left all content unchanged.', requestedAt: 10, completedAt: 20, status: 'complete' }]);
   assert.equal(output.updatedAt, 20);
   assert.equal(output.revisionUnread, true);
   assert.equal(output.revisionRequestUnread, true);
   assert.deepEqual(variantPanelState({ outputs: [output] }).outputs, [output]);
 });
 
-test('another revision always uses different sample text and retains request history', () => {
+test('unsupported revisions retain content and record each request in history', () => {
   const output = variant();
   reviseSampleOutput(output, 'First request', 10, 20);
   const previousText = output.draftText;
   reviseSampleOutput(output, 'Another request', 30, 40);
-  assert.notEqual(output.draftText, previousText);
+  assert.equal(output.draftText, previousText);
   assert.equal(output.revisionRequests.length, 2);
   assert.equal(output.revisionRequests[1].instructions, 'Another request');
 });
 
 test('a revised sent draft becomes a ready draft that can be sent again', () => {
   const output = { ...variant(), cmsSentAt: 5, cmsSentContent: 'Previously sent', needsRegeneration: true };
-  reviseSampleOutput(output, 'Revise', 10, 20);
+  reviseSampleOutput(output, 'Add bullet points to first paragraph', 10, 20);
   assert.equal(output.status, 'ready');
   assert.equal(output.cmsSentAt, undefined);
   assert.equal(output.cmsSentContent, undefined);
@@ -98,16 +98,16 @@ test('elephantine does not trigger the elephant refusal', () => {
   const output = variant();
   const before = output.draftText;
   reviseSampleOutput(output, 'Reduce the elephantine introduction', 10, 20);
-  assert.notEqual(output.draftText, before);
-  assert.equal(output.revisionRequests[0].changeSummary, 'Replaced the draft body with 7 paragraphs; left all other content unchanged.');
+  assert.equal(output.draftText, before);
+  assert.equal(output.revisionRequests[0].changeSummary, 'Could not apply “Reduce the elephantine introduction”; left all content unchanged.');
 });
 
-test('revision summaries include a newly initialized share text instead of claiming only the body changed', () => {
+test('unsupported revisions never initialize or change the share text', () => {
   const output = variant();
   delete output.shareText;
   reviseSampleOutput(output, 'Revise the opening', 10, 20);
-  assert.ok(output.shareText.trim());
-  assert.equal(output.revisionRequests[0].changeSummary, 'Replaced the draft body with 7 paragraphs. Updated the share text; left all other content unchanged.');
+  assert.equal(output.shareText, undefined);
+  assert.equal(output.revisionRequests[0].changeSummary, 'Could not apply “Revise the opening”; left all content unchanged.');
 });
 
 
@@ -138,7 +138,7 @@ test('a recognized paragraph-list no-op preserves the article, share text and se
     reviseSampleOutput(output, instructions, 10, 20);
     const { updatedAt, revisionUnread, revisionRequestUnread, revisionRequests, ...untouched } = output;
     assert.deepEqual(untouched, before);
-    assert.equal(revisionRequests.at(-1).changeSummary, 'Left all content unchanged.');
+    assert.match(revisionRequests.at(-1).changeSummary, /; left all content unchanged\.$/);
     assert.equal(updatedAt, 20);
     assert.equal(revisionUnread, true);
     assert.equal(revisionRequestUnread, true);
@@ -151,4 +151,17 @@ test('elephant refusal takes priority over a paragraph-list conversion request',
   reviseSampleOutput(output, 'Convert the second paragraph into bullets and add an elephant.', 10, 20);
   assert.deepEqual(output.document, before);
   assert.equal(output.revisionRequests.at(-1).changeSummary, elephantExplanation + 'Keep my title.');
+});
+
+
+test('the exact first-paragraph bullet request records its edit instead of rewriting the draft', () => {
+  const output = { ...variant(), draftText: 'First fact. Second fact.\n\nKeep the second paragraph.\n\nKeep the ending.', document: { ops: [{ insert: 'First fact. Second fact.\nKeep the second paragraph.\nKeep the ending.\n' }] } };
+  const request = 'add bullet points to first paragraph';
+  reviseSampleOutput(output, request, 10, 20);
+  assert.equal(output.document.ops.map(op => op.insert).join(''), 'First fact.\nSecond fact.\nKeep the second paragraph.\nKeep the ending.\n');
+  assert.equal(output.document.ops.filter(op => op.attributes?.list === 'bullet').length, 2);
+  assert.equal(output.revisionRequests.length, 1);
+  assert.equal(output.revisionRequests[0].instructions, request);
+  assert.equal(output.revisionRequests[0].changeSummary, 'Converted the opening paragraph into a bulleted list with two items; left all other content unchanged.');
+  assert.deepEqual(JSON.parse(JSON.stringify(output)).revisionRequests, output.revisionRequests, 'the exact note survives saved project serialization');
 });

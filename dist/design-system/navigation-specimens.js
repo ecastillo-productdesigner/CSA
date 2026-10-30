@@ -263,7 +263,7 @@ export function mountNavigationSpecimens(root, { onOpenSource } = {}) {
   window.addEventListener('resize', () => { hideTooltips(); closeMenu(); });
   window.addEventListener('scroll', hideTooltips, true);
   actions.append(newProject, sources, profileStage);
-  const guidance = element('p', 'ds-caption', 'The left navigation expands and collapses over 200 ms with ease timing. Project Sources uses the same 200 ms timing with a short slide on open and close. Closing controls leave the focus order immediately; reduced motion changes both panels immediately.');
+  const guidance = element('p', 'ds-caption', 'The left navigation expands and collapses over 200 ms with ease timing. Project Sources uses the same 200 ms timing with a short slide on open and close. Closing controls leave the focus order immediately; reduced motion changes both panels immediately. Mobile navigation uses an 80 px bar with 20 px icons, a 6 px icon-to-label gap, and 12 px / 16 px Inter Semibold labels in controls at least 44 px wide and 60 px tall. At 370 px and below, New Draft wraps onto two lines; all labeled controls reserve a 32 px label row with a 4 px icon gap and compact horizontal spacing. Content and open panels begin 112 px from the top.');
   root.append(actions, selectedPreview, status, guidance);
   attachTooltip(newProject, 'New Project', 'ds-nav-new-project-tooltip');
   attachTooltip(sources, 'Project Sources', 'ds-nav-sources-tooltip');

@@ -14,15 +14,28 @@ class Element {
     this.attributes = {};
     this.className = '';
     this.classList = { toggle() {} };
+    this.listeners = new Map();
   }
   set textContent(value) { this.text = String(value); this.children = []; }
   get textContent() { return this.text ?? this.children.map(child => child.textContent).join(''); }
   setAttribute(name, value) { this.attributes[name] = String(value); }
   removeAttribute(name) { delete this.attributes[name]; }
-  querySelector(selector) { return this.children.find(child => selector.startsWith('.') && child.className?.split(' ').includes(selector.slice(1))) || null; }
-  append(...children) { this.children.push(...children); }
-  replaceChildren(...children) { this.children = children; }
-  addEventListener() {}
+  matches(selector) {
+    if (selector.startsWith('.')) return this.className?.split(' ').includes(selector.slice(1));
+    const attribute = selector.match(/^\[([^=]+)="([^"]+)"\]$/);
+    return Boolean(attribute && this.attributes[attribute[1]] === attribute[2]);
+  }
+  closest(selector) { return this.matches(selector) ? this : this.parentElement?.closest(selector); }
+  querySelectorAll(selector) {
+    return this.children.flatMap(child => [...(child.matches?.(selector) ? [child] : []), ...(child.querySelectorAll?.(selector) || [])]);
+  }
+  querySelector(selector) { return this.querySelectorAll(selector)[0] || null; }
+  append(...children) { for (const child of children) { child.parentElement = this; this.children.push(child); } }
+  replaceChildren(...children) { this.children = []; this.append(...children); }
+  addEventListener(type, callback) { this.listeners.set(type, callback); }
+  emit(type, target = this, fields = {}) { this.listeners.get(type)?.({ type, target, preventDefault() {}, ...fields }); }
+  focus() { document.activeElement = this; }
+  getBoundingClientRect() { return { left: 0, right: 600 }; }
 }
 
 function documentFor(t, roots = {}) {
@@ -406,4 +419,90 @@ test('the tab keeps its ten-second acknowledgement timing while another draft re
   assert.equal(ui.first.revisionRequestUnread, true, 'the action notification is independent of the tab deadline');
   assert.deepEqual(ui.reads, [['project', 'first']]);
   ui.tabs.destroy();
+});
+
+
+test('Search remains available alongside created drafts and selecting it returns the workspace without selecting a draft', t => {
+  const root = new Element();
+  const panel = new Element();
+  panel.id = 'editor-canvas-content';
+  documentFor(t, { '#editor-variant-tabs': root, '#editor-canvas-content': panel });
+  const project = { id: 'searched-project', searchQuery: 'School openings', awaitingOutput: true, outputs: [] };
+  const selections = [];
+  const tabs = createEditorTabs({ onSelect(id) {
+    selections.push(id);
+    project.selectedOutputId = id;
+    project.viewOriginalDraft = id === null;
+    tabs.render(project);
+  } });
+  tabs.render(project);
+  assert.equal(root.children.length, 1);
+  assert.equal(root.children[0].textContent, 'Searching Topic');
+  assert.equal(root.children[0].attributes['aria-label'], 'Searching Topic');
+  assert.equal(root.children[0].attributes['aria-selected'], 'true');
+  assert.equal(panel.attributes['aria-labelledby'], 'editor-tab-original');
+
+  project.outputs.push({ id: 'draft-one', title: 'First article', status: 'ready' }, { id: 'draft-two', title: 'Second article', status: 'ready' });
+  project.selectedOutputId = 'draft-two';
+  project.awaitingOutput = false;
+  tabs.render(project);
+  assert.deepEqual(root.children.map(tab => tab.dataset.editorOutput), ['', 'draft-one', 'draft-two']);
+  assert.equal(root.children[0].textContent, 'Searching Topic');
+  assert.equal(root.children[0].attributes['aria-selected'], 'false');
+  assert.equal(root.children[2].attributes['aria-selected'], 'true');
+  assert.equal(panel.attributes['aria-labelledby'], 'editor-tab-draft-two');
+
+  root.emit('click', root.children[0]);
+  assert.deepEqual(selections, [null]);
+  assert.equal(project.viewOriginalDraft, true);
+  assert.equal(root.children[0].attributes['aria-selected'], 'true');
+  assert.equal(root.children[0].tabIndex, 0);
+  assert.equal(root.children[1].attributes['aria-selected'], 'false');
+  assert.equal(root.children[2].attributes['aria-selected'], 'false');
+  assert.equal(panel.attributes['aria-labelledby'], 'editor-tab-original');
+  assert.equal(document.activeElement, root.children[0]);
+
+  root.emit('keydown', root.children[0], { key: 'ArrowRight' });
+  assert.deepEqual(selections, [null, 'draft-one']);
+  assert.equal(root.children[1].attributes['aria-selected'], 'true');
+  assert.equal(project.viewOriginalDraft, false);
+  assert.equal(panel.attributes['aria-labelledby'], 'editor-tab-draft-one');
+  tabs.destroy();
+});
+
+test('an explicit Search workspace view stays active despite an old selected draft and does not consume its unread revision', t => {
+  const root = new Element();
+  const panel = new Element();
+  panel.id = 'editor-canvas-content';
+  const clock = documentFor(t, { '#editor-variant-tabs': root, '#editor-canvas-content': panel });
+  const reads = [];
+  const tabs = createEditorTabs({ onSelect() {}, onRevisionRead(project, output) { reads.push(output.id); } });
+  const output = { id: 'draft', title: 'Completed article', status: 'ready', revisionUnread: true };
+  const project = { id: 'search-project', searchQuery: 'School openings', viewOriginalDraft: true, selectedOutputId: output.id, outputs: [output] };
+  tabs.render(project);
+  assert.equal(root.children[0].attributes['aria-selected'], 'true');
+  assert.equal(root.children[1].attributes['aria-selected'], 'false');
+  assert.equal(root.children[1].querySelector('.editor-tab-revision-dot').attributes['aria-hidden'], 'true');
+  assert.equal(panel.attributes['aria-labelledby'], 'editor-tab-original');
+  assert.equal(clock.timers.size, 0);
+  clock.tick(60000);
+  assert.deepEqual(reads, []);
+  assert.equal(output.revisionUnread, true);
+  tabs.destroy();
+});
+
+test('adding search to an existing blank workspace relabels its tab without changing project identity', t => {
+  const root = new Element();
+  const panel = new Element();
+  panel.id = 'editor-canvas-content';
+  documentFor(t, { '#editor-variant-tabs': root, '#editor-canvas-content': panel });
+  const tabs = createEditorTabs({ onSelect() {} });
+  const project = { id: 'project', awaitingOutput: true, outputs: [] };
+  tabs.render(project);
+  assert.equal(root.children[0].textContent, '');
+  project.searchQuery = 'School openings';
+  tabs.render(project);
+  assert.equal(root.children[0].textContent, 'Searching Topic');
+  assert.equal(root.children[0].attributes['aria-label'], 'Searching Topic');
+  tabs.destroy();
 });

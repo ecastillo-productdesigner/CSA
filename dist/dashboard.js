@@ -1,7 +1,7 @@
 import { bindRovingSelection } from './selection-controls.js?v=20261026-drafting-card-size';
 import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261026-drafting-card-size';
 import { createIcon as icon } from './icons.js?v=20261026-drafting-card-size';
-import { projectOutputs, outputIsReady } from './outputs.js?v=20261026-drafting-card-size';
+import { projectOutputs, outputIsReady } from './outputs.js?v=20261102-saved-drafts';
 import { sourceLinkArticles } from './source-links.js?v=20261026-drafting-card-size';
 
 const layoutKey = 'csa.dashboard.layout.v1';

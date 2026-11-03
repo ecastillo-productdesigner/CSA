@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261030-mobile-menu-behavior');
+  await import('./app.js?v=20261102-search-cleanup');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

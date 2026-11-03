@@ -4,19 +4,26 @@ import { bindTabSelection } from '../selection-controls.js?v=20261026-drafting-c
 import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261030-revision-headings';
 import { mountProjectSpecimens } from './project-specimens.js?v=20261029-delete-project-dialog';
 import { mountFormSpecimens } from './form-specimens.js?v=20261026-drafting-card-size';
-import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261030-spacing-reference';
+import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261102-saved-drafts';
 import { colorRoleGroups } from './color-roles.js?v=20261028-revision-indicator';
-import { typographyRoleGroups } from './typography-roles.js?v=20261026-drafting-card-size';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-drafting-card-size';
+import { mountTypographyReference } from './typography-reference.js?v=20261103-typography-reference';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261102-saved-drafts';
+import { createToolFavorites } from '../tool-favorites.js?v=20261102-saved-choices';
 import { populateDraftOptions } from '../draft-options.js?v=20261026-drafting-card-size';
-import { iconInventory } from './icon-inventory.js?v=20261026-drafting-card-size';
+import { iconInventory } from './icon-inventory.js?v=20261102-saved-choices';
 import { tokenNumber } from './runtime.js?v=20261029-revision-indicator-location';
-import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261030-declined-revision-details';
+import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261102-saved-drafts';
 import { createDraftSourcesPopover } from '../draft-sources-popover.js?v=20261026-drafting-card-size';
 import { createSourcePreview } from '../sources.js?v=20261029-preview-direction';
 const $ = selector => document.querySelector(selector);
 populateDraftOptions(document);
-const toolDropdowns = createToolDropdowns();
+// Keep interactive documentation separate from the app's favorites.
+const specimenFavorites = new Map();
+const specimenFavoritesStore = createToolFavorites({ storage: () => ({
+  getItem: key => specimenFavorites.get(key) || null,
+  setItem: (key, value) => specimenFavorites.set(key, value),
+}) });
+const toolDropdowns = createToolDropdowns({ favoritesStore: specimenFavoritesStore });
 const sourcePreview = createSourcePreview();
 const toast = createToast({ root: $('#ds-toast'), message: $('#ds-toast-message'), action: $('#ds-toast-action') });
 function notify(message, action = null) { toast.show(message, action); }
@@ -50,7 +57,7 @@ renderIconInventory();
 mountProjectSpecimens($('#ds-project-sample-root'));
 mountFormSpecimens($('#ds-form-sample-root'));
 mountNavigationSpecimens($('#ds-navigation-sample-root'), { onOpenSource: (source, opener) => sourcePreview.open(source, opener) });
-mountStateSpecimens($('#ds-state-sample-root'));
+mountStateSpecimens($('#ds-state-sample-root'), { favoritesStore: specimenFavoritesStore });
 mountFeedbackSpecimens($('#ds-feedback-sample-root'), toolDropdowns);
 function mountDraftSourcesSpecimen(root) {
   if (!root) return;
@@ -292,47 +299,7 @@ try {
     section.append(grid);
     $('#ds-palette').append(section);
   }
-  for (const group of typographyRoleGroups) {
-    const section = element('section', 'ds-type-group');
-    section.id = `type-${group.id}`;
-    const heading = element('h4', 'ds-foundation-group-title', group.title);
-    heading.id = `${section.id}-title`;
-    section.setAttribute('aria-labelledby', heading.id);
-    section.append(heading, element('p', 'ds-foundation-group-description', group.description));
-    for (const role of group.roles) {
-      const row = element('article', 'ds-type-role');
-      const purpose = element('div', 'ds-type-purpose');
-      purpose.append(element('h5', '', role.name), element('p', '', role.usage));
-      const examples = element('div', 'ds-type-examples');
-      for (const style of role.styles) {
-        const token = byName.get(style.token);
-        const type = token.properties;
-        const item = element('div', 'ds-type-example');
-        item.dataset.typographyToken = style.token;
-        const specimen = element('p', 'ds-type-sample', role.example);
-        for (const prop of ['fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing']) {
-          const suffix = prop.replace(/[A-Z]/g, match => '-' + match.toLowerCase());
-          specimen.style[prop] = `var(${token.cssVariable}-${suffix})`;
-        }
-        for (const [property, name] of Object.entries(style.overrides || {})) {
-          specimen.style[property] = `var(${byName.get(name).cssVariable})`;
-        }
-        const fontSize = style.overrides?.fontSize ? Number.parseFloat(byName.get(style.overrides.fontSize).value) : type.fontSize.value;
-        const lineHeight = style.overrides?.lineHeight ? Number.parseFloat(byName.get(style.overrides.lineHeight).value) : +(fontSize * type.lineHeight).toFixed(2);
-        const fontWeight = style.overrides?.fontWeight ? byName.get(style.overrides.fontWeight).value : type.fontWeight;
-        const specs = `${fontSize} px size · ${lineHeight} px line height · weight ${fontWeight}`;
-        const details = element('details', 'ds-type-details');
-        const tracking = style.overrides?.letterSpacing ? byName.get(style.overrides.letterSpacing).value : typeof type.letterSpacing === 'object' ? `${type.letterSpacing.value}${type.letterSpacing.unit}` : type.letterSpacing;
-        details.append(element('summary', '', 'Token and letter spacing'), element('code', '', token.name), element('p', '', `Letter spacing: ${tracking}`));
-        item.append(element('p', 'ds-type-variant-label', style.label), specimen, element('p', 'ds-type-specs', specs), details);
-        if (style.note) item.append(element('p', 'ds-type-specs', style.note));
-        examples.append(item);
-      }
-      row.append(purpose, examples);
-      section.append(row);
-    }
-    $('#ds-type-specimens').append(section);
-  }
+  mountTypographyReference(tokens);
   for (const value of [4,6,8,10,12,16,20,24,32,40,48,64]) {
     const token = byName.get(`foundation.space.${value}`);
     const row = element('div', 'ds-space');

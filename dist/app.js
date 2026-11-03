@@ -1,3 +1,5 @@
+import { listSavedDraftSetups, saveDraftSetup, removeSavedDraftSetup, applySavedDraftSetup, clearSavedDraftSetup } from './saved-draft-setups.js?v=20261102-saved-draft-options';
+import { createSavedDrafts } from './saved-drafts.js?v=20261102-saved-draft-options';
 import { partitionSourceAdditions, sourceIdentityKey, findDuplicateSource } from './source-model.js?v=20261026-drafting-card-size';
 import { createSourceAlreadyAddedDialog } from './source-already-added.js?v=20261026-drafting-card-size';
 import { createToast } from './toast.js?v=20261027-toast-timing';
@@ -5,28 +7,29 @@ import { updatePresetPreferences } from './preset-settings.js?v=20261030-decline
 import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
 import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261029-revision-indicator-location';
 import { createIcon as icon } from './icons.js?v=20261026-drafting-card-size';
-import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261026-drafting-card-size';
+import { formatSourceLinks, sourceLinkArticles } from './source-links.js?v=20261026-drafting-card-size';
 import { resolveArticleMetadata } from './article-metadata.js?v=20261026-drafting-card-size';
 import { createPanelDisclosure } from './panel-disclosure.js?v=20261026-drafting-card-size';
 import { createTabPanelTransition } from './tab-panel-transition.js?v=20261026-drafting-card-size';
 import { bindTabSelection } from './selection-controls.js?v=20261026-drafting-card-size';
 import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261026-drafting-card-size';
 import { createProfile } from './profile.js?v=20261026-drafting-card-size';
-import { createSearchExperience } from './search.js?v=20261029-source-workspace';
+import { createSearchExperience, sampleSearchSources } from './search.js?v=20261102-search-cleanup';
+import { classifyProjectSearchInput } from './project-search-input.js?v=20261102-topic-search';
 import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261030-mobile-menu-behavior';
 import { createMaterialEditor } from './editor.js?v=20261030-neutral-toolbar';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-drafting-card-size';
 import { removeProjectContent } from './project-deletion.js?v=20261026-drafting-card-size';
 import { createContentPreview } from './content-preview.js?v=20261026-drafting-card-size';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261026-drafting-card-size';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261102-saved-drafts';
 import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261026-drafting-card-size';
 import { createNewProjectUpload } from './new-project-upload.js?v=20261026-drafting-card-size';
 import { createRailNavigation } from './navigation.js?v=20261030-mobile-menu-behavior';
 import { createProjectSources } from './sources.js?v=20261029-preview-direction';
 import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261026-drafting-card-size';
-import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261030-declined-revision-details';
-import { createEditorTabs } from './editor-tabs.js?v=20261029-revision-indicator-location';
-import { createContentCardEditing } from './content-card-editing.js?v=20261026-drafting-card-size';
+import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261102-saved-drafts';
+import { createEditorTabs } from './editor-tabs.js?v=20261102-search-cleanup';
+import { createContentCardEditing } from './content-card-editing.js?v=20261102-saved-drafts';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-drafting-card-size';
 import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261026-drafting-card-size';
 import { createRevisionButton, updateRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261030-revision-headings';
@@ -96,7 +99,7 @@ let dashboard = null;
 const outputTimers = new Map();
 const outputViews = new Map();
 populateDraftOptions(document);
-const toolDropdowns = createToolDropdowns();
+const toolDropdowns = createToolDropdowns({ notify });
 const newDraftDisclosure = createPanelDisclosure({ body: $('#composer-variant-form'), trigger: $('#toggle-new-variant'), panel: $('.composer-tools'), expanded: true });
 const contentDisclosure = createPanelDisclosure({ body: $('#composer-outputs-body'), trigger: $('#toggle-content'), panel: $('#composer-outputs'), label: 'Content', expanded: true });
 const outputTabTransition = createTabPanelTransition($('#output-status-content'));
@@ -143,10 +146,13 @@ const projectSourcesPanel = createProjectSources({
   onSelectionChange(projectId) {
     const project = projects.find(entry => entry.id === projectId);
     if (!project) return;
+    const removedPendingSearchSource = project.searchQuery && pruneUnusedSearchCandidates(project);
     project.updatedAt = Date.now();
     saveProjects();
     if (activeProjectId === project.id) {
+      if (removedPendingSearchSource) renderProjectSources(project);
       if ($('#composer').classList.contains('has-link-cards')) searchExperience.show(project, { embedded: true });
+      else if ($('#composer').classList.contains('has-search-results')) searchExperience.refreshSources(project);
       updateComposerActions();
     }
   },
@@ -159,7 +165,7 @@ const railNavigation = createRailNavigation({
   onSourcesOpen() { renderProjectSources(projects.find(project => project.id === activeProjectId && project.kind === 'draft') || null); },
   onNewVariantOpen() { setNewVariantCollapsed(false); },
   onVariantsOpen() { setContentCollapsed(false); },
-  onOpen: () => { toolDropdowns.close(); richEditor.closePanels(); draftSourcesPopover.close(); },
+  onOpen: () => { savedDrafts.close(); toolDropdowns.close(); richEditor.closePanels(); draftSourcesPopover.close(); },
 });
 createProfile({
   onClose: restoreFocus => railNavigation.close('profile', restoreFocus),
@@ -214,6 +220,53 @@ const contentCardEditing = createContentCardEditing({
   getProject: () => projects.find(project => project.id === activeProjectId && !project.deletedAt),
   onDelete: outputId => deleteVariant({ projectId: activeProjectId, outputId }),
 });
+
+
+const savedDrafts = createSavedDrafts({
+  getEntries: () => listSavedDraftSetups(projects),
+  getSelection: () => projects.find(project => project.id === activeProjectId)?.variantPreset,
+  isDisabled: () => Boolean(projects.find(project => project.id === activeProjectId)?.outputProcessing),
+  onBeforeOpen() { toolDropdowns.close(); contentCardEditing.close(); richEditor.closePanels(); draftSourcesPopover.close(); },
+  onApply: applySavedDraft,
+  onClear: () => applySavedDraft(null, null),
+  onRename(projectId, outputId, name) {
+    if (!saveDraftSetup(projects, projectId, outputId, { name })) return false;
+    const persisted = saveProjects();
+    notify(persisted ? 'Saved draft renamed' : 'Saved draft renamed for this session only');
+    return true;
+  },
+  onRemove: removeSavedDraft,
+});
+
+function applySavedDraft(projectId, outputId) {
+  richEditor.flush();
+  const clearing = projectId === null && outputId === null;
+  const project = clearing ? projects.find(entry => entry.id === activeProjectId) : ensureComposerProject(true);
+  if (!project || project.outputProcessing) return;
+  if (!(clearing ? clearSavedDraftSetup(project) : applySavedDraftSetup(projects, project, projectId, outputId))) return;
+  for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = project.toolPreferences[key];
+  $('#composer-editorial-direction').value = project.editorialDirection;
+  if ($('#composer').classList.contains('has-search-results')) searchExperience.syncDirection(project.editorialDirection);
+  $('#composer-target-word-count').value = project.targetWordCount;
+  project.newVariantCollapsed = false;
+  project.updatedAt = Date.now();
+  setNewVariantCollapsed(false);
+  toolDropdowns.refresh();
+  updateComposerActions();
+  const persisted = saveProjects();
+  ($('.create-variant').disabled ? $('#composer-format-trigger') : $('.create-variant')).focus({ preventScroll: true });
+  notify(clearing
+    ? persisted ? 'Saved draft selection cleared' : 'Saved draft selection cleared for this session only'
+    : persisted ? 'Saved draft settings applied' : 'Draft settings applied for this session only');
+}
+
+function removeSavedDraft(projectId, outputId) {
+  if (!removeSavedDraftSetup(projects, projectId, outputId)) return false;
+  const persisted = saveProjects();
+  renderOutputs(projects.find(project => project.id === activeProjectId));
+  notify(persisted ? 'Draft settings removed from saved drafts' : 'Draft settings removed for this session only');
+  return true;
+}
 
 function renderOutputs(project) {
   draftSourcesPopover.close();
@@ -289,6 +342,7 @@ function removeProjectSource(projectId, source) {
   }
   renderProjectSources(project);
   if ($('#composer').classList.contains('has-link-cards')) searchExperience.show(project, { embedded: true });
+  else if ($('#composer').classList.contains('has-search-results')) searchExperience.refreshSources(project);
   updateComposerActions();
   const focus = [...$('#editor-source-list').querySelectorAll('.editor-source-more')];
   (focus[Math.min(Math.max(index, 0), focus.length - 1)] || $('#editor-add-source-button')).focus({ preventScroll: true });
@@ -321,6 +375,7 @@ function removeProjectSource(projectId, source) {
     if (activeProjectId === project.id) {
       renderProjectSources(project);
       if ($('#composer').classList.contains('has-link-cards')) searchExperience.show(project, { embedded: true });
+      else if ($('#composer').classList.contains('has-search-results')) searchExperience.refreshSources(project);
       updateComposerActions();
     }
     notify('Source restored');
@@ -331,6 +386,7 @@ function deleteVariant({ projectId, outputId }) {
   richEditor.flush();
   const persist = next => localStorage.setItem(storageKey, JSON.stringify(next));
   const refresh = () => {
+    savedDrafts.render();
     const project = projects.find(entry => entry.id === projectId && !entry.deletedAt);
     if (project && activeProjectId === projectId && !$('#composer').hidden) {
       const contentPanelOpen = $('#composer-outputs').dataset.mobileOpen === 'true';
@@ -418,6 +474,7 @@ function saveProjects() {
     saved = false;
     notify('Storage unavailable. Changes are saved for this session only');
   }
+  savedDrafts.render();
   dashboard?.render(projects);
   return saved;
 }
@@ -453,6 +510,7 @@ function createProject(sources, options = {}) {
     ...(options.awaitingOutput ? { awaitingOutput: true } : {}),
     ...(options.contentPreview ? { contentPreview: options.contentPreview } : {}),
     ...(options.linkCards ? { linkCards: true } : {}),
+    ...(options.searchQuery ? { searchQuery: options.searchQuery } : {}),
     editorialDirection: typeof options.editorialDirection === 'string' ? options.editorialDirection : '',
     targetWordCount: normalizeWordCount(options.targetWordCount),
     ...(options.toolPreferences ? { toolPreferences: options.toolPreferences } : {}),
@@ -503,6 +561,7 @@ function showSourceStart() {
 }
 
 function closeComposer() {
+  savedDrafts.close();
   editorTabs.suspend();
   draftSourcesPopover.close();
   sendDestinationDialog.close();
@@ -512,7 +571,7 @@ function closeComposer() {
   try { sessionStorage.removeItem('csa.editor.active.v1'); } catch { /* Navigation still works without storage. */ }
   if ($('#new-project-dialog').open) $('#new-project-dialog').close();
   $('#composer').hidden = true;
-  $('#composer').classList.remove('has-editor', 'has-output', 'has-link-cards');
+  $('#composer').classList.remove('has-editor', 'has-output', 'has-link-cards', 'has-search-results');
   $('#output-placeholder').hidden = true;
   $('.create-variant').disabled = true;
   $('#composer-editorial-direction').value = '';
@@ -521,6 +580,7 @@ function closeComposer() {
 }
 
 function showProjectStart() {
+  savedDrafts.close();
   richEditor.flush();
   railNavigation.closeTransient();
   toolDropdowns.close();
@@ -552,8 +612,8 @@ $('#editor-add-source-button').addEventListener('click', () => {
   openProjectDialog(true, project.id);
 });
 
-function returnFromSourceAddition() {
-  const project = projects.find(entry => entry.id === sourceTargetProjectId);
+function returnFromSourceAddition(projectId = sourceTargetProjectId) {
+  const project = projects.find(entry => entry.id === projectId && !entry.deletedAt && !entry.archivedAt);
   sourceTargetProjectId = null;
   if ($('#new-project-dialog').open) $('#new-project-dialog').close();
   if ($('#material-dialog').open) $('#material-dialog').close();
@@ -585,6 +645,7 @@ async function appendProjectSources(sources, projectId = sourceTargetProjectId) 
     if (activeProjectId === project.id && !project.archivedAt && !$('#composer').hidden) {
       renderProjectSources(project, { forNewDraft: true });
       if ($('#composer').classList.contains('has-link-cards')) searchExperience.show(project, { embedded: true });
+      else if ($('#composer').classList.contains('has-search-results')) searchExperience.refreshSources(project);
       updateComposerActions();
     }
   }
@@ -595,6 +656,23 @@ async function appendProjectSources(sources, projectId = sourceTargetProjectId) 
     sourceAlreadyAdded.open({ count: duplicates.length, source: findDuplicateSource(project.sources, duplicates[0]), trigger: $('#editor-add-source-button') });
   }
   return true;
+}
+
+function showSourceAdditionResults(query, targetProjectId) {
+  railNavigation.close('sources', false, { animate: false });
+  closeComposer();
+  railNavigation.closeTransient();
+  for (const id of ['home', 'workspace', 'project-start']) $(`#${id}`).hidden = true;
+  document.body.classList.add('showing-results');
+  searchExperience.show({
+    id: `add-source-${crypto.randomUUID()}`,
+    sourceProjectId: targetProjectId,
+    sources: [{ type: 'search', title: query }],
+  }, { addingSources: true });
+  document.title = `Add source — ${query} — CSA`;
+  closeProfile();
+  $('#main').focus({ preventScroll: true });
+  window.scrollTo({ top: 0 });
 }
 
 function showProject(id) {
@@ -613,6 +691,7 @@ function showProject(id) {
   activeProjectId = id;
   $('#project-start').hidden = true;
   if (project.sources.length === 1 && project.sources[0].type === 'search') {
+    railNavigation.close('sources', false, { animate: false });
     railNavigation.closeTransient();
     $('#home').hidden = true;
     $('#workspace').hidden = true;
@@ -724,6 +803,7 @@ function renderSourceStory(project) {
 }
 
 function showEditorProject(project) {
+  if (project.searchQuery && pruneUnusedSearchCandidates(project)) saveProjects();
   closeComposer();
   railNavigation.closeTransient();
   activeProjectId = project.id;
@@ -736,7 +816,7 @@ function showEditorProject(project) {
   const editableOutputs = projectOutputs(project).filter(output => outputIsReady(output) || output.needsRegeneration);
   const readyOutputs = editableOutputs.filter(outputIsReady).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0));
   const replacingSourceView = Boolean(project.viewOriginalDraft && editableOutputs.length);
-  const selectedOutput = editableOutputs.find(output => output.id === project.selectedOutputId) || readyOutputs[0] || editableOutputs[0];
+  const selectedOutput = project.searchQuery && project.viewOriginalDraft ? null : editableOutputs.find(output => output.id === project.selectedOutputId) || readyOutputs[0] || editableOutputs[0];
   if (selectedOutput) {
     project.selectedOutputId = selectedOutput.id;
     project.viewOriginalDraft = false;
@@ -747,8 +827,13 @@ function showEditorProject(project) {
   if (project.viewOriginalDraft || (project.awaitingOutput && !selectedOutput)) {
     $('#composer').classList.add('has-output');
     $('#composer-heading').textContent = 'Story workspace';
-    renderSourceStory(project);
-    $('#output-placeholder').hidden = false;
+    if (project.searchQuery) {
+      $('#composer').classList.add('has-search-results');
+      searchExperience.show(project, { workspace: true });
+    } else {
+      renderSourceStory(project);
+      $('#output-placeholder').hidden = false;
+    }
     for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).value = draftPreferenceValue(key, project.toolPreferences?.[key]);
     $('#main').focus({ preventScroll: true });
   } else {
@@ -787,10 +872,10 @@ function closeProfile() {
 function updateComposerActions() {
   const project = projects.find(project => project.id === activeProjectId);
   const hasSources = hasSelectedSources(project);
-  const hasContent = $('#composer').classList.contains('has-link-cards') ? hasSources : !$('#material-editor').hidden ? richEditor.hasContent() : !$('#output-placeholder').hidden && ($('#content-preview').hidden || contentPreview.hasContent());
+  const hasContent = ($('#composer').classList.contains('has-link-cards') || $('#composer').classList.contains('has-search-results')) ? hasSources : !$('#material-editor').hidden ? richEditor.hasContent() : !$('#output-placeholder').hidden && ($('#content-preview').hidden || contentPreview.hasContent());
   const processing = Boolean(project?.outputProcessing);
   const processingLabel = project?.outputProcessing?.kind === 'revision' ? 'Revising Draft' : 'Creating Draft';
-  const canConfigure = hasContent && !processing;
+  const canConfigure = (hasContent || Boolean(project?.variantPreset)) && !processing;
   let changed = false;
   for (const key of ['format', 'audience', 'voice']) {
     const select = $(`#composer-${key}`);
@@ -799,6 +884,7 @@ function updateComposerActions() {
     select.title = canConfigure ? '' : processing ? processingLabel : 'Add content first';
   }
   if (changed) toolDropdowns.refresh();
+  savedDrafts.render();
   const hasSelection = hasDraftSelection(Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, $(`#composer-${key}`).value])));
   const enabled = hasSources && hasContent && hasSelection && !processing;
   $('.create-variant').disabled = !enabled;
@@ -820,7 +906,7 @@ function ensureComposerProject(allowEmpty = false) {
 }
 
 function setNewVariantCollapsed(collapsed, { animate = false } = {}) {
-  if (collapsed) toolDropdowns.close();
+  if (collapsed) { toolDropdowns.close(); savedDrafts.close(); }
   newDraftDisclosure.setExpanded(!collapsed, { animate });
 }
 
@@ -883,6 +969,23 @@ $('#output-list').addEventListener('click', event => {
   if (!project) return;
   const sources = event.target.closest('[data-variant-sources]');
   if (sources) { openVariantSources(sources); return; }
+  const save = event.target.closest('[data-save-output]');
+  if (save) {
+    if (project.outputProcessing || save.disabled) return;
+    const outputId = save.dataset.saveOutput;
+    richEditor.flush();
+    const output = projectOutputs(project).find(entry => entry.id === outputId);
+    if (!output) return;
+    if (output.isFavorite) removeSavedDraft(project.id, output.id);
+    else {
+      if (!saveDraftSetup(projects, project.id, output.id)) return;
+      const persisted = saveProjects();
+      renderOutputs(project);
+      notify(persisted ? 'Draft settings saved to My Saved Drafts' : 'Draft settings saved for this session only');
+    }
+    [...$('#output-list').querySelectorAll('[data-save-output]')].find(button => button.dataset.saveOutput === outputId)?.focus({ preventScroll: true });
+    return;
+  }
   if (event.target.closest('.output-card-actions')) return;
   const card = event.target.closest('.output-card')?.querySelector('.output-open');
   if (!card || card.disabled) return;
@@ -1024,7 +1127,9 @@ $('#create-output').addEventListener('click', () => {
 $('#composer-editorial-direction').addEventListener('input', () => {
   const project = ensureComposerProject();
   if (!project) return;
+  if (project.editorialDirection !== $('#composer-editorial-direction').value) delete project.variantPreset;
   project.editorialDirection = $('#composer-editorial-direction').value;
+  if ($('#composer').classList.contains('has-search-results')) searchExperience.syncDirection(project.editorialDirection);
   project.updatedAt = Date.now();
   saveProjects();
 });
@@ -1048,7 +1153,7 @@ for (const key of ['format', 'audience', 'voice']) $(`#composer-${key}`).addEven
 });
 
 $('#source-input').addEventListener('input', () => {
-  $('#start-button').disabled = !parseSourceLinks($('#source-input').value);
+  $('#start-button').disabled = !['links', 'search'].includes(classifyProjectSearchInput($('#source-input').value).kind);
 });
 
 $('#start-form').addEventListener('submit', (event) => {
@@ -1057,14 +1162,73 @@ $('#start-form').addEventListener('submit', (event) => {
   submitSource(input);
 });
 
+function setWorkspaceSearchQuery(project, query) {
+  pruneUnusedSearchCandidates(project);
+  project.searchQuery = query;
+}
+
+function pruneUnusedSearchCandidates(project) {
+  const outputs = Array.isArray(project.outputs) ? project.outputs : [];
+  // Old drafts can refer to sources by position; removing rows would shift that history.
+  if (outputs.some(output => !Array.isArray(output.sourceSnapshots) && output.selectedSourceIndexes?.length)) return false;
+  const capturedKeys = new Set(outputs.flatMap(output => Array.isArray(output.sourceSnapshots) ? output.sourceSnapshots : [])
+    .filter(source => source && typeof source === 'object').map(sourceIdentityKey));
+  const candidates = new Map();
+  const sourceFields = new Set(['type', 'title', 'text', 'selected', 'addedToCsa', 'searchQuery', 'searchArticleId']);
+  const retained = project.sources.filter(source => {
+    if (source.selected !== false || source.addedToCsa !== false || typeof source.searchQuery !== 'string' || !source.searchArticleId
+      || Object.keys(source).some(key => !sourceFields.has(key)) || capturedKeys.has(sourceIdentityKey(source))) return true;
+    if (!candidates.has(source.searchQuery)) candidates.set(source.searchQuery, sampleSearchSources(source.searchQuery));
+    const candidate = candidates.get(source.searchQuery).find(entry => entry.searchArticleId === source.searchArticleId);
+    return !candidate || source.type !== candidate.type || source.title !== candidate.title || source.text !== candidate.text;
+  });
+  if (retained.length === project.sources.length) return false;
+  project.sources = retained;
+  return true;
+}
+
+function applyWorkspaceSearchSelection(project, selection, addedArticleIds, query) {
+  if (query !== project.searchQuery) return false;
+  const selected = new Set(selection);
+  const ready = new Set(addedArticleIds || []);
+  for (const candidate of sampleSearchSources(query)) {
+    let source = project.sources.find(saved => saved.searchQuery === query && saved.searchArticleId === candidate.searchArticleId);
+    if (!source && selected.has(candidate.searchArticleId)) {
+      source = { ...candidate, selected: false, addedToCsa: false };
+      project.sources.push(source);
+      project.removedSourceKeys = (project.removedSourceKeys || []).filter(key => key !== sourceIdentityKey(source));
+    }
+    if (!source) continue;
+    source.selected = selected.has(source.searchArticleId);
+    source.addedToCsa = source.addedToCsa === true || ready.has(source.searchArticleId);
+  }
+  pruneUnusedSearchCandidates(project);
+  return true;
+}
+
+function startSearch(query) {
+  railNavigation.close('sources', false, { animate: false });
+  railNavigation.closeDrawer();
+  const project = createProject([], { title: titleFrom(query), kind: 'draft', awaitingOutput: true, linkCards: true, searchQuery: query, open: false });
+  setWorkspaceSearchQuery(project, query);
+  saveProjects();
+  showProject(project.id);
+}
+
 async function submitSource(input) {
-  const parsed = parseSourceLinks(input);
-  if (!parsed || sourceImport || newProjectUpload.isBusy()) return false;
-  const urls = [...new Set(parsed)];
+  const parsed = classifyProjectSearchInput(input);
+  if (!['links', 'search'].includes(parsed.kind) || sourceImport || newProjectUpload.isBusy()) return false;
   const targetProjectId = sourceTargetProjectId;
   const originProjectId = activeProjectId;
-  if (targetProjectId && !projects.some(project => project.id === targetProjectId && !project.deletedAt)) return false;
+  if (targetProjectId && !projects.some(project => project.id === targetProjectId && !project.deletedAt && !project.archivedAt)) return false;
   const dialog = $('#new-project-dialog');
+  if (parsed.kind === 'search') {
+    if (dialog.open) dialog.close();
+    if (targetProjectId) showSourceAdditionResults(parsed.query, targetProjectId);
+    else startSearch(parsed.query);
+    return true;
+  }
+  const urls = [...new Set(parsed.urls)];
   const fromDialog = dialog.open;
   const request = { controller: new AbortController() };
   sourceImport = request;
@@ -1121,9 +1285,10 @@ function updateStarterInput() {
     field.value = formatted;
     field.setSelectionRange(Math.max(0, caret), Math.max(0, caret));
   }
-  const valid = Boolean(parseSourceLinks(field.value));
-  const invalid = Boolean(field.value.trim()) && !valid;
-  field.setCustomValidity(invalid ? 'Paste a valid website link to continue.' : '');
+  const kind = classifyProjectSearchInput(field.value).kind;
+  const valid = ['links', 'search'].includes(kind);
+  const invalid = kind === 'invalid';
+  field.setCustomValidity(invalid ? 'Enter a topic or paste valid article URLs. Keep topics and links separate.' : '');
   field.setAttribute('aria-invalid', String(invalid));
   const error = $('#new-project-link-error');
   if (error) error.hidden = !invalid;
@@ -1357,14 +1522,49 @@ const searchExperience = createSearchExperience({
     const source = project?.sources.find(source => source.url === article?.url);
     sourceAlreadyAdded.open({ source, trigger });
   },
-  onSearch: submitSource,
+  onSearch(query, sourceProjectId, workspaceProjectId) {
+    if (workspaceProjectId) {
+      const project = projects.find(entry => entry.id === workspaceProjectId && entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
+      if (!project || sourceImport || newProjectUpload.isBusy()) return false;
+      const parsed = classifyProjectSearchInput(query);
+      if (parsed.kind === 'search') {
+        setWorkspaceSearchQuery(project, parsed.query);
+        project.updatedAt = Date.now();
+        saveProjects();
+        searchExperience.show(project, { workspace: true });
+        updateComposerActions();
+        if ($('#show-sources').getAttribute('aria-expanded') === 'true') renderProjectSources(project);
+        return true;
+      }
+      if (parsed.kind !== 'links') return false;
+      sourceTargetProjectId = workspaceProjectId;
+    } else sourceTargetProjectId = sourceProjectId;
+    return submitSource(query);
+  },
+  onBack(sourceProjectId) {
+    if (sourceProjectId) returnFromSourceAddition(sourceProjectId);
+    else showHome();
+  },
   onDirectionChange(id, direction) {
     const project = projects.find(entry => entry.id === id);
-    if (project) { project.editorialDirection = direction; saveProjects(); }
+    if (project) {
+      if (project.editorialDirection !== direction) delete project.variantPreset;
+      project.editorialDirection = direction;
+      if (id === activeProjectId && $('#composer').classList.contains('has-search-results')) $('#composer-editorial-direction').value = direction;
+      saveProjects();
+    }
   },
-  onSelectionChange(id, selection, addedArticleIds) {
+  onSelectionChange(id, selection, addedArticleIds, context) {
     const project = projects.find((entry) => entry.id === id);
     if (project) {
+      if (context?.workspace) {
+        if (!applyWorkspaceSearchSelection(project, selection, addedArticleIds, context.query)) return;
+        project.updatedAt = Date.now();
+        saveProjects();
+        updateComposerActions();
+        if ($('#show-sources').getAttribute('aria-expanded') === 'true') renderProjectSources(project);
+        return;
+      }
       project.selectedArticleIds = selection;
       if (Array.isArray(addedArticleIds)) project.addedArticleIds = addedArticleIds;
       if (project.linkCards) {
@@ -1379,12 +1579,17 @@ const searchExperience = createSearchExperience({
       saveProjects();
     }
   },
-  async onDraft({ query, articles, editorialDirection }) {
+  async onDraft({ query, articles, editorialDirection, sourceProjectId }) {
     const sources = articles.map((article) => article.url
       ? { type: 'link', title: article.title, url: article.url, excerpt: article.excerpt, description: article.description || '', headlineSource: article.headlineSource, metadataStatus: article.metadataStatus }
       : { type: 'text', title: article.title, text: `Fictional sample article · ${article.source} · ${article.date}\n\n${article.paragraphs.join('\n\n')}` });
-    if (sourceTargetProjectId) { await appendProjectSources(sources); return; }
-    createProject(sources, { title: articles[0]?.url ? articles[0].title : titleFrom(query), kind: 'draft', awaitingOutput: true, editorialDirection });
+    if (sourceProjectId) {
+      if (projects.some(project => project.id === sourceProjectId && !project.deletedAt && !project.archivedAt)) await appendProjectSources(sources, sourceProjectId);
+      return;
+    }
+    railNavigation.close('sources', false, { animate: false });
+    railNavigation.closeDrawer();
+    createProject(sources, { title: articles[0]?.url ? articles[0].title : titleFrom(query), kind: 'draft', awaitingOutput: true, linkCards: true, editorialDirection });
   },
 });
 
@@ -1435,6 +1640,7 @@ async function deleteProjectPermanently(id) {
   } catch { return false; }
   if (!removal) return false;
   projects = removal.projects;
+  savedDrafts.render();
   clearTimeout(outputTimers.get(id));
   outputTimers.delete(id);
   dashboard.render(projects);

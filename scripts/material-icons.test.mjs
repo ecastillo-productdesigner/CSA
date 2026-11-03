@@ -59,7 +59,7 @@ test('Quill cannot overwrite the shared Material Symbols toolbar with its own ic
   for (const name of ['format_bold', 'format_italic', 'format_underlined', 'format_h2', 'format_h3', 'format_quote', 'format_list_bulleted', 'format_list_numbered', 'link_2', 'undo', 'redo']) assert.ok(html.includes('>' + name + '</span>'));
 });
 
-test('the DS icon gallery matches its own subset while app-only glyphs stay separate', async () => {
+test('the DS icon gallery matches both shipped font subsets', async () => {
   const html = await readFile(new URL('../dist/design-system/index.html', import.meta.url), 'utf8');
   const shipped = html.match(/icon_names=([^&"]+)/)[1].split(',').sort();
   const catalog = iconInventory.map(([symbol]) => symbol).sort();
@@ -67,7 +67,7 @@ test('the DS icon gallery matches its own subset while app-only glyphs stay sepa
   assert.deepEqual(catalog, shipped, 'Keep the DS gallery in sync with its own shipped symbols');
   const app = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8');
   const appSubset = app.match(/icon_names=([^&"]+)/)[1].split(',').sort();
-  assert.deepEqual(appSubset, [...shipped, 'photo_camera'].sort(), 'Only the legacy result thumbnail glyph may remain app-only');
+  assert.deepEqual(appSubset, shipped, 'The app and DS ship the same current interface glyphs');
 
   const dropdowns = await readFile(new URL('../dist/tool-dropdowns.js', import.meta.url), 'utf8');
   assert.match(dropdowns, /createIcon\(['"]unfold_less['"],\s*['"]tool-dropdown-chevron['"]\)/,

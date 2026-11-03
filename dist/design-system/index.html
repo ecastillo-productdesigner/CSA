@@ -8,22 +8,22 @@
   <title>CSA Design System</title>
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,chevron_forward,close,delete,description,draw,edit,edit_document,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,unfold_less,upload,view_module,visibility&amp;display=block">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,check,chevron_forward,close,delete,description,draw,edit,edit_document,favorite,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,unfold_less,upload,view_module,visibility&amp;display=block">
   <link rel="stylesheet" href="tokens.css?v=20261029-revision-indicator-location">
-  <link rel="stylesheet" href="../styles.css?v=20261030-spacing-reference">
-  <link rel="stylesheet" href="guide.css?v=20261030-spacing-reference">
-  <script src="guide.js?v=20261030-spacing-reference" type="module"></script>
+  <link rel="stylesheet" href="../styles.css?v=20261102-search-cleanup">
+  <link rel="stylesheet" href="guide.css?v=20261103-typography-reference">
+  <script src="guide.js?v=20261103-typography-reference" type="module"></script>
 </head>
 <body class="ds-page">
   <a class="ds-skip" href="#overview">Skip to reference</a>
   <header class="ds-header">
     <a class="ds-brand" href="../">CSA <span>Design system</span></a>
-    <nav aria-label="Design system sections"><a href="#foundations">Foundations</a><a href="#iconography">Icons</a><a href="#spacing">Spacing</a><a href="#components">Components</a><a href="#content-microcopy">Content &amp; Microcopy</a><a href="#tokens">Tokens</a><a href="#handoff">Handoff</a></nav>
+    <nav aria-label="Design system sections"><a href="#foundations">Foundations</a><a href="#typography">Typography</a><a href="#iconography">Icons</a><a href="#spacing">Spacing</a><a href="#components">Components</a><a href="#content-microcopy">Content &amp; Microcopy</a><a href="#tokens">Tokens</a><a href="#handoff">Handoff</a></nav>
     <span class="ds-version">v1.0</span>
   </header>
   <main class="ds-main">
     <section class="ds-hero" id="overview" aria-label="Design system overview">
-      <p class="ds-eyebrow">THE CSA REFERENCE · OCTOBER 2026</p>
+      <p class="ds-eyebrow">THE CSA REFERENCE · NOVEMBER 2026</p>
       <p class="ds-lead">The colors, type, spacing, components, and writing guidance behind CSA. Extracted from the product and connected to its stylesheets.</p>
       <div class="ds-actions"><a class="primary-button" href="../">Launch Prototype</a><a class="ds-text-link" href="tokens.json" download>Download token JSON <span class="material-symbols-outlined" aria-hidden="true">open_in_new</span></a></div>
       <div class="ds-metrics"><div><strong id="ds-token-total">486</strong><span>named tokens</span></div><div><strong>3</strong><span>connected layers</span></div><div><strong>1</strong><span>source of truth</span></div></div>
@@ -32,22 +32,41 @@
     <section class="ds-section" id="foundations" aria-label="Foundations">
       <div class="ds-section-heading"><p class="ds-eyebrow">01 / FOUNDATIONS</p></div>
       <article class="ds-panel" id="colors" aria-labelledby="ds-colors-title"><div class="ds-panel-heading"><h3 id="ds-colors-title">Color roles</h3><span id="ds-color-count">Usage and opacity</span></div><p class="ds-foundation-intro">Use roughly 60% cream canvas, 30% white panels and content surfaces, and 10% teal actions, selection, and focus accents. The canvas is Amber 50 at 50% over white (resolved #FFFDF5). Headings stay near-black, body text stays dark gray, and chips, Sent, and destructive actions retain their functional colors. Choose colors by role and interaction state.</p><div class="ds-color-roles" id="ds-palette"></div></article>
-      <article class="ds-panel" id="typography" aria-labelledby="ds-typography-title">
-        <div class="ds-panel-heading"><h3 id="ds-typography-title">Typography</h3><span>Choose by purpose</span></div>
-        <div class="ds-type-families"><div><h4>Inter</h4><p>Navigation, controls, titles, and reading text.</p></div><div><h4>Newsreader</h4><p>The homepage greeting and the optional serif article format.</p></div></div>
-        <p class="ds-foundation-intro">Use six shared text sizes: 12, 14, 16, 20, 24, and 30 px. Choose by purpose, with size, line height, and weight defined together. Responsive variants stay with their role; icons use a separate 16, 20, 24, and 40 px scale.</p>
-        <div id="ds-type-specimens"></div>
-        <p class="ds-caption">Role-based organization follows <a href="https://m3.material.io/styles/typography/applying-type">Material typography guidance</a> and <a href="https://www.carbondesignsystem.com/building-blocks/foundations/typography/style-strategies">Carbon typography strategies</a>. Samples use the app’s shared typography roles. Project grid-card headings use 16 px Semibold, dropdown values use 14 px Regular, and status badges match settings chips at 12 px Medium with a 20 px line height.</p>
-      </article>
       <article class="ds-panel" id="radius" aria-labelledby="ds-radius-title"><div class="ds-panel-heading"><h3 id="ds-radius-title">Corner radius</h3><span>4 shared shapes</span></div><p class="ds-foundation-intro">Use the component’s assigned radius to keep corners consistent.</p><div class="ds-radius-row"><div style="border-radius:var(--csa-foundation-radius-4)"><strong>4 px</strong><span>Status · checkboxes · tooltips</span></div><div style="border-radius:var(--csa-foundation-radius-8)"><strong>8 px</strong><span>Fields · menus · content cards · layout switch</span></div><div style="border-radius:var(--csa-foundation-radius-16)"><strong>16 px</strong><span>Buttons · dialogs · project cards · navigation</span></div><div style="border-radius:var(--csa-foundation-radius-999)"><strong>999 px</strong><span>Chips · avatars · round controls</span></div></div></article>
       <div class="ds-stack">
         <article class="ds-panel"><div class="ds-panel-heading"><h3>Surfaces</h3><span>Subtle menu elevation</span></div><div class="ds-elevations"><div class="ds-menu-surface">Dropdown</div><div class="ds-menu-surface">Popover</div><div>Dialog</div></div><p class="ds-caption">Structural navigation/sidebar, New Draft, Content, editor, and source panels use white. The selected joined editor tab matches its panel; inner cards, fields, menus, and dialogs remain white. Dropdowns and popovers share a white surface, 1 px neutral border, 8 px corners, and a 0px 4px 12px shadow at 8% opacity on desktop and 16% on mobile. Mobile dialogs and open workspace panels share New Project’s 16% backdrop and 2px blur. Grid project cards and list rows gain a subtle 0px 3px 10px black shadow at 7% opacity on hover. Their hover surfaces remain white with dark text. List rows retain ordinary neutral dividers, white surfaces, and dark text, with subtle elevation on hover. Keyboard-focus outlines remain visible on row controls.</p></article>
-        <article class="ds-panel ds-iconography" id="iconography" aria-labelledby="ds-iconography-title"><div class="ds-panel-heading"><h3 id="ds-iconography-title">Iconography</h3><span id="ds-icon-count">CSA icon library</span></div><p class="ds-caption"><strong>Unselected: outlined (<code>FILL 0</code>).</strong> <strong>Selected: filled (<code>FILL 1</code>).</strong> Apply this rule to icons in selection controls, including view switches, source folders, and formatting toggles. Actions without a selected state use filled icons.</p><p class="ds-caption">The gallery includes current and legacy app icons. Continue and Upload appear in New Project, and Search marks article URL entry. Document and Source Link remain available from older flows. The legacy result-thumbnail photo_camera glyph remains app-only and is excluded from this gallery. Each icon shows both states and its Material Symbols name. Glyph sizes use a separate 16, 20, 24, and 40 px scale. The default is 24 px; status badge icons use 16 px.</p><div class="ds-icon-grid" id="ds-icon-grid"></div></article>
+        <article class="ds-panel ds-iconography" id="iconography" aria-labelledby="ds-iconography-title"><div class="ds-panel-heading"><h3 id="ds-iconography-title">Iconography</h3><span id="ds-icon-count">CSA icon library</span></div><p class="ds-caption"><strong>Unselected: outlined (<code>FILL 0</code>).</strong> <strong>Selected: filled (<code>FILL 1</code>).</strong> Apply this rule to icons in selection controls, including view switches, favorites, source folders, and formatting toggles. Actions without a selected state use filled icons.</p><p class="ds-caption">The gallery includes current and legacy app icons. Continue and Upload appear in New Project, and Search marks article URL entry. Document and Source Link remain available from older flows. Each icon shows both states and its Material Symbols name. Glyph sizes use a separate 16, 20, 24, and 40 px scale. The default is 24 px; status badge icons use 16 px.</p><div class="ds-icon-grid" id="ds-icon-grid"></div></article>
       </div>
     </section>
 
+    <section class="ds-section" id="typography" aria-labelledby="ds-typography-title">
+      <div class="ds-section-heading"><p class="ds-eyebrow">02 / TYPOGRAPHY</p><h2 id="ds-typography-title">Typography</h2><p>Choose a style by what the text needs to do. Compare the typefaces and shared scale, then see each style with its specifications and uses in CSA.</p></div>
+      <nav class="ds-type-nav" aria-label="Typography sections"><a href="#typefaces">Typefaces</a><a href="#type-scale">Type Scale</a><a href="#type-specimens">Styles</a><a href="#type-responsive">Responsive</a></nav>
+      <article class="ds-panel" id="typefaces" aria-labelledby="ds-typefaces-title">
+        <div class="ds-panel-heading"><h3 id="ds-typefaces-title">Typefaces</h3><span>Two families, clear roles</span></div>
+        <div class="ds-type-families" id="ds-type-families"></div>
+      </article>
+      <article class="ds-panel" id="type-scale" aria-labelledby="ds-type-scale-title">
+        <div class="ds-panel-heading"><h3 id="ds-type-scale-title">Type Scale</h3><span>Six shared sizes</span></div>
+        <p class="ds-foundation-intro">Compare the same text at each size. The styles below pair size with the right family, weight, line height, and letter spacing for its purpose.</p>
+        <div class="ds-type-scale" id="ds-type-scale"></div>
+        <p class="ds-caption">Text sizes and icon sizes have separate scales. See <a href="#iconography">Icons</a> for icon sizing.</p>
+      </article>
+      <article class="ds-panel" id="type-specimens" aria-labelledby="ds-type-styles-title">
+        <div class="ds-panel-heading"><h3 id="ds-type-styles-title">Styles in Use</h3><span>Specifications and examples</span></div>
+        <p class="ds-foundation-intro">Styles with the same specifications share a sample and list their uses. Open the token details to find the corresponding names in the design system.</p>
+        <div id="ds-type-specimens"></div>
+      </article>
+      <article class="ds-panel" id="type-responsive" aria-labelledby="ds-type-responsive-title">
+        <div class="ds-panel-heading"><h3 id="ds-type-responsive-title">Responsive Typography</h3><span>One role across screen sizes</span></div>
+        <p>Desktop and mobile samples stay together when their specifications differ. A style shared across screen sizes appears once. The greeting, draft title, and project metadata have responsive variants; mobile navigation uses its own label weight.</p>
+        <p>Component-specific styles are identified in the examples, including the compact New Draft and Content headings and the Editorial Direction field. Keep the full combination of size, weight, line height, and letter spacing when reusing a style.</p>
+        <p class="ds-caption">Organization inspired by <a href="https://base.uber.com/6d2425e9f/p/976582-typography-10/b/13e172">Uber Base typography</a>. Samples and specifications use CSA’s shared tokens. See <a href="#tokens">Tokens</a> for the complete inventory.</p>
+      </article>
+    </section>
+
     <section class="ds-section" id="spacing" aria-labelledby="ds-spacing-title">
-      <div class="ds-section-heading"><p class="ds-eyebrow">02 / SPACING</p><h2 id="ds-spacing-title">Spacing</h2><p>Use shared values for the space inside controls, between related items, and around panels. These examples show the spacing used in CSA.</p></div>
+      <div class="ds-section-heading"><p class="ds-eyebrow">03 / SPACING</p><h2 id="ds-spacing-title">Spacing</h2><p>Use shared values for the space inside controls, between related items, and around panels. These examples show the spacing used in CSA.</p></div>
       <div class="ds-two-column">
         <article class="ds-panel" aria-labelledby="ds-mobile-spacing-title">
           <div class="ds-panel-heading"><h3 id="ds-mobile-spacing-title">Mobile Header</h3><span>New Project &amp; avatar</span></div>
@@ -86,7 +105,7 @@
     </section>
 
     <section class="ds-section" id="components" aria-labelledby="components-title">
-      <div class="ds-section-heading"><p class="ds-eyebrow">03 / COMPONENTS</p><h2 id="components-title">The pieces of the workspace.</h2><p>These specimens reuse the app’s production classes, tokens, and shared helpers. Try the controls with isolated example data.</p></div>
+      <div class="ds-section-heading"><p class="ds-eyebrow">04 / COMPONENTS</p><h2 id="components-title">The pieces of the workspace.</h2><p>These specimens reuse the app’s production classes, tokens, and shared helpers. Try the controls with isolated example data.</p></div>
       <article class="ds-panel" id="button-hierarchy">
         <div class="ds-panel-heading"><h3>Button hierarchy</h3><span>46 px height · 16 px labels · 16 px radius</span></div>
         <div class="ds-button-matrix" role="group" aria-label="Primary, secondary, tertiary, and destructive button states">
@@ -136,8 +155,15 @@
             </div>
           </div>
           <p class="ds-caption">Empty dropdowns show their purpose—Format, Audience, or Voice—in Inter Regular (400) on a white surface. Choosing a value displays the selection. Selected recipe and WordPress destination options keep neutral text and row backgrounds, with a teal checkmark showing selection. CMS destinations show only the publication name and URL. Pointer hover stays gray and keyboard focus keeps its visible outline. Choosing None Selected from the menu clears the value and restores the purpose label.</p>
+          <p class="ds-caption">Format and Audience include a heart beside each value and All / Favorites (N) tabs. The tabs match Content tabs with a teal label and underline for the active view, a neutral baseline, and a 16 px gap. The count includes only available saved choices. None Selected remains visible in both views, and switching views leaves the current selection unchanged. Saving a choice keeps it for reuse without selecting it or closing the menu. Unsaved hearts are outlined; saved hearts are filled and teal. The separate teal checkmark continues to identify the current selection. An empty Favorites view says “No favorite formats yet. Choose All, then use a heart to add a favorite.” or the corresponding audience message. The app remembers saved choices in this browser; design-system examples use separate, temporary saved choices. Each heart and tab has a visible focus outline and a target of at least 40 px on desktop or 44 px on mobile.</p>
         </article>
       </div>
+      <article class="ds-panel" id="saved-drafts-components" aria-labelledby="ds-saved-drafts-title">
+        <div class="ds-panel-heading"><h3 id="ds-saved-drafts-title">Saved Drafts</h3><span>Reuse a complete draft setup</span></div>
+        <p class="ds-caption">A heart beside the pencil on a Content card saves Format, Audience, Voice, Editorial Direction, and target length together. My Saved Drafts uses a text label and chevron above the New Draft fields and lists saved names with their Format, Audience, and Voice pills stacked vertically underneath. The pills keep their existing category colors, natural widths, and readable wrapping, separated by 6 px. Edit and Delete align with the first pill, including when a saved name wraps. A subtle 1 px divider separates adjacent rows, including None Selected. None Selected appears first and clears the New Draft fields, Editorial Direction, and target length while keeping all saved setups. Choosing a saved draft shows its name in the dropdown and fills the fields; Add to List then uses the current project’s selected sources. Rename changes the saved name, and Remove keeps the original draft. These saved setups are separate from the individual choices in Format and Audience’s All / Favorites tabs.</p>
+        <p class="ds-caption">Card hearts use 20 px glyphs in 44 px targets: outlined and neutral when unsaved, filled and teal when saved. The saved menu keeps Apply, Rename, and Remove as separate controls with visible keyboard focus and 44 px targets. Naming uses a shared dialog with a 420 px maximum width, 16 px viewport clearance, and the existing heading, input, button, and backdrop styles. Saved setups remain available in this browser.</p>
+        <details class="ds-token-details"><summary>Example: A Saved Draft Setup</summary><p><strong>Weekly Style Roundup</strong></p><div class="saved-draft-badges"><span class="output-badge output-badge--format">Listicle</span><span class="output-badge output-badge--audience">General Audience</span><span class="output-badge output-badge--voice">Us Weekly</span></div><p>Editorial Direction: Keep each item concise and useful.<br>Target length: 500 words.</p><p>Use the card heart to save this setup, then choose Weekly Style Roundup from My Saved Drafts in another project. The new draft uses that project’s selected sources.</p></details>
+      </article>
       <article class="ds-panel" id="revision-indicator" aria-labelledby="ds-revision-indicator-title">
         <div class="ds-panel-heading"><h3 id="ds-revision-indicator-title">Revision indicator</h3><span>8 px · Blue 500 · #3B82F6</span></div>
         <div class="ds-revision-indicator-states">
@@ -184,7 +210,7 @@
     </section>
 
     <section class="ds-section" id="content-microcopy" aria-labelledby="content-microcopy-title">
-      <div class="ds-section-heading"><p class="ds-eyebrow">04 / CONTENT &amp; MICROCOPY</p><h2 id="content-microcopy-title">UX Writing Style Guide, CSA 2.0</h2><p>Be clear. Be easy to use. Respect the user.</p></div>
+      <div class="ds-section-heading"><p class="ds-eyebrow">05 / CONTENT &amp; MICROCOPY</p><h2 id="content-microcopy-title">UX Writing Style Guide, CSA 2.0</h2><p>Be clear. Be easy to use. Respect the user.</p></div>
       <div class="ds-two-column">
         <article class="ds-panel"><h3>Scope</h3><p>This guide applies to text users see in CSA and communication with users outside CSA. Back-end terminology is up to the engineers and may differ from this guide.</p><a class="ds-text-link" href="UX-WRITING.txt" download>Download Writing Guide <span class="material-symbols-outlined" aria-hidden="true">open_in_new</span></a></article>
         <article class="ds-panel"><h3>CSA voice</h3><p>Trustworthy, professional, contemporary, and humane.</p><p>Keep people informed, involved, and in control of their work.</p></article>
@@ -195,13 +221,13 @@
     </section>
 
     <section class="ds-section" id="tokens" aria-labelledby="tokens-title">
-      <div class="ds-section-heading"><p class="ds-eyebrow">05 / TOKEN EXPLORER</p><h2 id="tokens-title">One value. A clear purpose.</h2><p>Foundation stores the raw value. Semantic gives it a role. Component connects it to the interface.</p></div>
+      <div class="ds-section-heading"><p class="ds-eyebrow">06 / TOKEN EXPLORER</p><h2 id="tokens-title">One value. A clear purpose.</h2><p>Foundation stores the raw value. Semantic gives it a role. Component connects it to the interface.</p></div>
       <div class="ds-alias-chain"><div><small>FOUNDATION</small><code>color.teal.700</code><strong>#00786F</strong></div><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span><div><small>SEMANTIC</small><code>color.action.primary</code><strong>Primary action</strong></div><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span><div><small>COMPONENT</small><code>button.primary.background</code><strong>Button background</strong></div></div>
       <article class="ds-panel ds-token-panel"><div class="ds-token-controls"><label for="ds-token-search">Find a token<input id="ds-token-search" type="search" placeholder="Search primary, radius, chip…"></label><label for="ds-token-layer">Layer<select id="ds-token-layer"><option value="semantic">Semantic</option><option value="component">Component</option><option value="foundation">Foundation</option><option value="all">All tokens</option></select></label><span id="ds-token-count" role="status"></span></div><div class="ds-table-wrap" tabindex="0" aria-label="Design token table"><table><thead><tr><th scope="col">Token / CSS variable</th><th scope="col">Resolved value</th><th scope="col">Purpose</th><th scope="col">Copy</th></tr></thead><tbody id="ds-token-rows"></tbody></table></div><p class="ds-caption" id="ds-token-empty" hidden>No matching tokens. Try another term or choose All tokens.</p><p class="ds-caption">“Observed exception” preserves a value unique to an existing component. Prefer a semantic or component token for new work.</p></article>
     </section>
 
     <section class="ds-section" id="handoff" aria-labelledby="handoff-title">
-      <div class="ds-section-heading"><p class="ds-eyebrow">06 / HANDOFF</p><h2 id="handoff-title">Ready to use and maintain.</h2><p>The app now reads its shared values from the same token source as this reference.</p></div>
+      <div class="ds-section-heading"><p class="ds-eyebrow">07 / HANDOFF</p><h2 id="handoff-title">Ready to use and maintain.</h2><p>The app now reads its shared values from the same token source as this reference.</p></div>
       <div class="ds-two-column"><article class="ds-panel"><h3>Use the system</h3><ol class="ds-steps"><li>Edit <code>dist/design-system/tokens.json</code>.</li><li>Run <code>npm run design-system:build</code>.</li><li>Use a semantic or component CSS variable.</li><li>Run <code>npm run check</code> and review desktop and mobile.</li></ol><pre><code>.primary-action {
   background: var(--csa-component-button-primary-background);
   color: var(--csa-component-button-primary-label);

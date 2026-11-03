@@ -4,6 +4,8 @@ import { readFile } from 'node:fs/promises';
 import { createContext, runInContext } from 'node:vm';
 import { hasDraftSelection } from '../dist/draft-options.js';
 import { hasSelectedSources, projectOutputs, sampleVariant, selectedPendingOutputs } from '../dist/outputs.js';
+import { sampleSearchSources } from '../dist/search.js';
+import { sourceIdentityKey } from '../dist/source-model.js';
 import { setProjectWordCount } from '../dist/variant-word-count.js';
 
 const app = await readFile(new URL('../dist/app.js', import.meta.url), 'utf8');
@@ -14,6 +16,7 @@ function productionSection(start, end) {
   return app.slice(from, until);
 }
 const production = [
+  productionSection('function setWorkspaceSearchQuery(', '\nfunction startSearch('),
   productionSection('function updateComposerActions()', '\nfunction ensureComposerProject('),
   productionSection('function renderProjectSources(', '\nfunction removeProjectSource('),
   productionSection('const projectSourcesPanel = createProjectSources({', '\nconst draftSourcesPopover ='),
@@ -40,9 +43,9 @@ function setup(project, { onFlush = () => {}, onRenderSources = () => ({ selecti
   const handlers = new Map();
   const create = { disabled: false, addEventListener: (name, handler) => handlers.set(name, handler) };
   controls.set('.create-variant', create);
-  const view = { callbacks: null, events: [], persisted: [], canvas: [], opened: [], panelRenders: [] };
+  const view = { callbacks: null, events: [], persisted: [], canvas: [], opened: [], panelRenders: [], savedDraftRenders: [] };
   const context = createContext({
-    projects: [project], activeProjectId: project.id,
+    projects: [project], activeProjectId: project.id, sampleSearchSources, sourceIdentityKey,
     $: selector => {
       assert.ok(controls.has(selector), `Unexpected app selector ${selector}`);
       return controls.get(selector);
@@ -58,8 +61,12 @@ function setup(project, { onFlush = () => {}, onRenderSources = () => ({ selecti
     removeProjectSource() {}, downloadSource() {},
     richEditor: { hasContent: () => true, flush() { view.events.push('flush'); onFlush(project); } },
     toolDropdowns: { refresh() {}, close() {} },
+    savedDrafts: { render() { view.savedDraftRenders.push(project.id); } },
     contentPreview: { hasContent: () => true },
-    searchExperience: { show(current, options) { view.events.push('sync'); view.canvas.push({ project: structuredClone(current), options }); } },
+    searchExperience: {
+      show(current, options) { view.events.push('sync'); view.canvas.push({ project: structuredClone(current), options }); },
+      refreshSources(current) { view.events.push('refresh-search'); view.canvas.push({ project: structuredClone(current), options: { workspace: true } }); },
+    },
     saveProjects() { view.events.push('save'); view.persisted.push(structuredClone(project)); },
     setNewVariantCollapsed() {},
     showEditorProject: current => view.opened.push(current.id),
@@ -89,7 +96,9 @@ test('Project Sources changes flush before mutation, persist afterward, and refr
   const ui = setup(state);
   ui.refresh();
   assert.equal(ui.create.disabled, false);
+  assert.deepEqual(ui.savedDraftRenders, [state.id]);
   ui.toggle(0, false);
+  assert.deepEqual(ui.savedDraftRenders, [state.id, state.id]);
   assert.deepEqual(ui.events, ['flush', 'save']);
   assert.equal(ui.persisted.at(-1).sources[0].selected, false);
   assert.equal(ui.create.disabled, true, 'Editor text cannot bypass an empty source selection');
@@ -212,4 +221,38 @@ test('Add to List captures the direction on its recipe and clears the field and 
   assert.equal(state.outputs.length, 2);
   assert.equal(state.outputs[0].editorialDirection, '');
   assert.equal(first.editorialDirection, direction, 'the next addition must not change the earlier recipe');
+});
+
+
+test('Sources selections synchronize embedded search results and gate New Draft settings', () => {
+  const state = project([source('First search result', false), source('Second search result', false)]);
+  state.searchQuery = 'Local news';
+  const ui = setup(state);
+  ui.classes.add('has-search-results');
+  ui.refresh();
+  assert.equal(ui.create.disabled, true);
+  assert.equal(ui.controls.get('#composer-format').disabled, true);
+  ui.toggle(1, true);
+  assert.deepEqual(ui.events, ['flush', 'save', 'refresh-search']);
+  assert.equal(ui.canvas.at(-1).project.sources[1].selected, true);
+  assert.equal(ui.create.disabled, false);
+  assert.equal(ui.controls.get('#composer-format').disabled, false);
+  ui.createDraft();
+  assert.equal(state.outputs[0].sourceCount, 1);
+  assert.deepEqual(state.outputs[0].sourceSnapshots.map(item => item.title), ['Second search result']);
+});
+
+
+test('canceling a pending search source from Sources removes its temporary row and refreshes the results', () => {
+  const pending = { ...sampleSearchSources('Local news')[0], selected: true, addedToCsa: false };
+  const state = project([pending]);
+  state.searchQuery = 'Local news';
+  const ui = setup(state);
+  ui.classes.add('has-search-results');
+  ui.toggle(0, false);
+  assert.deepEqual(structuredClone(state.sources), []);
+  assert.deepEqual(ui.events, ['flush', 'save', 'render', 'refresh-search']);
+  assert.equal(ui.panelRenders.length, 1);
+  assert.equal(ui.create.disabled, true);
+  assert.deepEqual(ui.canvas.at(-1).project.sources, []);
 });

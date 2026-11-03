@@ -8,7 +8,7 @@ import { createSourceAdditionLoading } from '../source-addition-loading.js?v=202
 import { createIcon } from '../icons.js?v=20261026-drafting-card-size';
 import { tokenNumber } from './runtime.js?v=20261026-drafting-card-size';
 import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261026-drafting-card-size';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261026-drafting-card-size';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261102-saved-drafts';
 
 const navigationMounts = new WeakMap();
 const stateMounts = new WeakMap();
@@ -276,7 +276,7 @@ export function mountNavigationSpecimens(root, { onOpenSource } = {}) {
   return mounted;
 }
 
-export function mountStateSpecimens(root) {
+export function mountStateSpecimens(root, { favoritesStore } = {}) {
   if (!root) return;
   if (stateMounts.has(root)) return stateMounts.get(root);
   root.classList.add('ds-state-specimens');
@@ -421,7 +421,7 @@ export function mountStateSpecimens(root) {
   });
   root.append(panel, guidance, emptyPreview, loading, status);
   populateDraftOptions(panel);
-  dropdowns = createToolDropdowns({ root: panel });
+  dropdowns = createToolDropdowns({ root: panel, favoritesStore });
   const updateAdd = () => { add.disabled = !hasDraftSelection(Object.fromEntries([...fields.querySelectorAll('select')].map(select => [select.closest('.composer-field').dataset.label.toLowerCase(), select.value]))); };
   fields.addEventListener('change', updateAdd);
   updateAdd();

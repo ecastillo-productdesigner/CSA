@@ -21,7 +21,16 @@ export function createContentCardActions(output, { disabled = false } = {}) {
   edit.setAttribute('aria-expanded', 'false');
   edit.setAttribute('aria-controls', menuId);
   edit.append(createIcon('edit'));
-  actions.append(edit);
+  const save = document.createElement('button');
+  save.type = 'button';
+  save.className = 'icon-button output-card-save';
+  save.dataset.saveOutput = output.id;
+  save.disabled = disabled;
+  save.title = output.isFavorite ? 'Remove Saved Draft' : 'Save Draft Settings';
+  save.setAttribute('aria-label', `${output.isFavorite ? 'Remove saved draft' : 'Save draft settings'}: ${output.title || 'Untitled content'}`);
+  save.setAttribute('aria-pressed', String(Boolean(output.isFavorite)));
+  save.append(createIcon('favorite'));
+  actions.append(save, edit);
   return actions;
 }
 

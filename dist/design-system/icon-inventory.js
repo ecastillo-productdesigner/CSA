@@ -1,6 +1,6 @@
 // DS catalog of current controls and supported legacy app flows. Hidden toolbar
 // glyphs and dormant feature modules are excluded. The DS font subset matches
-// this catalog; the app additionally loads the legacy result-thumbnail photo_camera.
+// this catalog.
 // Both panel disclosure arrows remain active through shared runtime state.
 export const iconInventory = [
   ['add_circle', 'Add'],
@@ -14,6 +14,7 @@ export const iconInventory = [
   ['draw', 'Draft'],
   ['edit', 'Edit Content'],
   ['edit_document', 'Request Revision'],
+  ['favorite', 'Saved Choice'],
   ['folder_open', 'Sources'],
   ['format_bold', 'Bold'],
   ['format_h2', 'Heading 2'],

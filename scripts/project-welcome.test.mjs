@@ -33,6 +33,13 @@ test('source-first welcome stays empty and clears its presentation when showing 
   mobileAction.events.click();
   assert.deepEqual(calls.slice(-2), [{ open: 'newVariant' }, { focus: 'newDraft', preventScroll: true }]);
   assert.deepEqual(project, before, 'rendering a welcome must not invent or save source-derived article text');
+  const searchProject = { linkCards: true, sources: [{ type: 'text', title: 'Selected search article', text: 'Fictional sample article text.' }], awaitingOutput: true };
+  const beforeSearch = structuredClone(searchProject);
+  context.renderSourceStory(searchProject);
+  assert.equal(controls['#output-placeholder'].classList.contains('has-project-welcome'), true, 'selected search text opens the same empty welcome as selected links');
+  assert.equal(controls['#source-story-title'].hidden, true);
+  assert.equal(calls.at(-1), 'hide', 'the content preview stays closed until the person creates a draft');
+  assert.deepEqual(searchProject, beforeSearch, 'selected search text must not become an automatic story preview');
   const captured = { text: 'Captured document text.' };
   context.renderSourceStory({ contentPreview: captured });
   assert.equal(controls['#output-placeholder'].classList.contains('has-project-welcome'), false);

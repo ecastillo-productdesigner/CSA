@@ -4,7 +4,9 @@ import { readFile } from 'node:fs/promises';
 import { createContext, runInContext } from 'node:vm';
 import { randomUUID } from 'node:crypto';
 import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from '../dist/source-links.js';
-import { partitionSourceAdditions, findDuplicateSource } from '../dist/source-model.js';
+import { classifyProjectSearchInput } from '../dist/project-search-input.js';
+import { sampleSearchSources } from '../dist/search.js';
+import { partitionSourceAdditions, findDuplicateSource, sourceIdentityKey } from '../dist/source-model.js';
 import { projectTitleFromSources } from '../dist/dashboard.js';
 import { normalizeWordCount } from '../dist/variant-word-count.js';
 import { createNewProjectUpload } from '../dist/new-project-upload.js';
@@ -22,7 +24,8 @@ function productionFunction(start, end) {
 const production = [
   productionFunction('function titleFrom(', '\nfunction createProject('),
   productionFunction('function createProject(', '\nfunction showHome('),
-  productionFunction('async function appendProjectSources(', '\nfunction showProject('),
+  productionFunction('async function appendProjectSources(', '\nfunction showSourceAdditionResults('),
+  productionFunction('function setWorkspaceSearchQuery(', '\nasync function submitSource('),
   productionFunction('async function submitSource(', "\n$('#new-project-query').addEventListener"),
   productionFunction('function finishOutputProcessing(', '\nfunction resumeOutputProcessing('),
   productionFunction('function renderDeferredOutput(', "\n$('#new-project-dialog').addEventListener"),
@@ -93,15 +96,15 @@ function setup(t, { target = null, active = null, projects = [], dialogOpen = tr
   const composer = new Control();
   const querySelector = document.querySelector;
   document.querySelector = selector => selector === '#composer' ? composer : querySelector(selector);
-  const calls = { resolve: [], saved: [], shown: [], sourcePanels: [], notifications: [], fileSaves: 0, resets: 0, editorCloses: 0, additionWaits: [], additionCounts: [], sourceRenders: [], sourceRenderOptions: [], deletedDocuments: [], duplicatePopups: [] };
+  const calls = { searches: [], resultDisplays: [], navigation: [], resolve: [], saved: [], shown: [], sourcePanels: [], notifications: [], fileSaves: 0, resets: 0, editorCloses: 0, additionWaits: [], additionCounts: [], sourceRenders: [], sourceRenderOptions: [], deletedDocuments: [], duplicatePopups: [] };
   const context = createContext({
-    partitionSourceAdditions, findDuplicateSource, sourceAlreadyAdded: { open: options => calls.duplicatePopups.push(options) },
-    AbortController, crypto: { randomUUID }, document, parseSourceLinks, formatSourceLinks, sourceLinkArticles, projectTitleFromSources, normalizeWordCount,
+    partitionSourceAdditions, findDuplicateSource, sourceIdentityKey, sourceAlreadyAdded: { open: options => calls.duplicatePopups.push(options) },
+    AbortController, crypto: { randomUUID }, document, classifyProjectSearchInput, sampleSearchSources, parseSourceLinks, formatSourceLinks, sourceLinkArticles, projectTitleFromSources, normalizeWordCount,
     projectOutputs, selectedOutputs, outputIsReady, populateOutputContent, reviseSampleOutput, clearTimeout,
     projectSourcesPanel: { waitForAddition: (id, source, count) => { calls.additionWaits.push(id); calls.additionCounts.push(count); assert.equal(calls.sourcePanels.at(-1), 'sources', 'Project Sources must open before its loading animation starts'); return holdAddition ? addition.promise : Promise.resolve(true); } },
     renderProjectSources: (project, options) => { calls.sourceRenders.push(project.id); calls.sourceRenderOptions.push(options); },
     updateComposerActions() {},
-    searchExperience: { show() {} },
+    searchExperience: { show(project, options) { calls.resultDisplays.push({ project: clone(project), options }); } },
     deleteDocuments: async ids => { calls.deletedDocuments.push(...ids); },
     outputTimers: new Map(), outputViews: new Map(), deferredOutputProjectId: null,
     richEditor: { close: () => { calls.editorCloses++; } },
@@ -109,11 +112,16 @@ function setup(t, { target = null, active = null, projects = [], dialogOpen = tr
     projects: structuredClone(projects), activeProjectId: active, sourceTargetProjectId: target, sourceImport: null,
     resolveArticleMetadata: (urls, options) => { calls.resolve.push({ urls: clone(urls), options }); return pending.promise; },
     saveProjects: () => { calls.saved.push(clone(context.projects)); return true; },
-    showProject: id => { calls.shown.push(id); context.activeProjectId = id; context.sourceTargetProjectId = null; },
+    showSourceAdditionResults: (query, projectId) => { calls.searches.push({ query, projectId }); },
+    showProject: id => { calls.navigation.push({ action: 'show', id }); calls.shown.push(id); context.activeProjectId = id; context.sourceTargetProjectId = null; },
     showEditorProject: project => { calls.shown.push(project.id); context.activeProjectId = project.id; if (get('dialog').open) get('dialog').close(); },
     showHome: () => { context.activeProjectId = null; },
     notify: message => calls.notifications.push(message),
-    railNavigation: { open: name => calls.sourcePanels.push(name), closeTransient() {} },
+    railNavigation: {
+      open: name => calls.sourcePanels.push(name), closeTransient() {},
+      close(name, restoreFocus, options) { calls.navigation.push({ action: 'close', name, restoreFocus, options: clone(options) }); },
+      closeDrawer() { calls.navigation.push({ action: 'closeDrawer' }); },
+    },
     window: { matchMedia: () => ({ matches: false }) }, breakpointQuery: () => '(max-width: 640px)',
   });
   const upload = createNewProjectUpload({
@@ -434,4 +442,222 @@ test('adding a link preserves the current draft and its captured source snapshot
   assert.equal(saved.selectedOutputId, output.id);
   assert.equal(saved.viewOriginalDraft, false);
   assert.deepEqual(clone(saved.outputs), [output]);
+});
+
+
+test('a topic opens the search workspace with empty Sources and its drawer closed', async t => {
+  const ui = setup(t);
+  assert.equal(await ui.submit('  Local   school openings  '), true);
+  assert.equal(ui.get('dialog').open, false);
+  assert.equal(ui.calls.resolve.length, 0);
+  assert.equal(ui.context.projects.length, 1);
+  const result = ui.context.projects[0];
+  assert.equal(result.kind, 'draft');
+  assert.equal(result.dashboard, true);
+  assert.equal(result.awaitingOutput, true);
+  assert.equal(result.linkCards, true);
+  assert.equal(result.title, 'Local school openings');
+  assert.equal(result.searchQuery, 'Local school openings');
+  assert.deepEqual(clone(result.sources), []);
+  assert.deepEqual(ui.calls.saved.at(-1)[0], clone(result), 'the query and empty source list persist before opening the workspace');
+  assert.deepEqual(ui.calls.navigation, [
+    { action: 'close', name: 'sources', restoreFocus: false, options: { animate: false } },
+    { action: 'closeDrawer' },
+    { action: 'show', id: result.id },
+  ]);
+  assert.deepEqual(ui.calls.shown, [result.id]);
+  assert.deepEqual(ui.calls.searches, []);
+  assert.deepEqual(ui.calls.resultDisplays, []);
+  assert.deepEqual(ui.calls.sourcePanels, []);
+  assert.deepEqual(ui.calls.additionWaits, []);
+  assert.deepEqual(ui.calls.notifications, [], 'viewing results must not announce that sources were added');
+});
+
+test('a repeated topic creates a fresh workspace without changing earlier searches or drafts', async t => {
+  const previousSearch = { id: 'matching-search', title: 'School Openings', createdAt: 1, kind: 'search', dashboard: false, sources: [{ type: 'search', title: 'School Openings' }], selectedArticleIds: ['article-2'], addedArticleIds: ['article-2'] };
+  const previousDraft = {
+    id: 'matching-draft', title: 'School openings', kind: 'draft', dashboard: true,
+    sources: [{ type: 'text', title: 'Original source', text: 'Keep this source', selected: false }],
+    toolPreferences: { format: 'standard', audience: 'general', voice: '' },
+    outputs: [{ id: 'saved-output', title: 'Edited article', draftText: 'Keep my edits', status: 'ready' }],
+    selectedOutputId: 'saved-output', editorialDirection: 'Keep my instructions',
+  };
+  const ui = setup(t, { projects: [previousSearch, previousDraft] });
+  assert.equal(await ui.submit('school openings'), true);
+  const first = clone(ui.context.projects[0]);
+  assert.equal(first.kind, 'draft');
+  assert.equal(first.dashboard, true);
+  assert.notEqual(first.id, previousSearch.id);
+  assert.notEqual(first.id, previousDraft.id);
+  assert.equal(await ui.submit('school openings'), true);
+  const second = ui.context.projects[0];
+  assert.notEqual(second.id, first.id);
+  assert.equal(ui.context.projects.length, 4);
+  assert.deepEqual(clone(ui.context.projects.slice(1)), [first, previousSearch, previousDraft]);
+  assert.deepEqual(ui.calls.shown, [first.id, second.id]);
+  assert.deepEqual(ui.calls.searches, []);
+  assert.deepEqual(ui.calls.resultDisplays, []);
+  assert.equal(ui.calls.resolve.length, 0);
+});
+
+test('archived and deleted topic searches stay unchanged when a fresh draft workspace opens', async t => {
+  const sources = [{ type: 'search', title: 'School openings' }];
+  const prior = [
+    { id: 'archived-search', sources, kind: 'search', archivedAt: 1 },
+    { id: 'deleted-search', sources, kind: 'search', deletedAt: 1 },
+  ];
+  const ui = setup(t, { projects: prior });
+  assert.equal(await ui.submit('School openings'), true);
+  assert.equal(ui.context.projects.length, 3);
+  const created = ui.context.projects[0];
+  assert.equal(created.kind, 'draft');
+  assert.equal(created.dashboard, true);
+  assert.notEqual(created.id, 'archived-search');
+  assert.notEqual(created.id, 'deleted-search');
+  assert.deepEqual(clone(ui.context.projects.slice(1)), prior);
+  assert.deepEqual(ui.calls.shown, [created.id]);
+});
+
+test('an Add Source topic keeps its target and opens transient results without creating a project', async t => {
+  const existing = { id: 'target-project', kind: 'draft', sources: [] };
+  const ui = setup(t, { projects: [existing], active: existing.id, target: existing.id });
+  assert.equal(await ui.submit('  Local school openings  '), true);
+  assert.deepEqual(ui.calls.searches, [{ query: 'Local school openings', projectId: existing.id }]);
+  assert.equal(ui.context.sourceTargetProjectId, existing.id);
+  assert.equal(ui.context.projects.length, 1);
+  assert.equal(ui.get('dialog').open, false);
+  assert.deepEqual(ui.calls.shown, []);
+  assert.equal(ui.calls.resolve.length, 0);
+});
+
+test('invalid mixed input and a missing Add Source target cannot open topic results', async t => {
+  const ui = setup(t, { target: 'missing-project' });
+  assert.equal(await ui.submit('School openings'), false);
+  ui.context.sourceTargetProjectId = null;
+  for (const input of ['School openings https://example.com/news', 'https://', '   ']) {
+    assert.equal(await ui.submit(input), false);
+  }
+  assert.deepEqual(ui.calls.searches, []);
+  assert.deepEqual(ui.calls.shown, []);
+  assert.equal(ui.context.projects.length, 0);
+  assert.equal(ui.calls.resolve.length, 0);
+  assert.equal(ui.get('dialog').open, true);
+});
+
+test('starter validation enables topics and links but explains mixed or malformed URLs', t => {
+  const ui = setup(t);
+  for (const value of ['Local school openings', url]) {
+    ui.get('query').value = value;
+    assert.equal(ui.context.updateStarterInput(), true);
+    assert.equal(ui.get('submit').disabled, false);
+    assert.equal(ui.get('query').getAttribute('aria-invalid'), 'false');
+    assert.equal(ui.get('query').validityMessage, '');
+    assert.equal(ui.get('link-error').hidden, true);
+  }
+  ui.get('query').value = `School openings ${url}`;
+  assert.equal(ui.context.updateStarterInput(), false);
+  assert.equal(ui.get('submit').disabled, true);
+  assert.equal(ui.get('query').getAttribute('aria-invalid'), 'true');
+  assert.match(ui.get('query').validityMessage, /Keep topics and links separate/);
+  assert.equal(ui.get('link-error').hidden, false);
+  ui.get('query').value = '';
+  assert.equal(ui.context.updateStarterInput(), false);
+  assert.equal(ui.get('query').getAttribute('aria-invalid'), 'false');
+  assert.equal(ui.get('link-error').hidden, true);
+});
+
+test('topic submission cannot interrupt a source import already in progress', async t => {
+  const ui = setup(t);
+  ui.context.sourceImport = { controller: new AbortController() };
+  assert.equal(await ui.submit('Local school openings'), false);
+  assert.equal(ui.get('dialog').open, true);
+  assert.equal(ui.context.projects.length, 0);
+  assert.deepEqual(ui.calls.searches, []);
+  assert.equal(ui.calls.resolve.length, 0);
+});
+
+
+for (const addingSources of [false, true]) {
+  test(`entering ${addingSources ? 'Add Source' : 'standalone'} search closes the persistent mobile Sources panel before showing results`, () => {
+    const nodes = new Map();
+    const get = selector => {
+      if (!nodes.has(selector)) {
+        const node = new Control();
+        node.focus = () => {};
+        nodes.set(selector, node);
+      }
+      return nodes.get(selector);
+    };
+    let sourcesOpen = true;
+    const closures = [];
+    const shown = [];
+    const searchProject = { id: 'topic-search', title: 'School openings', kind: 'search', sources: [{ type: 'search', title: 'School openings' }] };
+    const context = createContext({
+      crypto: { randomUUID }, projects: [searchProject], activeProjectId: 'original-project', sourceTargetProjectId: 'original-project',
+      document: { body: get('body') }, $: get,
+      window: { matchMedia: () => ({ matches: true }), scrollTo() {} },
+      closeComposer() {}, closeProfile() {},
+      railNavigation: {
+        // Sources intentionally survives transient-panel cleanup on mobile.
+        closeTransient() {},
+        close(name, restoreFocus, options) {
+          closures.push({ name, restoreFocus, options: clone(options) });
+          if (name === 'sources') sourcesOpen = false;
+        },
+      },
+      searchExperience: {
+        show(project, options) {
+          assert.equal(sourcesOpen, false, 'Sources must be gone when results appear');
+          shown.push({ project: clone(project), options });
+        },
+      },
+    });
+    runInContext(productionFunction('function showSourceAdditionResults(', '\nfunction renderSourceStory('), context);
+    if (addingSources) context.showSourceAdditionResults('School openings', 'original-project');
+    else context.showProject('topic-search');
+    assert.deepEqual(closures, [{ name: 'sources', restoreFocus: false, options: { animate: false } }]);
+    assert.equal(shown.length, 1);
+    assert.equal(get('body').classList.contains('showing-results'), true);
+    if (addingSources) {
+      assert.equal(shown[0].project.sourceProjectId, 'original-project');
+      assert.equal(shown[0].options.addingSources, true);
+    } else assert.equal(shown[0].project.id, 'topic-search');
+  });
+}
+
+
+function searchDraftCallbacks(projects = []) {
+  const calls = [];
+  const context = createContext({
+    projects, sourceTargetProjectId: 'unrelated-project',
+    createSearchExperience: callbacks => callbacks,
+    titleFrom: value => value.trim(),
+    createProject(sources, options) { calls.push({ action: 'create', sources: clone(sources), options: clone(options) }); },
+    async appendProjectSources(sources, projectId) { calls.push({ action: 'append', sources: clone(sources), projectId }); },
+    railNavigation: {
+      close(name, restoreFocus, options) { calls.push({ action: 'close', name, restoreFocus, options: clone(options) }); },
+      closeDrawer() { calls.push({ action: 'closeDrawer' }); },
+    },
+  });
+  const callbacks = runInContext(productionFunction('const searchExperience = createSearchExperience(', "\n$('#draft-text').addEventListener") + '\nsearchExperience;', context);
+  return { callbacks, calls };
+}
+
+const selectedSearchArticle = { title: 'Library opening plans', source: 'Local Journal', date: '2026-11-02', paragraphs: ['The library plans to reopen.', 'The second paragraph adds details.'] };
+const selectedSearchSource = { type: 'text', title: selectedSearchArticle.title, text: 'Fictional sample article · Local Journal · 2026-11-02\n\nThe library plans to reopen.\n\nThe second paragraph adds details.' };
+
+test('Draft from search opens the source-first workspace with Sources and its drawer closed', async () => {
+  const ui = searchDraftCallbacks();
+  await ui.callbacks.onDraft({ query: 'Library reopening', articles: [selectedSearchArticle], editorialDirection: 'Focus on the reopening date', sourceProjectId: null });
+  assert.deepEqual(ui.calls, [
+    { action: 'close', name: 'sources', restoreFocus: false, options: { animate: false } },
+    { action: 'closeDrawer' },
+    { action: 'create', sources: [selectedSearchSource], options: { title: 'Library reopening', kind: 'draft', awaitingOutput: true, editorialDirection: 'Focus on the reopening date', linkCards: true } },
+  ]);
+});
+
+test('Add Sources from search appends to its captured project instead of opening a new workspace', async () => {
+  const ui = searchDraftCallbacks([{ id: 'original-project', sources: [] }]);
+  await ui.callbacks.onDraft({ query: 'Library reopening', articles: [selectedSearchArticle], editorialDirection: '', sourceProjectId: 'original-project' });
+  assert.deepEqual(ui.calls, [{ action: 'append', sources: [selectedSearchSource], projectId: 'original-project' }]);
 });

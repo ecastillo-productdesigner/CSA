@@ -1,5 +1,5 @@
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
-import { projectOutputs, outputIsReady, outputIsSent, outputLoadingSelectionKeys } from './outputs.js?v=20261029-revision-indicator-location';
+import { projectOutputs, outputIsReady, outputIsSent, outputLoadingSelectionKeys } from './outputs.js?v=20261102-saved-drafts';
 
 import { tokenNumber } from './design-system/runtime.js?v=20261028-revision-dot';
 import { createRevisionAnimation } from './drafting-animation.js?v=20261027-revision-tabs';
@@ -82,11 +82,11 @@ export function createEditorTabs({ onSelect, onRevisionRead = () => {}, createAn
     render(project) {
       const allOutputs = projectOutputs(project);
       const outputs = allOutputs.filter(output => outputIsReady(output) || output.needsRegeneration);
-      const showCreateTab = !outputs.length && Boolean(project?.linkCards || project?.viewOriginalDraft || project?.awaitingOutput || allOutputs.some(output => output.id === project?.lastPendingOutputId && !outputIsReady(output)));
+      const showCreateTab = Boolean(project?.searchQuery) || !outputs.length && Boolean(project?.linkCards || project?.viewOriginalDraft || project?.awaitingOutput || allOutputs.some(output => output.id === project?.lastPendingOutputId && !outputIsReady(output)));
       const activeId = showCreateTab && project?.viewOriginalDraft ? null : outputs.some(output => output.id === project?.selectedOutputId) ? project.selectedOutputId : outputs[0]?.id ?? null;
       const revisingIds = project?.outputProcessing?.kind === 'revision' ? project.outputProcessing.ids || [] : [];
       syncReadTimer(project, activeId, outputs, revisingIds);
-      const nextSignature = JSON.stringify([project?.id, activeId, showCreateTab, revisingIds, outputs.map(output => [output.id, output.title, output.cmsSentAt, output.revisionUnread, revisingIds.includes(output.id) ? outputLoadingSelectionKeys(output) : null])]);
+      const nextSignature = JSON.stringify([project?.id, activeId, showCreateTab, Boolean(project?.searchQuery), revisingIds, outputs.map(output => [output.id, output.title, output.cmsSentAt, output.revisionUnread, revisingIds.includes(output.id) ? outputLoadingSelectionKeys(output) : null])]);
       if (signature === nextSignature) return;
       signature = nextSignature;
       clearAnimations();
@@ -113,7 +113,7 @@ export function createEditorTabs({ onSelect, onRevisionRead = () => {}, createAn
         tab.setAttribute('aria-controls', panel.id);
         tab.setAttribute('aria-selected', String(id === activeId));
         tab.tabIndex = id === activeId ? 0 : -1;
-        tab.setAttribute('aria-label', title);
+        tab.setAttribute('aria-label', preview && project?.searchQuery ? 'Searching Topic' : title);
         const badge = document.createElement('span');
         badge.className = 'editor-tab-draft';
         badge.setAttribute('aria-hidden', 'true');
@@ -122,6 +122,10 @@ export function createEditorTabs({ onSelect, onRevisionRead = () => {}, createAn
         badge.dataset.sent = String(sent);
         if (preview) badge.dataset.pending = 'true';
         if (!preview) tab.append(badge);
+        else if (project?.searchQuery) {
+          tab.dataset.searchResults = 'true';
+          tab.append(document.createTextNode('Searching Topic'));
+        }
         tab.setAttribute('aria-description', preview ? 'New draft workspace' : status);
         if (!preview) {
           const label = document.createElement('span');

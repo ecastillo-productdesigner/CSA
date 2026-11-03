@@ -5,7 +5,7 @@ import { createEditorTabs } from '../editor-tabs.js?v=20261029-revision-indicato
 import { createStoryMetadata, storyMetadata } from '../story-metadata.js?v=20261027-metadata';
 import { createRevisionLoading } from '../revision-loading.js?v=20261027-revision-loading';
 import { tokenNumber } from './runtime.js?v=20261029-revision-indicator-location';
-import { createOutputBadges, outputLoadingSelectionKeys, reviseSampleOutput } from '../outputs.js?v=20261030-declined-revision-details';
+import { createOutputBadges, outputLoadingSelectionKeys, reviseSampleOutput } from '../outputs.js?v=20261102-saved-drafts';
 import { sendDestinations } from '../send-destination.js?v=20261026-drafting-card-size';
 
 // The app controller operates on isolated in-memory drafts here. No project storage,

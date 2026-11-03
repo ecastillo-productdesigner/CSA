@@ -1,196 +1,63 @@
-// Purpose-led roles follow Material 3's applying-type guidance and Carbon's
-// typography style strategies. Six text sizes serve the app and documentation.
+// Shared app typography, grouped for scanning without changing the token values.
+const type = (name, label = 'All screens', extras = {}) => ({ token: `semantic.typography.${name}`, label, ...extras });
+
 export const typographyRoleGroups = [
   {
-    id: 'page-hierarchy',
-    title: 'Page hierarchy',
-    description: 'Help people understand where they are and what matters first. Use a brief greeting for the homepage, a clear title for the draft, and smaller headings for panels and dialogs.',
+    id: 'display', title: 'Display',
+    description: 'A short editorial welcome sets the tone before the work begins.',
     roles: [
-      {
-        name: 'Homepage greeting',
-        usage: 'Welcome the user at the start of the homepage. Use Newsreader for the short greeting.',
-        example: 'Hello,',
-        styles: [
-          { token: 'semantic.typography.greeting.desktop', label: 'Desktop' },
-          { token: 'semantic.typography.greeting.mobile', label: 'Mobile' },
-        ],
-      },
-      {
-        name: 'Draft title',
-        usage: 'Identify the article being edited. This is the strongest heading inside the editor; use the compact version when space is limited.',
-        example: 'A Local Business Finds a Fresh Way to Connect',
-        styles: [
-          { token: 'semantic.typography.editor-heading.desktop', label: 'Desktop' },
-          { token: 'semantic.typography.editor-heading.compact', label: 'Compact / mobile' },
-        ],
-      },
-      {
-        name: 'Panel heading',
-        usage: 'Name a panel so its purpose is clear before the controls below it. New Draft and Content use a compact 16 px heading on every screen; other panels keep the 20 px role.',
-        example: 'New Draft',
-        styles: [
-          {
-            token: 'semantic.typography.panel-heading',
-            label: 'New Draft / Content',
-            overrides: { fontSize: 'foundation.font.size.16', lineHeight: 'foundation.line.height.24' },
-            note: 'Composer panel component tokens set 16 px / 24 px while retaining Bold (700).',
-          },
-          { token: 'semantic.typography.panel-heading', label: 'Other panels' },
-        ],
-      },
-      {
-        name: 'Dialog heading',
-        usage: 'State the task in a popup, such as creating a project or choosing where to send a draft. Keep the heading direct.',
-        example: 'New Project',
-        styles: [{ token: 'semantic.typography.dialog-heading', label: 'All screens' }],
-      },
+      { name: 'Homepage greeting', usage: 'The short welcome on the homepage.', example: 'Hello,', styles: [type('greeting.desktop', 'Desktop'), type('greeting.mobile', 'Mobile')] },
     ],
   },
   {
-    id: 'content-reading',
-    title: 'Content reading',
-    description: 'Make stories easy to find, scan, and read. Titles identify a piece of content, article headings organize its sections, and body text carries the longer passages.',
+    id: 'headings', title: 'Headings',
+    description: 'Give pages, panels, and articles a clear hierarchy. Choose the role that matches the content.',
     roles: [
-      {
-        name: 'Project card title',
-        usage: 'Identify a project in the homepage grid. The semibold title comes before its date and content count.',
-        example: 'A creative chapter begins',
-        styles: [
-          { token: 'semantic.typography.project-title.desktop', label: 'Desktop' },
-          { token: 'semantic.typography.project-title.mobile', label: 'Mobile' },
-        ],
-      },
-      {
-        name: 'Project list title',
-        usage: 'Identify a project in the homepage list with compact semibold text for easy scanning.',
-        example: 'A creative chapter begins',
-        styles: [{ token: 'semantic.typography.project-list-title', label: 'All screens' }],
-      },
-      {
-        name: 'Source title',
-        usage: 'Name an article in the Project Sources panel using Regular (400) weight at 14 px with a 20 px line height. Keep it distinct from the source details below it.',
-        example: 'A Local Business Finds a Fresh Way to Connect',
-        styles: [{ token: 'semantic.typography.source-title', label: 'All screens' }],
-      },
-      {
-        name: 'Content card title',
-        usage: 'Identify a draft in the Content panel, below its format, audience, and voice chips.',
-        example: 'A fresh perspective on the week',
-        styles: [{ token: 'semantic.typography.variant-title', label: 'All screens' }],
-      },
-      {
-        name: 'Article card title',
-        usage: 'Identify an article in a source result card. Use the bold title to lead into its short preview.',
-        example: 'A creative project brings neighbors together',
-        styles: [{ token: 'semantic.typography.result-title', label: 'All screens' }],
-      },
-      {
-        name: 'Article heading',
-        usage: 'Name the article at its highest heading level in the editor or exported document. Use one main heading before its sections.',
-        example: 'A local idea brings the community together',
-        styles: [{ token: 'semantic.typography.article-h1', label: 'Heading 1' }],
-      },
-      {
-        name: 'Article section heading',
-        usage: 'Divide a draft into its main sections. Use the editor’s Heading 2 style below the article title.',
-        example: 'A new perspective',
-        styles: [{ token: 'semantic.typography.article-h2', label: 'Heading 2' }],
-      },
-      {
-        name: 'Article subsection heading',
-        usage: 'Introduce a smaller section within a Heading 2 section. Keep this level visually quieter than the section heading.',
-        example: 'The details that matter',
-        styles: [{ token: 'semantic.typography.article-h3', label: 'Heading 3' }],
-      },
-      {
-        name: 'Body text',
-        usage: 'Use for the longer paragraphs in source previews and draft articles. Keep the regular weight and generous line spacing for sustained reading.',
-        example: 'A local business is finding new ways to connect with its community. The people behind the effort describe the small decisions that helped it take shape.',
-        styles: [{ token: 'semantic.typography.body', label: 'All screens' }],
-      },
+      { name: 'Draft title', usage: 'The title of the article being edited.', example: 'A Local Business Finds a Fresh Way to Connect', styles: [type('editor-heading.desktop', 'Desktop'), type('editor-heading.compact', 'Compact / mobile')] },
+      { name: 'Article heading', usage: 'The main heading inside an article or exported document.', example: 'A Local Business Finds a Fresh Way to Connect', styles: [type('article-h1', 'Heading 1')] },
+      { name: 'Dialog and section headings', usage: 'Dialog titles and Heading 2 sections in an article.', example: 'A new perspective', styles: [type('dialog-heading', 'Dialog heading'), type('article-h2', 'Article Heading 2')] },
+      { name: 'Panel and subsection headings', usage: 'Panel titles, compact New Draft and Content headings, and article subsections.', example: 'A new perspective', styles: [
+        type('panel-heading', 'General panels', { example: 'Project Sources' }),
+        type('panel-heading', 'New Draft / Content', { example: 'New Draft', overrides: { fontSize: 'component.composer-panel.heading-font-size', lineHeight: 'component.composer-panel.heading-line-height' }, note: 'The composer component uses a compact heading on every screen.' }),
+        type('article-h3', 'Article Heading 3'),
+      ] },
+      { name: 'Project card title', usage: 'Project names on homepage grid cards.', example: 'A creative chapter begins', styles: [type('project-title.desktop', 'Desktop'), type('project-title.mobile', 'Mobile')] },
+      { name: 'Project list title', usage: 'Project names in the compact homepage list.', example: 'A creative chapter begins', styles: [type('project-list-title')] },
+      { name: 'Article card title', usage: 'Article titles in search results.', example: 'A creative chapter begins', styles: [type('result-title')] },
     ],
   },
   {
-    id: 'interface-controls',
-    title: 'Interface controls',
-    description: 'Make actions and choices easy to recognize. Keep labels concise and use the same style for controls that do the same kind of work.',
+    id: 'body', title: 'Body',
+    description: 'Use comfortable reading text for stories and compact text for shorter values and summaries.',
     roles: [
-      {
-        name: 'Field label',
-        usage: 'Explain what a form field or setting controls. Place the label close to its value.',
-        example: 'Audience',
-        styles: [{ token: 'semantic.typography.label', label: 'All screens' }],
-      },
-      {
-        name: 'Dropdown value',
-        usage: 'Show the selected value inside a dropdown. Use regular weight so the value answers the field label.',
-        example: 'General Audience',
-        styles: [{ token: 'semantic.typography.field-value', label: 'All screens' }],
-      },
-      {
-        name: 'Text input value',
-        usage: 'Use regular text for editable input and textarea values. Editorial Direction uses its compact component style: 14 px Regular with a 20 px line height.',
-        example: 'Focus on the local economy',
-        styles: [{ token: 'semantic.typography.input-value', label: 'All screens' }],
-      },
-      {
-        name: 'Primary button label',
-        usage: 'Name the main action, such as Add to List or Draft. Use a short verb or verb phrase.',
-        example: 'Add to List',
-        styles: [{ token: 'semantic.typography.button', label: 'All screens' }],
-      },
-      {
-        name: 'Secondary and text action label',
-        usage: 'Name a supporting action, such as Cancel, with less weight than the primary action.',
-        example: 'Cancel',
-        styles: [{ token: 'semantic.typography.secondary-button', label: 'All screens' }],
-      },
-      {
-        name: 'Navigation label',
-        usage: 'Name a destination in the workspace navigation. Use the same wording wherever that destination appears.',
-        example: 'Project Sources',
-        styles: [{ token: 'semantic.typography.navigation', label: 'All screens' }],
-      },
-      {
-        name: 'Settings chip',
-        usage: 'Summarize a draft setting in a compact chip, such as its format, audience, or voice.',
-        example: 'General Audience',
-        styles: [{ token: 'semantic.typography.chip', label: 'All screens' }],
-      },
+      { name: 'Reading text', usage: 'Paragraphs in source previews and draft articles.', example: 'A local business is finding new ways to connect with its community. The people behind the effort describe the small decisions that helped it take shape.', styles: [type('body')] },
+      { name: 'Compact content and values', usage: 'Source titles, Content card titles, and selected dropdown values.', example: 'A fresh perspective on the week', styles: [type('source-title', 'Source title'), type('variant-title', 'Content card title'), type('field-value', 'Dropdown value')] },
+      { name: 'Input text', usage: 'Editable text fields and the compact Editorial Direction field.', example: 'Focus on the local economy', styles: [
+        type('input-value', 'Text inputs'),
+        type('input-value', 'Editorial Direction', { overrides: { fontSize: 'foundation.font.size.14', lineHeight: 'foundation.line.height.20' }, note: 'Editorial Direction uses the existing compact field size and line height.' }),
+      ] },
     ],
   },
   {
-    id: 'supporting-information',
-    title: 'Supporting information',
-    description: 'Add context without competing with the story or the main action. Keep dates, counts, status, and helper text separate from titles.',
+    id: 'labels', title: 'Labels',
+    description: 'Keep actions and choices concise. Use a consistent style for controls with the same purpose.',
     roles: [
-      {
-        name: 'Project metadata',
-        usage: 'Show the project’s update date and number of pieces of content below its homepage card title.',
-        example: 'Updated Today · 2 Pieces of Content',
-        styles: [
-          { token: 'semantic.typography.project-meta.desktop', label: 'Desktop' },
-          { token: 'semantic.typography.project-meta.mobile', label: 'Mobile' },
-        ],
-      },
-      {
-        name: 'Status badge',
-        usage: 'Show a short state, such as Draft or Sent, alongside the content it describes. Match the settings-chip typography.',
-        example: 'Draft',
-        styles: [{ token: 'semantic.typography.status', label: 'All screens' }],
-      },
-      {
-        name: 'Helper text',
-        usage: 'Give a brief explanation that supports the current task, such as the sign-in guidance.',
-        example: 'Use the demo password to continue.',
-        styles: [{ token: 'semantic.typography.caption', label: 'All screens' }],
-      },
-      {
-        name: 'Document metadata',
-        usage: 'Show small details in the editor footer, such as the draft’s word count. Keep essential instructions in the larger body or label styles.',
-        example: '235 words',
-        styles: [{ token: 'semantic.typography.metadata', label: 'All screens' }],
-      },
+      { name: 'Fields and navigation', usage: 'Field labels and workspace navigation destinations.', example: 'Project Sources', styles: [
+        type('label', 'Field labels', { example: 'Audience' }),
+        type('navigation', 'Desktop navigation'),
+        type('navigation', 'Mobile navigation', { overrides: { fontWeight: 'foundation.font.weight.600' }, note: 'Mobile navigation uses the existing Semibold weight.' }),
+      ] },
+      { name: 'Primary action', usage: 'The main action, including Add to List and Draft.', example: 'Add to List', styles: [type('button')] },
+      { name: 'Supporting action', usage: 'Secondary buttons and text actions.', example: 'Cancel', styles: [type('secondary-button')] },
+      { name: 'Chips and status', usage: 'Format, Audience, and Voice chips, plus Draft and Sent badges.', example: 'General Audience', styles: [type('chip', 'Settings chip'), type('status', 'Status badge')] },
+    ],
+  },
+  {
+    id: 'supporting-information', title: 'Supporting Information',
+    description: 'Dates, counts, and guidance add context without competing with the main content.',
+    roles: [
+      { name: 'Project metadata', usage: 'Updated dates and content counts on project cards.', example: 'Updated Today · 2 Pieces of Content', styles: [type('project-meta.desktop', 'Desktop'), type('project-meta.mobile', 'Mobile')] },
+      { name: 'Helper text and metadata', usage: 'Brief guidance, document details, and word counts.', example: '235 words', styles: [type('caption', 'Helper text'), type('metadata', 'Document metadata')] },
     ],
   },
 ];

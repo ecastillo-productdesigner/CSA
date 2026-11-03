@@ -63,6 +63,7 @@ class Element extends Events {
   setAttribute(name, value) { this.attributes.set(name, String(value)); }
   getAttribute(name) { return this.attributes.get(name); }
   removeAttribute(name) { this.attributes.delete(name); }
+  setCustomValidity(value) { this.validityMessage = value; }
   matches(selector) {
     if (selector.startsWith('.')) return this.classList.contains(selector.slice(1));
     if (selector.startsWith('#')) return this.id === selector.slice(1);
@@ -154,14 +155,23 @@ function setup(t) {
   });
   const changes = [];
   const duplicates = [];
+  const searches = [];
+  const drafts = [];
+  const backs = [];
+  const selectionContexts = [];
+  const workspaceSearches = [];
+  const directions = [];
   const experience = createSearchExperience({
-    onSearch() {}, onDirectionChange() {}, onDraft() {},
+    onSearch(query, sourceProjectId, workspaceProjectId) { searches.push({ query, sourceProjectId }); workspaceSearches.push(workspaceProjectId); },
+    onDirectionChange(projectId, value) { directions.push({ projectId, value }); },
+    onDraft(payload) { drafts.push(payload); },
+    onBack(sourceProjectId) { backs.push(sourceProjectId); },
     onDuplicateSource: trigger => duplicates.push(trigger),
-    onSelectionChange(projectId, selected, ready) { changes.push({ projectId, selected, ready }); },
+    onSelectionChange(projectId, selected, ready, context) { changes.push({ projectId, selected, ready }); selectionContexts.push(context); },
   });
   const $ = selector => document.querySelector(selector);
   return {
-    experience, changes, duplicates, $, pending: () => timers.size,
+    experience, changes, duplicates, searches, workspaceSearches, drafts, backs, selectionContexts, directions, $, pending: () => timers.size,
     animationListeners: () => document.listenerCount() + window.listenerCount() + motion.listenerCount(),
     animationObservers: () => mutations.size,
     addition: id => $('#result-list').querySelector('[data-addition-article-id="' + id + '"]'),
@@ -336,4 +346,232 @@ test('adding an already-ready link opens the duplicate popup without replaying i
   assert.equal(ui.changes.length, before);
   assert.equal(ui.pending(), 0);
   assert.equal(loading(ui.addition('link-1')), false);
+});
+
+
+const topicProject = (overrides = {}) => ({ id: 'topic-search', kind: 'search', sources: [{ type: 'search', title: 'Local school openings' }], ...overrides });
+
+test('Add Source search carries the original project through search, draft, and return callbacks', t => {
+  const ui = setup(t);
+  ui.experience.show(topicProject({ sourceProjectId: 'original-project' }), { addingSources: true });
+  assert.equal(ui.$('#results-back').hidden, false);
+  assert.equal(ui.$('#results-back').textContent, 'Back to Project');
+  assert.equal(ui.$('#results-demo-note').hidden, false);
+  assert.equal(ui.$('#create-draft').textContent, 'Add Sources');
+  ui.$('#results-query').value = 'School board decisions';
+  ui.$('#results-query').emit('input');
+  ui.$('#results-search-form').emit('submit');
+  assert.deepEqual(ui.searches, [{ query: 'School board decisions', sourceProjectId: 'original-project' }]);
+  ui.select('article-2');
+  ui.$('#create-draft').emit('click');
+  assert.equal(ui.drafts.length, 1);
+  assert.equal(ui.drafts[0].sourceProjectId, 'original-project');
+  assert.equal(ui.drafts[0].query, 'Local school openings');
+  assert.deepEqual(ui.drafts[0].articles.map(article => article.id), ['article-2']);
+  ui.$('#results-back').emit('click');
+  assert.deepEqual(ui.backs, ['original-project']);
+});
+
+test('leaving Add Source results clears their target and embedded links hide search-only actions', t => {
+  const ui = setup(t);
+  ui.experience.show(topicProject({ sourceProjectId: 'original-project' }), { addingSources: true });
+  ui.experience.show(topicProject({ sourceProjectId: 'irrelevant-target' }));
+  assert.equal(ui.$('#results-back').textContent, 'Back to Projects');
+  ui.$('#results-search-form').emit('submit');
+  assert.equal(ui.searches.at(-1).sourceProjectId, null);
+  ui.select('article-1');
+  ui.$('#create-draft').emit('click');
+  assert.equal(ui.drafts.at(-1).sourceProjectId, null);
+  ui.$('#results-back').emit('click');
+  assert.equal(ui.backs.at(-1), null);
+  ui.experience.show(project([link('source')]), { embedded: true });
+  assert.equal(ui.$('#results-back').hidden, true);
+  assert.equal(ui.$('#results-demo-note').hidden, true);
+  assert.equal(ui.$('.results-search-form').hidden, true);
+});
+
+test('results search rejects mixed topics and links without losing the current selections', t => {
+  const ui = setup(t);
+  ui.experience.show(topicProject());
+  ui.select('article-1');
+  for (const value of ['School openings https://example.com/news', 'https://']) {
+    ui.$('#results-query').value = value;
+    ui.$('#results-query').emit('input');
+    assert.equal(ui.$('#results-search-button').disabled, true);
+    assert.equal(ui.$('#results-query').getAttribute('aria-invalid'), 'true');
+    assert.match(ui.$('#results-query').validityMessage, /Keep topics and links separate/);
+    ui.$('#results-search-form').emit('submit');
+  }
+  assert.deepEqual(ui.searches, []);
+  assert.equal(ui.$('#create-draft').disabled, false);
+  assert.deepEqual(ui.changes.at(-1).selected, ['article-1']);
+  ui.$('#results-query').value = 'City schools';
+  ui.$('#results-query').emit('input');
+  assert.equal(ui.$('#results-search-button').disabled, false);
+  assert.equal(ui.$('#results-query').getAttribute('aria-invalid'), 'false');
+  assert.equal(ui.$('#results-query').validityMessage, '');
+  ui.$('#results-search-form').emit('submit');
+  assert.deepEqual(ui.searches, [{ query: 'City schools', sourceProjectId: null }]);
+});
+
+test('results search accepts pasted URLs and keeps empty input disabled without reporting an error', t => {
+  const ui = setup(t);
+  ui.experience.show(topicProject());
+  ui.$('#results-query').value = 'https://example.com/news';
+  ui.$('#results-query').emit('input');
+  assert.equal(ui.$('#results-search-button').disabled, false);
+  ui.$('#results-search-form').emit('submit');
+  assert.deepEqual(ui.searches, [{ query: 'https://example.com/news', sourceProjectId: null }]);
+  ui.$('#results-query').value = '  ';
+  ui.$('#results-query').emit('input');
+  assert.equal(ui.$('#results-search-button').disabled, true);
+  assert.equal(ui.$('#results-query').getAttribute('aria-invalid'), 'false');
+  assert.equal(ui.$('#results-query').validityMessage, '');
+  ui.$('#results-search-form').emit('submit');
+  assert.equal(ui.searches.length, 1);
+});
+
+
+const workspaceProject = (overrides = {}) => ({
+  id: 'workspace-project', kind: 'draft', searchQuery: 'Local school openings',
+  sources: Array.from({ length: 8 }, (_, index) => ({
+    type: 'text', title: `Story ${index + 1}`, searchQuery: 'Local school openings',
+    searchArticleId: `article-${index + 1}`, selected: false, addedToCsa: false,
+  })),
+  ...overrides,
+});
+
+test('workspace search preserves search, filters, and Load More while keeping direction in New Draft', t => {
+  const ui = setup(t);
+  ui.experience.show(workspaceProject(), { workspace: true });
+  assert.equal(ui.$('#search-results').parentElement, ui.$('#editor-canvas-content'));
+  assert.equal(ui.$('#search-results').classList.contains('workspace-search-panel'), true);
+  assert.equal(ui.$('#search-results').classList.contains('link-cards-panel'), false);
+  for (const selector of ['.results-search-form', '.results-toolbar', '.results-sort', '#results-toggle-filters', '#results-demo-note', '#load-more']) {
+    assert.equal(ui.$(selector).hidden, false, selector);
+  }
+  assert.equal(ui.$('#results-back').hidden, true);
+  assert.equal(ui.$('.results-actions').hidden, true);
+  assert.equal(ui.$('.results-direction').hidden, true);
+  assert.equal(ui.$('#results-query').value, 'Local school openings');
+  assert.equal(ui.$('#results-count').textContent, '8 stories found');
+  assert.equal(ui.$('#result-list').children.length, 4);
+  assert.match(ui.$('#result-list').textContent, /Local school openings/);
+  assert.equal(ui.pending(), 0);
+  assert.equal(ui.addition('article-1').hidden, true);
+  ui.$('#load-more').emit('click');
+  assert.equal(ui.$('#result-list').children.length, 8);
+  ui.experience.hide();
+  assert.equal(ui.$('#search-results').classList.contains('workspace-search-panel'), false);
+  ui.experience.show(topicProject());
+  assert.notEqual(ui.$('#search-results').parentElement, ui.$('#editor-canvas-content'));
+  assert.equal(ui.$('.results-actions').hidden, false);
+  assert.equal(ui.$('#results-back').hidden, false);
+});
+
+test('workspace selection follows matching source article IDs rather than source order or previous topic selections', t => {
+  const ui = setup(t);
+  const record = workspaceProject();
+  record.sources[0].selected = true;
+  record.sources[0].addedToCsa = true;
+  record.sources[2].selected = true;
+  record.sources.reverse();
+  record.sources.push({ searchQuery: 'Different topic', searchArticleId: 'article-2', selected: true, addedToCsa: true });
+  record.selectedArticleIds = ['article-4'];
+  record.addedArticleIds = ['article-4'];
+  ui.experience.show(record, { workspace: true });
+  const selected = id => ui.$('#result-list').querySelector(`[data-article-id="${id}"] .result-select-button`).getAttribute('aria-checked');
+  assert.equal(selected('article-1'), 'true');
+  assert.equal(selected('article-2'), 'false');
+  assert.equal(selected('article-3'), 'true');
+  assert.equal(selected('article-4'), 'false');
+  assert.equal(loading(ui.addition('article-1')), false);
+  assert.equal(loading(ui.addition('article-3')), true);
+  assert.equal(ui.pending(), 1);
+  ui.tick(3000);
+  assert.deepEqual(ui.changes.at(-1), { projectId: record.id, selected: ['article-3', 'article-1'], ready: ['article-1', 'article-3'] });
+  assert.deepEqual(ui.selectionContexts.at(-1), { query: record.searchQuery, workspace: true });
+  ui.select('article-2');
+  assert.deepEqual(ui.selectionContexts.at(-1), { query: record.searchQuery, workspace: true });
+});
+
+test('workspace searches carry the current project ID and direction can sync without triggering an input loop', t => {
+  const ui = setup(t);
+  ui.experience.show(workspaceProject({ editorialDirection: 'Focus on students' }), { workspace: true });
+  assert.equal(ui.$('#results-editorial-direction').value, 'Focus on students');
+  ui.$('#results-query').value = 'School board decisions';
+  ui.$('#results-search-form').emit('submit');
+  assert.deepEqual(ui.searches, [{ query: 'School board decisions', sourceProjectId: null }]);
+  assert.deepEqual(ui.workspaceSearches, ['workspace-project']);
+  ui.experience.syncDirection('Include the opening date');
+  assert.equal(ui.$('#results-editorial-direction').value, 'Include the opening date');
+  assert.deepEqual(ui.directions, []);
+  ui.$('#results-editorial-direction').value = 'Keep the local angle';
+  ui.$('#results-editorial-direction').emit('input');
+  assert.deepEqual(ui.directions, [{ projectId: 'workspace-project', value: 'Keep the local angle' }]);
+  ui.experience.hide();
+  ui.experience.syncDirection('Ignored after leaving');
+  assert.equal(ui.$('#results-editorial-direction').value, 'Keep the local angle');
+  ui.experience.show(topicProject());
+  ui.$('#results-search-form').emit('submit');
+  assert.equal(ui.workspaceSearches.at(-1), null);
+});
+
+test('refreshing sidebar selections preserves workspace filters and direction while reconciling addition timers', t => {
+  const ui = setup(t);
+  const record = workspaceProject({ editorialDirection: 'Local impact' });
+  record.sources[5].selected = true;
+  ui.experience.show(record, { workspace: true });
+  ui.$('#results-toggle-filters').emit('click');
+  ui.$('#results-sort').value = 'oldest';
+  ui.$('#results-sort').emit('change');
+  ui.$('#results-source').value = 'Culture Weekly';
+  ui.$('#results-source').emit('change');
+  ui.$('#results-after').value = '2026-10-08';
+  ui.$('#results-after').emit('change');
+  ui.$('#load-more').emit('click');
+  ui.$('#results-query').value = 'An unfinished replacement query';
+  ui.tick(1000);
+  record.sources[5].selected = false;
+  record.sources[7].selected = true;
+  record.sources.reverse();
+  assert.equal(ui.experience.refreshSources(record), true);
+  assert.equal(ui.pending(), 1, 'cancel deselected article and start newly selected article');
+  assert.equal(ui.$('#results-filter-panel').hidden, false);
+  assert.equal(ui.$('#results-sort').value, 'oldest');
+  assert.equal(ui.$('#results-source').value, 'Culture Weekly');
+  assert.equal(ui.$('#results-after').value, '2026-10-08');
+  assert.equal(ui.$('#results-query').value, 'An unfinished replacement query');
+  assert.equal(ui.$('#results-editorial-direction').value, 'Local impact');
+  assert.equal(ui.$('#results-count').textContent, '2 stories found');
+  assert.equal(ui.$('#result-list').children[0].querySelector('.result-card').dataset.articleId, 'article-8');
+  assert.equal(ui.addition('article-6').hidden, true);
+  assert.equal(loading(ui.addition('article-8')), true);
+  const beforeRefresh = ui.$('#result-list').children[0];
+  assert.equal(ui.experience.refreshSources({ ...record, id: 'another-project' }), false);
+  assert.equal(ui.experience.refreshSources({ ...record, searchQuery: 'Another topic' }), false);
+  assert.equal(ui.$('#result-list').children[0], beforeRefresh, 'stale updates leave current cards untouched');
+  ui.tick(2000);
+  assert.deepEqual(ui.changes, []);
+  ui.tick(1000);
+  assert.deepEqual(ui.changes.at(-1), { projectId: record.id, selected: ['article-8'], ready: ['article-8'] });
+});
+
+test('refreshing workspace source readiness completes the visible loader without notifying selection or resetting loaded results', t => {
+  const ui = setup(t);
+  const record = workspaceProject();
+  record.sources[0].selected = true;
+  ui.experience.show(record, { workspace: true });
+  ui.$('#load-more').emit('click');
+  record.sources[0].addedToCsa = true;
+  assert.equal(ui.experience.refreshSources(record), true);
+  assert.equal(ui.$('#result-list').children.length, 8);
+  assert.equal(loading(ui.addition('article-1')), false);
+  assert.equal(ui.pending(), 0);
+  ui.tick(3000);
+  assert.deepEqual(ui.changes, []);
+  ui.experience.hide();
+  assert.equal(ui.experience.refreshSources(record), false);
+  ui.experience.show(project([link('source')]), { embedded: true });
+  assert.equal(ui.experience.refreshSources(record), false);
 });

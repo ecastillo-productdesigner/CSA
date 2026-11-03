@@ -1,4 +1,4 @@
-import { savedVariantName } from './outputs.js?v=20261030-declined-revision-details';
+import { savedVariantName } from './outputs.js?v=20261102-saved-drafts';
 import { normalizeWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
 const keys = ['format', 'audience', 'voice'];
 export function presetConfiguration(output) {

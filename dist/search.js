@@ -1,3 +1,4 @@
+import { classifyProjectSearchInput } from './project-search-input.js?v=20261102-topic-search';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { createSourceAddingAnimation } from './drafting-animation.js?v=20261026-drafting-card-size';
 import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-drafting-card-size';
@@ -36,6 +37,17 @@ function sampleArticles(query) {
   }));
 }
 
+export function sampleSearchSources(query) {
+  return sampleArticles(query).map(article => ({
+    type: 'text',
+    title: article.title,
+    text: `Fictional sample article · ${article.source} · ${article.date}\n\n${article.paragraphs.join('\n\n')}`,
+    selected: true,
+    searchQuery: query,
+    searchArticleId: article.id,
+  }));
+}
+
 function node(tag, className, text) {
   const element = document.createElement(tag);
   if (className) element.className = className;
@@ -54,7 +66,7 @@ function dateLabel(value) {
   return new Date(`${value}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 }
 
-export function createSearchExperience({ onSearch, onSelectionChange, onDirectionChange, onDraft, onOpenSource, onDuplicateSource = () => {} }) {
+export function createSearchExperience({ onSearch, onBack = () => {}, onSelectionChange, onDirectionChange, onDraft, onOpenSource, onDuplicateSource = () => {} }) {
   const $ = (selector) => document.querySelector(selector);
   const results = $('#search-results');
   const resultsHome = results.parentElement;
@@ -103,6 +115,19 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     }
   }
 
+  function notifySelection() {
+    onSelectionChange(state.projectId, [...state.selected], [...state.readyArticleIds], { query: state.query, workspace: state.workspace });
+  }
+
+  function workspaceSelection(project, query, articles) {
+    const articleIds = new Set(articles.map(article => article.id));
+    const sources = project.sources.filter(source => source.searchQuery === query && articleIds.has(source.searchArticleId));
+    return {
+      selected: new Set(sources.filter(source => source.selected !== false).map(source => source.searchArticleId)),
+      readyArticleIds: new Set(sources.filter(source => source.addedToCsa !== false).map(source => source.searchArticleId)),
+    };
+  }
+
   function startAddition(id) {
     if (!state.readyArticleIds.has(id) && !additionTimers.has(id)) {
       const selectionState = state;
@@ -110,7 +135,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
         additionTimers.delete(id);
         if (state !== selectionState || !state.selected.has(id)) return;
         state.readyArticleIds.add(id);
-        onSelectionChange(state.projectId, [...state.selected], [...state.readyArticleIds]);
+        notifySelection();
         const container = $('#result-list').querySelector(`[data-addition-article-id="${id}"]`);
         const article = state.articles.find(article => article.id === id);
         if (container && article) renderAddition(container, article);
@@ -128,7 +153,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       if (state.linkResults) state.readyArticleIds.delete(id);
       startAddition(id);
     }
-    onSelectionChange(state.projectId, [...state.selected], [...state.readyArticleIds]);
+    notifySelection();
     render();
     $('#result-list').querySelector(`[data-article-id="${id}"] .result-select-button`)?.focus({ preventScroll: true });
   }
@@ -142,7 +167,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     state.selected.add(id);
     state.readyArticleIds.delete(id);
     startAddition(id);
-    onSelectionChange(state.projectId, [...state.selected], [...state.readyArticleIds]);
+    notifySelection();
     render();
     $('#result-list').querySelector(`[data-add-article-id="${id}"]`)?.focus({ preventScroll: true });
   }
@@ -186,7 +211,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     clearAdditionAnimations();
     list.replaceChildren(...visible.map((article) => {
       const item = node('li', 'result-item');
-      const card = node('div', `result-card${article.url ? ' result-card--link' : ''}`);
+      const card = node('div', `result-card${article.url ? ' result-card--link' : !article.referenceImage ? ' result-card--no-thumbnail' : ''}`);
       card.dataset.articleId = article.id;
       card.dataset.selected = String(state.selected.has(article.id));
       const selection = node('button', 'result-select-button');
@@ -197,9 +222,8 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       const indicator = node('span', 'result-selection-indicator');
       indicator.setAttribute('aria-hidden', 'true');
       selection.title = state.selected.has(article.id) ? 'Unselect this story' : 'Select this story for your draft';
-      const thumbnail = node('span', `result-thumbnail${article.referenceImage ? ' result-thumbnail--reference' : ''}`);
-      thumbnail.setAttribute('aria-hidden', 'true');
-      if (!article.referenceImage) thumbnail.append(node('span', 'material-symbols-outlined', 'photo_camera'));
+      const thumbnail = article.referenceImage ? node('span', 'result-thumbnail result-thumbnail--reference') : null;
+      if (thumbnail) thumbnail.setAttribute('aria-hidden', 'true');
       const copy = node('span', 'result-copy');
       const meta = node('span', 'result-meta');
       const publication = node('span', 'result-publication', article.source);
@@ -233,7 +257,11 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
         add.setAttribute('aria-label', `Add Article to CSA: ${article.title}`);
         add.setAttribute('aria-describedby', `source-addition-${article.id}`);
         card.append(add, selection, indicator, copy);
-      } else card.append(selection, indicator, thumbnail, copy);
+      } else {
+        card.append(selection, indicator);
+        if (thumbnail) card.append(thumbnail);
+        card.append(copy);
+      }
       const previewButton = node(article.url ? 'a' : 'button', 'icon-button result-preview-button');
       if (article.url) {
         previewButton.href = article.url;
@@ -276,12 +304,21 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
     $('#results-selection').textContent = `${state.selected.size} ${state.selected.size === 1 ? 'story' : 'stories'} selected`;
   }
 
+  function validateSearchInput() {
+    const field = $('#results-query');
+    const kind = classifyProjectSearchInput(field.value).kind;
+    const valid = ['links', 'search'].includes(kind);
+    field.setCustomValidity(kind === 'invalid' ? 'Enter a topic or paste valid article URLs. Keep topics and links separate.' : '');
+    field.setAttribute('aria-invalid', String(kind === 'invalid'));
+    $('#results-search-button').disabled = !valid;
+    return valid;
+  }
   $('#results-search-form').addEventListener('submit', (event) => {
     event.preventDefault();
-    const query = $('#results-query').value.trim();
-    if (query) onSearch(query);
+    if (state && validateSearchInput()) onSearch($('#results-query').value.trim(), state.sourceProjectId, state.workspace ? state.projectId : null);
   });
-  $('#results-query').addEventListener('input', () => { $('#results-search-button').disabled = !$('#results-query').value.trim(); });
+  $('#results-query').addEventListener('input', validateSearchInput);
+  $('#results-back').addEventListener('click', () => { if (state) onBack(state.sourceProjectId); });
   $('#results-sort').addEventListener('change', () => { if (state) { state.sort = $('#results-sort').value; render(); } });
   $('#results-source').addEventListener('change', () => { if (state) { state.source = $('#results-source').value; state.visibleCount = 4; render(); } });
   $('#results-after').addEventListener('change', () => { if (state) { state.after = $('#results-after').value; state.visibleCount = 4; render(); } });
@@ -317,15 +354,15 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
   $('#create-draft').addEventListener('click', () => {
     if (!state) return;
     const articles = chosenArticles();
-    if (articles.length) onDraft({ query: state.query, articles, editorialDirection: state.editorialDirection });
+    if (articles.length) onDraft({ query: state.query, articles, editorialDirection: state.editorialDirection, sourceProjectId: state.sourceProjectId });
   });
 
   return {
-    show(project, { addingSources = false, embedded = false } = {}) {
+    show(project, { addingSources = false, embedded = false, workspace = false } = {}) {
       clearAdditionTimers();
-      const linkResults = embedded || project.kind === 'links';
+      const linkResults = !workspace && (embedded || project.kind === 'links');
       const linkSources = project.sources.filter(source => source.type === 'link');
-      const query = linkResults ? linkSources.map(source => source.url).join(' ') : project.sources[0].title;
+      const query = workspace ? project.searchQuery : linkResults ? linkSources.map(source => source.url).join(' ') : project.sources[0].title;
       const articles = linkResults ? sourceLinkArticles(linkSources) : sampleArticles(query);
       const savedSelection = embedded ? linkSources.flatMap((source, index) => source.selected !== false ? [`link-${index + 1}`] : []) : Array.isArray(project.selectedArticleIds) ? project.selectedArticleIds : [];
       const selected = new Set(savedSelection.filter(id => articles.some(article => article.id === id)));
@@ -333,15 +370,20 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
         ? linkSources.flatMap((source, index) => source.addedToCsa !== false ? [`link-${index + 1}`] : [])
         : Array.isArray(project.addedArticleIds) ? project.addedArticleIds : savedSelection;
       const readyArticleIds = new Set(savedAdded.filter(id => articles.some(article => article.id === id)));
-      state = { projectId: project.id, addingSources, linkResults, query, articles, editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '', sort: 'newest', source: 'all', after: '', visibleCount: linkResults ? articles.length : 4, selected, readyArticleIds };
+      const workspaceSources = workspace ? workspaceSelection(project, query, articles) : null;
+      state = { workspace, projectId: project.id, sourceProjectId: addingSources ? project.sourceProjectId : null, addingSources, linkResults, query, articles, editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '', sort: 'newest', source: 'all', after: '', visibleCount: linkResults ? articles.length : 4, selected, readyArticleIds, ...workspaceSources };
       $('#create-draft').textContent = addingSources ? 'Add Sources' : 'Draft';
-      $('.results-direction').hidden = addingSources || embedded;
-      $('.results-actions').hidden = embedded;
+      $('.results-direction').hidden = addingSources || embedded || workspace;
+      $('.results-actions').hidden = embedded || workspace;
       $('.results-search-form').hidden = embedded;
       $('.results-toolbar').hidden = embedded;
-      (embedded ? $('#editor-canvas-content') : resultsHome).append(results);
+      $('#results-back').hidden = embedded || workspace;
+      $('#results-back').textContent = addingSources ? 'Back to Project' : 'Back to Projects';
+      $('#results-demo-note').hidden = linkResults;
+      (embedded || workspace ? $('#editor-canvas-content') : resultsHome).append(results);
       results.classList.toggle('link-cards-panel', embedded);
-      $('#results-help').textContent = embedded ? 'Select sources and choose a format to enable Add.' : addingSources ? 'Select at least one article to add it to your project.' : 'Select at least one article to enable Draft.';
+      results.classList.toggle('workspace-search-panel', workspace);
+      $('#results-help').textContent = workspace ? 'Select sources and choose a format, audience, or voice in New Draft.' : embedded ? 'Select sources and choose a format to enable Add.' : addingSources ? 'Select at least one article to add it to your project.' : 'Select at least one article to enable Draft.';
       $('#search-results').hidden = false;
       $('#results-heading').textContent = embedded ? 'Ready to Create Content' : linkResults ? 'Choose sources from your links' : `Search results for ${query}`;
       $('#results-heading').classList.toggle('visually-hidden', !embedded);
@@ -349,7 +391,7 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       $('#results-toggle-filters').hidden = linkResults;
       $('#results-query').value = query;
       $('#results-editorial-direction').value = state.editorialDirection;
-      $('#results-search-button').disabled = false;
+      validateSearchInput();
       $('#results-sort').value = 'newest';
       $('#results-sort').dispatchEvent(new Event('change', { bubbles: true }));
       $('#results-source').replaceChildren(node('option', '', 'All sources'), ...[...new Set(articles.map((article) => article.source))].map((source) => {
@@ -360,8 +402,27 @@ export function createSearchExperience({ onSearch, onSelectionChange, onDirectio
       $('#results-filter-panel').hidden = true;
       $('#results-toggle-filters').setAttribute('aria-expanded', 'false');
       render();
-      for (const id of selected) startAddition(id);
+      for (const id of state.selected) startAddition(id);
     },
-    hide() { clearAdditionTimers(); if (preview.open) preview.close(); state = null; $('#search-results').hidden = true; },
+    refreshSources(project) {
+      if (!state?.workspace || project.id !== state.projectId || project.searchQuery !== state.query) return false;
+      const selection = workspaceSelection(project, state.query, state.articles);
+      for (const [id, timer] of additionTimers) {
+        if (!selection.selected.has(id) || selection.readyArticleIds.has(id)) {
+          clearTimeout(timer);
+          additionTimers.delete(id);
+        }
+      }
+      Object.assign(state, selection);
+      render();
+      for (const id of state.selected) startAddition(id);
+      return true;
+    },
+    syncDirection(value) {
+      if (!state) return;
+      state.editorialDirection = typeof value === 'string' ? value : '';
+      $('#results-editorial-direction').value = state.editorialDirection;
+    },
+    hide() { results.classList.toggle('workspace-search-panel', false); clearAdditionTimers(); if (preview.open) preview.close(); state = null; $('#search-results').hidden = true; },
   };
 }

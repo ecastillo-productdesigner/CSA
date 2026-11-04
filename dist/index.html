@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=add_circle,arrow_forward,article,check,chevron_forward,close,delete,description,draw,edit,edit_document,favorite,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,post_add,redo,right_panel_open,search,send,thumb_down,thumb_up,undo,unfold_less,upload,view_module,visibility&amp;display=block">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
     <link rel="stylesheet" href="./design-system/tokens.css?v=20261029-revision-indicator-location">
-    <link rel="stylesheet" href="./styles.css?v=20261102-search-cleanup">
-    <script src="./demo-access.js?v=20261102-search-cleanup" type="module"></script>
+    <link rel="stylesheet" href="./styles.css?v=20261104-search-copy">
+    <script src="./demo-access.js?v=20261104-search-draft-tabs" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -214,7 +214,6 @@
           <input id="results-query" type="text" placeholder="Search or paste URLs to start" autocomplete="off" maxlength="4000" required>
           <button class="submit-button" id="results-search-button" type="submit" aria-label="Search Again"><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></button>
         </form>
-        <p class="results-demo-note" id="results-demo-note">Sample search results. These articles are fictional.</p>
         <div class="results-toolbar">
           <div class="results-sort results-sort-field" data-label="Sort articles"><span>Sort by:</span><select class="visually-hidden" id="results-sort" aria-label="Sort articles" aria-hidden="true" tabindex="-1"><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="relevance">Relevance</option></select></div>
           <div class="results-toolbar-actions"><span class="results-selection" id="results-selection" role="status" hidden></span><span class="results-count" id="results-count" role="status" aria-live="polite"></span><button class="text-button" id="results-toggle-filters" type="button" aria-controls="results-filter-panel" aria-expanded="false">Filters</button></div>
@@ -267,7 +266,7 @@
       <button class="icon-button new-project-close" type="button" data-close="new-project-dialog" aria-label="Close new project modal"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
       <form class="new-project-search" id="new-project-search-form">
         <label class="visually-hidden" for="new-project-query">Search articles or paste article URLs</label>
-        <div class="new-project-input"><span class="material-symbols-outlined" aria-hidden="true">search</span><textarea id="new-project-query" aria-describedby="new-project-link-error" rows="5" wrap="soft" placeholder="Search for a topic, or paste article URLs (1 per line or separated by commas)&#10;&#10;Topic: Local arts&#10;URL: https://www.centredaily.com/news/local/article123.html" autocomplete="off" maxlength="4000" required></textarea></div>
+        <div class="new-project-input"><span class="material-symbols-outlined" aria-hidden="true">search</span><textarea id="new-project-query" aria-describedby="new-project-link-error" rows="5" wrap="soft" placeholder="Search for articles or paste article URL (1 per line or separated by commas)&#10;&#10;Examples:&#10;https://www.centredaily.com/news/local/article123.html&#10;https://www.miamiherald.com/sports/article456.html" autocomplete="off" maxlength="4000" required></textarea></div>
         <p class="form-error" id="new-project-link-error" role="status" hidden>Enter a topic or paste valid article URLs. Keep topics and links separate.</p>
         <button class="new-project-continue" id="new-project-submit" type="submit" disabled>Continue</button>
         <p class="visually-hidden" id="new-project-link-status" role="status" aria-live="polite"></p>

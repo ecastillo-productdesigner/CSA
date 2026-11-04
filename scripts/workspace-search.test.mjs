@@ -285,15 +285,22 @@ test('canvas direction edits synchronize the New Draft field and clear an applie
   assert.equal(ui.calls.persisted.at(-1).editorialDirection, 'Focus on the local angle');
 });
 
-test('the Search tab can reopen search results while preserving a finished draft', () => {
+test('reopening a finished search project clears a stale search view and preserves its draft and sources', () => {
   const output = { id: 'draft-1', title: 'Edited article', status: 'ready', draftText: 'Saved draft text' };
   const state = { id: 'search-workspace', title: topic, searchQuery: topic, awaitingOutput: true, viewOriginalDraft: true, sources: sampleSearchSources(topic), outputs: [output], selectedOutputId: output.id };
+  const sources = clone(state.sources);
   const ui = editorSetup(state);
-  assert.equal(ui.calls.search.length, 1);
-  assert.equal(ui.calls.search[0].options.workspace, true);
-  assert.deepEqual(ui.calls.editor, []);
-  assert.equal(state.viewOriginalDraft, true);
+  assert.deepEqual(ui.calls.search, []);
+  assert.equal(ui.get('#composer').classList.contains('has-editor'), true);
+  assert.equal(ui.get('#composer').classList.contains('has-search-results'), false);
+  assert.equal(ui.calls.editor.length, 1);
+  assert.equal(ui.calls.editor[0].draftText, output.draftText);
+  assert.equal(state.viewOriginalDraft, false);
+  assert.equal(state.selectedOutputId, output.id);
+  assert.equal(state.searchQuery, topic);
+  assert.deepEqual(state.sources, sources);
   assert.deepEqual(state.outputs, [output]);
+  assert.equal(ui.calls.saved, 1);
 });
 
 

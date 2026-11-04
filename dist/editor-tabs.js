@@ -82,7 +82,7 @@ export function createEditorTabs({ onSelect, onRevisionRead = () => {}, createAn
     render(project) {
       const allOutputs = projectOutputs(project);
       const outputs = allOutputs.filter(output => outputIsReady(output) || output.needsRegeneration);
-      const showCreateTab = Boolean(project?.searchQuery) || !outputs.length && Boolean(project?.linkCards || project?.viewOriginalDraft || project?.awaitingOutput || allOutputs.some(output => output.id === project?.lastPendingOutputId && !outputIsReady(output)));
+      const showCreateTab = !outputs.length && Boolean(project?.searchQuery || project?.linkCards || project?.viewOriginalDraft || project?.awaitingOutput || allOutputs.some(output => output.id === project?.lastPendingOutputId && !outputIsReady(output)));
       const activeId = showCreateTab && project?.viewOriginalDraft ? null : outputs.some(output => output.id === project?.selectedOutputId) ? project.selectedOutputId : outputs[0]?.id ?? null;
       const revisingIds = project?.outputProcessing?.kind === 'revision' ? project.outputProcessing.ids || [] : [];
       syncReadTimer(project, activeId, outputs, revisingIds);

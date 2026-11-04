@@ -422,7 +422,7 @@ test('the tab keeps its ten-second acknowledgement timing while another draft re
 });
 
 
-test('Search remains available alongside created drafts and selecting it returns the workspace without selecting a draft', t => {
+test('Searching Topic remains through pending recipes and disappears when the first draft is ready', t => {
   const root = new Element();
   const panel = new Element();
   panel.id = 'editor-canvas-content';
@@ -442,35 +442,37 @@ test('Search remains available alongside created drafts and selecting it returns
   assert.equal(root.children[0].attributes['aria-selected'], 'true');
   assert.equal(panel.attributes['aria-labelledby'], 'editor-tab-original');
 
-  project.outputs.push({ id: 'draft-one', title: 'First article', status: 'ready' }, { id: 'draft-two', title: 'Second article', status: 'ready' });
-  project.selectedOutputId = 'draft-two';
+  const first = { id: 'draft-one', title: 'First article', status: 'pending' };
+  project.outputs.push(first);
+  tabs.render(project);
+  assert.deepEqual(root.children.map(tab => tab.dataset.editorOutput), ['']);
+  assert.equal(root.children[0].textContent, 'Searching Topic');
+
+  first.status = 'ready';
+  project.selectedOutputId = first.id;
   project.awaitingOutput = false;
   tabs.render(project);
-  assert.deepEqual(root.children.map(tab => tab.dataset.editorOutput), ['', 'draft-one', 'draft-two']);
-  assert.equal(root.children[0].textContent, 'Searching Topic');
-  assert.equal(root.children[0].attributes['aria-selected'], 'false');
-  assert.equal(root.children[2].attributes['aria-selected'], 'true');
-  assert.equal(panel.attributes['aria-labelledby'], 'editor-tab-draft-two');
-
-  root.emit('click', root.children[0]);
-  assert.deepEqual(selections, [null]);
-  assert.equal(project.viewOriginalDraft, true);
+  assert.deepEqual(root.children.map(tab => tab.dataset.editorOutput), ['draft-one']);
   assert.equal(root.children[0].attributes['aria-selected'], 'true');
   assert.equal(root.children[0].tabIndex, 0);
-  assert.equal(root.children[1].attributes['aria-selected'], 'false');
-  assert.equal(root.children[2].attributes['aria-selected'], 'false');
-  assert.equal(panel.attributes['aria-labelledby'], 'editor-tab-original');
-  assert.equal(document.activeElement, root.children[0]);
+  assert.equal(panel.attributes['aria-labelledby'], 'editor-tab-draft-one');
 
-  root.emit('keydown', root.children[0], { key: 'ArrowRight' });
-  assert.deepEqual(selections, [null, 'draft-one']);
+  project.outputs.push({ id: 'draft-two', title: 'Second article', status: 'ready' });
+  project.selectedOutputId = 'draft-two';
+  tabs.render(project);
+  assert.deepEqual(root.children.map(tab => tab.dataset.editorOutput), ['draft-one', 'draft-two']);
   assert.equal(root.children[1].attributes['aria-selected'], 'true');
+  assert.equal(panel.attributes['aria-labelledby'], 'editor-tab-draft-two');
+  root.emit('keydown', root.children[1], { key: 'ArrowLeft' });
+  assert.deepEqual(selections, ['draft-one']);
+  assert.equal(root.children[0].attributes['aria-selected'], 'true');
   assert.equal(project.viewOriginalDraft, false);
   assert.equal(panel.attributes['aria-labelledby'], 'editor-tab-draft-one');
+  assert.equal(document.activeElement, root.children[0]);
   tabs.destroy();
 });
 
-test('an explicit Search workspace view stays active despite an old selected draft and does not consume its unread revision', t => {
+test('a completed search draft stays active despite a stale search-view flag', t => {
   const root = new Element();
   const panel = new Element();
   panel.id = 'editor-canvas-content';
@@ -480,14 +482,15 @@ test('an explicit Search workspace view stays active despite an old selected dra
   const output = { id: 'draft', title: 'Completed article', status: 'ready', revisionUnread: true };
   const project = { id: 'search-project', searchQuery: 'School openings', viewOriginalDraft: true, selectedOutputId: output.id, outputs: [output] };
   tabs.render(project);
+  assert.deepEqual(root.children.map(tab => tab.dataset.editorOutput), ['draft']);
   assert.equal(root.children[0].attributes['aria-selected'], 'true');
-  assert.equal(root.children[1].attributes['aria-selected'], 'false');
-  assert.equal(root.children[1].querySelector('.editor-tab-revision-dot').attributes['aria-hidden'], 'true');
-  assert.equal(panel.attributes['aria-labelledby'], 'editor-tab-original');
-  assert.equal(clock.timers.size, 0);
-  clock.tick(60000);
-  assert.deepEqual(reads, []);
-  assert.equal(output.revisionUnread, true);
+  assert.equal(root.children[0].tabIndex, 0);
+  assert.equal(panel.attributes['aria-labelledby'], 'editor-tab-draft');
+  assert.equal(clock.timers.size, 1);
+  clock.tick(10000);
+  assert.deepEqual(reads, ['draft']);
+  assert.equal(output.revisionUnread, false);
+  assert.equal(output.revisionRequestUnread, true);
   tabs.destroy();
 });
 

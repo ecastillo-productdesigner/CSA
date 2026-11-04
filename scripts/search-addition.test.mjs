@@ -356,7 +356,6 @@ test('Add Source search carries the original project through search, draft, and 
   ui.experience.show(topicProject({ sourceProjectId: 'original-project' }), { addingSources: true });
   assert.equal(ui.$('#results-back').hidden, false);
   assert.equal(ui.$('#results-back').textContent, 'Back to Project');
-  assert.equal(ui.$('#results-demo-note').hidden, false);
   assert.equal(ui.$('#create-draft').textContent, 'Add Sources');
   ui.$('#results-query').value = 'School board decisions';
   ui.$('#results-query').emit('input');
@@ -386,7 +385,6 @@ test('leaving Add Source results clears their target and embedded links hide sea
   assert.equal(ui.backs.at(-1), null);
   ui.experience.show(project([link('source')]), { embedded: true });
   assert.equal(ui.$('#results-back').hidden, true);
-  assert.equal(ui.$('#results-demo-note').hidden, true);
   assert.equal(ui.$('.results-search-form').hidden, true);
 });
 
@@ -447,7 +445,7 @@ test('workspace search preserves search, filters, and Load More while keeping di
   assert.equal(ui.$('#search-results').parentElement, ui.$('#editor-canvas-content'));
   assert.equal(ui.$('#search-results').classList.contains('workspace-search-panel'), true);
   assert.equal(ui.$('#search-results').classList.contains('link-cards-panel'), false);
-  for (const selector of ['.results-search-form', '.results-toolbar', '.results-sort', '#results-toggle-filters', '#results-demo-note', '#load-more']) {
+  for (const selector of ['.results-search-form', '.results-toolbar', '.results-sort', '#results-toggle-filters', '#load-more']) {
     assert.equal(ui.$(selector).hidden, false, selector);
   }
   assert.equal(ui.$('#results-back').hidden, true);

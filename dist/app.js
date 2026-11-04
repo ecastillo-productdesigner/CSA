@@ -14,7 +14,7 @@ import { createTabPanelTransition } from './tab-panel-transition.js?v=20261026-d
 import { bindTabSelection } from './selection-controls.js?v=20261026-drafting-card-size';
 import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261026-drafting-card-size';
 import { createProfile } from './profile.js?v=20261026-drafting-card-size';
-import { createSearchExperience, sampleSearchSources } from './search.js?v=20261102-search-cleanup';
+import { createSearchExperience, sampleSearchSources } from './search.js?v=20261104-search-copy';
 import { classifyProjectSearchInput } from './project-search-input.js?v=20261102-topic-search';
 import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261030-mobile-menu-behavior';
 import { createMaterialEditor } from './editor.js?v=20261030-neutral-toolbar';
@@ -28,7 +28,7 @@ import { createRailNavigation } from './navigation.js?v=20261030-mobile-menu-beh
 import { createProjectSources } from './sources.js?v=20261029-preview-direction';
 import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261026-drafting-card-size';
 import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261102-saved-drafts';
-import { createEditorTabs } from './editor-tabs.js?v=20261102-search-cleanup';
+import { createEditorTabs } from './editor-tabs.js?v=20261104-search-draft-tabs';
 import { createContentCardEditing } from './content-card-editing.js?v=20261102-saved-drafts';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-drafting-card-size';
 import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261026-drafting-card-size';
@@ -816,7 +816,7 @@ function showEditorProject(project) {
   const editableOutputs = projectOutputs(project).filter(output => outputIsReady(output) || output.needsRegeneration);
   const readyOutputs = editableOutputs.filter(outputIsReady).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0));
   const replacingSourceView = Boolean(project.viewOriginalDraft && editableOutputs.length);
-  const selectedOutput = project.searchQuery && project.viewOriginalDraft ? null : editableOutputs.find(output => output.id === project.selectedOutputId) || readyOutputs[0] || editableOutputs[0];
+  const selectedOutput = editableOutputs.find(output => output.id === project.selectedOutputId) || readyOutputs[0] || editableOutputs[0];
   if (selectedOutput) {
     project.selectedOutputId = selectedOutput.id;
     project.viewOriginalDraft = false;

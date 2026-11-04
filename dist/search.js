@@ -379,7 +379,6 @@ export function createSearchExperience({ onSearch, onBack = () => {}, onSelectio
       $('.results-toolbar').hidden = embedded;
       $('#results-back').hidden = embedded || workspace;
       $('#results-back').textContent = addingSources ? 'Back to Project' : 'Back to Projects';
-      $('#results-demo-note').hidden = linkResults;
       (embedded || workspace ? $('#editor-canvas-content') : resultsHome).append(results);
       results.classList.toggle('link-cards-panel', embedded);
       results.classList.toggle('workspace-search-panel', workspace);

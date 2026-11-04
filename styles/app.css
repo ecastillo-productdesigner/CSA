@@ -805,7 +805,6 @@ textarea::placeholder { color: var(--csa-semantic-color-text-secondary); opacity
 .showing-results main { align-items: start; padding-top: var(--csa-foundation-space-32); padding-bottom: var(--csa-foundation-space-32); }
 .search-results { width: 100%; min-width: 0; max-width: var(--csa-foundation-size-640); margin-inline: auto; }
 .results-back { min-height: var(--csa-foundation-space-44); margin-bottom: var(--csa-foundation-space-12); }
-.results-demo-note { margin: 0 0 var(--csa-foundation-space-18); color: var(--csa-semantic-color-text-secondary); font-size: var(--csa-foundation-font-size-12); line-height: var(--csa-foundation-line-height-16); }
 .results-search-form { margin-bottom: var(--csa-foundation-space-30); }
 .results-search-form .submit-button:not(:disabled) { background: var(--color-button-primary); }
 .results-search-form .submit-button:not(:disabled):is(:hover, :active) { background: var(--color-button-primary-interaction); }

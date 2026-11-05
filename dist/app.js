@@ -1,9 +1,9 @@
 import { listSavedDraftSetups, saveDraftSetup, removeSavedDraftSetup, applySavedDraftSetup, clearSavedDraftSetup } from './saved-draft-setups.js?v=20261102-saved-draft-options';
-import { createSavedDrafts } from './saved-drafts.js?v=20261102-saved-draft-options';
+import { createSavedDrafts } from './saved-drafts.js?v=20261105-filter-settings';
 import { partitionSourceAdditions, sourceIdentityKey, findDuplicateSource } from './source-model.js?v=20261026-drafting-card-size';
 import { createSourceAlreadyAddedDialog } from './source-already-added.js?v=20261026-drafting-card-size';
 import { createToast } from './toast.js?v=20261027-toast-timing';
-import { updatePresetPreferences } from './preset-settings.js?v=20261030-declined-revision-details';
+import { updatePresetPreferences } from './preset-settings.js?v=20261105-filter-settings';
 import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
 import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261029-revision-indicator-location';
 import { createIcon as icon } from './icons.js?v=20261026-drafting-card-size';
@@ -12,24 +12,25 @@ import { resolveArticleMetadata } from './article-metadata.js?v=20261026-draftin
 import { createPanelDisclosure } from './panel-disclosure.js?v=20261026-drafting-card-size';
 import { createTabPanelTransition } from './tab-panel-transition.js?v=20261026-drafting-card-size';
 import { bindTabSelection } from './selection-controls.js?v=20261026-drafting-card-size';
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261026-drafting-card-size';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261105-filter-settings';
+import { createRoleSelector } from './role-selector.js?v=20261105-role-selector';
 import { createProfile } from './profile.js?v=20261026-drafting-card-size';
-import { createSearchExperience, sampleSearchSources } from './search.js?v=20261104-search-copy';
+import { createSearchExperience, sampleSearchSources } from './search.js?v=20261105-default-source';
 import { classifyProjectSearchInput } from './project-search-input.js?v=20261102-topic-search';
-import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261030-mobile-menu-behavior';
-import { createMaterialEditor } from './editor.js?v=20261030-neutral-toolbar';
+import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261105-filter-settings';
+import { createMaterialEditor } from './editor.js?v=20261105-own-material';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-drafting-card-size';
 import { removeProjectContent } from './project-deletion.js?v=20261026-drafting-card-size';
 import { createContentPreview } from './content-preview.js?v=20261026-drafting-card-size';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261102-saved-drafts';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261105-filter-settings';
 import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261026-drafting-card-size';
 import { createNewProjectUpload } from './new-project-upload.js?v=20261026-drafting-card-size';
-import { createRailNavigation } from './navigation.js?v=20261030-mobile-menu-behavior';
+import { createRailNavigation } from './navigation.js?v=20261105-role-selector';
 import { createProjectSources } from './sources.js?v=20261029-preview-direction';
-import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261026-drafting-card-size';
-import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261102-saved-drafts';
-import { createEditorTabs } from './editor-tabs.js?v=20261104-search-draft-tabs';
-import { createContentCardEditing } from './content-card-editing.js?v=20261102-saved-drafts';
+import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261105-filter-settings';
+import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261105-own-material-empty';
+import { createEditorTabs } from './editor-tabs.js?v=20261105-filter-settings';
+import { createContentCardEditing } from './content-card-editing.js?v=20261105-filter-settings';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-drafting-card-size';
 import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261026-drafting-card-size';
 import { createRevisionButton, updateRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261030-revision-headings';
@@ -161,11 +162,15 @@ const draftSourcesPopover = createDraftSourcesPopover({
   onDownloadSource: downloadSource,
   onOpenSource: (source, trigger) => projectSourcesPanel.openPreview(source, trigger),
 });
+const roleSelector = createRoleSelector({
+  onOpen() { railNavigation.close(); savedDrafts.close(); toolDropdowns.close(); richEditor.closePanels(); draftSourcesPopover.close(); },
+  notify,
+});
 const railNavigation = createRailNavigation({
   onSourcesOpen() { renderProjectSources(projects.find(project => project.id === activeProjectId && project.kind === 'draft') || null); },
   onNewVariantOpen() { setNewVariantCollapsed(false); },
   onVariantsOpen() { setContentCollapsed(false); },
-  onOpen: () => { savedDrafts.close(); toolDropdowns.close(); richEditor.closePanels(); draftSourcesPopover.close(); },
+  onOpen: () => { roleSelector.close(); savedDrafts.close(); toolDropdowns.close(); richEditor.closePanels(); draftSourcesPopover.close(); },
 });
 createProfile({
   onClose: restoreFocus => railNavigation.close('profile', restoreFocus),
@@ -190,6 +195,7 @@ const richEditor = createMaterialEditor({
       if (typeof snapshot.cmsSentContent === 'string') output.cmsSentContent = snapshot.cmsSentContent;
       project.toolPreferences = snapshot.toolPreferences;
       project.updatedAt = snapshot.updatedAt;
+      if (project.ownMaterialOutputId === output.id) project.title = snapshot.title;
     } else Object.assign(project, snapshot);
     const saved = saveProjects();
     renderOutputs(project);
@@ -232,7 +238,7 @@ const savedDrafts = createSavedDrafts({
   onRename(projectId, outputId, name) {
     if (!saveDraftSetup(projects, projectId, outputId, { name })) return false;
     const persisted = saveProjects();
-    notify(persisted ? 'Saved draft renamed' : 'Saved draft renamed for this session only');
+    notify(persisted ? 'Saved settings renamed' : 'Saved settings renamed for this session only');
     return true;
   },
   onRemove: removeSavedDraft,
@@ -256,15 +262,15 @@ function applySavedDraft(projectId, outputId) {
   const persisted = saveProjects();
   ($('.create-variant').disabled ? $('#composer-format-trigger') : $('.create-variant')).focus({ preventScroll: true });
   notify(clearing
-    ? persisted ? 'Saved draft selection cleared' : 'Saved draft selection cleared for this session only'
-    : persisted ? 'Saved draft settings applied' : 'Draft settings applied for this session only');
+    ? persisted ? 'Saved settings selection cleared' : 'Saved settings selection cleared for this session only'
+    : persisted ? 'Saved settings applied' : 'Draft settings applied for this session only');
 }
 
 function removeSavedDraft(projectId, outputId) {
   if (!removeSavedDraftSetup(projects, projectId, outputId)) return false;
   const persisted = saveProjects();
   renderOutputs(projects.find(project => project.id === activeProjectId));
-  notify(persisted ? 'Draft settings removed from saved drafts' : 'Draft settings removed for this session only');
+  notify(persisted ? 'Saved settings removed' : 'Draft settings removed for this session only');
   return true;
 }
 
@@ -580,6 +586,7 @@ function closeComposer() {
 }
 
 function showProjectStart() {
+  roleSelector.close();
   savedDrafts.close();
   richEditor.flush();
   railNavigation.closeTransient();
@@ -588,9 +595,38 @@ function showProjectStart() {
   openProjectDialog();
 }
 
+function startOwnMaterial() {
+  if (sourceTargetProjectId || newProjectUpload.isBusy() || !$('#new-project-dialog').open) return false;
+  richEditor.flush();
+  const project = createProject([], { title: 'Untitled story', kind: 'draft', open: false });
+  const output = {
+    id: crypto.randomUUID(), title: 'Untitled story', createdAt: project.createdAt,
+    status: 'ready', contentInitialized: true, contentVersion: 3,
+    draftText: '', document: { ops: [{ insert: '\n' }] },
+    shareText: '', shareTextEdited: true,
+    labels: [], toolPreferences: { format: '', audience: '', voice: '' },
+    sourceSnapshots: [], selectedSourceIndexes: [], sourceCount: 0,
+    editorialDirection: '', targetWordCount: project.targetWordCount,
+    metadata: { author: '', tags: '' },
+  };
+  project.outputs = [output];
+  project.selectedOutputId = output.id;
+  project.selectedOutputIds = [output.id];
+  project.ownMaterialOutputId = output.id;
+  project.viewOriginalDraft = false;
+  outputViews.set(project.id, 'created');
+  saveProjects();
+  $('#new-project-dialog').close();
+  railNavigation.close('sources', false, { animate: false });
+  railNavigation.closeDrawer();
+  showProject(project.id);
+  return true;
+}
+
 function openProjectDialog(reset = true, sourceProjectId = null) {
   if (newProjectUpload.isBusy()) return;
   sourceTargetProjectId = sourceProjectId;
+  $('#new-project-material').hidden = Boolean(sourceProjectId);
   $('#new-project-dialog-title').textContent = sourceProjectId ? 'Add Source' : 'New Project';
   $('.new-project-close').setAttribute('aria-label', sourceProjectId ? 'Close add source modal' : 'Close new project modal');
   if (reset) { $('#new-project-query').value = ''; newProjectUpload.reset(); }
@@ -981,7 +1017,7 @@ $('#output-list').addEventListener('click', event => {
       if (!saveDraftSetup(projects, project.id, output.id)) return;
       const persisted = saveProjects();
       renderOutputs(project);
-      notify(persisted ? 'Draft settings saved to My Saved Drafts' : 'Draft settings saved for this session only');
+      notify(persisted ? 'Draft settings saved' : 'Draft settings saved for this session only');
     }
     [...$('#output-list').querySelectorAll('[data-save-output]')].find(button => button.dataset.saveOutput === outputId)?.focus({ preventScroll: true });
     return;
@@ -1316,6 +1352,7 @@ async function downloadSource(source) {
 
 $('.brand').addEventListener('click', () => showHome());
 $('#new-project').addEventListener('click', showProjectStart);
+$('#new-project-material').addEventListener('click', startOwnMaterial);
 $('#back-home').addEventListener('click', () => showHome());
 $('#back-dashboard').addEventListener('click', () => showHome());
 

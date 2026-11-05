@@ -4,7 +4,7 @@ import { syncSelection } from './selection-controls.js?v=20261026-drafting-card-
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { normalizeWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
 import { countPreviewWords } from './content-preview.js?v=20261026-drafting-card-size';
-import { createContentCardActions } from './content-card-editing.js?v=20261102-saved-drafts';
+import { createContentCardActions } from './content-card-editing.js?v=20261105-filter-settings';
 import { createRevisionAnimation } from './drafting-animation.js?v=20261030-draft-status-and-history';
 import { topicDraftContent } from './topic-draft.js?v=20261026-drafting-card-size';
 import { formatDraftContent } from './draft-format.js?v=20261026-drafting-card-size';
@@ -380,11 +380,20 @@ export function sampleVariant(project, selections) {
   };
 }
 
+function isEmptyOwnMaterial(project, output) {
+  if (output.id !== project?.ownMaterialOutputId) return false;
+  const body = Array.isArray(output.document?.ops)
+    ? output.document.ops.map(op => typeof op.insert === 'string' ? op.insert : '').join('')
+    : String(output.draftText || '');
+  return !body.replace(/[\s\u200B-\u200D\uFEFF]/gu, '');
+}
+
 export function variantPanelState(project, requestedView) {
   const outputs = projectOutputs(project);
   const pending = outputs.filter(output => !outputIsReady(output));
-  const created = outputs.filter(outputIsReady);
-  const activeCreated = !project?.viewOriginalDraft && created.some(output => output.id === project?.selectedOutputId);
+  const ready = outputs.filter(outputIsReady);
+  const created = ready.filter(output => !isEmptyOwnMaterial(project, output));
+  const activeCreated = !project?.viewOriginalDraft && ready.some(output => output.id === project?.selectedOutputId);
   const view = ['pending', 'created'].includes(requestedView) ? requestedView : activeCreated || (!pending.length && created.length) ? 'created' : 'pending';
   return {
     view,
@@ -401,7 +410,7 @@ export function renderOutputs(project, requestedView) {
   const tabs = document.querySelectorAll('[data-output-view]');
   for (const tab of tabs) {
     tab.textContent = tab.dataset.outputView === 'pending' ? state.pendingLabel : state.createdLabel;
-    tab.dataset.empty = String(tab.dataset.outputView === 'pending' ? state.pendingLabel === 'To Draft' : !projectOutputs(project).some(outputIsReady));
+    tab.dataset.empty = String(tab.dataset.outputView === 'pending' ? state.pendingLabel === 'To Draft' : !variantPanelState(project, 'created').outputs.length);
   }
   syncSelection(tabs, state.view, { getValue: tab => tab.dataset.outputView });
   document.querySelector('#output-status-content').setAttribute('aria-labelledby', `output-${state.view}-tab`);

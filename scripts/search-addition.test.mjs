@@ -161,7 +161,16 @@ function setup(t) {
   const selectionContexts = [];
   const workspaceSearches = [];
   const directions = [];
+  let changeDates;
   const experience = createSearchExperience({
+    createDateFilter({ onChange }) {
+      const sync = ({ after, before }) => {
+        document.querySelector('#results-after').value = after;
+        document.querySelector('#results-before').value = before;
+      };
+      changeDates = (after, before = '') => { sync({ after, before }); onChange({ after, before }); };
+      return { sync, close() {}, destroy() {} };
+    },
     onSearch(query, sourceProjectId, workspaceProjectId) { searches.push({ query, sourceProjectId }); workspaceSearches.push(workspaceProjectId); },
     onDirectionChange(projectId, value) { directions.push({ projectId, value }); },
     onDraft(payload) { drafts.push(payload); },
@@ -171,7 +180,7 @@ function setup(t) {
   });
   const $ = selector => document.querySelector(selector);
   return {
-    experience, changes, duplicates, searches, workspaceSearches, drafts, backs, selectionContexts, directions, $, pending: () => timers.size,
+    experience, changeDates, changes, duplicates, searches, workspaceSearches, drafts, backs, selectionContexts, directions, $, pending: () => timers.size,
     animationListeners: () => document.listenerCount() + window.listenerCount() + motion.listenerCount(),
     animationObservers: () => mutations.size,
     addition: id => $('#result-list').querySelector('[data-addition-article-id="' + id + '"]'),
@@ -201,6 +210,7 @@ test('fresh embedded links use the one-page source animation and complete indepe
   const ui = setup(t);
   ui.experience.show(project([link('one'), link('two'), link('three')]), { embedded: true });
   assert.equal(ui.pending(), 3);
+  assert.equal(ui.$('#results-source').value, 'all', 'link imports remain unfiltered');
   for (const id of ['link-1', 'link-2', 'link-3']) {
     assert.equal(loading(ui.addition(id)), true);
     const animation = ui.addition(id).querySelector('.drafting-animation');
@@ -452,13 +462,14 @@ test('workspace search preserves search, filters, and Load More while keeping di
   assert.equal(ui.$('.results-actions').hidden, true);
   assert.equal(ui.$('.results-direction').hidden, true);
   assert.equal(ui.$('#results-query').value, 'Local school openings');
-  assert.equal(ui.$('#results-count').textContent, '8 stories found');
+  assert.equal(ui.$('#results-source').value, 'The State');
+  assert.equal(ui.$('#results-count').textContent, '5 stories found');
   assert.equal(ui.$('#result-list').children.length, 4);
   assert.match(ui.$('#result-list').textContent, /Local school openings/);
   assert.equal(ui.pending(), 0);
   assert.equal(ui.addition('article-1').hidden, true);
   ui.$('#load-more').emit('click');
-  assert.equal(ui.$('#result-list').children.length, 8);
+  assert.equal(ui.$('#result-list').children.length, 5);
   ui.experience.hide();
   assert.equal(ui.$('#search-results').classList.contains('workspace-search-panel'), false);
   ui.experience.show(topicProject());
@@ -525,8 +536,7 @@ test('refreshing sidebar selections preserves workspace filters and direction wh
   ui.$('#results-sort').emit('change');
   ui.$('#results-source').value = 'Culture Weekly';
   ui.$('#results-source').emit('change');
-  ui.$('#results-after').value = '2026-10-08';
-  ui.$('#results-after').emit('change');
+  ui.changeDates('2026-10-08');
   ui.$('#load-more').emit('click');
   ui.$('#results-query').value = 'An unfinished replacement query';
   ui.tick(1000);
@@ -560,6 +570,7 @@ test('refreshing workspace source readiness completes the visible loader without
   const record = workspaceProject();
   record.sources[0].selected = true;
   ui.experience.show(record, { workspace: true });
+  ui.$('#results-reset-filters').emit('click');
   ui.$('#load-more').emit('click');
   record.sources[0].addedToCsa = true;
   assert.equal(ui.experience.refreshSources(record), true);
@@ -572,4 +583,51 @@ test('refreshing workspace source readiness completes the visible loader without
   assert.equal(ui.experience.refreshSources(record), false);
   ui.experience.show(project([link('source')]), { embedded: true });
   assert.equal(ui.experience.refreshSources(record), false);
+});
+
+
+test('source catalog preserves publication labels, defaults to The State, and resets to all sources', t => {
+  const ui = setup(t);
+  ui.experience.show(topicProject());
+  const options = ui.$('#results-source').options;
+  assert.equal(options.length, 39);
+  assert.equal(options[0].value, 'all');
+  assert.equal(options.filter(option => option.value === 'The State').length, 1);
+  for (const [value, label] of [['Bargain Hunter', 'Bargain Hunter (BH)'], ['Bellingham Herald', 'Bellingham Herald (BH)'], ['The News & Observer', 'The News & Observer (N&O)'], ["Woman's World", "Woman's World (WW)"], ['Culture Weekly', 'Culture Weekly'], ['Spotlight', 'Spotlight']]) {
+    assert.equal(options.find(option => option.value === value)?.textContent, label);
+  }
+  assert.equal(ui.$('#results-source').value, 'The State');
+  assert.equal(ui.$('#results-count').textContent, '5 stories found');
+  assert.equal(ui.$('#results-toggle-filters').dataset.active, 'true');
+  ui.$('#results-source').value = 'Bargain Hunter';
+  ui.$('#results-source').emit('change');
+  assert.equal(ui.$('#results-count').textContent, '0 stories found');
+  assert.equal(ui.$('#results-empty').hidden, false);
+  ui.$('#results-reset-filters').emit('click');
+  assert.equal(ui.$('#results-count').textContent, '8 stories found');
+  assert.equal(ui.$('#results-source').value, 'all');
+  assert.equal(ui.$('#results-toggle-filters').dataset.active, 'false');
+});
+
+test('publication date ranges include both endpoints and combine with source filters', t => {
+  const ui = setup(t);
+  ui.experience.show(topicProject());
+  ui.$('#results-reset-filters').emit('click');
+  ui.changeDates('2026-10-08', '2026-10-10');
+  assert.equal(ui.$('#results-count').textContent, '3 stories found');
+  assert.equal(ui.$('#results-toggle-filters').dataset.active, 'true');
+  ui.changeDates('2026-10-12', '2026-10-12');
+  assert.equal(ui.$('#results-count').textContent, '4 stories found');
+  ui.changeDates('2026-10-12');
+  assert.equal(ui.$('#results-count').textContent, '4 stories found');
+  ui.$('#results-source').value = 'Culture Weekly';
+  ui.$('#results-source').emit('change');
+  ui.changeDates('2026-10-08', '2026-10-09');
+  assert.equal(ui.$('#results-count').textContent, '1 story found');
+  assert.equal(ui.$('#result-list').children[0].querySelector('.result-card').dataset.articleId, 'article-8');
+  ui.$('#results-reset-filters').emit('click');
+  assert.equal(ui.$('#results-count').textContent, '8 stories found');
+  assert.equal(ui.$('#results-after').value, '');
+  assert.equal(ui.$('#results-before').value, '');
+  assert.equal(ui.$('#results-toggle-filters').dataset.active, 'false');
 });

@@ -86,7 +86,8 @@ export function createRailNavigation({ onSourcesOpen, onSourcesClose, onNewVaria
   const drawerToggle = document.querySelector('#toggle-navigation-drawer');
   const newProject = document.querySelector('#new-project');
   const mobileUtilities = document.querySelector('#mobile-workspace-utilities');
-  const utilityHomes = mobileUtilities ? [newProject, panels.profile.trigger].map(control => {
+  const accountControls = document.querySelector('#account-controls') || panels.profile.trigger;
+  const utilityHomes = mobileUtilities ? [newProject, accountControls].map(control => {
     const home = document.createComment('Desktop navigation control home');
     control.before(home);
     return { control, home };

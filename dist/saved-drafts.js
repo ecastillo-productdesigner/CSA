@@ -1,4 +1,4 @@
-import { createOutputBadges } from './outputs.js?v=20261102-saved-drafts';
+import { createOutputBadges } from './outputs.js?v=20261105-filter-settings';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { tokenNumber } from './design-system/runtime.js?v=20261029-revision-indicator-location';
 import { createDropdownTransition } from './dropdown-transition.js?v=20261026-drafting-card-size';
@@ -12,13 +12,13 @@ export function createSavedDrafts({ getEntries, getSelection, isDisabled, onAppl
   menu.className = 'saved-drafts-menu';
   menu.dataset.workspaceDropdown = 'true';
   menu.setAttribute('role', 'dialog');
-  menu.setAttribute('aria-label', 'My Saved Drafts');
+  menu.setAttribute('aria-label', 'Saved Settings');
   menu.tabIndex = -1;
   const list = document.createElement('div');
   list.className = 'saved-drafts-list';
   const empty = document.createElement('p');
   empty.className = 'saved-drafts-empty';
-  empty.textContent = 'No saved drafts yet. Use a heart on a content card to save its settings.';
+  empty.textContent = 'No saved settings yet. Use a heart on a content card to save its settings.';
   menu.append(list, empty);
   document.body.append(menu);
   const transition = createDropdownTransition(menu);
@@ -26,7 +26,7 @@ export function createSavedDrafts({ getEntries, getSelection, isDisabled, onAppl
   dialog.id = 'saved-draft-name-dialog';
   dialog.className = 'saved-draft-name-dialog';
   dialog.setAttribute('aria-labelledby', 'saved-draft-name-heading');
-  dialog.innerHTML = `<form><div class="saved-draft-dialog-header"><h2 id="saved-draft-name-heading">Rename Saved Draft</h2><button class="icon-button" type="button" data-close-saved-name aria-label="Close Rename Saved Draft"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div><p>Give these draft settings a name you can find again.</p><label for="saved-draft-name">Name</label><input id="saved-draft-name" name="name" type="text" maxlength="180" required autocomplete="off"><div class="saved-draft-dialog-actions"><button class="secondary-button" type="button" data-close-saved-name>Cancel</button><button class="primary-button" type="submit">Save Name</button></div></form>`;
+  dialog.innerHTML = `<form><div class="saved-draft-dialog-header"><h2 id="saved-draft-name-heading">Rename Saved Settings</h2><button class="icon-button" type="button" data-close-saved-name aria-label="Close Rename Saved Settings"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div><p>Give these draft settings a name you can find again.</p><label for="saved-draft-name">Name</label><input id="saved-draft-name" name="name" type="text" maxlength="180" required autocomplete="off"><div class="saved-draft-dialog-actions"><button class="secondary-button" type="button" data-close-saved-name>Cancel</button><button class="primary-button" type="submit">Save Name</button></div></form>`;
   document.body.append(dialog);
   const name = dialog.querySelector('input');
   let renaming = null;
@@ -59,8 +59,8 @@ export function createSavedDrafts({ getEntries, getSelection, isDisabled, onAppl
     const selected = getSelection();
     trigger.disabled = Boolean(isDisabled());
     const active = entries.find(entry => entry.project.id === selected?.projectId && entry.output.id === selected?.outputId);
-    label.textContent = active?.name || (entries.length ? `My Saved Drafts (${entries.length})` : 'My Saved Drafts');
-    trigger.title = active ? `Saved draft: ${active.name}` : 'My Saved Drafts';
+    label.textContent = active?.name || (entries.length ? `Saved Settings (${entries.length})` : 'Saved Settings');
+    trigger.title = active ? `Saved settings: ${active.name}` : 'Saved Settings';
     if (trigger.disabled) close();
     const nextSignature = JSON.stringify([selected, entries.map(entry => [entry.project.id, entry.output.id, entry.name, entry.configuration])]);
     if (signature === nextSignature) { position(); return; }
@@ -87,7 +87,7 @@ export function createSavedDrafts({ getEntries, getSelection, isDisabled, onAppl
       const apply = document.createElement('button');
       apply.type = 'button';
       apply.className = 'saved-draft-apply';
-      apply.setAttribute('aria-label', `Use saved draft: ${entryName}`);
+      apply.setAttribute('aria-label', `Use saved settings: ${entryName}`);
       apply.setAttribute('aria-pressed', String(selected?.projectId === project.id && selected?.outputId === output.id));
       const heading = document.createElement('strong');
       heading.textContent = entryName;
@@ -100,8 +100,8 @@ export function createSavedDrafts({ getEntries, getSelection, isDisabled, onAppl
       const rename = document.createElement('button');
       rename.type = 'button';
       rename.className = 'icon-button saved-draft-rename';
-      rename.setAttribute('aria-label', `Rename saved draft: ${entryName}`);
-      rename.title = 'Rename Saved Draft';
+      rename.setAttribute('aria-label', `Rename saved settings: ${entryName}`);
+      rename.title = 'Rename Saved Settings';
       rename.append(createIcon('edit'));
       rename.addEventListener('click', () => {
         close();
@@ -115,8 +115,8 @@ export function createSavedDrafts({ getEntries, getSelection, isDisabled, onAppl
       const remove = document.createElement('button');
       remove.type = 'button';
       remove.className = 'icon-button saved-draft-remove';
-      remove.setAttribute('aria-label', `Remove saved draft: ${entryName}`);
-      remove.title = 'Remove Saved Draft';
+      remove.setAttribute('aria-label', `Remove saved settings: ${entryName}`);
+      remove.title = 'Remove Saved Settings';
       remove.append(createIcon('delete'));
       remove.addEventListener('click', () => onRemove(project.id, output.id));
       row.append(apply, rename, remove);

@@ -2,18 +2,17 @@ import { createDropdownTransition } from './dropdown-transition.js?v=20261026-dr
 import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261026-drafting-card-size';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { bindTapActivation } from './tap-activation.js?v=20261026-drafting-card-size';
-import { toolFavorites } from './tool-favorites.js?v=20261102-saved-choices';
-import { bindTabSelection } from './selection-controls.js?v=20261026-drafting-card-size';
+import { toolFavorites } from './tool-favorites.js?v=20261105-filter-settings';
 
 export function createToolDropdowns({ root = document, favoritesStore = toolFavorites, notify = () => {} } = {}) {
-  const controls = [...root.querySelectorAll('.composer-field, .results-sort-field, .feedback-select-field, .editor-style-field, .word-count-field')].map(field => {
+  const controls = [...root.querySelectorAll('.composer-field, .results-sort-field, .results-source-field, .feedback-select-field, .editor-style-field, .word-count-field')].map(field => {
     const select = field.querySelector('select');
     const label = field.dataset.label;
     const draftSetting = field.matches('.composer-field') && ['Format', 'Audience', 'Voice'].includes(label);
-    const key = draftSetting ? label.toLowerCase() : select.id.replace(/^(composer-|output-edit-)/, '');
-    const supportsFavorites = draftSetting && ['format', 'audience'].includes(key);
-    const plural = key === 'format' ? 'formats' : 'audiences';
-    let savedOnly = false;
+    const sourceFilter = field.matches('.results-source-field');
+    const key = sourceFilter ? 'source' : draftSetting ? label.toLowerCase() : select.id.replace(/^(composer-|output-edit-)/, '');
+    const supportsFavorites = sourceFilter || (draftSetting && ['format', 'audience'].includes(key));
+    const favoriteChoice = option => Boolean(option.value) && !(sourceFilter && option.value === 'all');
     let opensUp = false;
     field.dataset.tool = key;
     if (field.dataset.fixedValue) {
@@ -32,7 +31,7 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
       return { connected: () => field.isConnected, contains: target => field.contains(target), close() {}, refresh };
     }
     const editorStyle = field.matches('.editor-style-field');
-    const floating = field.matches('.feedback-select-field') || editorStyle;
+    const floating = field.matches('.feedback-select-field') || editorStyle || sourceFilter;
     const inWorkspacePanel = Boolean(field.closest('#composer-tools, .composer-tools'));
     const mobileWorkspacePanel = () => inWorkspacePanel && window.matchMedia(breakpointQuery()).matches;
     const placeholder = draftSetting ? label : field.dataset.placeholder || (['format', 'audience', 'voice'].includes(key) ? `Select ${label}` : label);
@@ -44,7 +43,8 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
     trigger.setAttribute('aria-expanded', 'false');
     trigger.setAttribute('aria-controls', `${select.id}-options`);
     const text = document.createElement('span');
-    const chevron = createIcon('unfold_less', 'tool-dropdown-chevron');
+    const singleChevron = draftSetting || sourceFilter || field.matches('.results-sort-field');
+    const chevron = createIcon(singleChevron ? 'keyboard_arrow_down' : 'unfold_less', 'tool-dropdown-chevron');
     trigger.append(text, chevron);
 
     const menu = document.createElement('div');
@@ -60,84 +60,52 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
     list.className = 'tool-dropdown-list';
     list.setAttribute('role', supportsFavorites ? 'group' : 'listbox');
     list.setAttribute('aria-label', label);
-    let allTab;
-    let savedTab;
-    let tabs;
-    let choicesPanel;
-    if (supportsFavorites) {
-      const toolbar = document.createElement('div');
-      toolbar.className = 'tool-dropdown-toolbar';
-      toolbar.setAttribute('aria-label', `${label} views`);
-      choicesPanel = document.createElement('div');
-      choicesPanel.id = `${select.id}-view`;
-      choicesPanel.className = 'tool-favorites-panel';
-      const createTab = (view, title) => {
-        const tab = document.createElement('button');
-        tab.type = 'button';
-        tab.id = `${select.id}-${view}-tab`;
-        tab.className = 'tool-favorites-tab';
-        tab.dataset.view = view;
-        tab.textContent = title;
-        toolbar.append(tab);
-        return tab;
-      };
-      allTab = createTab('all', 'All');
-      savedTab = createTab('saved', 'Favorites (0)');
-      tabs = bindTabSelection({
-        root: toolbar, items: [allTab, savedTab], panel: choicesPanel,
-        getValue: tab => tab.dataset.view,
-        onSelect(view) {
-          if (!transition.expanded || select.disabled) return;
-          savedOnly = view === 'saved';
-          refreshFavorites();
-        },
-      });
-      menu.append(toolbar);
-    }
-    const rows = [...select.options].map(option => {
-      const row = document.createElement('div');
-      row.className = 'tool-dropdown-row';
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'tool-dropdown-option';
-      if (!supportsFavorites) button.setAttribute('role', 'option');
-      button.tabIndex = supportsFavorites ? 0 : -1;
-      button.textContent = option.textContent;
-      button.append(createIcon('check', 'tool-dropdown-check'));
-      bindTapActivation(button, () => {
-        if (!transition.expanded || select.disabled) return;
-        select.value = option.value;
-        select.dispatchEvent(new Event('change', { bubbles: true }));
-        close(true);
-      });
-      row.append(button);
-      let favorite;
-      if (supportsFavorites && option.value) {
-        favorite = document.createElement('button');
-        favorite.type = 'button';
-        favorite.className = 'tool-option-favorite';
-        favorite.append(createIcon('favorite'));
-        bindTapActivation(favorite, () => {
-          if (!transition.expanded || select.disabled) return;
-          const { persisted } = favoritesStore.toggle(key, option.value);
-          if (!persisted) notify('Favorites updated for this session only. Browser storage is unavailable');
-          refreshFavorites();
-          if (row.hidden) (rows.find(choice => !choice.row.hidden)?.button || (savedOnly ? savedTab : allTab)).focus({ preventScroll: true });
+    let rows = [];
+    let displayedRows = [];
+    let optionsSignature = '';
+    function refreshRows() {
+      const options = [...select.options];
+      const signature = JSON.stringify(options.map(option => [option.value, option.textContent, option.disabled]));
+      if (signature === optionsSignature && options.every((option, index) => rows[index]?.option === option)) return;
+      optionsSignature = signature;
+      list.replaceChildren();
+      rows = options.map(option => {
+        const row = document.createElement('div');
+        row.className = 'tool-dropdown-row';
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'tool-dropdown-option';
+        button.disabled = option.disabled;
+        if (!supportsFavorites) button.setAttribute('role', 'option');
+        button.tabIndex = supportsFavorites ? 0 : -1;
+        button.textContent = option.textContent;
+        button.append(createIcon('check', 'tool-dropdown-check'));
+        bindTapActivation(button, () => {
+          if (!transition.expanded || select.disabled || option.disabled) return;
+          select.value = option.value;
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+          close(true);
         });
-        row.append(favorite);
-      }
-      list.append(row);
-      return { row, button, favorite, option };
-    });
-    const empty = document.createElement('p');
-    empty.className = 'tool-saved-empty';
-    empty.setAttribute('role', 'status');
-    empty.textContent = `No favorite ${plural} yet. Choose All, then use a heart to add a favorite.`;
-    empty.hidden = true;
-    if (choicesPanel) {
-      choicesPanel.append(list, empty);
-      menu.append(choicesPanel);
-    } else menu.append(list, empty);
+        row.append(button);
+        let favorite;
+        if (supportsFavorites && favoriteChoice(option)) {
+          favorite = document.createElement('button');
+          favorite.type = 'button';
+          favorite.className = 'tool-option-favorite';
+          favorite.append(createIcon('favorite'));
+          bindTapActivation(favorite, () => {
+            if (!transition.expanded || select.disabled) return;
+            const { persisted } = favoritesStore.toggle(key, option.value);
+            if (!persisted) notify('Favorites updated for this session only. Browser storage is unavailable');
+          });
+          row.append(favorite);
+        }
+        list.append(row);
+        return { row, button, favorite, option };
+      });
+      displayedRows = rows;
+    }
+    menu.append(list);
     field.append(trigger, menu);
     const transition = createDropdownTransition(menu, { onClosed: settleMenu });
 
@@ -149,33 +117,34 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
     function refreshFavorites() {
       if (!supportsFavorites) return;
       const favorites = new Set(favoritesStore.values(key));
-      const savedCount = rows.filter(({ option }) => option.value && favorites.has(option.value)).length;
-      savedTab.textContent = `Favorites (${savedCount})`;
-      tabs.sync(savedOnly ? 'saved' : 'all');
-      for (const { row, favorite, option } of rows) {
-        const saved = favorites.has(option.value);
-        row.hidden = savedOnly && Boolean(option.value) && !saved;
+      for (const { favorite, option } of rows) {
         if (!favorite) continue;
+        const saved = favorites.has(option.value);
         favorite.setAttribute('aria-pressed', String(saved));
         const favoriteLabel = saved ? `Remove ${option.textContent} from favorites` : `Add ${option.textContent} to favorites`;
         favorite.setAttribute('aria-label', favoriteLabel);
         favorite.title = favoriteLabel;
       }
-      empty.hidden = !savedOnly || savedCount > 0;
-      if (transition.expanded) positionMenu();
-      const activeRow = rows.find(choice => choice.row.contains(document.activeElement));
-      if (transition.expanded && activeRow?.row.hidden) {
-        (rows.find(choice => !choice.row.hidden)?.button || (savedOnly ? savedTab : allTab)).focus({ preventScroll: true });
+      // Keep reset first, then favorites and remaining choices in catalog order.
+      const rank = ({ option }) => !favoriteChoice(option) ? 0 : favorites.has(option.value) ? 1 : 2;
+      const ordered = [...rows].sort((a, b) => rank(a) - rank(b));
+      if (ordered.some((choice, index) => choice !== displayedRows[index])) {
+        const active = list.contains(document.activeElement) ? document.activeElement : null;
+        list.append(...ordered.map(({ row }) => row));
+        if (active && document.activeElement !== active) active.focus({ preventScroll: true });
       }
+      displayedRows = ordered;
+      if (transition.expanded) positionMenu();
     }
     const unsubscribeFavorites = supportsFavorites ? favoritesStore.subscribe(refreshFavorites) : () => {};
     function refresh() {
+      refreshRows();
       trigger.disabled = select.disabled;
       field.dataset.hasValue = String(Boolean(select.value));
       trigger.title = select.title;
       if (select.disabled) close(false, { animate: false });
       const selected = select.options[select.selectedIndex];
-      const selectedLabel = select.value ? selected.textContent : placeholder;
+      const selectedLabel = select.value && selected ? selected.textContent : placeholder;
       text.textContent = selectedLabel;
       trigger.setAttribute('aria-label', select.value ? `${label}: ${selectedLabel}` : selectedLabel);
       rows.forEach(({ row, button, option }) => {
@@ -211,7 +180,7 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
       closeAll(menu);
       if (supportsFavorites) favoritesStore.refresh();
       refresh();
-      if (inWorkspacePanel || editorStyle) {
+      if (inWorkspacePanel || editorStyle || sourceFilter) {
         document.body.append(menu);
         menu.dataset.workspaceDropdown = 'true';
         menu.style.zIndex = tokenValue('foundation.layer.30');
@@ -221,8 +190,8 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
       trigger.setAttribute('aria-expanded', 'true');
       positionMenu();
       transition.open({ opensUp });
-      const selected = rows.find(choice => choice.option.selected);
-      (selected && !selected.row.hidden ? selected.button : rows.find(choice => !choice.row.hidden)?.button || (savedOnly ? savedTab : allTab)).focus({ preventScroll: true });
+      const selected = displayedRows.find(choice => choice.option.selected && !choice.button.disabled);
+      (selected?.button || displayedRows.find(choice => !choice.button.disabled)?.button)?.focus({ preventScroll: true });
     }
     trigger.addEventListener('click', () => { if (!transition.expanded) open(); else close(true); });
     trigger.addEventListener('keydown', event => {
@@ -235,10 +204,10 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
       if (event.key === 'Escape') {
         event.preventDefault(); event.stopPropagation(); close(true); return;
       }
-      const visible = rows.filter(choice => !choice.row.hidden);
+      const visible = displayedRows.filter(choice => !choice.button.disabled);
       if (event.key === 'Tab') {
         if (!supportsFavorites) { close(true); return; }
-        const targets = [savedOnly ? savedTab : allTab, ...visible.flatMap(choice => [choice.button, choice.favorite].filter(Boolean))];
+        const targets = visible.flatMap(choice => [choice.button, choice.favorite].filter(Boolean));
         if (document.activeElement === (event.shiftKey ? targets[0] : targets.at(-1))) close(true);
         return;
       }
@@ -269,7 +238,7 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
       contains: target => field.contains(target) || menu.contains(target),
       close,
       refresh() { transition.settle(); refresh(); },
-      destroy() { unsubscribeFavorites(); tabs?.destroy(); transition.destroy(); },
+      destroy() { unsubscribeFavorites(); transition.destroy(); },
     };
   });
 

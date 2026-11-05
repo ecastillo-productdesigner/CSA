@@ -1,5 +1,5 @@
 const storageKey = 'csa.tool-favorites.v1';
-const categories = ['format', 'audience'];
+const categories = ['format', 'audience', 'source'];
 const validValue = value => typeof value === 'string' && value.trim().length > 0;
 
 function normalize(stored) {

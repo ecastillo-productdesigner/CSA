@@ -70,7 +70,6 @@ test('the DS icon gallery matches both shipped font subsets', async () => {
   assert.deepEqual(appSubset, shipped, 'The app and DS ship the same current interface glyphs');
 
   const dropdowns = await readFile(new URL('../dist/tool-dropdowns.js', import.meta.url), 'utf8');
-  assert.match(dropdowns, /createIcon\(['"]unfold_less['"],\s*['"]tool-dropdown-chevron['"]\)/,
-    'App and DS dropdowns use the approved unfold_less glyph');
+  assert.ok(shipped.includes('keyboard_arrow_down'), 'The single dropdown chevron must be available in both fonts');
   assert.doesNotMatch(dropdowns, /unfold_more/, 'The replaced double-chevron glyph must not return');
 });

@@ -57,7 +57,7 @@ class Node {
 function setup(t, { mobile = false, workspace = false, reducedMotion = true } = {}) {
   const previous = Object.fromEntries(['document', 'window', 'MutationObserver', 'getComputedStyle'].map(key => [key, globalThis[key]]));
   t.after(() => Object.assign(globalThis, previous));
-  const selectors = ['show-sources', 'editor-sources', 'show-new-variant', 'composer-tools', 'show-variants', 'composer-outputs', 'show-profile', 'profile-menu', 'navigation-drawer', 'toggle-navigation-drawer', 'new-project', 'home', 'new-project-tooltip', 'sources-tooltip', 'account-tooltip', 'workspace-app', 'mobile-workspace-utilities', 'sidebar-header', 'workspace-navigation'];
+  const selectors = ['show-sources', 'editor-sources', 'show-new-variant', 'composer-tools', 'show-variants', 'composer-outputs', 'show-profile', 'account-controls', 'show-role', 'profile-menu', 'navigation-drawer', 'toggle-navigation-drawer', 'new-project', 'home', 'new-project-tooltip', 'sources-tooltip', 'account-tooltip', 'workspace-app', 'mobile-workspace-utilities', 'sidebar-header', 'workspace-navigation'];
   const nodes = Object.fromEntries(selectors.map(id => [`#${id}`, new Node()]));
   const doc = new Node();
   doc.body = new Node(); doc.documentElement = new Node();
@@ -73,7 +73,9 @@ function setup(t, { mobile = false, workspace = false, reducedMotion = true } = 
   nodes['#navigation-drawer'].append(nodes['#workspace-navigation']);
   nodes['#workspace-navigation'].append(nodes['#new-project']);
   nodes['#workspace-navigation'].append(nodes['#editor-sources']);
-  nodes['#navigation-drawer'].append(nodes['#show-profile']);
+  nodes['#navigation-drawer'].append(nodes['#account-controls']);
+  nodes['#account-controls'].append(nodes['#show-role']);
+  nodes['#account-controls'].append(nodes['#show-profile']);
   nodes['#navigation-drawer'].dataset.expanded = 'false';
   nodes['#home'].hidden = workspace;
   if (workspace) doc.body.classList.add('showing-composer');
@@ -140,14 +142,16 @@ for (const workspace of [false, true]) {
     const sidebarOrder = [...nodes['#navigation-drawer'].children];
     ui.media.matches = true;
     ui.media.fire('change');
-    assert.deepEqual(utilities.children, [nodes['#new-project'], nodes['#show-profile']]);
+    assert.deepEqual(utilities.children, [nodes['#new-project'], nodes['#account-controls']]);
+    assert.deepEqual(nodes['#account-controls'].children, [nodes['#show-role'], nodes['#show-profile']], 'role stays above avatar in visual and keyboard order');
     ui.navigation.open('profile');
     assert.equal(nodes['#show-profile'].getAttribute('aria-expanded'), 'true');
     assert.equal(nodes['#profile-menu'].hidden, false);
     ui.media.matches = false;
     ui.media.fire('change');
     assert.equal(nodes['#new-project'].parentElement, nodes['#workspace-navigation']);
-    assert.equal(nodes['#show-profile'].parentElement, nodes['#navigation-drawer']);
+    assert.equal(nodes['#account-controls'].parentElement, nodes['#navigation-drawer']);
+    assert.deepEqual(nodes['#account-controls'].children, [nodes['#show-role'], nodes['#show-profile']]);
     assert.deepEqual(nodes['#workspace-navigation'].children, navigationOrder);
     assert.deepEqual(nodes['#navigation-drawer'].children, sidebarOrder);
     assert.equal(utilities.children.length, 0);
@@ -159,8 +163,8 @@ test('mobile homepage and workspace retain the same utility controls without dup
   const ui = setup(t, { mobile: true });
   const { nodes } = ui;
   const utilities = nodes['#mobile-workspace-utilities'];
-  const controls = [nodes['#new-project'], nodes['#show-profile']];
-  assert.deepEqual(utilities.children, controls, 'the initial mobile homepage places New Project before the account control');
+  const controls = [nodes['#new-project'], nodes['#account-controls']];
+  assert.deepEqual(utilities.children, controls, 'the initial mobile homepage places New Project before the role and account controls');
   nodes['#home'].hidden = true;
   ui.doc.body.classList.add('showing-composer');
   await ui.deliverLayoutMutation();
@@ -173,7 +177,8 @@ test('mobile homepage and workspace retain the same utility controls without dup
   await ui.deliverLayoutMutation();
   assert.equal(utilities.children.length, 0, 'leaving a mobile top-bar screen restores the original containers');
   assert.equal(nodes['#new-project'].parentElement, nodes['#workspace-navigation']);
-  assert.equal(nodes['#show-profile'].parentElement, nodes['#navigation-drawer']);
+  assert.equal(nodes['#account-controls'].parentElement, nodes['#navigation-drawer']);
+  assert.deepEqual(nodes['#account-controls'].children, [nodes['#show-role'], nodes['#show-profile']]);
 });
 
 for (const mobile of [true, false]) {

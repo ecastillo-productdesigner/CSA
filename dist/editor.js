@@ -1,6 +1,6 @@
 import { documentStyles } from './design-system/export-styles.js?v=20261026-drafting-card-size';
 import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-drafting-card-size';
-import { initializeOutputShareText } from './outputs.js?v=20261102-saved-drafts';
+import { initializeOutputShareText } from './outputs.js?v=20261105-filter-settings';
 import { createRevisionLoading } from './revision-loading.js?v=20261027-revision-loading';
 import { createStoryMetadata, storyMetadata } from './story-metadata.js?v=20261027-metadata';
 import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261026-drafting-card-size';
@@ -105,8 +105,12 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     updateSendButton();
   }
 
+  function hasContent() {
+    return Boolean(project && quill && quill.getText().replace(/[\s\u200B-\u200D\uFEFF]/gu, ''));
+  }
+
   function canSend() {
-    return Boolean(!revisionBusy && project?.selectedOutputId && project.status !== 'pending' && !project.needsRegeneration && quill && (sentContent === null || contentSignature() !== sentContent));
+    return Boolean(!revisionBusy && project?.selectedOutputId && project.status !== 'pending' && !project.needsRegeneration && hasContent() && (sentContent === null || contentSignature() !== sentContent));
   }
 
   function updateSendButton() {
@@ -115,6 +119,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     button.title = !project?.selectedOutputId ? 'Select a draft to send to your CMS'
       : project.status === 'pending' || project.needsRegeneration ? 'Draft this content again to apply its updated settings before sending.'
       : revisionBusy ? 'Wait for this draft’s revision to finish'
+      : !hasContent() ? 'Add draft content before sending'
       : button.disabled ? 'This version has been sent. Edit the title or content to send an update.'
         : 'Send this draft to your CMS (demo)';
   }
@@ -391,7 +396,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     close() { flush(); metadata.close(); directionMetadata.close(); setRevisionBusy(false); title.disabled = false; quill?.enable(true); project = null; root.hidden = true; setPanel('', false); if (linkDialog.open) linkDialog.close(); $('#editor-download').open = false; },
     setRevisionBusy,
     closePanels() { setPanel('', false); directionMetadata.close(); metadata.close(); },
-    hasContent() { return Boolean(project && quill && quill.getText().replace(/[\s\u200B-\u200D\uFEFF]/gu, '')); },
+    hasContent,
     canSend,
     markSent() {
       sentContent = contentSignature();

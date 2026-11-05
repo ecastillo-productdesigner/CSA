@@ -29,7 +29,7 @@ test('saving and removing a choice leaves the other category intact', () => {
   const { favorites, storage } = setup(JSON.stringify({ format: ['listicle'], audience: ['general'] }));
   assert.deepEqual(favorites.toggle('format', 'explainer'), { saved: true, persisted: true });
   assert.deepEqual(favorites.toggle('format', 'listicle'), { saved: false, persisted: true });
-  assert.deepEqual(JSON.parse(storage.getItem(storageKey)), { format: ['explainer'], audience: ['general'] });
+  assert.deepEqual(JSON.parse(storage.getItem(storageKey)), { format: ['explainer'], audience: ['general'], source: [] });
   assert.deepEqual(favorites.toggle('audience', 'general'), { saved: false, persisted: true });
   assert.deepEqual(favorites.values('format'), ['explainer']);
   assert.deepEqual(favorites.values('audience'), []);
@@ -80,7 +80,7 @@ test('failed writes survive refresh and merge with external changes when saving 
   persist(storageKey, JSON.stringify({ format: ['listicle'], audience: ['local'] }));
   storage.setItem = persist;
   assert.deepEqual(favorites.toggle('audience', 'general'), { saved: true, persisted: true });
-  assert.deepEqual(JSON.parse(storage.getItem(storageKey)), { format: ['explainer'], audience: ['local', 'general'] });
+  assert.deepEqual(JSON.parse(storage.getItem(storageKey)), { format: ['explainer'], audience: ['local', 'general'], source: [] });
 });
 
 test('separate instances preserve updates to both categories', () => {
@@ -91,7 +91,7 @@ test('separate instances preserve updates to both categories', () => {
   second.toggle('audience', 'general');
   first.toggle('format', 'explainer');
   second.toggle('audience', 'local');
-  assert.deepEqual(JSON.parse(storage.getItem(storageKey)), { format: ['listicle', 'explainer'], audience: ['general', 'local'] });
+  assert.deepEqual(JSON.parse(storage.getItem(storageKey)), { format: ['listicle', 'explainer'], audience: ['general', 'local'], source: [] });
   first.refresh();
   assert.deepEqual(first.values('audience'), ['general', 'local']);
 });
@@ -106,4 +106,17 @@ test('subscribers observe toggles and refreshed external changes until unsubscri
   unsubscribe();
   favorites.toggle('format', 'what-to-know');
   assert.deepEqual(observed, [['listicle'], ['explainer']]);
+});
+
+test('source favorites persist by publication name alongside legacy draft favorites', () => {
+  const { favorites, storage } = setup(JSON.stringify({ format: ['listicle'], audience: ['general'] }));
+  assert.deepEqual(favorites.values('source'), []);
+  favorites.toggle('source', 'Bargain Hunter');
+  favorites.toggle('source', 'Bellingham Herald');
+  const restored = createToolFavorites({ storage: () => storage });
+  assert.deepEqual(restored.values('source'), ['Bargain Hunter', 'Bellingham Herald']);
+  restored.toggle('source', 'Bargain Hunter');
+  assert.deepEqual(JSON.parse(storage.getItem(storageKey)), {
+    format: ['listicle'], audience: ['general'], source: ['Bellingham Herald'],
+  });
 });

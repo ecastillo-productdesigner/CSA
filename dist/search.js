@@ -1,7 +1,47 @@
+import { createSearchDateFilter } from './search-date-filter.js?v=20261105-filter-settings';
 import { classifyProjectSearchInput } from './project-search-input.js?v=20261102-topic-search';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { createSourceAddingAnimation } from './drafting-animation.js?v=20261026-drafting-card-size';
 import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-drafting-card-size';
+const sourcePublications = [
+  ["Bargain Hunter", "BH"],
+  ["Belleville News-Democrat", "BND"],
+  ["Bellingham Herald", "BH"],
+  ["Bradenton Herald", "BrH"],
+  ["Centre Daily Times", "CDT"],
+  ["Communities of Interest", "COI"],
+  ["El Nuevo Herald", "ENH"],
+  ["Fort Worth Star-Telegram", "FWST"],
+  ["Idaho Statesman", "IS"],
+  ["Ledger-Enquirer", "LE"],
+  ["Lexington Herald-Leader", "LHL"],
+  ["McClatchy DC Bureau", "DC"],
+  ["Merced Sun-Star", "MSS"],
+  ["Miami Herald", "MH"],
+  ["National Team", "NAT"],
+  ["Soap Opera Digest", "SOD"],
+  ["Sun Herald", "SH"],
+  ["The Charlotte Observer", "CO"],
+  ["The Fresno Bee", "FB"],
+  ["The Herald", "RH"],
+  ["The Herald-Sun", "HS"],
+  ["The Island Packet", "IP"],
+  ["The Kansas City Star", "KCS"],
+  ["The Modesto Bee", "MB"],
+  ["The News & Observer", "N&O"],
+  ["The News Tribune", "TNT"],
+  ["The Olympian", "Oly"],
+  ["The Sacramento Bee", "SacBee"],
+  ["The State", ""],
+  ["The Sun News", "SN"],
+  ["The Telegraph", "Tel"],
+  ["The Tribune", "SLO"],
+  ["The Wichita Eagle", "WE"],
+  ["Tri-City Herald", "TCH"],
+  ["Us Weekly", "USW"],
+  ["Woman's World", "WW"],
+];
+
 // Sample content for the results-screen prototype. No live news requests are made.
 function sampleArticles(query) {
   const isKelly = /^kelly\s+clarkson$/i.test(query.trim());
@@ -66,7 +106,7 @@ function dateLabel(value) {
   return new Date(`${value}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 }
 
-export function createSearchExperience({ onSearch, onBack = () => {}, onSelectionChange, onDirectionChange, onDraft, onOpenSource, onDuplicateSource = () => {} }) {
+export function createSearchExperience({ onSearch, onBack = () => {}, onSelectionChange, onDirectionChange, onDraft, onOpenSource, onDuplicateSource = () => {}, createDateFilter = createSearchDateFilter }) {
   const $ = (selector) => document.querySelector(selector);
   const results = $('#search-results');
   const resultsHome = results.parentElement;
@@ -74,6 +114,16 @@ export function createSearchExperience({ onSearch, onBack = () => {}, onSelectio
   const additionTimers = new Map();
   const additionAnimations = new Map();
   const preview = $('#article-preview-dialog');
+  const dateFilter = createDateFilter({
+    root: $('#results-date-filter'),
+    onChange({ after, before }) {
+      if (!state) return;
+      state.after = after;
+      state.before = before;
+      state.visibleCount = 4;
+      render();
+    },
+  });
 
   function clearAdditionAnimations() {
     for (const animation of additionAnimations.values()) animation.destroy();
@@ -192,7 +242,8 @@ export function createSearchExperience({ onSearch, onBack = () => {}, onSelectio
     };
     return state.articles.filter((article) =>
       (state.source === 'all' || article.source === state.source) &&
-      (!state.after || article.date >= state.after)
+      (!state.after || article.date >= state.after) &&
+      (!state.before || article.date <= state.before)
     ).sort((a, b) => state.sort === 'relevance' ? relevance(b) - relevance(a) : state.sort === 'newest' ? (b.date || '').localeCompare(a.date || '') : (a.date || '').localeCompare(b.date || ''));
   }
 
@@ -202,6 +253,7 @@ export function createSearchExperience({ onSearch, onBack = () => {}, onSelectio
 
   function render() {
     if (!state) return;
+    $('#results-toggle-filters').dataset.active = String(state.source !== 'all' || Boolean(state.after || state.before));
     const filtered = filteredArticles();
     const visible = filtered.slice(0, state.visibleCount);
     $('#results-count').textContent = state.linkResults
@@ -321,18 +373,20 @@ export function createSearchExperience({ onSearch, onBack = () => {}, onSelectio
   $('#results-back').addEventListener('click', () => { if (state) onBack(state.sourceProjectId); });
   $('#results-sort').addEventListener('change', () => { if (state) { state.sort = $('#results-sort').value; render(); } });
   $('#results-source').addEventListener('change', () => { if (state) { state.source = $('#results-source').value; state.visibleCount = 4; render(); } });
-  $('#results-after').addEventListener('change', () => { if (state) { state.after = $('#results-after').value; state.visibleCount = 4; render(); } });
   $('#results-reset-filters').addEventListener('click', () => {
     if (!state) return;
-    state.source = 'all'; state.after = ''; state.visibleCount = 4;
-    $('#results-source').value = 'all'; $('#results-after').value = '';
+    state.source = 'all'; state.after = ''; state.before = ''; state.visibleCount = 4;
+    dateFilter.sync({ after: '', before: '' });
+    $('#results-source').value = 'all';
+    $('#results-source').dispatchEvent(new Event('change', { bubbles: true }));
     render();
   });
   $('#results-toggle-filters').addEventListener('click', () => {
     const expanded = $('#results-filter-panel').hidden;
     $('#results-filter-panel').hidden = !expanded;
     $('#results-toggle-filters').setAttribute('aria-expanded', String(expanded));
-    if (expanded) $('#results-source').focus();
+    if (expanded) ($('#results-source-trigger') || $('#results-source')).focus();
+    else dateFilter.close();
   });
   $('#results-editorial-direction').addEventListener('input', () => {
     if (!state) return;
@@ -371,7 +425,7 @@ export function createSearchExperience({ onSearch, onBack = () => {}, onSelectio
         : Array.isArray(project.addedArticleIds) ? project.addedArticleIds : savedSelection;
       const readyArticleIds = new Set(savedAdded.filter(id => articles.some(article => article.id === id)));
       const workspaceSources = workspace ? workspaceSelection(project, query, articles) : null;
-      state = { workspace, projectId: project.id, sourceProjectId: addingSources ? project.sourceProjectId : null, addingSources, linkResults, query, articles, editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '', sort: 'newest', source: 'all', after: '', visibleCount: linkResults ? articles.length : 4, selected, readyArticleIds, ...workspaceSources };
+      state = { workspace, projectId: project.id, sourceProjectId: addingSources ? project.sourceProjectId : null, addingSources, linkResults, query, articles, editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '', sort: 'newest', source: linkResults ? 'all' : 'The State', after: '', before: '', visibleCount: linkResults ? articles.length : 4, selected, readyArticleIds, ...workspaceSources };
       $('#create-draft').textContent = addingSources ? 'Add Sources' : 'Draft';
       $('.results-direction').hidden = addingSources || embedded || workspace;
       $('.results-actions').hidden = embedded || workspace;
@@ -393,11 +447,15 @@ export function createSearchExperience({ onSearch, onBack = () => {}, onSelectio
       validateSearchInput();
       $('#results-sort').value = 'newest';
       $('#results-sort').dispatchEvent(new Event('change', { bubbles: true }));
-      $('#results-source').replaceChildren(node('option', '', 'All sources'), ...[...new Set(articles.map((article) => article.source))].map((source) => {
-        const option = node('option', '', source); option.value = source; return option;
+      const sourceLabels = new Map(sourcePublications.map(([name, abbreviation]) => [name, abbreviation ? `${name} (${abbreviation})` : name]));
+      for (const { source } of articles) if (!sourceLabels.has(source)) sourceLabels.set(source, source);
+      $('#results-source').replaceChildren(node('option', '', 'All sources'), ...[...sourceLabels].map(([source, label]) => {
+        const option = node('option', '', label); option.value = source; return option;
       }));
       $('#results-source').options[0].value = 'all';
-      $('#results-after').value = '';
+      $('#results-source').value = state.source;
+      $('#results-source').dispatchEvent(new Event('change', { bubbles: true }));
+      dateFilter.sync({ after: '', before: '' });
       $('#results-filter-panel').hidden = true;
       $('#results-toggle-filters').setAttribute('aria-expanded', 'false');
       render();
@@ -422,6 +480,6 @@ export function createSearchExperience({ onSearch, onBack = () => {}, onSelectio
       state.editorialDirection = typeof value === 'string' ? value : '';
       $('#results-editorial-direction').value = state.editorialDirection;
     },
-    hide() { results.classList.toggle('workspace-search-panel', false); clearAdditionTimers(); if (preview.open) preview.close(); state = null; $('#search-results').hidden = true; },
+    hide() { dateFilter.close(); results.classList.toggle('workspace-search-panel', false); clearAdditionTimers(); if (preview.open) preview.close(); state = null; $('#search-results').hidden = true; },
   };
 }

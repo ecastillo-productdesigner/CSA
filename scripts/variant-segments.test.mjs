@@ -50,3 +50,45 @@ test('pending content uses the same unnumbered label for one or many pieces and 
     assert.equal(variantPanelState({ outputs }).pendingLabel, 'Content to Draft');
   }
 });
+
+test('a blank own-material output keeps Drafted selected without showing a card', () => {
+  for (const body of ['', '\n \t', '\u200B\u200C\u200D\uFEFF\n']) {
+    const output = {
+      id: 'own-material', title: 'My draft title', status: 'ready',
+      draftText: body, document: { ops: [{ insert: body }] },
+      shareText: 'A title or share text alone is not draft body content',
+    };
+    const project = { ownMaterialOutputId: output.id, selectedOutputId: output.id, outputs: [output] };
+    const state = variantPanelState(project);
+    assert.equal(state.view, 'created');
+    assert.deepEqual(state.outputs, []);
+    assert.deepEqual(variantPanelState(project, 'created').outputs, []);
+    assert.deepEqual(variantPanelState(project, 'pending').outputs, []);
+    assert.equal(output.status, 'ready', 'the empty draft remains editable');
+  }
+});
+
+test('an own-material card appears for body text and hides again when the rich document is cleared', () => {
+  const output = { id: 'own-material', title: 'My draft', status: 'ready', draftText: '', document: { ops: [{ insert: '\n' }] } };
+  const project = { ownMaterialOutputId: output.id, selectedOutputId: output.id, outputs: [output] };
+  assert.deepEqual(variantPanelState(project, 'created').outputs, []);
+  output.document = { ops: [{ insert: 'My pasted paragraph', attributes: { bold: true } }, { insert: '\n' }] };
+  assert.deepEqual(variantPanelState(project, 'created').outputs, [output]);
+  output.draftText = 'My pasted paragraph';
+  output.document = { ops: [{ insert: '\n\u200B ' }] };
+  assert.deepEqual(variantPanelState(project, 'created').outputs, [], 'an empty rich document overrides stale plain text');
+  output.document = { ops: [] };
+  assert.deepEqual(variantPanelState(project, 'created').outputs, []);
+  delete output.document;
+  assert.deepEqual(variantPanelState(project, 'created').outputs, [output], 'plain-text drafts remain supported');
+  output.draftText = '\u200B\n';
+  assert.deepEqual(variantPanelState(project, 'created').outputs, []);
+});
+
+test('hiding an empty own-material card does not hide ordinary ready drafts or pending recipes', () => {
+  const own = { id: 'own-material', title: 'Untitled story', status: 'ready', draftText: '', document: { ops: [{ insert: '\n' }] } };
+  const project = { ownMaterialOutputId: own.id, selectedOutputId: own.id, outputs: [own, ready, pending] };
+  assert.deepEqual(variantPanelState(project, 'created').outputs, [ready]);
+  assert.deepEqual(variantPanelState(project, 'pending').outputs, [pending]);
+  assert.deepEqual(variantPanelState({ ...project, ownMaterialOutputId: null }, 'created').outputs, [own, ready]);
+});

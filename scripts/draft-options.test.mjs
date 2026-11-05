@@ -23,7 +23,11 @@ class Element {
   }
   append(...children) {
     for (const child of children) {
-      if (child.parentElement) child.parentElement.children = child.parentElement.children.filter(value => value !== child);
+      if (child.parentElement) {
+        child.parentElement.children = child.parentElement.children.filter(value => value !== child);
+        // Moving an ancestor with append can blur a focused descendant in browsers.
+        if (child.contains(globalThis.document?.activeElement)) globalThis.document.activeElement = null;
+      }
       child.parentElement = this;
       this.children.push(child);
     }
@@ -142,6 +146,7 @@ test('empty draft fields show their purpose while retaining the None Selected re
     const trigger = field.querySelector('.tool-dropdown-trigger');
     assert.equal(trigger.children[0].textContent, field.dataset.label);
     assert.equal(trigger.getAttribute('aria-label'), field.dataset.label);
+    assert.equal(trigger.querySelector('.tool-dropdown-chevron').textContent, 'keyboard_arrow_down');
     assert.equal(field.querySelector('.tool-dropdown-option').textContent, 'None Selected');
   }
   populateDraftOptions();
@@ -233,10 +238,11 @@ test('unselected feedback, editor style, and sort dropdowns keep their existing 
     const trigger = field.querySelector('.tool-dropdown-trigger');
     assert.equal(trigger.children[0].textContent, placeholder);
     assert.equal(trigger.getAttribute('aria-label'), placeholder);
+    assert.equal(trigger.querySelector('.tool-dropdown-chevron').textContent, field.matches('.results-sort-field') ? 'keyboard_arrow_down' : 'unfold_less');
   }
 });
 
-test('favoriting Format or Audience keeps the current choice and popup open', t => {
+test('favoriting Format or Audience pins that choice without changing selection or closing the popup', t => {
   const ui = setup(t);
   const entries = [ui.field('Format', 'standard'), ui.field('Audience', 'general')];
   populateDraftOptions();
@@ -250,21 +256,20 @@ test('favoriting Format or Audience keeps the current choice and popup open', t 
     const rows = menu.querySelectorAll('.tool-dropdown-row');
     const option = rows[2].querySelector('.tool-dropdown-option');
     const favorite = rows[2].querySelector('.tool-option-favorite');
-    const savedTab = menu.querySelectorAll('.tool-favorites-tab').find(tab => tab.dataset.view === 'saved');
-    assert.equal(savedTab.textContent, 'Favorites (0)');
+    assert.equal(menu.querySelector('.tool-dropdown-toolbar'), null);
+    assert.equal(menu.querySelector('.tool-favorites-tab'), null);
+    assert.equal(menu.querySelector('.tool-saved-empty'), null);
     assert.equal(trigger.getAttribute('aria-haspopup'), 'dialog');
     assert.equal(menu.getAttribute('role'), 'dialog');
     assert.equal(menu.querySelector('.tool-dropdown-list').getAttribute('role'), 'group');
     assert.equal(rows[0].querySelector('.tool-option-favorite'), null);
     assert.equal(favorite.getAttribute('aria-pressed'), 'false');
-    assert.equal(favorite.getAttribute('aria-label'), `Add ${select.options[2].textContent} to favorites`);
-    assert.equal(menu.querySelector('.tool-saved-empty').textContent, `No favorite ${field.dataset.tool === 'format' ? 'formats' : 'audiences'} yet. Choose All, then use a heart to add a favorite.`);
     trigger.emit('click');
     favorite.focus();
     favorite.emit('click');
     assert.equal(favorite.getAttribute('aria-pressed'), 'true');
-    assert.equal(savedTab.textContent, 'Favorites (1)');
     assert.equal(favorite.getAttribute('aria-label'), `Remove ${select.options[2].textContent} from favorites`);
+    assert.deepEqual(menu.querySelectorAll('.tool-dropdown-row'), [rows[0], rows[2], rows[1], rows[3], rows[4]]);
     assert.equal(option.getAttribute('aria-pressed'), 'false');
     assert.equal(select.value, selected);
     assert.equal(changes, 0);
@@ -272,191 +277,136 @@ test('favoriting Format or Audience keeps the current choice and popup open', t 
     assert.equal(trigger.getAttribute('aria-expanded'), 'true');
     assert.equal(document.activeElement, favorite);
     assert.deepEqual(ui.favoritesStore.values(field.dataset.tool), [select.options[2].value]);
+    favorite.emit('click');
+    assert.deepEqual(menu.querySelectorAll('.tool-dropdown-row'), rows);
+    assert.equal(document.activeElement, favorite);
+    assert.equal(select.value, selected);
   }
 });
 
-test('All and Favorites tabs count valid saved choices and preserve None Selected in the filtered view', t => {
-  const ui = setup(t, { format: ['listicle', 'retired-format', 'listicle', ''], audience: ['general'] });
-  const { field, select } = ui.field('Format', 'standard');
-  populateDraftOptions();
-  ui.dropdowns();
-  const trigger = field.querySelector('.tool-dropdown-trigger');
-  const menu = field.querySelector('.tool-dropdown-menu');
-  const toolbar = menu.querySelector('.tool-dropdown-toolbar');
-  const tabs = menu.querySelectorAll('.tool-favorites-tab');
-  const [allTab, savedTab] = tabs;
-  const panel = menu.querySelector('.tool-favorites-panel');
-  const rows = menu.querySelectorAll('.tool-dropdown-row');
-  assert.equal(toolbar.getAttribute('role'), 'tablist');
-  assert.deepEqual(tabs.map(tab => [tab.dataset.view, tab.textContent]), [['all', 'All'], ['saved', 'Favorites (1)']]);
-  assert.deepEqual(tabs.map(tab => tab.id), [`${select.id}-all-tab`, `${select.id}-saved-tab`]);
-  assert.ok(tabs.every(tab => tab.getAttribute('role') === 'tab' && tab.getAttribute('aria-controls') === panel.id));
-  assert.deepEqual(tabs.map(tab => [tab.getAttribute('aria-selected'), tab.tabIndex]), [['true', 0], ['false', -1]]);
-  assert.equal(panel.getAttribute('role'), 'tabpanel');
-  assert.equal(panel.getAttribute('aria-labelledby'), allTab.id);
-  assert.equal(panel.contains(menu.querySelector('.tool-dropdown-list')), true);
-  assert.equal(panel.contains(menu.querySelector('.tool-saved-empty')), true);
-  trigger.emit('click');
-  savedTab.focus();
-  toolbar.emit('click', { target: savedTab });
-  assert.deepEqual(tabs.map(tab => [tab.getAttribute('aria-selected'), tab.tabIndex]), [['false', -1], ['true', 0]]);
-  assert.equal(panel.getAttribute('aria-labelledby'), savedTab.id);
-  assert.deepEqual(rows.map(row => row.hidden), [false, true, true, false, true]);
-  assert.equal(menu.querySelector('.tool-saved-empty').hidden, true);
-  assert.equal(select.value, 'standard');
-  assert.equal(menu.hidden, false);
-  assert.equal(document.activeElement, savedTab);
-  allTab.focus();
-  toolbar.emit('click', { target: allTab });
-  assert.equal(allTab.getAttribute('aria-selected'), 'true');
-  assert.equal(panel.getAttribute('aria-labelledby'), allTab.id);
-  assert.ok(rows.every(row => !row.hidden));
-  assert.equal(select.value, 'standard');
-  assert.deepEqual(ui.favoritesStore.values('audience'), ['general']);
-});
-
-test('removing the last favorite shows Favorites (0), the empty state, and the focused reset choice', t => {
-  const ui = setup(t, { format: ['listicle'] });
+test('favorites keep catalog order below None Selected and ignore retired favorites', t => {
+  const ui = setup(t, { format: ['listicle', 'retired-format', 'standard', 'listicle', ''], audience: ['general'] });
   const { field, select } = ui.field('Format', 'listicle');
   populateDraftOptions();
   ui.dropdowns();
   const trigger = field.querySelector('.tool-dropdown-trigger');
   const menu = field.querySelector('.tool-dropdown-menu');
-  const toolbar = menu.querySelector('.tool-dropdown-toolbar');
-  const [allTab, savedTab] = menu.querySelectorAll('.tool-favorites-tab');
-  const rows = menu.querySelectorAll('.tool-dropdown-row');
-  const reset = rows[0].querySelector('.tool-dropdown-option');
-  const favorite = rows[3].querySelector('.tool-option-favorite');
+  const options = menu.querySelectorAll('.tool-dropdown-option');
+  assert.deepEqual(options.map(option => option.textContent), [
+    'None Selected', 'Standard Format', 'Listicle', 'Celebrity Relationship Timeline', 'Who’s Returning to the Show?',
+  ]);
+  assert.ok(menu.querySelectorAll('.tool-dropdown-row').every(row => !row.hidden));
+  assert.equal(options[2].getAttribute('aria-pressed'), 'true');
   trigger.emit('click');
-  toolbar.emit('click', { target: savedTab });
-  favorite.focus();
-  favorite.emit('click');
-  assert.deepEqual(rows.map(row => row.hidden), [false, true, true, true, true]);
-  assert.equal(savedTab.textContent, 'Favorites (0)');
-  assert.equal(savedTab.getAttribute('aria-selected'), 'true');
-  assert.equal(menu.querySelector('.tool-saved-empty').hidden, false);
-  assert.equal(menu.querySelector('.tool-saved-empty').getAttribute('role'), 'status');
-  assert.equal(document.activeElement, reset);
-  assert.equal(favorite.getAttribute('aria-pressed'), 'false');
-  assert.equal(select.value, 'listicle');
-  assert.equal(menu.hidden, false);
-  menu.emit('keydown', { key: 'ArrowDown' });
-  assert.equal(document.activeElement, reset);
-  reset.emit('click');
+  assert.equal(document.activeElement, options[2]);
+  options[0].emit('click');
   assert.equal(select.value, '');
-  assert.equal(field.dataset.hasValue, 'false');
   assert.equal(trigger.getAttribute('aria-label'), 'Format');
   assert.equal(menu.hidden, true);
-  assert.equal(document.activeElement, trigger);
-  trigger.emit('click');
-  assert.equal(savedTab.getAttribute('aria-selected'), 'true');
-  assert.equal(rows[0].hidden, false);
-  assert.equal(document.activeElement, reset);
-  toolbar.emit('click', { target: allTab });
-  assert.equal(menu.querySelector('.tool-saved-empty').hidden, true);
-  assert.ok(rows.every(row => !row.hidden));
-});
-
-test('None Selected resets the current choice while other saved choices remain available', t => {
-  const ui = setup(t, { audience: ['general'] });
-  const { field, select } = ui.field('Audience', 'wellness-enthusiast');
-  populateDraftOptions();
-  ui.dropdowns();
-  let changes = 0;
-  select.addEventListener('change', () => { changes++; });
-  const trigger = field.querySelector('.tool-dropdown-trigger');
-  const menu = field.querySelector('.tool-dropdown-menu');
-  const toolbar = menu.querySelector('.tool-dropdown-toolbar');
-  const savedTab = menu.querySelectorAll('.tool-favorites-tab').find(tab => tab.dataset.view === 'saved');
-  const rows = menu.querySelectorAll('.tool-dropdown-row');
-  trigger.emit('click');
-  toolbar.emit('click', { target: savedTab });
-  assert.deepEqual(rows.map(row => row.hidden), [false, false, true, true, true]);
-  rows[0].querySelector('.tool-dropdown-option').emit('click');
-  assert.equal(select.value, '');
-  assert.equal(changes, 1);
-  assert.equal(menu.hidden, true);
-  assert.equal(document.activeElement, trigger);
   assert.deepEqual(ui.favoritesStore.values('audience'), ['general']);
-  assert.equal(savedTab.textContent, 'Favorites (1)');
+  assert.deepEqual(ui.favoritesStore.values('format'), ['listicle', 'retired-format', 'standard']);
 });
 
-test('All and Favorites support tab arrows, Home, End, native Tab, and Escape', t => {
+test('keyboard navigation follows pinned display order, preserves heart focus, and supports Escape and Tab', t => {
   const ui = setup(t, { format: ['listicle'] });
   const { field, select } = ui.field('Format', 'standard');
   populateDraftOptions();
   ui.dropdowns();
   const trigger = field.querySelector('.tool-dropdown-trigger');
   const menu = field.querySelector('.tool-dropdown-menu');
-  const toolbar = menu.querySelector('.tool-dropdown-toolbar');
-  const [allTab, savedTab] = menu.querySelectorAll('.tool-favorites-tab');
-  const panel = menu.querySelector('.tool-favorites-panel');
-  function keydown(key, target) {
-    target.focus();
-    const event = toolbar.emit('keydown', { key, target });
-    // The mock does not bubble; pass the handled event on to the popup listener.
-    menu.emit('keydown', event);
-    assert.equal(event.defaultPrevented, true);
-  }
-  trigger.emit('click');
-  keydown('ArrowRight', allTab);
-  assert.equal(document.activeElement, savedTab);
-  assert.equal(savedTab.getAttribute('aria-selected'), 'true');
-  assert.equal(panel.getAttribute('aria-labelledby'), savedTab.id);
-  keydown('ArrowRight', savedTab);
-  assert.equal(document.activeElement, allTab);
-  assert.equal(allTab.getAttribute('aria-selected'), 'true');
-  keydown('ArrowLeft', allTab);
-  assert.equal(document.activeElement, savedTab);
-  keydown('Home', savedTab);
-  assert.equal(document.activeElement, allTab);
-  keydown('End', allTab);
-  assert.equal(document.activeElement, savedTab);
-  assert.deepEqual([allTab.tabIndex, savedTab.tabIndex], [-1, 0]);
-  assert.notEqual(menu.emit('keydown', { key: 'Tab', target: savedTab }).defaultPrevented, true);
-  assert.equal(menu.hidden, false);
-  assert.equal(select.value, 'standard');
-  assert.equal(menu.emit('keydown', { key: 'Escape', target: savedTab }).defaultPrevented, true);
-  assert.equal(menu.hidden, true);
-  assert.equal(document.activeElement, trigger);
-});
-
-test('favorite popups support row and heart arrows and leave interior Tab to the browser', t => {
-  const ui = setup(t);
-  const { field } = ui.field('Format', 'standard');
-  populateDraftOptions();
-  ui.dropdowns();
-  const trigger = field.querySelector('.tool-dropdown-trigger');
-  const menu = field.querySelector('.tool-dropdown-menu');
-  const allTab = menu.querySelectorAll('.tool-favorites-tab').find(tab => tab.dataset.view === 'all');
   const rows = menu.querySelectorAll('.tool-dropdown-row');
   const options = rows.map(row => row.querySelector('.tool-dropdown-option'));
   const hearts = rows.map(row => row.querySelector('.tool-option-favorite'));
+  assert.equal(options[1].textContent, 'Listicle');
   assert.equal(trigger.emit('keydown', { key: 'ArrowDown' }).defaultPrevented, true);
+  assert.equal(document.activeElement, options[2]);
+  menu.emit('keydown', { key: 'ArrowUp' });
   assert.equal(document.activeElement, options[1]);
   menu.emit('keydown', { key: 'ArrowRight' });
   assert.equal(document.activeElement, hearts[1]);
-  menu.emit('keydown', { key: 'ArrowDown' });
-  assert.equal(document.activeElement, hearts[2]);
+  hearts[1].emit('click');
+  assert.equal(document.activeElement, hearts[1]);
+  menu.emit('keydown', { key: 'ArrowUp' });
+  assert.equal(document.activeElement, hearts[3]);
   menu.emit('keydown', { key: 'ArrowLeft' });
-  assert.equal(document.activeElement, options[2]);
-  menu.emit('keydown', { key: 'End' });
-  assert.equal(document.activeElement, options.at(-1));
+  assert.equal(document.activeElement, options[3]);
   menu.emit('keydown', { key: 'Home' });
   assert.equal(document.activeElement, options[0]);
-  menu.emit('keydown', { key: 'ArrowUp' });
+  menu.emit('keydown', { key: 'End' });
   assert.equal(document.activeElement, options.at(-1));
   assert.notEqual(menu.emit('keydown', { key: 'Tab' }).defaultPrevented, true);
   assert.equal(menu.hidden, false);
   hearts.at(-1).focus();
-  assert.notEqual(menu.emit('keydown', { key: 'Tab' }).defaultPrevented, true);
+  menu.emit('keydown', { key: 'Tab' });
   assert.equal(menu.hidden, true);
   assert.equal(document.activeElement, trigger);
   trigger.emit('click');
-  allTab.focus();
+  options[0].focus();
   menu.emit('keydown', { key: 'Tab', shiftKey: true });
   assert.equal(menu.hidden, true);
+  trigger.emit('click');
+  menu.emit('keydown', { key: 'Escape' });
+  assert.equal(menu.hidden, true);
   assert.equal(document.activeElement, trigger);
+  assert.equal(select.value, 'standard');
+});
+
+test('Source uses the shared favorites menu and refreshes when search replaces its publication options', t => {
+  const ui = setup(t, { source: ['Miami Herald', 'Bellingham Herald'], format: ['listicle'] });
+  const previousStyle = globalThis.getComputedStyle;
+  globalThis.getComputedStyle = () => ({ getPropertyValue: name => name.match(/-(\d+)$/)?.[1] || '0' });
+  t.after(() => { globalThis.getComputedStyle = previousStyle; });
+  ui.doc.documentElement = { clientHeight: 900, clientWidth: 1200 };
+  const { field, select } = ui.field('Source', 'all', ui.doc.body, 'results-');
+  field.className = 'results-source-field';
+  delete field.dataset.fixedValue;
+  function populate() {
+    select.replaceChildren(...[
+      ['all', 'All sources'], ['Bargain Hunter', 'Bargain Hunter (BH)'],
+      ['Bellingham Herald', 'Bellingham Herald (BH)'], ['Miami Herald', 'Miami Herald (MH)'],
+    ].map(([value, label]) => {
+      const option = new Element('option');
+      option.value = value;
+      option.textContent = label;
+      return option;
+    }));
+    select.value = 'all';
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+  ui.dropdowns();
+  populate();
+  const trigger = field.querySelector('.tool-dropdown-trigger');
+  trigger.getBoundingClientRect = () => ({ left: 20, top: 100, bottom: 136, width: 300 });
+  const menu = field.querySelector('.tool-dropdown-menu');
+  const labels = () => menu.querySelectorAll('.tool-dropdown-option').map(option => option.textContent);
+  assert.equal(trigger.querySelector('.tool-dropdown-chevron').textContent, 'keyboard_arrow_down');
+  assert.deepEqual(labels(), ['All sources', 'Bellingham Herald (BH)', 'Miami Herald (MH)', 'Bargain Hunter (BH)']);
+  assert.equal(menu.querySelector('.tool-dropdown-row').querySelector('.tool-option-favorite'), null);
+  trigger.emit('click');
+  assert.equal(menu.parentElement, ui.doc.body);
+  assert.equal(menu.style.position, 'fixed');
+  const favorite = menu.querySelectorAll('.tool-dropdown-row').at(-1).querySelector('.tool-option-favorite');
+  favorite.focus();
+  favorite.emit('click');
+  assert.deepEqual(labels(), ['All sources', 'Bargain Hunter (BH)', 'Bellingham Herald (BH)', 'Miami Herald (MH)']);
+  assert.equal(document.activeElement, favorite);
+  assert.deepEqual(ui.favoritesStore.values('source'), ['Miami Herald', 'Bellingham Herald', 'Bargain Hunter']);
+  menu.querySelectorAll('.tool-dropdown-option')[2].emit('click');
+  assert.equal(select.value, 'Bellingham Herald');
+  assert.equal(trigger.getAttribute('aria-label'), 'Source: Bellingham Herald (BH)');
+  assert.equal(menu.parentElement, field);
+  populate();
+  assert.deepEqual(labels(), ['All sources', 'Bargain Hunter (BH)', 'Bellingham Herald (BH)', 'Miami Herald (MH)']);
+  assert.equal(menu.querySelector('.tool-dropdown-option').getAttribute('aria-pressed'), 'true');
+  assert.equal(trigger.getAttribute('aria-label'), 'Source: All sources');
+  trigger.emit('click');
+  const freshOptions = menu.querySelectorAll('.tool-dropdown-option');
+  freshOptions[3].emit('click');
+  assert.equal(select.value, 'Miami Herald');
+  trigger.emit('click');
+  freshOptions[0].emit('click');
+  assert.equal(select.value, 'all');
+  assert.deepEqual(ui.favoritesStore.values('format'), ['listicle']);
 });
 
 test('Voice retains listbox selection and keyboard behavior without favorite controls', t => {

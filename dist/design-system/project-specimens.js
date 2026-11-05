@@ -1,6 +1,6 @@
 import { createIcon } from '../icons.js?v=20261026-drafting-card-size';
 import { bindRovingSelection } from '../selection-controls.js?v=20261026-drafting-card-size';
-import { projectUpdatedDate, projectContentCountLabel } from '../dashboard.js?v=20261029-delete-project-dialog';
+import { projectUpdatedDate, projectContentCountLabel } from '../dashboard.js?v=20261105-filter-settings';
 
 // Isolated documentation data. This specimen never mounts the app dashboard
 // controller, reads browser storage, or changes a saved project.

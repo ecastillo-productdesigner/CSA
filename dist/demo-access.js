@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261104-search-draft-tabs');
+  await import('./app.js?v=20261105-role-selector');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

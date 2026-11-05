@@ -1,5 +1,5 @@
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
-import { projectOutputs, outputIsReady, outputIsSent, outputLoadingSelectionKeys } from './outputs.js?v=20261102-saved-drafts';
+import { projectOutputs, outputIsReady, outputIsSent, outputLoadingSelectionKeys } from './outputs.js?v=20261105-filter-settings';
 
 import { tokenNumber } from './design-system/runtime.js?v=20261028-revision-dot';
 import { createRevisionAnimation } from './drafting-animation.js?v=20261027-revision-tabs';

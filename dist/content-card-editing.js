@@ -26,8 +26,8 @@ export function createContentCardActions(output, { disabled = false } = {}) {
   save.className = 'icon-button output-card-save';
   save.dataset.saveOutput = output.id;
   save.disabled = disabled;
-  save.title = output.isFavorite ? 'Remove Saved Draft' : 'Save Draft Settings';
-  save.setAttribute('aria-label', `${output.isFavorite ? 'Remove saved draft' : 'Save draft settings'}: ${output.title || 'Untitled content'}`);
+  save.title = output.isFavorite ? 'Remove Saved Settings' : 'Save Draft Settings';
+  save.setAttribute('aria-label', `${output.isFavorite ? 'Remove saved settings' : 'Save draft settings'}: ${output.title || 'Untitled content'}`);
   save.setAttribute('aria-pressed', String(Boolean(output.isFavorite)));
   save.append(createIcon('favorite'));
   actions.append(save, edit);

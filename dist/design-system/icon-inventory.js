@@ -6,6 +6,7 @@ export const iconInventory = [
   ['add_circle', 'Add'],
   ['arrow_forward', 'Continue'],
   ['article', 'Content'],
+  ['badge', 'Role'],
   ['check', 'Check'],
   ['chevron_forward', 'Editorial Direction'],
   ['close', 'Close'],

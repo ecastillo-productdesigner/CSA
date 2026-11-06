@@ -194,3 +194,33 @@ test('a deliberately typed Untitled story title is distinct from the empty-edito
   assert.equal(project.sources[0].title, 'Untitled story');
   assert.equal(project.sources[0].text, output.draftText);
 });
+
+
+test('additional own-material outputs sync independently and respect per-source deletion', () => {
+  const { project, output } = setup('First body', 'First material');
+  const second = { ...structuredClone(output), id: 'second-material', ownMaterial: true, title: 'Second material', draftText: 'Second body', document: { ops: [{ insert: 'Second body\n' }] } };
+  project.outputs.push(second);
+  syncOwnMaterialSource(project, output);
+  syncOwnMaterialSource(project, second);
+  assert.equal(project.sources.length, 2);
+  assert.equal(project.sources[0].ownMaterialOutputId, output.id);
+  assert.equal(project.sources[1].ownMaterialOutputId, second.id);
+  assert.deepEqual(output.selectedSourceIndexes, [0]);
+  assert.deepEqual(second.selectedSourceIndexes, [1]);
+  const firstSource = structuredClone(project.sources[0]);
+  const firstOutput = structuredClone(output);
+  edit(second, 'Revised second body', 'Updated second material');
+  syncOwnMaterialSource(project, second);
+  assert.deepEqual(project.sources[0], firstSource);
+  assert.deepEqual(output, firstOutput);
+  assert.equal(project.sources[1].text, 'Revised second body');
+  const removed = project.sources.pop();
+  project.removedSourceKeys = [sourceIdentityKey(removed)];
+  edit(second, 'Do not restore the deleted source');
+  assert.equal(syncOwnMaterialSource(project, second), false);
+  assert.deepEqual(project.sources, [firstSource]);
+  edit(output, 'First source stays editable');
+  syncOwnMaterialSource(project, output);
+  assert.equal(project.sources.length, 1);
+  assert.equal(project.sources[0].text, 'First source stays editable');
+});

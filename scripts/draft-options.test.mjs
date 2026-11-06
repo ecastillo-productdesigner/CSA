@@ -58,10 +58,14 @@ class Element {
   dispatchEvent(event) { for (const callback of this.listeners.get(event.type) || []) callback(event); return true; }
   focus() { document.activeElement = this; }
   get options() { return this.tagName === 'select' ? this.children : undefined; }
-  get value() { return this._value ?? (this.tagName === 'select' ? this.children[0]?.value || '' : ''); }
-  set value(value) { this._value = value; }
+  get value() { return this.tagName === 'select' && this.multiple ? this.children.find(option => option.selected)?.value || '' : this._value ?? (this.tagName === 'select' ? this.children[0]?.value || '' : ''); }
+  set value(value) {
+    this._value = value;
+    if (this.tagName === 'select') for (const option of this.children) option._selected = option.value === value;
+  }
   get selectedIndex() { return this.options.findIndex(option => option.value === this.value); }
-  get selected() { return this.tagName === 'option' && this.parentElement?.value === this.value; }
+  get selected() { return this.tagName === 'option' && (this.parentElement?.multiple ? Boolean(this._selected) : this.parentElement?.value === this.value); }
+  set selected(value) { this._selected = Boolean(value); }
 }
 
 function setup(t, savedFavorites = {}) {
@@ -394,16 +398,16 @@ test('Source uses the shared favorites menu and refreshes when search replaces i
   menu.querySelectorAll('.tool-dropdown-option')[2].emit('click');
   assert.equal(select.value, 'Bellingham Herald');
   assert.equal(trigger.getAttribute('aria-label'), 'Source: Bellingham Herald');
-  assert.equal(menu.parentElement, field);
+  assert.equal(menu.parentElement, ui.doc.body);
+  assert.equal(menu.hidden, false);
   populate();
   assert.deepEqual(labels(), ['All sources', 'Bargain Hunter', 'Bellingham Herald', 'Miami Herald']);
-  assert.equal(menu.querySelector('.tool-dropdown-option').getAttribute('aria-pressed'), 'true');
+  assert.equal(menu.querySelector('.tool-dropdown-option').getAttribute('aria-checked'), 'true');
   assert.equal(trigger.getAttribute('aria-label'), 'Source: All sources');
-  trigger.emit('click');
   const freshOptions = menu.querySelectorAll('.tool-dropdown-option');
   freshOptions[3].emit('click');
   assert.equal(select.value, 'Miami Herald');
-  trigger.emit('click');
+  assert.equal(menu.hidden, false);
   freshOptions[0].emit('click');
   assert.equal(select.value, 'all');
   assert.deepEqual(ui.favoritesStore.values('format'), ['listicle']);
@@ -483,4 +487,69 @@ test('unknown settings and unsupported saved values do not count as draft select
   assert.equal(hasDraftSelection({ format: 'general', audience: 'us-weekly', voice: 'standard' }), false);
   assert.equal(hasDraftSelection({ format: null, audience: undefined, voice: 42 }), false);
   assert.equal(hasDraftSelection({ format: 'retired-format', audience: 'general', voice: '' }), true);
+});
+
+
+test('publication choices toggle independently, keep the menu open, and use All sources when the last choice is cleared', t => {
+  const ui = setup(t, { source: ['The Sacramento Bee'] });
+  const previousStyle = globalThis.getComputedStyle;
+  globalThis.getComputedStyle = () => ({ getPropertyValue: name => name.match(/-(\d+)$/)?.[1] || '0' });
+  t.after(() => { globalThis.getComputedStyle = previousStyle; });
+  ui.doc.documentElement = { clientHeight: 900, clientWidth: 1200 };
+  const { field, select } = ui.field('Source', 'The State', ui.doc.body, 'results-');
+  field.className = 'results-source-field';
+  delete field.dataset.fixedValue;
+  select.replaceChildren(...['all', 'The Fresno Bee', 'The Sacramento Bee', 'The State'].map(value => {
+    const option = new Element('option');
+    option.value = value;
+    option.textContent = value === 'all' ? 'All sources' : value;
+    return option;
+  }));
+  select.value = 'The State';
+  ui.dropdowns();
+  const trigger = field.querySelector('.tool-dropdown-trigger');
+  trigger.getBoundingClientRect = () => ({ left: 20, top: 100, bottom: 136, width: 500 });
+  const menu = field.querySelector('.tool-dropdown-menu');
+  const choices = () => menu.querySelectorAll('.tool-dropdown-option');
+  const choice = label => choices().find(button => button.textContent === label);
+  const selected = () => select.options.filter(option => option.selected).map(option => option.value);
+  assert.equal(select.multiple, true);
+  assert.deepEqual(selected(), ['The State']);
+  assert.equal(choice('The State').getAttribute('role'), 'checkbox');
+  trigger.emit('click');
+  choice('The State').emit('click');
+  assert.deepEqual(selected(), ['all']);
+  assert.equal(choice('All sources').getAttribute('aria-checked'), 'true');
+  ui.doc.emit('scroll', { target: ui.doc.body });
+  assert.equal(menu.hidden, false, 'a results reflow scroll keeps the multi-select open');
+  assert.equal(trigger.getAttribute('aria-expanded'), 'true');
+  choice('The Sacramento Bee').emit('click');
+  choice('The Fresno Bee').emit('click');
+  assert.deepEqual(selected(), ['The Fresno Bee', 'The Sacramento Bee']);
+  assert.equal(choice('All sources').getAttribute('aria-checked'), 'false');
+  assert.equal(choice('The Fresno Bee').getAttribute('aria-checked'), 'true');
+  assert.equal(choice('The Sacramento Bee').getAttribute('aria-checked'), 'true');
+  assert.equal(trigger.children[0].textContent, 'The Fresno Bee + The Sacramento Bee');
+  assert.equal(trigger.getAttribute('aria-label'), 'Source: The Fresno Bee, The Sacramento Bee');
+  assert.equal(menu.hidden, false);
+  assert.equal(trigger.getAttribute('aria-expanded'), 'true');
+  const heart = choice('The Fresno Bee').parentElement.querySelector('.tool-option-favorite');
+  heart.emit('click');
+  assert.deepEqual(selected(), ['The Fresno Bee', 'The Sacramento Bee']);
+  assert.deepEqual(ui.favoritesStore.values('source'), ['The Sacramento Bee', 'The Fresno Bee']);
+  assert.deepEqual(choices().map(button => button.textContent), ['All sources', 'The Fresno Bee', 'The Sacramento Bee', 'The State']);
+  choice('The State').emit('click');
+  assert.equal(trigger.children[0].textContent, '3 publications');
+  assert.equal(trigger.title, 'The Fresno Bee, The Sacramento Bee, The State');
+  choice('All sources').emit('click');
+  assert.deepEqual(selected(), ['all']);
+  assert.equal(trigger.children[0].textContent, 'All sources');
+  assert.equal(menu.hidden, false);
+  menu.emit('keydown', { key: 'Escape' });
+  assert.equal(menu.hidden, true);
+  assert.equal(document.activeElement, trigger);
+  trigger.emit('click');
+  trigger.getBoundingClientRect = () => ({ left: 20, top: -100, bottom: -64, width: 500 });
+  ui.doc.emit('scroll', { target: ui.doc.body });
+  assert.equal(menu.hidden, true, 'scrolling the filter trigger off screen closes its popup');
 });

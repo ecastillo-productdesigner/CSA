@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createContext, runInContext } from 'node:vm';
 import { randomUUID } from 'node:crypto';
-import { projectOutputs, outputIsReady, outputSourceCount, initializeVariantNames, selectedPendingOutputs, populateOutputContent } from '../dist/outputs.js';
+import { projectOutputs, outputIsReady, outputSourceCount, initializeVariantNames, selectedPendingOutputs, populateOutputContent, variantPanelState } from '../dist/outputs.js';
 import { projectTitleFromSources, normalizeProjectTitles } from '../dist/dashboard.js';
 import { normalizeWordCount } from '../dist/variant-word-count.js';
 import { syncOwnMaterialSource } from '../dist/own-material-source.js';
@@ -62,6 +62,7 @@ function setup() {
   });
   runInContext([
     section('const richEditor = createMaterialEditor(', '\nconst sendDestinationDialog'),
+    section('function openEditorTab(', '\nfunction loadProjects('),
     section('function loadProjects(', '\nfunction notify('),
     section('function titleFrom(', '\nfunction showHome('),
     section('function startOwnMaterial(', "\n$('#editor-add-source-button')"),
@@ -94,7 +95,7 @@ test('own material opens and persists a blank editable ready draft without gener
   assert.equal(output.shareText, '');
   assert.equal(ui.calls.opened.at(-1).shareText, '');
   assert.equal(ui.$('#composer').classList.contains('has-editor'), true);
-  assert.equal(ui.context.outputViews.get(project.id), 'created');
+  assert.equal(ui.context.outputViews.get(project.id), 'pending');
   assert.deepEqual(ui.calls.sourceStories, []);
   assert.deepEqual(ui.calls.searches, []);
   assert.deepEqual(ui.calls.sourcePanels, ['sources']);
@@ -170,10 +171,10 @@ test('own material autosaves its content and source, refreshes visible controls,
   assert.equal(ui.calls.saved.at(-1)[0].outputs[0].sourceCount, 0);
 });
 
-test('own material is unavailable when adding sources or while another import is running', () => {
+test('own material rejects invalid source targets and stays unavailable during an import', () => {
   const ui = setup();
   ui.open('existing-project');
-  assert.equal(ui.$('#new-project-material').hidden, true);
+  assert.equal(ui.$('#new-project-material').hidden, false);
   assert.equal(ui.$('#new-project-material').click(), false);
   assert.equal(ui.context.projects.length, 0);
   ui.open();
@@ -229,4 +230,158 @@ test('an explicitly typed Untitled story title saves and reopens as a title-only
   assert.equal(reopened.sources.length, 1);
   assert.equal(reopened.sources[0].title, 'Untitled story');
   assert.equal(ui.calls.saved.at(-1)[0].outputs[0].titleProvided, true);
+});
+
+
+function existingProjectWithMaterial() {
+  const ui = setup();
+  ui.open();
+  ui.$('#new-project-material').click();
+  const project = ui.context.projects[0];
+  ui.calls.editorCallbacks.onSave({
+    ...ui.calls.opened.at(-1), title: 'Original story', titleProvided: true,
+    draftText: 'The existing draft stays unchanged.',
+    document: { ops: [{ insert: 'The existing draft stays unchanged.\n' }] }, updatedAt: Date.now(),
+  });
+  return { ui, project };
+}
+
+function addOwnMaterialTab(ui, project) {
+  ui.open(project.id);
+  assert.equal(ui.$('#new-project-material').hidden, false);
+  assert.equal(ui.$('#new-project-material').getAttribute('aria-label'), 'Add your own material');
+  assert.equal(ui.$('#new-project-material-label').textContent, 'Add your own material');
+  assert.equal(ui.$('#new-project-material').click(), true);
+  assert.equal(ui.$('#new-project-dialog').open, false);
+  assert.equal(ui.$('#material-dialog').open, false);
+  assert.equal(ui.context.sourceTargetProjectId, null);
+  return project.outputs.find(output => output.id === project.selectedOutputId);
+}
+
+test('Add your own material opens a blank adjacent editor tab in the existing project', () => {
+  const { ui, project } = existingProjectWithMaterial();
+  const original = project.outputs[0];
+  const originalContent = clone(original);
+  const originalSources = clone(project.sources);
+  const neighbor = { ...clone(original), id: 'other-draft', title: 'Another draft', ownMaterial: false };
+  project.outputs.push(neighbor);
+  const added = addOwnMaterialTab(ui, project);
+  assert.equal(ui.context.projects.length, 1);
+  assert.equal(project.title, 'Original story');
+  assert.deepEqual(clone(project.outputs.map(output => output.id)), [original.id, added.id, neighbor.id]);
+  assert.deepEqual(clone(original), originalContent);
+  assert.deepEqual(clone(project.sources), originalSources);
+  assert.equal(project.ownMaterialOutputId, original.id);
+  assert.equal(added.ownMaterial, true);
+  assert.equal(added.title, 'Untitled story');
+  assert.equal(added.titleProvided, false);
+  assert.equal(added.draftText, '');
+  assert.deepEqual(clone(added.document), { ops: [{ insert: '\n' }] });
+  assert.equal(added.status, 'ready', 'the blank output remains eligible for an editor tab');
+  assert.deepEqual(clone(added.sourceSnapshots), []);
+  assert.deepEqual(clone(project.selectedOutputIds), [added.id]);
+  assert.equal(ui.calls.opened.at(-1).selectedOutputId, added.id);
+  assert.equal(ui.calls.opened.at(-1).title, 'Untitled story');
+  assert.equal(ui.calls.opened.at(-1).draftText, '');
+  assert.deepEqual(clone(variantPanelState(project, 'created').outputs.map(output => output.id)), [neighbor.id]);
+  assert.equal(ui.$('#composer').classList.contains('has-editor'), true);
+  assert.equal(ui.$('#new-project-material').click(), false, 'closed starter cannot create a duplicate tab');
+  ui.context.projects = ui.context.loadProjects();
+  ui.context.showProject(project.id);
+  assert.equal(ui.calls.opened.at(-1).selectedOutputId, added.id);
+  assert.equal(ui.calls.opened.at(-1).draftText, '');
+  assert.equal(ui.context.projects[0].outputs.length, 3);
+});
+
+test('added material autosaves a separate source without renaming the project or changing existing drafts', () => {
+  const { ui, project } = existingProjectWithMaterial();
+  const original = clone(project.outputs[0]);
+  const added = addOwnMaterialTab(ui, project);
+  const snapshot = { ...ui.calls.opened.at(-1), title: 'Interview notes', titleProvided: true, updatedAt: Date.now() };
+  assert.equal(ui.calls.editorCallbacks.onSave(snapshot), true);
+  assert.equal(project.title, 'Original story');
+  assert.equal(project.sources.length, 2);
+  const source = project.sources[1];
+  assert.equal(source.ownMaterialOutputId, added.id);
+  assert.equal(source.title, 'Interview notes');
+  assert.equal(source.text, 'Interview notes');
+  assert.deepEqual(clone(project.outputs[0]), original);
+  assert.deepEqual(clone(variantPanelState(project, 'created').outputs.map(output => output.id)), []);
+  snapshot.draftText = 'The neighbor described plans for the community garden.';
+  snapshot.document = { ops: [{ insert: `${snapshot.draftText}\n` }] };
+  ui.calls.editorCallbacks.onSave(snapshot);
+  assert.equal(project.sources.length, 2);
+  assert.equal(project.sources[1], source);
+  assert.equal(source.text, snapshot.draftText);
+  assert.deepEqual(clone(project.outputs[0]), original);
+  assert.equal(project.title, 'Original story');
+  assert.deepEqual(clone(variantPanelState(project, 'created').outputs.map(output => output.id)), []);
+  ui.context.openEditorTab(original.id);
+  assert.equal(ui.calls.opened.at(-1).title, original.title);
+  assert.equal(ui.calls.opened.at(-1).draftText, original.draftText);
+  ui.context.openEditorTab(added.id);
+  assert.equal(ui.calls.opened.at(-1).title, 'Interview notes');
+  assert.equal(ui.calls.opened.at(-1).draftText, snapshot.draftText);
+});
+
+test('multiple material tabs keep separate sources and insert next to the active tab', () => {
+  const { ui, project } = existingProjectWithMaterial();
+  const originalId = project.selectedOutputId;
+  const first = addOwnMaterialTab(ui, project);
+  const firstBody = 'One two three four five six seven eight nine ten.\n\nThe full paragraph remains.';
+  ui.calls.editorCallbacks.onSave({ ...ui.calls.opened.at(-1), draftText: firstBody, document: { ops: [{ insert: `${firstBody}\n` }] }, updatedAt: Date.now() });
+  assert.equal(project.sources[1].title, 'One two three four five six seven eight…');
+  const firstSource = clone(project.sources[1]);
+  ui.context.openEditorTab(originalId);
+  const second = addOwnMaterialTab(ui, project);
+  assert.deepEqual(clone(project.outputs.map(output => output.id)), [originalId, second.id, first.id]);
+  ui.calls.editorCallbacks.onSave({ ...ui.calls.opened.at(-1), title: 'Second material', titleProvided: true, updatedAt: Date.now() });
+  assert.equal(project.sources.length, 3);
+  assert.equal(project.sources[2].ownMaterialOutputId, second.id);
+  assert.deepEqual(clone(project.sources[1]), firstSource);
+  assert.equal(project.title, 'Original story');
+  ui.context.projects = ui.context.loadProjects();
+  ui.context.showProject(project.id);
+  assert.equal(ui.context.projects[0].sources.length, 3);
+  assert.equal(ui.calls.opened.at(-1).selectedOutputId, second.id);
+});
+
+test('adding material to a generated project preserves its name without creating a legacy own-material owner', () => {
+  const { ui, project } = existingProjectWithMaterial();
+  delete project.ownMaterialOutputId;
+  delete project.outputs[0].ownMaterial;
+  const originalId = project.selectedOutputId;
+  const added = addOwnMaterialTab(ui, project);
+  ui.calls.editorCallbacks.onSave({ ...ui.calls.opened.at(-1), title: 'New source title', titleProvided: true, updatedAt: Date.now() });
+  assert.equal(project.ownMaterialOutputId, undefined);
+  assert.equal(project.title, 'Original story');
+  assert.deepEqual(clone(project.outputs.map(output => output.id)), [originalId, added.id]);
+  assert.equal(project.sources.at(-1).ownMaterialOutputId, added.id);
+});
+
+
+test('own-material editors default to To Draft on creation, reopening, and switching while respecting a manual selection', () => {
+  const { ui, project } = existingProjectWithMaterial();
+  const original = project.outputs[0];
+  assert.equal(ui.context.outputViews.get(project.id), 'pending');
+  const generated = { ...clone(original), id: 'generated', ownMaterial: false, title: 'Generated story' };
+  project.outputs.push(generated);
+  ui.context.openEditorTab(generated.id);
+  assert.equal(ui.context.outputViews.get(project.id), 'created');
+  const added = addOwnMaterialTab(ui, project);
+  assert.equal(ui.context.outputViews.get(project.id), 'pending');
+  ui.context.outputViews.set(project.id, 'created');
+  ui.calls.editorCallbacks.onSave({ ...ui.calls.opened.at(-1), title: 'Added source', titleProvided: true, updatedAt: Date.now() });
+  assert.equal(ui.context.outputViews.get(project.id), 'created', 'autosaving respects the manually selected Content segment');
+  ui.context.openEditorTab(added.id);
+  assert.equal(ui.context.outputViews.get(project.id), 'created', 'clicking the same editor tab does not reset Content');
+  ui.context.openEditorTab(generated.id);
+  assert.equal(ui.context.outputViews.get(project.id), 'created');
+  ui.context.openEditorTab(added.id);
+  assert.equal(ui.context.outputViews.get(project.id), 'pending');
+  ui.context.outputViews.set(project.id, 'created');
+  ui.context.showProject(project.id);
+  assert.equal(ui.context.outputViews.get(project.id), 'pending', 'opening the project starts material in To Draft');
+  ui.context.openEditorTab(original.id);
+  assert.equal(ui.context.outputViews.get(project.id), 'pending', 'legacy original material follows the same default');
 });

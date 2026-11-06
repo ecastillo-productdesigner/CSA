@@ -51,7 +51,7 @@ test('pending content uses the same unnumbered label for one or many pieces and 
   }
 });
 
-test('a blank own-material output keeps Drafted selected without showing a card', () => {
+test('a blank own-material output defaults to To Draft without showing a Drafted card', () => {
   for (const body of ['', '\n \t', '\u200B\u200C\u200D\uFEFF\n']) {
     const output = {
       id: 'own-material', title: 'My draft title', status: 'ready',
@@ -60,7 +60,7 @@ test('a blank own-material output keeps Drafted selected without showing a card'
     };
     const project = { ownMaterialOutputId: output.id, selectedOutputId: output.id, outputs: [output] };
     const state = variantPanelState(project);
-    assert.equal(state.view, 'created');
+    assert.equal(state.view, 'pending');
     assert.deepEqual(state.outputs, []);
     assert.deepEqual(variantPanelState(project, 'created').outputs, []);
     assert.deepEqual(variantPanelState(project, 'pending').outputs, []);
@@ -68,27 +68,38 @@ test('a blank own-material output keeps Drafted selected without showing a card'
   }
 });
 
-test('an own-material card appears for body text and hides again when the rich document is cleared', () => {
-  const output = { id: 'own-material', title: 'My draft', status: 'ready', draftText: '', document: { ops: [{ insert: '\n' }] } };
-  const project = { ownMaterialOutputId: output.id, selectedOutputId: output.id, outputs: [output] };
-  assert.deepEqual(variantPanelState(project, 'created').outputs, []);
-  output.document = { ops: [{ insert: 'My pasted paragraph', attributes: { bold: true } }, { insert: '\n' }] };
-  assert.deepEqual(variantPanelState(project, 'created').outputs, [output]);
-  output.draftText = 'My pasted paragraph';
-  output.document = { ops: [{ insert: '\n\u200B ' }] };
-  assert.deepEqual(variantPanelState(project, 'created').outputs, [], 'an empty rich document overrides stale plain text');
-  output.document = { ops: [] };
-  assert.deepEqual(variantPanelState(project, 'created').outputs, []);
-  delete output.document;
-  assert.deepEqual(variantPanelState(project, 'created').outputs, [output], 'plain-text drafts remain supported');
-  output.draftText = '\u200B\n';
-  assert.deepEqual(variantPanelState(project, 'created').outputs, []);
+test('own material stays out of Drafted after typing or pasting while its editor data remains intact', () => {
+  for (const marker of ['legacy', 'output']) {
+    const output = { id: 'own-material', title: 'My draft', status: 'ready', draftText: 'My pasted paragraph', document: { ops: [{ insert: 'My pasted paragraph', attributes: { bold: true } }, { insert: '\n' }] } };
+    const project = { selectedOutputId: output.id, outputs: [output] };
+    if (marker === 'legacy') project.ownMaterialOutputId = output.id;
+    else output.ownMaterial = true;
+    const before = structuredClone(output);
+    assert.equal(variantPanelState(project).view, 'pending');
+    assert.deepEqual(variantPanelState(project, 'created').outputs, []);
+    assert.deepEqual(output, before, 'hiding the card must not remove or rewrite editor content');
+    delete output.document;
+    assert.deepEqual(variantPanelState(project, 'created').outputs, [], 'plain-text own material is excluded too');
+  }
 });
 
-test('hiding an empty own-material card does not hide ordinary ready drafts or pending recipes', () => {
-  const own = { id: 'own-material', title: 'Untitled story', status: 'ready', draftText: '', document: { ops: [{ insert: '\n' }] } };
-  const project = { ownMaterialOutputId: own.id, selectedOutputId: own.id, outputs: [own, ready, pending] };
+test('hiding original and added own material retains generated drafts and pending recipes', () => {
+  const own = { id: 'own-material', title: 'Original material', status: 'ready', draftText: 'Original text' };
+  const added = { id: 'added-material', ownMaterial: true, title: 'Added material', status: 'ready', draftText: 'More text' };
+  const project = { ownMaterialOutputId: own.id, selectedOutputId: added.id, outputs: [own, ready, added, pending] };
   assert.deepEqual(variantPanelState(project, 'created').outputs, [ready]);
   assert.deepEqual(variantPanelState(project, 'pending').outputs, [pending]);
   assert.deepEqual(variantPanelState({ ...project, ownMaterialOutputId: null }, 'created').outputs, [own, ready]);
+  assert.equal(project.outputs.length, 4);
+});
+
+
+test('active material defaults to To Draft even with generated drafts, but explicit Content selection wins', () => {
+  const own = { id: 'own', ownMaterial: true, title: 'My material', status: 'ready', draftText: 'Source text' };
+  const project = { selectedOutputId: own.id, outputs: [own, ready] };
+  assert.equal(variantPanelState(project).view, 'pending');
+  assert.deepEqual(variantPanelState(project).outputs, []);
+  assert.equal(variantPanelState(project, 'created').view, 'created');
+  assert.deepEqual(variantPanelState(project, 'created').outputs, [ready]);
+  assert.equal(variantPanelState({ ...project, selectedOutputId: ready.id }).view, 'created');
 });

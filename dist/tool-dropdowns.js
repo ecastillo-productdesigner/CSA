@@ -10,6 +10,7 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
     const label = field.dataset.label;
     const draftSetting = field.matches('.composer-field') && ['Format', 'Audience', 'Voice'].includes(label);
     const sourceFilter = field.matches('.results-source-field');
+    if (sourceFilter) select.multiple = true;
     const key = sourceFilter ? 'source' : draftSetting ? label.toLowerCase() : select.id.replace(/^(composer-|output-edit-)/, '');
     const supportsFavorites = sourceFilter || (draftSetting && ['format', 'audience'].includes(key));
     const favoriteChoice = option => Boolean(option.value) && !(sourceFilter && option.value === 'all');
@@ -76,15 +77,22 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
         button.type = 'button';
         button.className = 'tool-dropdown-option';
         button.disabled = option.disabled;
-        if (!supportsFavorites) button.setAttribute('role', 'option');
+        if (sourceFilter) button.setAttribute('role', 'checkbox');
+        else if (!supportsFavorites) button.setAttribute('role', 'option');
         button.tabIndex = supportsFavorites ? 0 : -1;
         button.textContent = option.textContent;
         button.append(createIcon('check', 'tool-dropdown-check'));
         bindTapActivation(button, () => {
           if (!transition.expanded || select.disabled || option.disabled) return;
-          select.value = option.value;
+          if (sourceFilter && option.value !== 'all') {
+            option.selected = !option.selected;
+            const all = [...select.options].find(choice => choice.value === 'all');
+            if (all) all.selected = false;
+            if (![...select.options].some(choice => choice.selected)) select.value = 'all';
+          } else select.value = option.value;
           select.dispatchEvent(new Event('change', { bubbles: true }));
-          close(true);
+          if (sourceFilter) button.focus({ preventScroll: true });
+          else close(true);
         });
         row.append(button);
         let favorite;
@@ -144,12 +152,17 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
       trigger.title = select.title;
       if (select.disabled) close(false, { animate: false });
       const selected = select.options[select.selectedIndex];
-      const selectedLabel = select.value && selected ? selected.textContent : placeholder;
+      const selectedPublications = sourceFilter ? [...select.options].filter(option => option.selected && option.value !== 'all').map(option => option.textContent) : [];
+      const selectedLabel = sourceFilter
+        ? selectedPublications.length > 2 ? `${selectedPublications.length} publications` : selectedPublications.join(' + ') || 'All sources'
+        : select.value && selected ? selected.textContent : placeholder;
       text.textContent = selectedLabel;
-      trigger.setAttribute('aria-label', select.value ? `${label}: ${selectedLabel}` : selectedLabel);
+      const accessibleLabel = sourceFilter ? selectedPublications.join(', ') || 'All sources' : selectedLabel;
+      trigger.setAttribute('aria-label', select.value ? `${label}: ${accessibleLabel}` : accessibleLabel);
+      if (sourceFilter) trigger.title = accessibleLabel;
       rows.forEach(({ row, button, option }) => {
         row.dataset.selected = String(option.selected);
-        button.setAttribute(supportsFavorites ? 'aria-pressed' : 'aria-selected', String(option.selected));
+        button.setAttribute(sourceFilter ? 'aria-checked' : supportsFavorites ? 'aria-pressed' : 'aria-selected', String(option.selected));
       });
       refreshFavorites();
     }
@@ -228,7 +241,19 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
     });
     select.addEventListener('change', refresh);
     if (floating || inWorkspacePanel) {
-      document.addEventListener('scroll', event => { if (!menu.hidden && !menu.contains(event.target)) close(); }, true);
+      document.addEventListener('scroll', event => {
+        if (menu.hidden || menu.contains(event.target)) return;
+        if (sourceFilter && transition.expanded) {
+          // Filtering can change the results height and adjust the canvas scroll.
+          // Keep the multi-select anchored so another publication can be chosen.
+          const bounds = trigger.getBoundingClientRect();
+          if (bounds.bottom > 0 && bounds.top < document.documentElement.clientHeight) {
+            positionMenu();
+            return;
+          }
+        }
+        close();
+      }, true);
       window.addEventListener('resize', () => close());
     }
     refresh();

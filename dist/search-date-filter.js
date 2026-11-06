@@ -106,7 +106,7 @@ export function createSearchDateFilter({ root, onChange = () => {} } = {}) {
   root.append(menu);
   const transition = createDropdownTransition(menu, { onClosed() { menu.removeAttribute('style'); } });
   const calendar = element('div', 'search-date-calendar');
-  const summary = element('p', 'search-date-selection');
+  const summary = element('p', 'visually-hidden');
   summary.setAttribute('role', 'status');
   summary.setAttribute('aria-live', 'polite');
   const heading = element('div', 'search-date-month-heading');
@@ -123,7 +123,7 @@ export function createSearchDateFilter({ root, onChange = () => {} } = {}) {
   const grid = element('div', 'search-date-grid');
   grid.setAttribute('role', 'grid');
   grid.setAttribute('aria-labelledby', monthHeading.id);
-  const help = element('p', 'search-date-help');
+  const help = element('p', 'visually-hidden');
   help.id = `${prefix}-help`;
   grid.setAttribute('aria-describedby', help.id);
   calendar.append(summary, heading, grid, help);

@@ -41,6 +41,11 @@ class Element extends Events {
   get textContent() { return this._text + this.children.map(child => child.textContent).join(''); }
   set textContent(value) { this._text = String(value); this.replaceChildren(); }
   get options() { return this.children; }
+  get value() { return this.id === 'results-source' ? this.children.find(option => option.selected)?.value || '' : this._value || ''; }
+  set value(value) {
+    this._value = value;
+    if (this.id === 'results-source') for (const option of this.children) option.selected = option.value === value;
+  }
   get isConnected() { return Boolean(this.connectedRoot || this.parentElement?.isConnected); }
   getBoundingClientRect() { return { left: 0, top: 0, right: 360, bottom: 160, width: 360, height: 160 }; }
   getClientRects() {
@@ -665,4 +670,34 @@ test('topic filters start open, can close and reopen, and open again for a new q
     assert.equal(ui.$('#results-toggle-filters').getAttribute('aria-expanded'), 'false');
     assert.equal(ui.$('#results-source').value, 'all');
   }
+});
+
+
+test('multiple publication filters include any selected publication and combine with date, sort, and existing story selections', t => {
+  const ui = setup(t);
+  const record = workspaceProject();
+  ui.experience.show(record, { workspace: true });
+  ui.select('article-1');
+  ui.tick(3000);
+  const source = ui.$('#results-source');
+  for (const option of source.options) option.selected = ['Culture Weekly', 'Spotlight'].includes(option.value);
+  source.emit('change');
+  assert.equal(ui.$('#results-count').textContent, '3 stories found');
+  assert.equal(ui.$('#results-toggle-filters').dataset.active, 'true');
+  assert.equal(ui.$('#results-selection').textContent, '1 story selected', 'filter changes do not discard chosen stories');
+  assert.deepEqual(ui.$('#result-list').children.map(item => item.querySelector('.result-card').dataset.articleId), ['article-6', 'article-7', 'article-8']);
+  ui.changeDates('2026-10-08', '2026-10-09');
+  ui.$('#results-sort').value = 'oldest';
+  ui.$('#results-sort').emit('change');
+  assert.deepEqual(ui.$('#result-list').children.map(item => item.querySelector('.result-card').dataset.articleId), ['article-8', 'article-7']);
+  record.sources[0].selected = true;
+  record.sources[0].addedToCsa = true;
+  ui.experience.refreshSources(record);
+  assert.deepEqual(source.options.filter(option => option.selected).map(option => option.value), ['Culture Weekly', 'Spotlight']);
+  assert.equal(ui.$('#results-count').textContent, '2 stories found');
+  ui.$('#results-reset-filters').emit('click');
+  assert.deepEqual(source.options.filter(option => option.selected).map(option => option.value), ['all']);
+  assert.equal(ui.$('#results-count').textContent, '8 stories found');
+  assert.equal(ui.$('#results-toggle-filters').dataset.active, 'false');
+  assert.equal(ui.$('#results-selection').textContent, '1 story selected');
 });

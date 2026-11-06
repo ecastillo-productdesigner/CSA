@@ -380,21 +380,18 @@ export function sampleVariant(project, selections) {
   };
 }
 
-function isEmptyOwnMaterial(project, output) {
-  if (output.id !== project?.ownMaterialOutputId) return false;
-  const body = Array.isArray(output.document?.ops)
-    ? output.document.ops.map(op => typeof op.insert === 'string' ? op.insert : '').join('')
-    : String(output.draftText || '');
-  return !body.replace(/[\s\u200B-\u200D\uFEFF]/gu, '');
+function isOwnMaterial(project, output) {
+  return output.id === project?.ownMaterialOutputId || output.ownMaterial === true;
 }
 
 export function variantPanelState(project, requestedView) {
   const outputs = projectOutputs(project);
   const pending = outputs.filter(output => !outputIsReady(output));
   const ready = outputs.filter(outputIsReady);
-  const created = ready.filter(output => !isEmptyOwnMaterial(project, output));
-  const activeCreated = !project?.viewOriginalDraft && ready.some(output => output.id === project?.selectedOutputId);
-  const view = ['pending', 'created'].includes(requestedView) ? requestedView : activeCreated || (!pending.length && created.length) ? 'created' : 'pending';
+  const created = ready.filter(output => !isOwnMaterial(project, output));
+  const activeCreated = !project?.viewOriginalDraft && created.some(output => output.id === project?.selectedOutputId);
+  const activeMaterial = !project?.viewOriginalDraft && ready.some(output => output.id === project?.selectedOutputId && isOwnMaterial(project, output));
+  const view = ['pending', 'created'].includes(requestedView) ? requestedView : !activeMaterial && (activeCreated || (!pending.length && created.length)) ? 'created' : 'pending';
   return {
     view,
     outputs: view === 'pending' ? pending : created,

@@ -1,4 +1,4 @@
-import { createSearchDateFilter } from './search-date-filter.js?v=20261106-unified-calendar';
+import { createSearchDateFilter } from './search-date-filter.js?v=20261106-clean-calendar';
 import { classifyProjectSearchInput } from './project-search-input.js?v=20261102-topic-search';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { createSourceAddingAnimation } from './drafting-animation.js?v=20261026-drafting-card-size';
@@ -241,7 +241,7 @@ export function createSearchExperience({ onSearch, onBack = () => {}, onSelectio
       return terms.reduce((score, term) => score + (title.includes(term) ? 3 : 0) + (excerpt.includes(term) ? 1 : 0), title.startsWith(query) ? 2 : 0);
     };
     return state.articles.filter((article) =>
-      (state.source === 'all' || article.source === state.source) &&
+      (!state.sources.size || state.sources.has(article.source)) &&
       (!state.after || article.date >= state.after) &&
       (!state.before || article.date <= state.before)
     ).sort((a, b) => state.sort === 'relevance' ? relevance(b) - relevance(a) : state.sort === 'newest' ? (b.date || '').localeCompare(a.date || '') : (a.date || '').localeCompare(b.date || ''));
@@ -253,7 +253,7 @@ export function createSearchExperience({ onSearch, onBack = () => {}, onSelectio
 
   function render() {
     if (!state) return;
-    $('#results-toggle-filters').dataset.active = String(state.source !== 'all' || Boolean(state.after || state.before));
+    $('#results-toggle-filters').dataset.active = String(state.sources.size > 0 || Boolean(state.after || state.before));
     const filtered = filteredArticles();
     const visible = filtered.slice(0, state.visibleCount);
     $('#results-count').textContent = state.linkResults
@@ -372,10 +372,16 @@ export function createSearchExperience({ onSearch, onBack = () => {}, onSelectio
   $('#results-query').addEventListener('input', validateSearchInput);
   $('#results-back').addEventListener('click', () => { if (state) onBack(state.sourceProjectId); });
   $('#results-sort').addEventListener('change', () => { if (state) { state.sort = $('#results-sort').value; render(); } });
-  $('#results-source').addEventListener('change', () => { if (state) { state.source = $('#results-source').value; state.visibleCount = 4; render(); } });
+  $('#results-source').addEventListener('change', () => {
+    if (!state) return;
+    const selected = [...$('#results-source').options].filter(option => option.selected).map(option => option.value);
+    state.sources = new Set(selected.includes('all') ? [] : selected);
+    state.visibleCount = 4;
+    render();
+  });
   $('#results-reset-filters').addEventListener('click', () => {
     if (!state) return;
-    state.source = 'all'; state.after = ''; state.before = ''; state.visibleCount = 4;
+    state.sources.clear(); state.after = ''; state.before = ''; state.visibleCount = 4;
     dateFilter.sync({ after: '', before: '' });
     $('#results-source').value = 'all';
     $('#results-source').dispatchEvent(new Event('change', { bubbles: true }));
@@ -425,7 +431,7 @@ export function createSearchExperience({ onSearch, onBack = () => {}, onSelectio
         : Array.isArray(project.addedArticleIds) ? project.addedArticleIds : savedSelection;
       const readyArticleIds = new Set(savedAdded.filter(id => articles.some(article => article.id === id)));
       const workspaceSources = workspace ? workspaceSelection(project, query, articles) : null;
-      state = { workspace, projectId: project.id, sourceProjectId: addingSources ? project.sourceProjectId : null, addingSources, linkResults, query, articles, editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '', sort: 'newest', source: linkResults ? 'all' : 'The State', after: '', before: '', visibleCount: linkResults ? articles.length : 4, selected, readyArticleIds, ...workspaceSources };
+      state = { workspace, projectId: project.id, sourceProjectId: addingSources ? project.sourceProjectId : null, addingSources, linkResults, query, articles, editorialDirection: typeof project.editorialDirection === 'string' ? project.editorialDirection : '', sort: 'newest', sources: new Set(linkResults ? [] : ['The State']), after: '', before: '', visibleCount: linkResults ? articles.length : 4, selected, readyArticleIds, ...workspaceSources };
       $('#create-draft').textContent = addingSources ? 'Add Sources' : 'Draft';
       $('.results-direction').hidden = addingSources || embedded || workspace;
       $('.results-actions').hidden = embedded || workspace;
@@ -453,7 +459,7 @@ export function createSearchExperience({ onSearch, onBack = () => {}, onSelectio
         const option = node('option', '', label); option.value = source; return option;
       }));
       $('#results-source').options[0].value = 'all';
-      $('#results-source').value = state.source;
+      $('#results-source').value = linkResults ? 'all' : 'The State';
       $('#results-source').dispatchEvent(new Event('change', { bubbles: true }));
       dateFilter.sync({ after: '', before: '' });
       $('#results-filter-panel').hidden = linkResults;

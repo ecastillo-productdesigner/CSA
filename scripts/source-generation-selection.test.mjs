@@ -2,7 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createContext, runInContext } from 'node:vm';
-import { hasDraftSelection } from '../dist/draft-options.js';
+import { draftOptions, hasDraftSelection } from '../dist/draft-options.js';
+import { applySavedDraftSetup, clearSavedDraftSetup } from '../dist/saved-draft-setups.js';
+import { syncOwnMaterialSource } from '../dist/own-material-source.js';
 import { hasSelectedSources, projectOutputs, sampleVariant, selectedPendingOutputs } from '../dist/outputs.js';
 import { sampleSearchSources } from '../dist/search.js';
 import { sourceIdentityKey } from '../dist/source-model.js';
@@ -18,12 +20,13 @@ function productionSection(start, end) {
 const production = [
   productionSection('function setWorkspaceSearchQuery(', '\nfunction startSearch('),
   productionSection('function updateComposerActions()', '\nfunction ensureComposerProject('),
+  productionSection('function applySavedDraft(', '\nfunction removeSavedDraft('),
   productionSection('function renderProjectSources(', '\nfunction removeProjectSource('),
   productionSection('const projectSourcesPanel = createProjectSources({', '\nconst draftSourcesPopover ='),
   productionSection("$('.create-variant').addEventListener('click'", "\n$('#output-list').addEventListener"),
 ].join('\n');
 
-function setup(project, { onFlush = () => {}, onRenderSources = () => ({ selectionChanged: false }) } = {}) {
+function setup(project, { onFlush = () => {}, onRenderSources = () => ({ selectionChanged: false }), hasContent = true, libraryProjects = [] } = {}) {
   const classes = new Set();
   const controls = new Map([
     ['#composer', { hidden: false, classList: { contains: name => classes.has(name) } }],
@@ -37,15 +40,16 @@ function setup(project, { onFlush = () => {}, onRenderSources = () => ({ selecti
   for (const key of ['format', 'audience', 'voice']) {
     controls.set(`#composer-${key}`, {
       value: key === 'format' ? 'standard' : '', disabled: false,
-      selectedIndex: 0, options: [{ textContent: key === 'format' ? 'Standard Format' : 'None Selected' }],
+      options: draftOptions.find(option => option.key === key).options.map(option => ({ value: option.value, textContent: option.label })),
+      get selectedIndex() { return this.options.findIndex(option => option.value === this.value); },
     });
   }
   const handlers = new Map();
-  const create = { disabled: false, addEventListener: (name, handler) => handlers.set(name, handler) };
+  const create = { disabled: false, focus() {}, addEventListener: (name, handler) => handlers.set(name, handler) };
   controls.set('.create-variant', create);
   const view = { callbacks: null, events: [], persisted: [], canvas: [], opened: [], panelRenders: [], savedDraftRenders: [] };
   const context = createContext({
-    projects: [project], activeProjectId: project.id, sampleSearchSources, sourceIdentityKey,
+    projects: [project, ...libraryProjects], activeProjectId: project.id, sampleSearchSources, sourceIdentityKey,
     $: selector => {
       assert.ok(controls.has(selector), `Unexpected app selector ${selector}`);
       return controls.get(selector);
@@ -59,7 +63,7 @@ function setup(project, { onFlush = () => {}, onRenderSources = () => ({ selecti
       } };
     },
     removeProjectSource() {}, downloadSource() {},
-    richEditor: { hasContent: () => true, flush() { view.events.push('flush'); onFlush(project); } },
+    richEditor: { hasContent: () => hasContent, flush() { view.events.push('flush'); onFlush(project); } },
     toolDropdowns: { refresh() {}, close() {} },
     savedDrafts: { render() { view.savedDraftRenders.push(project.id); } },
     contentPreview: { hasContent: () => true },
@@ -68,7 +72,8 @@ function setup(project, { onFlush = () => {}, onRenderSources = () => ({ selecti
       refreshSources(current) { view.events.push('refresh-search'); view.canvas.push({ project: structuredClone(current), options: { workspace: true } }); },
     },
     saveProjects() { view.events.push('save'); view.persisted.push(structuredClone(project)); },
-    setNewVariantCollapsed() {},
+    setNewVariantCollapsed() {}, ensureComposerProject: () => project, notify() {},
+    applySavedDraftSetup, clearSavedDraftSetup,
     showEditorProject: current => view.opened.push(current.id),
     outputViews: new Map(), window: { matchMedia: () => ({ matches: false }) },
     railNavigation: { open() {} }, breakpointQuery: () => '',
@@ -80,6 +85,7 @@ function setup(project, { onFlush = () => {}, onRenderSources = () => ({ selecti
     refresh: () => runInContext('updateComposerActions()', context),
     renderSources: () => runInContext('renderProjectSources(projects[0])', context),
     createDraft: () => handlers.get('click')(),
+    applySaved: (projectId, outputId) => context.applySavedDraft(projectId, outputId),
     toggle(index, checked) {
       view.callbacks.onBeforeSelectionChange();
       project.sources[index].selected = checked;
@@ -255,4 +261,92 @@ test('canceling a pending search source from Sources removes its temporary row a
   assert.equal(ui.panelRenders.length, 1);
   assert.equal(ui.create.disabled, true);
   assert.deepEqual(ui.canvas.at(-1).project.sources, []);
+});
+
+
+test('applying saved settings enables Add to List for a title-only material source and captures its settings', () => {
+  const state = project([]);
+  const material = {
+    id: 'title-only-material', title: 'A title without body text', titleProvided: true,
+    ownMaterial: true, status: 'ready', document: { ops: [{ insert: '\n' }] }, draftText: '',
+  };
+  state.outputs.push(material);
+  state.selectedOutputId = material.id;
+  syncOwnMaterialSource(state, material);
+  const saved = {
+    id: 'saved-settings', title: 'Saved Draft 7', isFavorite: true,
+    toolPreferences: { format: 'standard', audience: 'millennial-pop-culture', voice: 'us-weekly' },
+    editorialDirection: 'Focus on the community', targetWordCount: 'long',
+  };
+  const library = { id: 'settings-library', outputs: [saved] };
+  const before = structuredClone(saved);
+  const ui = setup(state, { hasContent: false, libraryProjects: [library] });
+  for (const key of ['format', 'audience', 'voice']) ui.controls.get(`#composer-${key}`).value = '';
+  ui.refresh();
+  assert.equal(ui.create.disabled, true);
+  ui.applySaved(library.id, saved.id);
+  assert.equal(ui.create.disabled, false);
+  assert.equal(ui.create.title, 'Add to List');
+  for (const [key, value] of Object.entries(saved.toolPreferences)) {
+    assert.equal(ui.controls.get(`#composer-${key}`).value, value);
+    assert.equal(ui.controls.get(`#composer-${key}`).disabled, false);
+  }
+  ui.createDraft();
+  const recipe = state.outputs[0];
+  assert.equal(recipe.status, 'pending');
+  assert.deepEqual(recipe.toolPreferences, saved.toolPreferences);
+  assert.deepEqual(structuredClone(recipe.labels), [
+    { key: 'format', label: 'Standard Format' },
+    { key: 'audience', label: 'Millennial Pop-Culture Fan' },
+    { key: 'voice', label: 'Us Weekly' },
+  ]);
+  assert.equal(recipe.editorialDirection, saved.editorialDirection);
+  assert.equal(recipe.targetWordCount, 'long');
+  assert.deepEqual(recipe.sourceSnapshots, [state.sources[0]]);
+  assert.equal(recipe.sourceSnapshots[0].text, material.title);
+  assert.equal(recipe.sourceCount, 1);
+  assert.deepEqual(saved, before, 'applying a saved setup must not mutate the saved original');
+  assert.equal(state.outputs[1], material, 'creating a recipe keeps its own-material editor');
+});
+
+test('a blank own-material editor can configure a recipe from another selected project source', () => {
+  const state = project([source('Selected interview notes'), source('Unchecked notes', false)]);
+  const material = { id: 'blank-material', title: 'Untitled story', ownMaterial: true, status: 'ready', draftText: '', sourceSnapshots: [] };
+  state.outputs.push(material);
+  state.selectedOutputId = material.id;
+  const ui = setup(state, { hasContent: false });
+  ui.refresh();
+  assert.equal(ui.create.disabled, false);
+  assert.equal(ui.controls.get('#composer-format').disabled, false);
+  ui.createDraft();
+  const recipe = state.outputs[0];
+  assert.deepEqual(recipe.toolPreferences, { format: 'standard', audience: '', voice: '' });
+  assert.deepEqual(recipe.sourceSnapshots, [state.sources[0]]);
+  assert.equal(recipe.sourceCount, 1);
+  assert.equal(state.outputs[1], material);
+  assert.equal(material.draftText, '');
+});
+
+test('selected sources do not bypass missing settings or processing, and a saved preset does not bypass source selection', () => {
+  const state = project([source('Selected notes')]);
+  const ui = setup(state, { hasContent: false });
+  ui.controls.get('#composer-format').value = '';
+  ui.refresh();
+  assert.equal(ui.create.disabled, true);
+  assert.equal(ui.create.title, 'Select a setting first');
+  ui.controls.get('#composer-format').value = 'standard';
+  state.outputProcessing = { kind: 'creation' };
+  ui.refresh();
+  assert.equal(ui.create.disabled, true);
+  assert.equal(ui.controls.get('#composer-format').disabled, true);
+  assert.equal(ui.create.title, 'Creating Draft');
+  delete state.outputProcessing;
+  state.sources[0].selected = false;
+  state.variantPreset = { projectId: 'library', outputId: 'saved' };
+  ui.refresh();
+  assert.equal(ui.controls.get('#composer-format').disabled, false, 'saved settings remain configurable');
+  assert.equal(ui.create.disabled, true);
+  assert.equal(ui.create.title, 'Select a source first');
+  ui.createDraft();
+  assert.equal(state.outputs.length, 0);
 });

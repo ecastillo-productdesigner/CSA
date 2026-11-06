@@ -1,4 +1,4 @@
-import { syncOwnMaterialSource } from './own-material-source.js?v=20261106-title-source';
+import { syncOwnMaterialSource } from './own-material-source.js?v=20261106-material-tabs';
 import { listSavedDraftSetups, saveDraftSetup, removeSavedDraftSetup, applySavedDraftSetup, clearSavedDraftSetup } from './saved-draft-setups.js?v=20261102-saved-draft-options';
 import { createSavedDrafts } from './saved-drafts.js?v=20261105-filter-settings';
 import { partitionSourceAdditions, sourceIdentityKey, findDuplicateSource } from './source-model.js?v=20261106-own-material-source';
@@ -16,20 +16,20 @@ import { bindTabSelection } from './selection-controls.js?v=20261026-drafting-ca
 import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261105-filter-settings';
 import { createRoleSelector } from './role-selector.js?v=20261105-role-selector';
 import { createProfile } from './profile.js?v=20261026-drafting-card-size';
-import { createSearchExperience, sampleSearchSources } from './search.js?v=20261106-unified-calendar';
+import { createSearchExperience, sampleSearchSources } from './search.js?v=20261106-multi-publications';
 import { classifyProjectSearchInput } from './project-search-input.js?v=20261102-topic-search';
 import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261105-filter-settings';
 import { createMaterialEditor } from './editor.js?v=20261106-title-source';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-drafting-card-size';
 import { removeProjectContent } from './project-deletion.js?v=20261026-drafting-card-size';
 import { createContentPreview } from './content-preview.js?v=20261026-drafting-card-size';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261105-filter-settings';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261106-multi-publications-scroll';
 import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261026-drafting-card-size';
 import { createNewProjectUpload } from './new-project-upload.js?v=20261026-drafting-card-size';
 import { createRailNavigation } from './navigation.js?v=20261105-role-selector';
 import { createProjectSources } from './sources.js?v=20261106-own-material-source';
 import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261106-own-material-source';
-import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261105-own-material-empty';
+import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261106-material-tabs';
 import { createEditorTabs } from './editor-tabs.js?v=20261105-filter-settings';
 import { createContentCardEditing } from './content-card-editing.js?v=20261105-filter-settings';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-drafting-card-size';
@@ -197,12 +197,10 @@ const richEditor = createMaterialEditor({
       if (typeof snapshot.cmsSentContent === 'string') output.cmsSentContent = snapshot.cmsSentContent;
       project.toolPreferences = snapshot.toolPreferences;
       project.updatedAt = snapshot.updatedAt;
-      if (project.ownMaterialOutputId === output.id) {
-        project.title = snapshot.title;
-        if (syncOwnMaterialSource(project, output) && activeProjectId === project.id) {
-          if ($('#show-sources').getAttribute('aria-expanded') === 'true') renderProjectSources(project);
-          updateComposerActions();
-        }
+      if (project.ownMaterialOutputId === output.id) project.title = snapshot.title;
+      if (syncOwnMaterialSource(project, output) && activeProjectId === project.id) {
+        if ($('#show-sources').getAttribute('aria-expanded') === 'true') renderProjectSources(project);
+        updateComposerActions();
       }
     } else Object.assign(project, snapshot);
     const saved = saveProjects();
@@ -448,7 +446,10 @@ function openEditorTab(outputId) {
   if (!project || !output) return;
   if (output.revisionUnread && output.revisionRequestUnread == null) output.revisionRequestUnread = true;
   output.revisionUnread = false;
-  outputViews.set(project.id, outputIsReady(output) ? 'created' : 'pending');
+  if (project.selectedOutputId !== outputId || project.viewOriginalDraft || !outputViews.has(project.id)) {
+    const ownMaterial = output.id === project.ownMaterialOutputId || output.ownMaterial === true;
+    outputViews.set(project.id, outputIsReady(output) && !ownMaterial ? 'created' : 'pending');
+  }
   project.selectedOutputIds = outputIsReady(output) ? [outputId] : [...new Set([...selectedPendingOutputs(project).map(output => output.id), outputId])];
   project.selectedOutputId = outputId;
   project.viewOriginalDraft = false;
@@ -604,11 +605,15 @@ function showProjectStart() {
 }
 
 function startOwnMaterial() {
-  if (sourceTargetProjectId || newProjectUpload.isBusy() || !$('#new-project-dialog').open) return false;
+  if (newProjectUpload.isBusy() || !$('#new-project-dialog').open) return false;
+  const target = sourceTargetProjectId
+    ? projects.find(entry => entry.id === sourceTargetProjectId && !entry.deletedAt && !entry.archivedAt)
+    : null;
+  if (sourceTargetProjectId && !target) return false;
   richEditor.flush();
-  const project = createProject([], { title: 'Untitled story', kind: 'draft', open: false });
+  const project = target || createProject([], { title: 'Untitled story', kind: 'draft', open: false });
   const output = {
-    id: crypto.randomUUID(), title: 'Untitled story', titleProvided: false, createdAt: project.createdAt,
+    id: crypto.randomUUID(), ownMaterial: true, title: 'Untitled story', titleProvided: false, createdAt: Date.now(),
     status: 'ready', contentInitialized: true, contentVersion: 3,
     draftText: '', document: { ops: [{ insert: '\n' }] },
     shareText: '', shareTextEdited: true,
@@ -617,24 +622,37 @@ function startOwnMaterial() {
     editorialDirection: '', targetWordCount: project.targetWordCount,
     metadata: { author: '', tags: '' },
   };
-  project.outputs = [output];
+  if (target) {
+    project.outputs = projectOutputs(project);
+    const activeIndex = project.outputs.findIndex(entry => entry.id === project.selectedOutputId);
+    project.outputs.splice(activeIndex < 0 ? project.outputs.length : activeIndex + 1, 0, output);
+  } else {
+    project.outputs = [output];
+    project.ownMaterialOutputId = output.id;
+  }
   project.selectedOutputId = output.id;
   project.selectedOutputIds = [output.id];
-  project.ownMaterialOutputId = output.id;
   project.viewOriginalDraft = false;
-  outputViews.set(project.id, 'created');
+  project.updatedAt = Date.now();
+  outputViews.set(project.id, 'pending');
   saveProjects();
+  sourceTargetProjectId = null;
   $('#new-project-dialog').close();
   railNavigation.close('sources', false, { animate: false });
   railNavigation.closeDrawer();
-  showProject(project.id);
+  if (target) showEditorProject(project);
+  else showProject(project.id);
   return true;
 }
 
 function openProjectDialog(reset = true, sourceProjectId = null) {
   if (newProjectUpload.isBusy()) return;
   sourceTargetProjectId = sourceProjectId;
-  $('#new-project-material').hidden = Boolean(sourceProjectId);
+  const materialLabel = sourceProjectId ? 'Add your own material' : 'Start from your own material';
+  $('#new-project-material').hidden = false;
+  $('#new-project-material').setAttribute('aria-label', materialLabel);
+  $('#new-project-material-label').textContent = materialLabel;
+  $('#new-project-material-description').textContent = sourceProjectId ? 'Type or paste text to use as a source' : 'Paste an existing draft or start writing';
   $('#new-project-dialog-title').textContent = sourceProjectId ? 'Add Source' : 'New Project';
   $('.new-project-close').setAttribute('aria-label', sourceProjectId ? 'Close add source modal' : 'Close new project modal');
   if (reset) { $('#new-project-query').value = ''; newProjectUpload.reset(); }
@@ -726,6 +744,8 @@ function showProject(id) {
   if (project.kind === 'links') { project.kind = 'draft'; project.linkCards = true; project.awaitingOutput = true; saveProjects(); }
   if (project.kind === 'draft') {
     richEditor.flush();
+    const selected = projectOutputs(project).find(output => output.id === project.selectedOutputId);
+    if (selected && (selected.id === project.ownMaterialOutputId || selected.ownMaterial === true)) outputViews.set(project.id, 'pending');
     project.toolPreferences = { format: '', audience: '', voice: '' };
     showEditorProject(project);
     return;
@@ -920,7 +940,7 @@ function updateComposerActions() {
   const hasContent = ($('#composer').classList.contains('has-link-cards') || $('#composer').classList.contains('has-search-results')) ? hasSources : !$('#material-editor').hidden ? richEditor.hasContent() : !$('#output-placeholder').hidden && ($('#content-preview').hidden || contentPreview.hasContent());
   const processing = Boolean(project?.outputProcessing);
   const processingLabel = project?.outputProcessing?.kind === 'revision' ? 'Revising Draft' : 'Creating Draft';
-  const canConfigure = (hasContent || Boolean(project?.variantPreset)) && !processing;
+  const canConfigure = (hasSources || hasContent || Boolean(project?.variantPreset)) && !processing;
   let changed = false;
   for (const key of ['format', 'audience', 'voice']) {
     const select = $(`#composer-${key}`);
@@ -931,9 +951,9 @@ function updateComposerActions() {
   if (changed) toolDropdowns.refresh();
   savedDrafts.render();
   const hasSelection = hasDraftSelection(Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, $(`#composer-${key}`).value])));
-  const enabled = hasSources && hasContent && hasSelection && !processing;
+  const enabled = hasSources && hasSelection && !processing;
   $('.create-variant').disabled = !enabled;
-  $('.create-variant').title = processing ? processingLabel : !hasSources || !hasContent ? 'Select a source first' : !hasSelection ? 'Select a setting first' : 'Add to List';
+  $('.create-variant').title = processing ? processingLabel : !hasSources ? 'Select a source first' : !hasSelection ? 'Select a setting first' : 'Add to List';
 }
 
 function ensureComposerProject(allowEmpty = false) {

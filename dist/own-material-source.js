@@ -2,7 +2,7 @@ import { sourceIdentityKey } from './source-model.js?v=20261106-own-material-sou
 
 // Keep the editable material as one live source; other drafts retain their snapshots.
 export function syncOwnMaterialSource(project, output) {
-  if (!output?.id || project?.ownMaterialOutputId !== output.id || !Array.isArray(project.sources)) return false;
+  if (!output?.id || (project?.ownMaterialOutputId !== output.id && output.ownMaterial !== true) || !Array.isArray(project.sources)) return false;
   const sources = project.sources;
   const index = sources.findIndex(source => source.ownMaterialOutputId === output.id);
   const text = Array.isArray(output.document?.ops)

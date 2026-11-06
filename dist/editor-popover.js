@@ -1,6 +1,6 @@
 import { tokenNumber } from './design-system/runtime.js?v=20261026-drafting-card-size';
 
-export function createEditorPopover({ container, trigger, popover, dismiss, onOpen = () => {}, resetScroll = false }) {
+export function createEditorPopover({ container, trigger, popover, dismiss, onOpen = () => {}, resetScroll = false, compact = false }) {
   function close(restoreFocus = false) {
     const wasOpen = !popover.hidden;
     popover.hidden = true;
@@ -14,14 +14,25 @@ export function createEditorPopover({ container, trigger, popover, dismiss, onOp
     const gap = tokenNumber('foundation.space.8');
     const viewportWidth = document.documentElement.clientWidth;
     const viewportHeight = document.documentElement.clientHeight;
-    const anchor = trigger.getBoundingClientRect();
-    const width = Math.max(0, Math.min(tokenNumber('foundation.size.620'), container.getBoundingClientRect().width, viewportWidth - inset * 2));
+    let anchor = trigger.getBoundingClientRect();
+    if (compact) {
+      const chipHeight = Math.min(anchor.height, tokenNumber('component.chip.height'));
+      const chipTop = anchor.top + (anchor.height - chipHeight) / 2;
+      anchor = { left: anchor.left, top: chipTop, bottom: chipTop + chipHeight };
+    }
+    const width = Math.max(0, Math.min(
+      tokenNumber(compact ? 'foundation.size.360' : 'foundation.size.620'),
+      compact ? viewportWidth : container.getBoundingClientRect().width,
+      viewportWidth - inset * 2,
+    ));
+    const maxHeight = tokenNumber('foundation.size.420');
     popover.style.width = `${width}px`;
+    if (compact) popover.style.maxHeight = `${maxHeight}px`;
     const above = Math.max(0, anchor.top - inset - gap);
     const below = Math.max(0, viewportHeight - anchor.bottom - inset - gap);
-    const desired = Math.min(popover.scrollHeight || tokenNumber('foundation.size.420'), tokenNumber('foundation.size.420'));
-    const opensAbove = above >= desired || above > below;
-    popover.style.maxHeight = `${Math.min(tokenNumber('foundation.size.420'), opensAbove ? above : below)}px`;
+    const desired = Math.min(popover.scrollHeight || maxHeight, maxHeight);
+    const opensAbove = compact ? below < desired && above > below : above >= desired || above > below;
+    popover.style.maxHeight = `${Math.min(maxHeight, opensAbove ? above : below)}px`;
     const height = popover.getBoundingClientRect().height;
     const top = opensAbove ? anchor.top - height - gap : anchor.bottom + gap;
     popover.style.left = `${Math.max(inset, Math.min(anchor.left, viewportWidth - width - inset))}px`;

@@ -22,7 +22,7 @@ class Control {
   fire(name) { this.listeners.get(name)?.({ preventDefault() {} }); }
 }
 
-function setup(t) {
+function setup(t, { iconOnly = false } = {}) {
   const previous = globalThis.document;
   const nodes = Object.fromEntries(['dialog', 'form', 'instructions', 'submit', 'error', 'history-toggle', 'history-panel', 'history-list', 'history-label'].map(name => [name, new Control()]));
   const fallback = new Control();
@@ -41,7 +41,7 @@ function setup(t) {
   nodes.dialog.close = () => { nodes.dialog.open = false; nodes.dialog.fire('close'); };
   const project = { id: 'project-a' };
   const output = { id: 'draft-a', title: 'The draft being revised' };
-  const trigger = createRevisionButton(output);
+  const trigger = createRevisionButton(output, false, { iconOnly });
   buttons.push(trigger);
   const calls = [];
   let result = true;
@@ -64,6 +64,51 @@ test('revision trigger uses the requested edit_document glyph and native dialog 
   assert.equal(ui.trigger.getAttribute('aria-haspopup'), 'dialog');
   assert.equal(ui.trigger.getAttribute('aria-controls'), 'revision-request-dialog');
   assert.equal(createRevisionButton(ui.output, true).disabled, true);
+});
+
+test('toolbar revision control is icon-only with an accessible label, tooltip, and unread status', t => {
+  const ui = setup(t, { iconOnly: true });
+  assert.equal(ui.trigger.className, 'revision-request-trigger');
+  assert.equal(ui.trigger.type, 'button');
+  assert.equal(ui.trigger.dataset.requestRevision, ui.output.id);
+  assert.equal(ui.trigger.getAttribute('aria-label'), 'Request Revision');
+  assert.equal(ui.trigger.getAttribute('title'), 'Request Revision');
+  assert.equal(ui.trigger.getAttribute('aria-haspopup'), 'dialog');
+  assert.equal(ui.trigger.getAttribute('aria-controls'), 'revision-request-dialog');
+  assert.equal(ui.trigger.children.length, 2, 'only the glyph and unread indicator are rendered');
+  assert.equal(ui.trigger.children[0].textContent, 'edit_document');
+  assert.equal(ui.trigger.children[0].getAttribute('aria-hidden'), 'true');
+  const dot = ui.trigger.querySelector('.revision-request-dot');
+  assert.equal(dot.hidden, true);
+  ui.output.revisionRequestUnread = true;
+  updateRevisionButton(ui.trigger, ui.output);
+  assert.equal(dot.hidden, false);
+  assert.equal(ui.trigger.getAttribute('aria-description'), 'Revision complete, unread');
+  updateRevisionButton(ui.trigger, ui.output, true);
+  assert.equal(ui.trigger.disabled, true);
+  assert.equal(dot.hidden, true);
+  assert.equal(ui.trigger.getAttribute('aria-label'), 'Request Revision');
+  assert.equal(ui.output.revisionRequestUnread, true, 'disabled toolbar controls do not consume unread state');
+});
+
+test('toolbar revision control opens unread history and restores focus after submitting', t => {
+  const ui = setup(t, { iconOnly: true });
+  ui.output.revisionRequestUnread = true;
+  ui.output.revisionRequests = [{ instructions: 'Retain the source facts', completedAt: 1 }];
+  updateRevisionButton(ui.trigger, ui.output);
+  ui.api.open(ui.project, ui.output);
+  assert.equal(ui.dialog.open, true);
+  assert.equal(ui['history-panel'].hidden, false);
+  assert.equal(ui.trigger.getAttribute('aria-expanded'), 'true');
+  assert.equal(ui.trigger.querySelector('.revision-request-dot').hidden, true);
+  assert.equal(ui.output.revisionRequestUnread, false);
+  assert.equal(document.activeElement, ui.instructions);
+  ui.instructions.value = '  Shorten the introduction  ';
+  ui.form.fire('submit');
+  assert.deepEqual(ui.calls, [{ projectId: ui.project.id, outputId: ui.output.id, instructions: 'Shorten the introduction' }]);
+  assert.equal(ui.dialog.open, false);
+  assert.equal(ui.trigger.getAttribute('aria-expanded'), 'false');
+  assert.equal(document.activeElement, ui.trigger);
 });
 
 test('opening focuses instructions and rejects blank or over-limit input before submitting', t => {

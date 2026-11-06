@@ -19,7 +19,7 @@ import { createProfile } from './profile.js?v=20261026-drafting-card-size';
 import { createSearchExperience, sampleSearchSources } from './search.js?v=20261106-multi-publications';
 import { classifyProjectSearchInput } from './project-search-input.js?v=20261102-topic-search';
 import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261105-filter-settings';
-import { createMaterialEditor } from './editor.js?v=20261106-title-source';
+import { createMaterialEditor } from './editor.js?v=20261106-direction-popover';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-drafting-card-size';
 import { removeProjectContent } from './project-deletion.js?v=20261026-drafting-card-size';
 import { createContentPreview } from './content-preview.js?v=20261026-drafting-card-size';
@@ -34,7 +34,7 @@ import { createEditorTabs } from './editor-tabs.js?v=20261105-filter-settings';
 import { createContentCardEditing } from './content-card-editing.js?v=20261105-filter-settings';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-drafting-card-size';
 import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261026-drafting-card-size';
-import { createRevisionButton, updateRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261030-revision-headings';
+import { createRevisionButton, updateRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261106-editor-controls';
 
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'csa.projects.v1';
@@ -138,7 +138,7 @@ const contentPreview = createContentPreview({
 });
 const editorTabs = createEditorTabs({ onSelect: openEditorTab, onRevisionRead(project, output) {
   saveProjects();
-  const trigger = $('#editor-variant-labels').querySelector('[data-request-revision]');
+  const trigger = $('#editor-revision-tools').querySelector('[data-request-revision]');
   if (activeProjectId === project.id && trigger?.dataset.requestRevision === output.id) updateRevisionButton(trigger, output);
 } });
 const projectSourcesPanel = createProjectSources({
@@ -291,11 +291,15 @@ function renderOutputs(project) {
   const selectedOutput = projectOutputs(project).find(output => output.id === project?.selectedOutputId && (outputIsReady(output) || output.needsRegeneration));
   richEditor.setRevisionBusy(Boolean(project?.outputProcessing?.kind === 'revision' && project.outputProcessing.ids.includes(selectedOutput?.id)), outputLoadingSelectionKeys(selectedOutput));
   const labels = $('#editor-variant-labels');
-  labels.replaceChildren(...createOutputBadges(selectedOutput, { includeWordCount: false }));
+  labels.replaceChildren(...createOutputBadges(selectedOutput, { includeWordCount: false }), $('#editor-direction-empty'), $('#editor-direction-button'));
+  const revisionTools = $('#editor-revision-tools');
+  revisionTools.replaceChildren();
   if (selectedOutput && outputIsReady(selectedOutput) && !selectedOutput.needsRegeneration) {
-    labels.append(createRevisionButton(selectedOutput, Boolean(project?.outputProcessing)), createFeedbackPill(selectedOutput, Boolean(project?.outputProcessing)));
+    revisionTools.append(createRevisionButton(selectedOutput, Boolean(project?.outputProcessing), { iconOnly: true }));
+    labels.append(createFeedbackPill(selectedOutput, Boolean(project?.outputProcessing)));
   }
-  labels.hidden = !labels.childElementCount;
+  revisionTools.hidden = !revisionTools.childElementCount;
+  labels.hidden = !selectedOutput;
 }
 
 function selectOutputView(view) {
@@ -1099,16 +1103,17 @@ $('#editor-variant-labels').addEventListener('click', event => {
     }
     return;
   }
-  const revision = event.target.closest('[data-request-revision]');
-  if (revision) {
-    richEditor.flush();
-    const project = projects.find(entry => entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
-    const output = projectOutputs(project).find(entry => entry.id === revision.dataset.requestRevision && outputIsReady(entry) && !entry.needsRegeneration);
-    if (output && !project.outputProcessing) revisionRequests.open(project, output);
-    return;
-  }
   const button = event.target.closest('[data-variant-sources]');
   if (button) openVariantSources(button);
+});
+
+$('#editor-revision-tools').addEventListener('click', event => {
+  const revision = event.target.closest('[data-request-revision]');
+  if (!revision || revision.disabled) return;
+  richEditor.flush();
+  const project = projects.find(entry => entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
+  const output = projectOutputs(project).find(entry => entry.id === revision.dataset.requestRevision && outputIsReady(entry) && !entry.needsRegeneration);
+  if (output && !project.outputProcessing) revisionRequests.open(project, output);
 });
 
 function requestVariantRevision({ projectId, outputId, instructions }) {

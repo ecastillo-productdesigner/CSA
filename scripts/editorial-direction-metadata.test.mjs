@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createEditorialDirectionMetadata } from '../dist/editorial-direction-metadata.js';
+import { createEditorPopover } from '../dist/editor-popover.js';
 
 class Element {
   constructor(tag = 'div') {
@@ -11,6 +12,8 @@ class Element {
     this.style = {};
     this.hidden = false;
     this.textContent = '';
+    this.naturalHeight = 160;
+    this.scrollHeight = 160;
     this.rect = { left: 400, right: 520, top: 680, bottom: 698, width: 120, height: 18 };
   }
   append(...children) { for (const child of children) { child.parent = this; this.children.push(child); } }
@@ -43,7 +46,7 @@ class Element {
   getBoundingClientRect() {
     if (this.id !== 'editor-direction-popover') return this.rect;
     const width = Math.min(620, document.documentElement.clientWidth - 24, Number.parseFloat(this.style.width) || 620);
-    const height = Math.min(160, Number.parseFloat(this.style.maxHeight) || 420);
+    const height = Math.min(this.naturalHeight, Number.parseFloat(this.style.maxHeight) || 420);
     const left = Number.parseFloat(this.style.left) || 0;
     const top = Number.parseFloat(this.style.top) || 0;
     return { width, height, left, top, right: left + width, bottom: top + height };
@@ -52,7 +55,7 @@ class Element {
   get offsetHeight() { return this.getBoundingClientRect().height; }
 }
 
-function setup(t) {
+function setup(t, { metadata = false } = {}) {
   const previous = { document: globalThis.document, window: globalThis.window, getComputedStyle: globalThis.getComputedStyle };
   const doc = new Element('document');
   doc.body = new Element('body');
@@ -83,9 +86,11 @@ function setup(t) {
   doc.append(doc.body);
   globalThis.document = doc;
   globalThis.window = new Element('window');
-  globalThis.getComputedStyle = () => ({ getPropertyValue: name => ({ '--csa-foundation-size-620': '620px', '--csa-foundation-size-420': '420px', '--csa-foundation-space-8': '8px', '--csa-foundation-space-12': '12px', '--csa-foundation-space-24': '24px' }[name] || '') });
+  globalThis.getComputedStyle = () => ({ getPropertyValue: name => ({ '--csa-foundation-size-360': '360px', '--csa-foundation-size-620': '620px', '--csa-component-chip-height': '24px', '--csa-foundation-size-420': '420px', '--csa-foundation-space-8': '8px', '--csa-foundation-space-12': '12px', '--csa-foundation-space-24': '24px' }[name] || '') });
   t.after(() => { Object.assign(globalThis, previous); });
-  const api = createEditorialDirectionMetadata();
+  const api = metadata
+    ? createEditorPopover({ container: root, trigger, popover, dismiss: close })
+    : createEditorialDirectionMetadata();
   return { api, doc, root, trigger, empty, popover, copy, close, chevron, window };
 }
 
@@ -188,4 +193,55 @@ test('the anchored popover stays within a mobile viewport after resize and outsi
   assert.equal(ui.popover.hidden, false);
   ui.doc.emit('scroll', { target: ui.root });
   assert.equal(ui.popover.hidden, true);
+});
+
+
+test('direction opens below the compact visual chip when both sides have room', t => {
+  const ui = setup(t);
+  ui.root.rect.width = 280;
+  ui.trigger.rect = { left: 400, right: 600, top: 300, bottom: 344, width: 200, height: 44 };
+  ui.api.update('Keep the local angle');
+  ui.trigger.click();
+  assert.equal(ui.popover.style.width, '360px');
+  assert.equal(ui.popover.style.left, '400px');
+  assert.equal(ui.popover.style.top, '342px');
+});
+
+test('direction flips above the compact visual chip when there is insufficient room below', t => {
+  const ui = setup(t);
+  ui.trigger.rect = { left: 400, right: 600, top: 700, bottom: 744, width: 200, height: 44 };
+  ui.api.update('Keep the local angle');
+  ui.trigger.click();
+  assert.equal(ui.popover.style.top, '542px');
+  assert.equal(ui.popover.style.maxHeight, '420px');
+});
+
+test('direction resets a previous height constraint before measuring scrollable compact content', t => {
+  const ui = setup(t);
+  ui.popover.naturalHeight = 320;
+  const measuredHeights = [];
+  Object.defineProperty(ui.popover, 'scrollHeight', { get() {
+    measuredHeights.push(ui.popover.style.maxHeight);
+    return Math.min(ui.popover.naturalHeight, Number.parseFloat(ui.popover.style.maxHeight) || 420);
+  } });
+  ui.doc.documentElement.clientHeight = 170;
+  ui.trigger.rect = { left: 400, right: 600, top: 25, bottom: 69, width: 200, height: 44 };
+  ui.api.update('A saved direction long enough to need scrolling');
+  ui.trigger.click();
+  assert.equal(ui.popover.style.maxHeight, '91px');
+  ui.doc.documentElement.clientHeight = 400;
+  ui.trigger.rect = { left: 400, right: 600, top: 210, bottom: 254, width: 200, height: 44 };
+  ui.window.emit('resize');
+  assert.equal(ui.popover.style.maxHeight, '200px');
+  assert.equal(ui.popover.style.top, '12px');
+  assert.ok(measuredHeights.every(height => height === '420px'));
+});
+
+test('the default Metadata popover keeps its wide placement above the full target', t => {
+  const ui = setup(t, { metadata: true });
+  ui.trigger.rect = { left: 300, right: 500, top: 300, bottom: 344, width: 200, height: 44 };
+  ui.trigger.click();
+  assert.equal(ui.popover.style.width, '620px');
+  assert.equal(ui.popover.style.top, '132px');
+  assert.equal(ui.popover.style.left, '300px');
 });

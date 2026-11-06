@@ -3,7 +3,7 @@ import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-d
 import { initializeOutputShareText } from './outputs.js?v=20261105-filter-settings';
 import { createRevisionLoading } from './revision-loading.js?v=20261027-revision-loading';
 import { createStoryMetadata, storyMetadata } from './story-metadata.js?v=20261027-metadata';
-import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261026-drafting-card-size';
+import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261106-direction-popover';
 import { draftPreferenceValue } from './draft-options.js?v=20261026-drafting-card-size';
 import './vendor/quill-2.0.3.js?v=20261026-drafting-card-size';
 
@@ -183,10 +183,10 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
 
   function format(name, value) { restoreSelection(); quill.history.cutoff(); quill.format(name, value, 'user'); quill.history.cutoff(); updateToolbar(); }
 
-  $('#editor-toolbar').addEventListener('mousedown', event => { if (event.target.closest('button')) event.preventDefault(); });
+  $('#editor-toolbar').addEventListener('mousedown', event => { if (event.target.closest('button') && !event.target.closest('[data-request-revision]')) event.preventDefault(); });
   $('#editor-toolbar').addEventListener('click', event => {
     const button = event.target.closest('button');
-    if (!button || !quill) return;
+    if (!button || !quill || button.matches('[data-request-revision]')) return;
     if (button.dataset.header) {
       const level = Number(button.dataset.header);
       restoreSelection();

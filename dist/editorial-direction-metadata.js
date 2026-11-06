@@ -1,4 +1,4 @@
-import { createEditorPopover } from './editor-popover.js?v=20261027-metadata';
+import { createEditorPopover } from './editor-popover.js?v=20261106-compact-direction';
 
 // Receives the direction captured on this draft, never the current composer value.
 export function createEditorialDirectionMetadata() {
@@ -9,7 +9,7 @@ export function createEditorialDirectionMetadata() {
   const copy = document.querySelector('#editor-direction-copy');
   const dismiss = document.querySelector('#editor-direction-close');
   let direction = '';
-  const controller = createEditorPopover({ container, trigger, popover, dismiss, onOpen() { copy.textContent = direction; } });
+  const controller = createEditorPopover({ container, trigger, popover, dismiss, compact: true, onOpen() { copy.textContent = direction; } });
 
   function update(value) {
     controller.close();

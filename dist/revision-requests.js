@@ -1,10 +1,14 @@
 import { revisionHistory, renderRevisionHistory } from './last-revision-note.js?v=20261030-revision-headings';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 
-export function createRevisionButton(output, disabled = false) {
+export function createRevisionButton(output, disabled = false, { iconOnly = false } = {}) {
   const button = document.createElement('button');
   button.type = 'button';
-  button.className = 'output-badge output-badge--sources revision-request-trigger';
+  button.className = iconOnly ? 'revision-request-trigger' : 'output-badge output-badge--sources revision-request-trigger';
+  if (iconOnly) {
+    button.setAttribute('aria-label', 'Request Revision');
+    button.setAttribute('title', 'Request Revision');
+  }
   button.dataset.requestRevision = output.id;
   button.disabled = disabled;
   button.setAttribute('aria-haspopup', 'dialog');
@@ -13,7 +17,7 @@ export function createRevisionButton(output, disabled = false) {
   const dot = document.createElement('span');
   dot.className = 'revision-request-dot';
   dot.setAttribute('aria-hidden', 'true');
-  button.append(createIcon('edit_document'), document.createTextNode('Request Revision'), dot);
+  button.append(createIcon('edit_document'), ...(iconOnly ? [] : [document.createTextNode('Request Revision')]), dot);
   return updateRevisionButton(button, output, disabled);
 }
 

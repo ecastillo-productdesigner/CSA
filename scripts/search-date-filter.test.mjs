@@ -12,13 +12,14 @@ test('publication dates reject rollover and malformed values and accept leap day
   assert.deepEqual(normalizeDateFilter({ after: '2026-10-15', before: '2026-10-01' }), { after: '2026-10-01', before: '2026-10-15' });
 });
 
-test('range selection supports reverse order, same day, and restarting a completed range', () => {
-  const start = selectCalendarDate({ mode: 'range', after: '', before: '' }, '2026-10-15');
-  assert.deepEqual(selectCalendarDate(start, '2026-10-01'), { mode: 'range', after: '2026-10-01', before: '2026-10-15' });
+test('one date starts a selection, a second makes a sorted range, and a third restarts it', () => {
+  const start = selectCalendarDate({ after: '', before: '' }, '2026-10-15');
+  assert.deepEqual(start, { after: '2026-10-15', before: '' });
+  assert.deepEqual(selectCalendarDate(start, '2026-10-01'), { after: '2026-10-01', before: '2026-10-15' });
+  assert.deepEqual(selectCalendarDate(start, '2026-11-05'), { after: '2026-10-15', before: '2026-11-05' });
   const sameDay = selectCalendarDate(start, '2026-10-15');
-  assert.equal(sameDay.before, sameDay.after);
-  assert.deepEqual(selectCalendarDate(sameDay, '2026-11-05'), { mode: 'range', after: '2026-11-05', before: '' });
-  assert.deepEqual(selectCalendarDate({ mode: 'after', after: '', before: '' }, '2026-10-01'), { mode: 'after', after: '2026-10-01', before: '' });
+  assert.deepEqual(sameDay, { after: '2026-10-15', before: '2026-10-15' });
+  assert.deepEqual(selectCalendarDate(sameDay, '2026-11-05'), { after: '2026-11-05', before: '' });
 });
 
 test('date labels preserve month and year boundaries', () => {
@@ -94,46 +95,86 @@ function setup(t) {
   return { picker, root, after, before, changes, trigger, doc, menu: root.querySelector('.search-date-menu'), click: selector => { const node = doc.body.querySelector(selector); assert.ok(node, selector); node.emit('click'); } };
 }
 
-test('date changes remain pending until Apply; Cancel, Escape, and outside click discard edits', t => {
+test('the picker opens directly to its calendar and a single date applies only on Apply', t => {
   const ui = setup(t);
-  ui.picker.sync({ after: '2026-10-01' });
   ui.trigger.emit('click');
-  ui.click('[data-date-mode="range"]');
-  ui.click('[data-date="2026-10-15"]');
+  assert.notEqual(ui.menu.querySelector('.search-date-calendar').hidden, true);
+  assert.equal(ui.menu.querySelector('.search-date-modes'), null);
+  assert.equal(ui.menu.querySelectorAll('[data-date]').length, 42);
+  assert.equal(ui.menu.querySelector('.search-date-apply').disabled, false);
+  const date = ui.menu.querySelectorAll('[data-date]')[15].dataset.date;
+  ui.click(`[data-date="${date}"]`);
+  assert.equal(ui.after.value, '');
   assert.equal(ui.before.value, '');
   assert.deepEqual(ui.changes, []);
-  ui.click('.search-date-cancel');
-  assert.equal(ui.menu.hidden, true);
-  ui.trigger.emit('click');
-  assert.equal(ui.menu.querySelector('[data-date-mode="after"]').getAttribute('aria-pressed'), 'true');
-  ui.click('[data-date-mode="range"]');
-  ui.click('[data-date="2026-10-15"]');
+  assert.equal(ui.menu.querySelector('.search-date-apply').disabled, false);
   ui.click('.search-date-apply');
-  assert.deepEqual(ui.changes, [{ after: '2026-10-01', before: '2026-10-15' }]);
-  assert.equal(ui.before.value, '2026-10-15');
-  assert.equal(ui.trigger.textContent, 'Oct 1–15, 2026keyboard_arrow_down');
-  ui.trigger.emit('click');
-  ui.click('[data-date="2026-10-05"]');
-  assert.equal(ui.menu.querySelector('.search-date-apply').disabled, true);
-  ui.menu.emit('keydown', { key: 'Escape' });
+  assert.deepEqual(ui.changes, [{ after: date, before: '' }]);
+  assert.equal(ui.after.value, date);
+  assert.equal(ui.before.value, '');
   assert.equal(ui.menu.hidden, true);
   assert.equal(ui.doc.activeElement, ui.trigger);
-  ui.trigger.emit('click');
-  ui.doc.emit('pointerdown', { target: ui.doc.body });
-  assert.equal(ui.menu.hidden, true);
-  assert.equal(ui.changes.length, 1);
 });
 
-test('Any Date clears both bounds only after Apply and sync is silent', t => {
+test('an applied single date extends into a cross-month range and a completed range restarts on the next date', t => {
+  const ui = setup(t);
+  ui.picker.sync({ after: '2026-10-31' });
+  ui.trigger.emit('click');
+  assert.equal(ui.menu.querySelector('[data-date="2026-10-31"]').getAttribute('aria-selected'), 'true');
+  ui.click('[data-date="2026-11-02"]');
+  assert.equal(ui.before.value, '');
+  assert.deepEqual(ui.changes, []);
+  ui.click('.search-date-apply');
+  assert.deepEqual(ui.changes, [{ after: '2026-10-31', before: '2026-11-02' }]);
+  assert.equal(ui.trigger.textContent, 'Oct 31–Nov 2, 2026keyboard_arrow_down');
+  ui.trigger.emit('click');
+  ui.click('[data-date="2026-10-15"]');
+  assert.equal(ui.menu.querySelector('[data-date="2026-10-31"]').getAttribute('aria-selected'), 'false');
+  assert.equal(ui.menu.querySelector('.search-date-apply').disabled, false);
+  ui.click('.search-date-apply');
+  assert.deepEqual(ui.changes.at(-1), { after: '2026-10-15', before: '' });
+});
+
+test('Cancel, Escape, and outside click discard pending calendar edits', t => {
+  const ui = setup(t);
+  ui.picker.sync({ after: '2026-10-01', before: '2026-10-15' });
+  for (const dismiss of [
+    () => ui.click('.search-date-cancel'),
+    () => ui.menu.emit('keydown', { key: 'Escape' }),
+    () => ui.doc.emit('pointerdown', { target: ui.doc.body }),
+  ]) {
+    ui.trigger.emit('click');
+    ui.click('[data-date="2026-10-05"]');
+    dismiss();
+    assert.equal(ui.menu.hidden, true);
+    assert.equal(ui.after.value, '2026-10-01');
+    assert.equal(ui.before.value, '2026-10-15');
+    assert.deepEqual(ui.changes, []);
+    ui.trigger.emit('click');
+    assert.equal(ui.menu.querySelector('[data-date="2026-10-01"]').getAttribute('aria-selected'), 'true');
+    assert.equal(ui.menu.querySelector('[data-date="2026-10-15"]').getAttribute('aria-selected'), 'true');
+    ui.picker.close();
+  }
+});
+
+test('Clear Dates resets only the pending selection until Apply and sync remains silent', t => {
   const ui = setup(t);
   ui.picker.sync({ after: '2026-10-01', before: '2026-10-15' });
   ui.trigger.emit('click');
-  ui.click('[data-date-mode="any"]');
+  ui.click('.search-date-clear');
   assert.equal(ui.after.value, '2026-10-01');
+  assert.equal(ui.before.value, '2026-10-15');
+  assert.ok(ui.menu.querySelectorAll('[data-date]').every(day => day.getAttribute('aria-selected') === 'false'));
+  assert.equal(ui.menu.querySelector('.search-date-apply').disabled, false);
+  ui.click('.search-date-cancel');
+  ui.trigger.emit('click');
+  assert.equal(ui.menu.querySelector('[data-date="2026-10-01"]').getAttribute('aria-selected'), 'true');
+  ui.click('.search-date-clear');
   ui.click('.search-date-apply');
   assert.deepEqual(ui.changes, [{ after: '', before: '' }]);
   assert.equal(ui.after.value, '');
   assert.equal(ui.before.value, '');
+  assert.equal(ui.trigger.textContent, 'Any Datekeyboard_arrow_down');
   ui.picker.sync({ after: '2026-11-01' });
   assert.equal(ui.changes.length, 1);
 });

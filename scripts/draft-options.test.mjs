@@ -362,8 +362,8 @@ test('Source uses the shared favorites menu and refreshes when search replaces i
   delete field.dataset.fixedValue;
   function populate() {
     select.replaceChildren(...[
-      ['all', 'All sources'], ['Bargain Hunter', 'Bargain Hunter (BH)'],
-      ['Bellingham Herald', 'Bellingham Herald (BH)'], ['Miami Herald', 'Miami Herald (MH)'],
+      ['all', 'All sources'], ['Bargain Hunter', 'Bargain Hunter'],
+      ['Bellingham Herald', 'Bellingham Herald'], ['Miami Herald', 'Miami Herald'],
     ].map(([value, label]) => {
       const option = new Element('option');
       option.value = value;
@@ -380,7 +380,7 @@ test('Source uses the shared favorites menu and refreshes when search replaces i
   const menu = field.querySelector('.tool-dropdown-menu');
   const labels = () => menu.querySelectorAll('.tool-dropdown-option').map(option => option.textContent);
   assert.equal(trigger.querySelector('.tool-dropdown-chevron').textContent, 'keyboard_arrow_down');
-  assert.deepEqual(labels(), ['All sources', 'Bellingham Herald (BH)', 'Miami Herald (MH)', 'Bargain Hunter (BH)']);
+  assert.deepEqual(labels(), ['All sources', 'Bellingham Herald', 'Miami Herald', 'Bargain Hunter']);
   assert.equal(menu.querySelector('.tool-dropdown-row').querySelector('.tool-option-favorite'), null);
   trigger.emit('click');
   assert.equal(menu.parentElement, ui.doc.body);
@@ -388,15 +388,15 @@ test('Source uses the shared favorites menu and refreshes when search replaces i
   const favorite = menu.querySelectorAll('.tool-dropdown-row').at(-1).querySelector('.tool-option-favorite');
   favorite.focus();
   favorite.emit('click');
-  assert.deepEqual(labels(), ['All sources', 'Bargain Hunter (BH)', 'Bellingham Herald (BH)', 'Miami Herald (MH)']);
+  assert.deepEqual(labels(), ['All sources', 'Bargain Hunter', 'Bellingham Herald', 'Miami Herald']);
   assert.equal(document.activeElement, favorite);
   assert.deepEqual(ui.favoritesStore.values('source'), ['Miami Herald', 'Bellingham Herald', 'Bargain Hunter']);
   menu.querySelectorAll('.tool-dropdown-option')[2].emit('click');
   assert.equal(select.value, 'Bellingham Herald');
-  assert.equal(trigger.getAttribute('aria-label'), 'Source: Bellingham Herald (BH)');
+  assert.equal(trigger.getAttribute('aria-label'), 'Source: Bellingham Herald');
   assert.equal(menu.parentElement, field);
   populate();
-  assert.deepEqual(labels(), ['All sources', 'Bargain Hunter (BH)', 'Bellingham Herald (BH)', 'Miami Herald (MH)']);
+  assert.deepEqual(labels(), ['All sources', 'Bargain Hunter', 'Bellingham Herald', 'Miami Herald']);
   assert.equal(menu.querySelector('.tool-dropdown-option').getAttribute('aria-pressed'), 'true');
   assert.equal(trigger.getAttribute('aria-label'), 'Source: All sources');
   trigger.emit('click');

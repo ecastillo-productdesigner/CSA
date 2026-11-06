@@ -1,45 +1,45 @@
-import { createSearchDateFilter } from './search-date-filter.js?v=20261105-filter-settings';
+import { createSearchDateFilter } from './search-date-filter.js?v=20261106-unified-calendar';
 import { classifyProjectSearchInput } from './project-search-input.js?v=20261102-topic-search';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { createSourceAddingAnimation } from './drafting-animation.js?v=20261026-drafting-card-size';
 import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-drafting-card-size';
 const sourcePublications = [
-  ["Bargain Hunter", "BH"],
-  ["Belleville News-Democrat", "BND"],
-  ["Bellingham Herald", "BH"],
-  ["Bradenton Herald", "BrH"],
-  ["Centre Daily Times", "CDT"],
-  ["Communities of Interest", "COI"],
-  ["El Nuevo Herald", "ENH"],
-  ["Fort Worth Star-Telegram", "FWST"],
-  ["Idaho Statesman", "IS"],
-  ["Ledger-Enquirer", "LE"],
-  ["Lexington Herald-Leader", "LHL"],
-  ["McClatchy DC Bureau", "DC"],
-  ["Merced Sun-Star", "MSS"],
-  ["Miami Herald", "MH"],
-  ["National Team", "NAT"],
-  ["Soap Opera Digest", "SOD"],
-  ["Sun Herald", "SH"],
-  ["The Charlotte Observer", "CO"],
-  ["The Fresno Bee", "FB"],
-  ["The Herald", "RH"],
-  ["The Herald-Sun", "HS"],
-  ["The Island Packet", "IP"],
-  ["The Kansas City Star", "KCS"],
-  ["The Modesto Bee", "MB"],
-  ["The News & Observer", "N&O"],
-  ["The News Tribune", "TNT"],
-  ["The Olympian", "Oly"],
-  ["The Sacramento Bee", "SacBee"],
-  ["The State", ""],
-  ["The Sun News", "SN"],
-  ["The Telegraph", "Tel"],
-  ["The Tribune", "SLO"],
-  ["The Wichita Eagle", "WE"],
-  ["Tri-City Herald", "TCH"],
-  ["Us Weekly", "USW"],
-  ["Woman's World", "WW"],
+  "Bargain Hunter",
+  "Belleville News-Democrat",
+  "Bellingham Herald",
+  "Bradenton Herald",
+  "Centre Daily Times",
+  "Communities of Interest",
+  "El Nuevo Herald",
+  "Fort Worth Star-Telegram",
+  "Idaho Statesman",
+  "Ledger-Enquirer",
+  "Lexington Herald-Leader",
+  "McClatchy DC Bureau",
+  "Merced Sun-Star",
+  "Miami Herald",
+  "National Team",
+  "Soap Opera Digest",
+  "Sun Herald",
+  "The Charlotte Observer",
+  "The Fresno Bee",
+  "The Herald",
+  "The Herald-Sun",
+  "The Island Packet",
+  "The Kansas City Star",
+  "The Modesto Bee",
+  "The News & Observer",
+  "The News Tribune",
+  "The Olympian",
+  "The Sacramento Bee",
+  "The State",
+  "The Sun News",
+  "The Telegraph",
+  "The Tribune",
+  "The Wichita Eagle",
+  "Tri-City Herald",
+  "Us Weekly",
+  "Woman's World",
 ];
 
 // Sample content for the results-screen prototype. No live news requests are made.
@@ -447,7 +447,7 @@ export function createSearchExperience({ onSearch, onBack = () => {}, onSelectio
       validateSearchInput();
       $('#results-sort').value = 'newest';
       $('#results-sort').dispatchEvent(new Event('change', { bubbles: true }));
-      const sourceLabels = new Map(sourcePublications.map(([name, abbreviation]) => [name, abbreviation ? `${name} (${abbreviation})` : name]));
+      const sourceLabels = new Map(sourcePublications.map(name => [name, name]));
       for (const { source } of articles) if (!sourceLabels.has(source)) sourceLabels.set(source, source);
       $('#results-source').replaceChildren(node('option', '', 'All sources'), ...[...sourceLabels].map(([source, label]) => {
         const option = node('option', '', label); option.value = source; return option;
@@ -456,8 +456,8 @@ export function createSearchExperience({ onSearch, onBack = () => {}, onSelectio
       $('#results-source').value = state.source;
       $('#results-source').dispatchEvent(new Event('change', { bubbles: true }));
       dateFilter.sync({ after: '', before: '' });
-      $('#results-filter-panel').hidden = true;
-      $('#results-toggle-filters').setAttribute('aria-expanded', 'false');
+      $('#results-filter-panel').hidden = linkResults;
+      $('#results-toggle-filters').setAttribute('aria-expanded', String(!linkResults));
       render();
       for (const id of state.selected) startAddition(id);
     },

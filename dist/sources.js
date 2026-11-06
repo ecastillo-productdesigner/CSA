@@ -1,5 +1,5 @@
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
-import { draftSourcesFor, sourceIdentityKey } from './source-model.js?v=20261026-drafting-card-size';
+import { draftSourcesFor, sourceIdentityKey } from './source-model.js?v=20261106-own-material-source';
 import { tokenNumber } from './design-system/runtime.js?v=20261026-drafting-card-size';
 import { fictionalArticleParagraphs, sourceLinkArticles } from './source-links.js?v=20261026-drafting-card-size';
 import { createSourceAdditionLoading } from './source-addition-loading.js?v=20261026-drafting-card-size';

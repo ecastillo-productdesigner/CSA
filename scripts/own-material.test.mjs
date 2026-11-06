@@ -6,6 +6,7 @@ import { randomUUID } from 'node:crypto';
 import { projectOutputs, outputIsReady, outputSourceCount, initializeVariantNames, selectedPendingOutputs, populateOutputContent } from '../dist/outputs.js';
 import { projectTitleFromSources, normalizeProjectTitles } from '../dist/dashboard.js';
 import { normalizeWordCount } from '../dist/variant-word-count.js';
+import { syncOwnMaterialSource } from '../dist/own-material-source.js';
 
 const app = await readFile(new URL('../dist/app.js', import.meta.url), 'utf8');
 function section(start, end) {
@@ -18,7 +19,7 @@ const clone = value => JSON.parse(JSON.stringify(value));
 
 function setup() {
   const nodes = new Map();
-  const calls = { opened: [], sourcePanels: [], saved: [], sourceStories: [], searches: [] };
+  const calls = { opened: [], sourcePanels: [], saved: [], sourceStories: [], searches: [], sourceRenders: [], actionUpdates: 0 };
   const $ = selector => {
     if (!nodes.has(selector)) {
       const classes = new Set();
@@ -41,13 +42,13 @@ function setup() {
     projects: [], activeProjectId: null, sourceTargetProjectId: null,
     outputViews: new Map(), crypto: { randomUUID }, $, document: { body: $('body'), title: '' },
     projectOutputs, outputIsReady, outputSourceCount, initializeVariantNames, selectedPendingOutputs, populateOutputContent,
-    projectTitleFromSources, normalizeProjectTitles, normalizeWordCount,
+    projectTitleFromSources, normalizeProjectTitles, normalizeWordCount, syncOwnMaterialSource,
     storageKey: 'test-projects', localStorage: { getItem: key => storage.get(key), setItem: (key, value) => { storage.set(key, value); calls.saved.push(JSON.parse(value)); } },
     savedDrafts: { render() {} }, dashboard: null, notify() {},
     draftSourcesFor: () => [], draftPreferenceValue: (key, value) => value || '',
     newProjectUpload: { busy: false, isBusy() { return this.busy; }, reset() {} },
     railNavigation: { closeTransient() {}, closeDrawer() {}, close(name) { calls.sourcePanels.push(name); } },
-    toolDropdowns: { refresh() {} }, updateComposerActions() {}, renderOutputs() {}, renderProjectSources() {},
+    toolDropdowns: { refresh() {} }, updateComposerActions() { calls.actionUpdates++; }, renderOutputs() {}, renderProjectSources(project) { calls.sourceRenders.push(clone(project)); },
     closeComposer() { $('#new-project-dialog').close(); }, closeProfile() {}, updateStarterInput() {},
     setNewVariantCollapsed() {}, setContentCollapsed() {}, resumeOutputProcessing() {},
     renderSourceStory(project) { calls.sourceStories.push(project); },
@@ -106,29 +107,67 @@ test('own material opens and persists a blank editable ready draft without gener
   assert.equal(ui.calls.opened.at(-1).shareText, '');
 });
 
-test('own material autosaves exact pasted content, formatting and title and reopens the same output', () => {
+test('own material autosaves its content and source, refreshes visible controls, and reopens the same output', () => {
   const ui = setup();
   ui.open();
   ui.$('#new-project-material').click();
   const project = ui.context.projects[0];
   const outputId = project.selectedOutputId;
   const snapshot = {
-    ...ui.calls.opened.at(-1), title: 'My original draft', shareText: '', shareTextEdited: true,
+    ...ui.calls.opened.at(-1), title: 'My original draft', titleProvided: true, shareText: '', shareTextEdited: true,
     document: { ops: [{ insert: 'My original paragraph', attributes: { bold: true } }, { insert: '\n' }] },
     draftText: 'My original paragraph', metadata: { author: 'Author' }, updatedAt: Date.now(),
   };
+  ui.$('#show-sources').setAttribute('aria-expanded', 'true');
+  const beforeActions = ui.calls.actionUpdates;
   assert.equal(ui.calls.editorCallbacks.onSave(snapshot), true);
   assert.equal(project.title, snapshot.title);
+  assert.equal(project.sources.length, 1);
+  const source = project.sources[0];
+  assert.equal(source.title, snapshot.title);
+  assert.equal(source.text, snapshot.draftText);
+  assert.equal(source.selected, true);
+  assert.equal(ui.calls.sourceRenders.at(-1).sources[0].text, snapshot.draftText);
+  assert.equal(ui.calls.actionUpdates, beforeActions + 1);
+  Object.assign(snapshot, {
+    title: 'Updated original draft', draftText: 'A revised original paragraph',
+    document: { ops: [{ insert: 'A revised original paragraph', attributes: { italic: true } }, { insert: '\n' }] },
+  });
+  assert.equal(ui.calls.editorCallbacks.onSave(snapshot), true);
+  assert.equal(project.sources.length, 1);
+  assert.equal(project.sources[0], source);
+  assert.equal(source.title, snapshot.title);
+  assert.equal(source.text, snapshot.draftText);
+  assert.equal(ui.calls.sourceRenders.at(-1).sources[0].title, snapshot.title);
+  assert.equal(ui.calls.actionUpdates, beforeActions + 2);
   ui.context.projects = ui.context.loadProjects();
   ui.context.showProject(project.id);
   const reopened = ui.calls.opened.at(-1);
   assert.equal(reopened.id, project.id);
   assert.equal(reopened.selectedOutputId, outputId);
   assert.equal(reopened.title, snapshot.title);
+  assert.equal(reopened.titleProvided, true);
   assert.equal(reopened.draftText, snapshot.draftText);
   assert.deepEqual(reopened.document, snapshot.document);
   assert.equal(reopened.shareText, '');
-  assert.deepEqual(reopened.sources, []);
+  assert.equal(reopened.sources.length, 1);
+  assert.equal(reopened.sources[0].ownMaterialOutputId, outputId);
+  assert.equal(reopened.sources[0].title, snapshot.title);
+  assert.equal(reopened.sources[0].text, snapshot.draftText);
+  assert.equal(ui.calls.saved.at(-1)[0].sources[0].text, snapshot.draftText);
+  const beforeClear = ui.calls.actionUpdates;
+  const clearedBody = { ...reopened, draftText: '', document: { ops: [{ insert: '\n' }] } };
+  assert.equal(ui.calls.editorCallbacks.onSave(clearedBody), true);
+  assert.equal(ui.context.projects[0].sources.length, 1);
+  assert.equal(ui.context.projects[0].sources[0].text, snapshot.title);
+  assert.equal(ui.calls.sourceRenders.at(-1).sources[0].text, snapshot.title);
+  assert.equal(ui.calls.actionUpdates, beforeClear + 1);
+  assert.equal(ui.calls.saved.at(-1)[0].outputs[0].sourceCount, 1);
+  assert.equal(ui.calls.editorCallbacks.onSave({ ...clearedBody, title: 'Untitled story', titleProvided: false }), true);
+  assert.deepEqual(clone(ui.context.projects[0].sources), []);
+  assert.deepEqual(ui.calls.sourceRenders.at(-1).sources, []);
+  assert.equal(ui.calls.actionUpdates, beforeClear + 2);
+  assert.equal(ui.calls.saved.at(-1)[0].outputs[0].sourceCount, 0);
 });
 
 test('own material is unavailable when adding sources or while another import is running', () => {
@@ -143,4 +182,51 @@ test('own material is unavailable when adding sources or while another import is
   assert.equal(ui.$('#new-project-material').click(), false);
   assert.equal(ui.context.projects.length, 0);
   assert.equal(ui.$('#new-project-dialog').open, true);
+});
+
+
+test('reopening older own-material content creates its missing source from the opening paragraph', () => {
+  const ui = setup();
+  ui.open();
+  ui.$('#new-project-material').click();
+  const project = ui.context.projects[0];
+  const output = project.outputs[0];
+  const body = 'One two three four five six seven eight nine ten.\n\nThe full second paragraph remains in the source.';
+  output.document = { ops: [{ insert: `${body}\n` }] };
+  output.draftText = body;
+  ui.context.saveProjects();
+  ui.context.projects = ui.context.loadProjects();
+  ui.context.showProject(project.id);
+  const reopened = ui.context.projects[0];
+  assert.equal(reopened.sources.length, 1);
+  assert.equal(reopened.sources[0].title, 'One two three four five six seven eight…');
+  assert.equal(reopened.sources[0].text, body);
+  assert.equal(reopened.sources[0].selected, true);
+  assert.equal(reopened.outputs[0].sourceCount, 1);
+  ui.context.showProject(project.id);
+  assert.equal(reopened.sources.length, 1);
+  assert.equal(ui.calls.saved.at(-1)[0].sources.length, 1);
+});
+
+
+test('an explicitly typed Untitled story title saves and reopens as a title-only source', () => {
+  const ui = setup();
+  ui.open();
+  ui.$('#new-project-material').click();
+  const project = ui.context.projects[0];
+  const snapshot = { ...ui.calls.opened.at(-1), title: 'Untitled story', titleProvided: true, draftText: '', document: { ops: [{ insert: '\n' }] }, updatedAt: Date.now() };
+  assert.equal(ui.calls.editorCallbacks.onSave(snapshot), true);
+  assert.equal(project.sources.length, 1);
+  assert.equal(project.sources[0].title, 'Untitled story');
+  assert.equal(project.sources[0].text, 'Untitled story');
+  assert.equal(project.outputs[0].titleProvided, true);
+  ui.context.projects = ui.context.loadProjects();
+  ui.context.showProject(project.id);
+  const reopened = ui.calls.opened.at(-1);
+  assert.equal(reopened.title, 'Untitled story');
+  assert.equal(reopened.titleProvided, true);
+  assert.equal(reopened.draftText, '');
+  assert.equal(reopened.sources.length, 1);
+  assert.equal(reopened.sources[0].title, 'Untitled story');
+  assert.equal(ui.calls.saved.at(-1)[0].outputs[0].titleProvided, true);
 });

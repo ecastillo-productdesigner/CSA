@@ -8,6 +8,7 @@ import { classifyProjectSearchInput } from '../dist/project-search-input.js';
 import { hasSelectedSources, projectOutputs, outputIsReady, selectedPendingOutputs, sampleVariant } from '../dist/outputs.js';
 import { sourceIdentityKey } from '../dist/source-model.js';
 import { normalizeWordCount } from '../dist/variant-word-count.js';
+import { syncOwnMaterialSource } from '../dist/own-material-source.js';
 import { applySavedDraftSetup, clearSavedDraftSetup } from '../dist/saved-draft-setups.js';
 
 const app = await readFile(new URL('../dist/app.js', import.meta.url), 'utf8');
@@ -143,7 +144,7 @@ function editorSetup(project) {
     document: { body: get('body'), title: '' }, $: get, activeProjectId: null, sampleSearchSources, sourceIdentityKey,
     closeComposer() {}, railNavigation: { closeTransient() {} },
     searchExperience: { hide() {}, show(current, options) { calls.search.push({ project: current, options: clone(options) }); } },
-    resumeOutputProcessing() {}, projectOutputs, outputIsReady, selectedPendingOutputs,
+    resumeOutputProcessing() {}, projectOutputs, outputIsReady, selectedPendingOutputs, syncOwnMaterialSource,
     populateOutputContent() {}, saveProjects() { calls.saved++; },
     renderSourceStory(current) { calls.welcome.push(current); },
     draftPreferenceValue: (key, value) => value || '',

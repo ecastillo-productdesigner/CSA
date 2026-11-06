@@ -138,7 +138,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     clearTimeout(saveTimer);
     if (!project || !quill || !dirty) return;
     const snapshot = {
-      id: project.id, title: title.value.trim() || 'Untitled story', shareText: shareText.value, shareTextEdited: project.shareTextEdited === true, kind: 'draft',
+      id: project.id, title: title.value.trim() || 'Untitled story', titleProvided: Boolean(title.value.trim()), shareText: shareText.value, shareTextEdited: project.shareTextEdited === true, kind: 'draft',
       document: quill.getContents(), draftText: quill.getText().replace(/\n$/, ''),
       sources: project.sources,
       metadata: { ...project.metadata, ...currentStoryMetadata() },
@@ -361,7 +361,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
       quill.enable(true);
       title.disabled = false;
       shareText.disabled = false;
-      title.value = next.title === 'Untitled story' ? '' : next.title;
+      title.value = next.title === 'Untitled story' && next.titleProvided !== true ? '' : next.title;
       const initializedShareText = initializeOutputShareText(next);
       shareText.value = next.shareText;
       syncShareText();

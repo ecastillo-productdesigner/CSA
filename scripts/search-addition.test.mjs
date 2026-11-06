@@ -531,7 +531,7 @@ test('refreshing sidebar selections preserves workspace filters and direction wh
   const record = workspaceProject({ editorialDirection: 'Local impact' });
   record.sources[5].selected = true;
   ui.experience.show(record, { workspace: true });
-  ui.$('#results-toggle-filters').emit('click');
+  assert.equal(ui.$('#results-filter-panel').hidden, false);
   ui.$('#results-sort').value = 'oldest';
   ui.$('#results-sort').emit('change');
   ui.$('#results-source').value = 'Culture Weekly';
@@ -586,15 +586,16 @@ test('refreshing workspace source readiness completes the visible loader without
 });
 
 
-test('source catalog preserves publication labels, defaults to The State, and resets to all sources', t => {
+test('source catalog displays full publication names, defaults to The State, and resets to all sources', t => {
   const ui = setup(t);
   ui.experience.show(topicProject());
   const options = ui.$('#results-source').options;
   assert.equal(options.length, 39);
   assert.equal(options[0].value, 'all');
   assert.equal(options.filter(option => option.value === 'The State').length, 1);
-  for (const [value, label] of [['Bargain Hunter', 'Bargain Hunter (BH)'], ['Bellingham Herald', 'Bellingham Herald (BH)'], ['The News & Observer', 'The News & Observer (N&O)'], ["Woman's World", "Woman's World (WW)"], ['Culture Weekly', 'Culture Weekly'], ['Spotlight', 'Spotlight']]) {
-    assert.equal(options.find(option => option.value === value)?.textContent, label);
+  for (const option of options.slice(1)) assert.equal(option.textContent, option.value, 'publication labels omit appended codes');
+  for (const name of ['Bargain Hunter', 'Bellingham Herald', 'The News & Observer', "Woman's World", 'Culture Weekly', 'Spotlight']) {
+    assert.equal(options.find(option => option.value === name)?.textContent, name);
   }
   assert.equal(ui.$('#results-source').value, 'The State');
   assert.equal(ui.$('#results-count').textContent, '5 stories found');
@@ -630,4 +631,38 @@ test('publication date ranges include both endpoints and combine with source fil
   assert.equal(ui.$('#results-after').value, '');
   assert.equal(ui.$('#results-before').value, '');
   assert.equal(ui.$('#results-toggle-filters').dataset.active, 'false');
+});
+
+
+test('topic filters start open, can close and reopen, and open again for a new query while link results keep them hidden', t => {
+  const ui = setup(t);
+  for (const [record, options] of [
+    [topicProject(), {}],
+    [topicProject({ sourceProjectId: 'original-project' }), { addingSources: true }],
+    [workspaceProject(), { workspace: true }],
+  ]) {
+    ui.experience.show(record, options);
+    assert.equal(ui.$('#results-filter-panel').hidden, false);
+    assert.equal(ui.$('#results-toggle-filters').getAttribute('aria-expanded'), 'true');
+    ui.$('#results-toggle-filters').emit('click');
+    assert.equal(ui.$('#results-filter-panel').hidden, true);
+    assert.equal(ui.$('#results-toggle-filters').getAttribute('aria-expanded'), 'false');
+    ui.$('#results-toggle-filters').emit('click');
+    assert.equal(ui.$('#results-filter-panel').hidden, false);
+    assert.equal(ui.$('#results-toggle-filters').getAttribute('aria-expanded'), 'true');
+    ui.$('#results-toggle-filters').emit('click');
+    const next = options.workspace
+      ? { ...record, searchQuery: 'Community gardens' }
+      : { ...record, sources: [{ type: 'search', title: 'Community gardens' }] };
+    ui.experience.show(next, options);
+    assert.equal(ui.$('#results-filter-panel').hidden, false);
+    assert.equal(ui.$('#results-toggle-filters').getAttribute('aria-expanded'), 'true');
+  }
+  for (const options of [{}, { embedded: true }]) {
+    ui.experience.show({ ...project([link('source')]), kind: 'links' }, options);
+    assert.equal(ui.$('#results-filter-panel').hidden, true);
+    assert.equal(ui.$('#results-toggle-filters').hidden, true);
+    assert.equal(ui.$('#results-toggle-filters').getAttribute('aria-expanded'), 'false');
+    assert.equal(ui.$('#results-source').value, 'all');
+  }
 });

@@ -1,6 +1,7 @@
+import { syncOwnMaterialSource } from './own-material-source.js?v=20261106-title-source';
 import { listSavedDraftSetups, saveDraftSetup, removeSavedDraftSetup, applySavedDraftSetup, clearSavedDraftSetup } from './saved-draft-setups.js?v=20261102-saved-draft-options';
 import { createSavedDrafts } from './saved-drafts.js?v=20261105-filter-settings';
-import { partitionSourceAdditions, sourceIdentityKey, findDuplicateSource } from './source-model.js?v=20261026-drafting-card-size';
+import { partitionSourceAdditions, sourceIdentityKey, findDuplicateSource } from './source-model.js?v=20261106-own-material-source';
 import { createSourceAlreadyAddedDialog } from './source-already-added.js?v=20261026-drafting-card-size';
 import { createToast } from './toast.js?v=20261027-toast-timing';
 import { updatePresetPreferences } from './preset-settings.js?v=20261105-filter-settings';
@@ -15,10 +16,10 @@ import { bindTabSelection } from './selection-controls.js?v=20261026-drafting-ca
 import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261105-filter-settings';
 import { createRoleSelector } from './role-selector.js?v=20261105-role-selector';
 import { createProfile } from './profile.js?v=20261026-drafting-card-size';
-import { createSearchExperience, sampleSearchSources } from './search.js?v=20261105-default-source';
+import { createSearchExperience, sampleSearchSources } from './search.js?v=20261106-unified-calendar';
 import { classifyProjectSearchInput } from './project-search-input.js?v=20261102-topic-search';
 import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261105-filter-settings';
-import { createMaterialEditor } from './editor.js?v=20261105-own-material';
+import { createMaterialEditor } from './editor.js?v=20261106-title-source';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-drafting-card-size';
 import { removeProjectContent } from './project-deletion.js?v=20261026-drafting-card-size';
 import { createContentPreview } from './content-preview.js?v=20261026-drafting-card-size';
@@ -26,8 +27,8 @@ import { createToolDropdowns } from './tool-dropdowns.js?v=20261105-filter-setti
 import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261026-drafting-card-size';
 import { createNewProjectUpload } from './new-project-upload.js?v=20261026-drafting-card-size';
 import { createRailNavigation } from './navigation.js?v=20261105-role-selector';
-import { createProjectSources } from './sources.js?v=20261029-preview-direction';
-import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261105-filter-settings';
+import { createProjectSources } from './sources.js?v=20261106-own-material-source';
+import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261106-own-material-source';
 import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261105-own-material-empty';
 import { createEditorTabs } from './editor-tabs.js?v=20261105-filter-settings';
 import { createContentCardEditing } from './content-card-editing.js?v=20261105-filter-settings';
@@ -192,10 +193,17 @@ const richEditor = createMaterialEditor({
     const output = projectOutputs(project).find(entry => entry.id === project.selectedOutputId);
     if (output) {
       for (const key of ['title', 'shareText', 'shareTextEdited', 'document', 'draftText', 'metadata', 'updatedAt']) output[key] = snapshot[key];
+      if (typeof snapshot.titleProvided === 'boolean') output.titleProvided = snapshot.titleProvided;
       if (typeof snapshot.cmsSentContent === 'string') output.cmsSentContent = snapshot.cmsSentContent;
       project.toolPreferences = snapshot.toolPreferences;
       project.updatedAt = snapshot.updatedAt;
-      if (project.ownMaterialOutputId === output.id) project.title = snapshot.title;
+      if (project.ownMaterialOutputId === output.id) {
+        project.title = snapshot.title;
+        if (syncOwnMaterialSource(project, output) && activeProjectId === project.id) {
+          if ($('#show-sources').getAttribute('aria-expanded') === 'true') renderProjectSources(project);
+          updateComposerActions();
+        }
+      }
     } else Object.assign(project, snapshot);
     const saved = saveProjects();
     renderOutputs(project);
@@ -600,7 +608,7 @@ function startOwnMaterial() {
   richEditor.flush();
   const project = createProject([], { title: 'Untitled story', kind: 'draft', open: false });
   const output = {
-    id: crypto.randomUUID(), title: 'Untitled story', createdAt: project.createdAt,
+    id: crypto.randomUUID(), title: 'Untitled story', titleProvided: false, createdAt: project.createdAt,
     status: 'ready', contentInitialized: true, contentVersion: 3,
     draftText: '', document: { ops: [{ insert: '\n' }] },
     shareText: '', shareTextEdited: true,
@@ -858,6 +866,7 @@ function showEditorProject(project) {
     project.viewOriginalDraft = false;
     project.selectedOutputIds = outputIsReady(selectedOutput) && !replacingSourceView ? [selectedOutput.id] : [...new Set([...selectedPendingOutputs(project).map(output => output.id), selectedOutput.id])];
     if (outputIsReady(selectedOutput)) populateOutputContent(selectedOutput);
+    syncOwnMaterialSource(project, selectedOutput);
     saveProjects();
   }
   if (project.viewOriginalDraft || (project.awaitingOutput && !selectedOutput)) {

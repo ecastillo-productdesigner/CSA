@@ -4,7 +4,6 @@ import { tokenNumber } from './design-system/runtime.js?v=20261029-revision-indi
 
 const dayMilliseconds = 86400000;
 const datePattern = /^\d{4}-\d{2}-\d{2}$/;
-const modes = [['any', 'Any Date'], ['after', 'On or After'], ['range', 'Date Range']];
 const shortDate = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 const fullDate = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 const monthDate = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
@@ -38,10 +37,9 @@ export function dateFilterLabel(selection) {
 
 export function selectCalendarDate(selection, value) {
   if (!validCalendarDate(value)) return { ...selection };
-  if (selection.mode === 'after') return { mode: 'after', after: value, before: '' };
-  if (!selection.after || selection.before) return { mode: 'range', after: value, before: '' };
+  if (!selection.after || selection.before) return { after: value, before: '' };
   const [after, before] = [selection.after, value].sort();
-  return { mode: 'range', after, before };
+  return { after, before };
 }
 
 export function calendarMonthDays(value) {
@@ -89,7 +87,7 @@ export function createSearchDateFilter({ root, onChange = () => {} } = {}) {
     return node;
   }
   let applied = normalizeDateFilter({ after: afterInput.value, before: beforeInput.value });
-  let draft = { mode: 'any', after: '', before: '' };
+  let draft = { after: '', before: '' };
   let focusedDate = applied.after || today();
   let visibleMonth = focusedDate.slice(0, 7);
   let destroyed = false;
@@ -107,21 +105,6 @@ export function createSearchDateFilter({ root, onChange = () => {} } = {}) {
   menu.setAttribute('aria-label', 'Published Date');
   root.append(menu);
   const transition = createDropdownTransition(menu, { onClosed() { menu.removeAttribute('style'); } });
-  const modeList = element('div', 'search-date-modes');
-  modeList.setAttribute('role', 'group');
-  modeList.setAttribute('aria-label', 'Date filter type');
-  const modeButtons = modes.map(([mode, label]) => {
-    const choice = button('tool-dropdown-option search-date-mode', undefined, () => {
-      if (draft.mode !== mode) {
-        draft = { mode, after: mode === 'any' ? '' : draft.after, before: mode === 'range' ? draft.before : '' };
-      }
-      render();
-    });
-    choice.dataset.dateMode = mode;
-    choice.append(element('span', '', label), createIcon('check', 'search-date-mode-check'));
-    modeList.append(choice);
-    return choice;
-  });
   const calendar = element('div', 'search-date-calendar');
   const summary = element('p', 'search-date-selection');
   summary.setAttribute('role', 'status');
@@ -145,18 +128,22 @@ export function createSearchDateFilter({ root, onChange = () => {} } = {}) {
   grid.setAttribute('aria-describedby', help.id);
   calendar.append(summary, heading, grid, help);
   const footer = element('div', 'search-date-actions');
+  const clear = button('text-button search-date-clear', 'Clear Dates', () => {
+    draft = { after: '', before: '' };
+    render();
+  });
   const cancel = button('secondary-button search-date-cancel', 'Cancel', () => close(true));
   const apply = button('primary-button search-date-apply', 'Apply', () => {
     if (apply.disabled) return;
-    applied = normalizeDateFilter(draft.mode === 'any' ? {} : draft);
+    applied = normalizeDateFilter(draft);
     afterInput.value = applied.after;
     beforeInput.value = applied.before;
     updateTrigger();
     close(true);
     onChange({ ...applied });
   });
-  footer.append(cancel, apply);
-  menu.append(modeList, calendar, footer);
+  footer.append(clear, cancel, apply);
+  menu.append(calendar, footer);
 
   function updateTrigger() {
     triggerLabel.textContent = dateFilterLabel(applied);
@@ -168,7 +155,7 @@ export function createSearchDateFilter({ root, onChange = () => {} } = {}) {
     render();
   }
   function renderCalendar(focus = false) {
-    grid.setAttribute('aria-multiselectable', String(draft.mode === 'range'));
+    grid.setAttribute('aria-multiselectable', 'true');
     monthHeading.textContent = monthDate.format(dateValue(`${visibleMonth}-01`));
     const weekday = element('div', 'search-date-week');
     weekday.setAttribute('role', 'row');
@@ -195,7 +182,7 @@ export function createSearchDateFilter({ root, onChange = () => {} } = {}) {
         day.dataset.date = value;
         day.dataset.outsideMonth = String(value.slice(0, 7) !== visibleMonth);
         const selected = value === draft.after || value === draft.before;
-        const inRange = Boolean(draft.mode === 'range' && draft.after && draft.before && value > draft.after && value < draft.before);
+        const inRange = Boolean(draft.after && draft.before && value > draft.after && value < draft.before);
         day.dataset.inRange = String(inRange);
         day.setAttribute('role', 'gridcell');
         day.setAttribute('aria-label', fullDate.format(dateValue(value)));
@@ -211,16 +198,12 @@ export function createSearchDateFilter({ root, onChange = () => {} } = {}) {
     if (focus) grid.querySelector(`[data-date="${focusedDate}"]`)?.focus({ preventScroll: true });
   }
   function render(focus = false) {
-    modeButtons.forEach(choice => choice.setAttribute('aria-pressed', String(choice.dataset.dateMode === draft.mode)));
-    calendar.hidden = draft.mode === 'any';
-    if (draft.mode !== 'any') {
-      summary.textContent = draft.mode === 'range'
-        ? draft.after && draft.before ? dateFilterLabel(draft) : draft.after ? `Start: ${shortDate.format(dateValue(draft.after))} · Choose an end date` : 'Choose a start date, then an end date'
-        : draft.after ? `On or after ${shortDate.format(dateValue(draft.after))}` : 'Choose a publication date';
-      help.textContent = draft.mode === 'range' ? 'Both dates are included' : 'Includes the selected date';
-      renderCalendar(focus);
-    }
-    apply.disabled = draft.mode !== 'any' && (!draft.after || draft.mode === 'range' && !draft.before);
+    summary.textContent = draft.after ? dateFilterLabel(draft) : 'Choose a publication date';
+    help.textContent = draft.before
+      ? 'Both dates are included. Select another date to start over.'
+      : 'Apply one date for on or after, or choose a second date for a range.';
+    renderCalendar(focus);
+    apply.disabled = false;
     if (transition.expanded) position();
   }
   function position() {
@@ -242,7 +225,7 @@ export function createSearchDateFilter({ root, onChange = () => {} } = {}) {
   }
   function open() {
     if (destroyed || trigger.disabled) return;
-    draft = { mode: applied.before ? 'range' : applied.after ? 'after' : 'any', ...applied };
+    draft = { ...applied };
     focusedDate = applied.after || today();
     visibleMonth = focusedDate.slice(0, 7);
     render();
@@ -251,7 +234,7 @@ export function createSearchDateFilter({ root, onChange = () => {} } = {}) {
     trigger.setAttribute('aria-expanded', 'true');
     transition.open();
     position();
-    modeButtons.find(choice => choice.dataset.dateMode === draft.mode)?.focus({ preventScroll: true });
+    grid.querySelector(`[data-date="${focusedDate}"]`)?.focus({ preventScroll: true });
   }
   function close(restoreFocus = false) {
     trigger.setAttribute('aria-expanded', 'false');

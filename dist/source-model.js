@@ -12,7 +12,8 @@ export function draftSourcesFor(project, output) {
 
 // Stable visibility keys let the sidebar hide deleted sources without rewriting draft history.
 export function sourceIdentityKey(source) {
-  return JSON.stringify(source.attachmentId ? ['document', source.attachmentId]
+  return JSON.stringify(source.ownMaterialOutputId ? ['own-material', source.ownMaterialOutputId]
+    : source.attachmentId ? ['document', source.attachmentId]
     : source.url ? ['link', source.url] : [source.type, source.title, source.text || '']);
 }
 

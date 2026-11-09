@@ -295,7 +295,7 @@ function renderOutputs(project) {
   const revisionTools = $('#editor-revision-tools');
   revisionTools.replaceChildren();
   if (selectedOutput && outputIsReady(selectedOutput) && !selectedOutput.needsRegeneration) {
-    revisionTools.append(createRevisionButton(selectedOutput, Boolean(project?.outputProcessing), { iconOnly: true }));
+    revisionTools.append(createRevisionButton(selectedOutput, Boolean(project?.outputProcessing)));
     labels.append(createFeedbackPill(selectedOutput, Boolean(project?.outputProcessing)));
   }
   revisionTools.hidden = !revisionTools.childElementCount;

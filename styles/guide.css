@@ -122,7 +122,7 @@
 .ds-radius-row span { font-size: var(--csa-foundation-font-size-12); line-height: var(--csa-foundation-font-leading-1-6); }
 .ds-elevations { display: flex; gap: var(--csa-foundation-space-22); padding: var(--csa-foundation-space-12) 0 var(--csa-foundation-space-20); }
 .ds-elevations > div { display: grid; place-items: center; flex: 1; height: var(--csa-foundation-size-74); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-8); font-size: var(--csa-foundation-font-size-12); }
-.ds-elevations .ds-menu-surface { background: var(--csa-semantic-color-surface-default); border-color: var(--csa-semantic-color-border-default); border-radius: var(--csa-component-dropdown-radius); box-shadow: var(--csa-semantic-shadow-dropdown); }
+.ds-elevations .ds-menu-surface { background: var(--csa-semantic-color-surface-default); border-color: var(--csa-semantic-color-border-default); border-radius: var(--csa-foundation-radius-8); box-shadow: var(--csa-semantic-shadow-dropdown); }
 .ds-iconography { scroll-margin-top: var(--csa-foundation-space-24); }
 .ds-icon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--csa-foundation-size-140)), 1fr)); gap: var(--csa-foundation-space-16); margin-top: var(--csa-foundation-space-24); }
 .ds-icon-item { display: grid; align-content: start; gap: var(--csa-foundation-space-10); min-width: 0; padding: var(--csa-foundation-space-16) var(--csa-foundation-space-12); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-8); }
@@ -159,6 +159,7 @@
 #ds-token-count { padding-bottom: var(--csa-foundation-space-13); font-size: var(--csa-foundation-font-size-12); }
 .ds-table-wrap { overflow-x: auto; max-height: var(--csa-foundation-size-560); overscroll-behavior: contain; }
 .ds-table-wrap table { width: 100%; min-width: var(--csa-foundation-size-680); border-collapse: collapse; text-align: left; }
+.ds-animation-rules table { min-width: 0; }
 .ds-table-wrap th { position: sticky; top: 0; z-index: var(--csa-foundation-layer-1); padding: var(--csa-foundation-space-12) var(--csa-foundation-space-10); background: var(--surface); border-bottom: var(--csa-foundation-border-width-1) solid var(--line); font-size: var(--csa-foundation-font-size-12); font-weight: var(--csa-foundation-font-weight-600); }
 .ds-table-wrap td { padding: var(--csa-foundation-space-16) var(--csa-foundation-space-10); border-bottom: var(--csa-foundation-border-width-1) solid var(--line); vertical-align: top; font-size: var(--csa-foundation-font-size-12); line-height: var(--csa-foundation-font-leading-1-7); max-width: var(--csa-foundation-size-280); overflow-wrap: anywhere; }
 .ds-token-name { display: block; font-size: var(--csa-foundation-font-size-12); font-weight: var(--csa-foundation-font-weight-650); }
@@ -338,4 +339,25 @@ body.ds-page:has(dialog[open]) { overflow: hidden; }
 #spacing code { overflow-wrap: anywhere; }
 @media (max-width: token(foundation.breakpoint.mobile)) {
   .ds-spacing-usage > div { grid-template-columns: minmax(0, 1fr); gap: var(--csa-foundation-space-8); }
+}
+
+/* Dedicated motion reference uses the app's loading components. */
+.ds-animation-audience-examples, .ds-animation-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--csa-foundation-space-24); }
+.ds-animation-audience-examples { align-items: start; }
+.ds-animation-grid { gap: var(--csa-foundation-space-20); }
+.ds-animation-grid .ds-panel { margin-bottom: 0; }
+.ds-animation-example { min-width: 0; }
+.ds-animation-example h4 { margin: 0 0 var(--csa-foundation-space-12); font-size: var(--csa-semantic-typography-label-font-size); line-height: var(--csa-semantic-typography-label-line-height); font-weight: var(--csa-semantic-typography-label-font-weight); }
+.ds-animation-audience-panel { overflow: hidden; border: var(--csa-foundation-border-width-1) solid var(--csa-semantic-color-border-default); border-radius: var(--csa-foundation-radius-8); background: var(--csa-semantic-color-surface-default); }
+.ds-animation-audience-tabs { display: flex; gap: var(--csa-foundation-space-16); padding-inline: var(--csa-foundation-space-12); border-bottom: var(--csa-foundation-border-width-1) solid var(--csa-semantic-color-border-default); font-size: var(--csa-semantic-typography-input-value-font-size); line-height: var(--csa-semantic-typography-input-value-line-height); color: var(--csa-semantic-color-text-secondary); }
+.ds-animation-audience-tabs > span { display: inline-flex; align-items: center; gap: var(--csa-foundation-space-6); padding-block: var(--csa-foundation-space-12); border-bottom: var(--csa-foundation-border-width-2) solid transparent; }
+.ds-animation-audience-tabs > .is-active { color: var(--csa-semantic-color-action-primary); border-bottom-color: currentColor; }
+.ds-animation-audience-tabs .material-symbols-outlined { font-size: var(--csa-foundation-icon-size-16); }
+.ds-animation-compact-trigger { width: 100%; height: var(--csa-component-field-height-desktop); }
+.ds-animation-controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--csa-foundation-space-12); margin-top: var(--csa-foundation-space-20); }
+.ds-animation-status { color: var(--csa-semantic-color-text-secondary); font-size: var(--csa-foundation-font-size-12); line-height: var(--csa-foundation-line-height-20); }
+.ds-animation-stage > .drafting-animation { min-height: var(--csa-foundation-size-160); }
+@media (max-width: token(foundation.breakpoint.mobile)) {
+  .ds-animation-audience-examples, .ds-animation-grid { grid-template-columns: minmax(0, 1fr); }
+  .ds-animation-compact-trigger { height: var(--csa-component-field-height-mobile); }
 }

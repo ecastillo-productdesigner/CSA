@@ -3,8 +3,8 @@ import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-d
 import { initializeOutputShareText } from './outputs.js?v=20261105-filter-settings';
 import { createRevisionLoading } from './revision-loading.js?v=20261027-revision-loading';
 import { createStoryMetadata, storyMetadata } from './story-metadata.js?v=20261027-metadata';
-import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261106-direction-popover';
-import { draftPreferenceValue } from './draft-options.js?v=20261026-drafting-card-size';
+import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261111-word-count-label';
+import { draftPreferenceValue } from './draft-options.js?v=20261111-audience-name-variation';
 import './vendor/quill-2.0.3.js?v=20261026-drafting-card-size';
 
 const Quill = window.Quill;
@@ -355,7 +355,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   return {
     open(next) {
       flush(); metadata.close(); project = next; loading = true; root.hidden = false;
-      directionMetadata.update(next.editorialDirection);
+      directionMetadata.update(next.editorialDirection, { shorterDraftAccepted: next.shorterDraftAccepted === true });
       initialize();
       setRevisionBusy(false);
       quill.enable(true);
@@ -396,6 +396,8 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     close() { flush(); metadata.close(); directionMetadata.close(); setRevisionBusy(false); title.disabled = false; quill?.enable(true); project = null; root.hidden = true; setPanel('', false); if (linkDialog.open) linkDialog.close(); $('#editor-download').open = false; },
     setRevisionBusy,
     closePanels() { setPanel('', false); directionMetadata.close(); metadata.close(); },
+    showDirectionFor(button, output) { setPanel('', false); metadata.close(); directionMetadata.toggleFor(button, output); },
+    closeDirection() { directionMetadata.close(); },
     hasContent,
     canSend,
     markSent() {

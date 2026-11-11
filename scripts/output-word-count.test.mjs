@@ -509,3 +509,25 @@ test('adding search to an existing blank workspace relabels its tab without chan
   assert.equal(root.children[0].attributes['aria-label'], 'Searching Topic');
   tabs.destroy();
 });
+
+
+test('cards opt into outlined direction controls beside sources while other shared badge uses stay unchanged', t => {
+  documentFor(t);
+  for (const status of ['pending', 'ready']) {
+    const output = { id: status, title: 'Example', status, sourceCount: 2, editorialDirection: 'Focus on local impact.' };
+    assert.equal(createOutputBadges(output).some(badge => badge.dataset.variantDirection), false);
+    const badges = createOutputBadges(output, { includeWordCount: false, includeEditorialDirection: true });
+    const direction = badges.at(-1);
+    assert.equal(badges.at(-2).dataset.variantSources, status);
+    assert.equal(direction.dataset.variantDirection, status);
+    assert.equal(direction.className, 'output-badge output-badge--sources output-badge--direction');
+    assert.equal(direction.children[0].textContent, 'signpost');
+    assert.equal(direction.children[1].textContent, 'Editorial Direction');
+    assert.equal(direction.attributes['aria-controls'], 'editor-direction-popover');
+    assert.equal(direction.attributes['aria-haspopup'], 'dialog');
+    assert.equal(direction.attributes['aria-expanded'], 'false');
+  }
+  for (const editorialDirection of ['', '  ', null, undefined]) {
+    assert.equal(createOutputBadges({ id: 'empty', editorialDirection }, { includeEditorialDirection: true }).some(badge => badge.dataset.variantDirection), false);
+  }
+});

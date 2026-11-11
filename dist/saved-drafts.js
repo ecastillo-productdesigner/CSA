@@ -59,7 +59,8 @@ export function createSavedDrafts({ getEntries, getSelection, isDisabled, onAppl
     const selected = getSelection();
     trigger.disabled = Boolean(isDisabled());
     const active = entries.find(entry => entry.project.id === selected?.projectId && entry.output.id === selected?.outputId);
-    label.textContent = active?.name || (entries.length ? `Saved Settings (${entries.length})` : 'Saved Settings');
+    label.textContent = active?.name || 'None Selected';
+    trigger.dataset.hasValue = String(Boolean(active));
     trigger.title = active ? `Saved settings: ${active.name}` : 'Saved Settings';
     if (trigger.disabled) close();
     const nextSignature = JSON.stringify([selected, entries.map(entry => [entry.project.id, entry.output.id, entry.name, entry.configuration])]);

@@ -5,6 +5,24 @@ const contentOutputs = project => (Array.isArray(project?.outputs) ? project.out
   .filter(output => output && typeof output.id === 'string');
 const menuId = 'content-card-menu';
 
+export function createContentDirectionIndicator(output, { disabled = false, popoverId = 'editor-direction-popover' } = {}) {
+  if (typeof output?.editorialDirection !== 'string' || !output.editorialDirection.trim()) return null;
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'output-badge output-badge--sources output-badge--direction';
+  button.dataset.variantDirection = output.id;
+  button.disabled = disabled;
+  button.title = 'Editorial Direction';
+  button.setAttribute('aria-label', `View Editorial Direction: ${output.title || 'Untitled content'}`);
+  button.setAttribute('aria-haspopup', 'dialog');
+  button.setAttribute('aria-expanded', 'false');
+  button.setAttribute('aria-controls', popoverId);
+  const label = document.createElement('span');
+  label.textContent = 'Editorial Direction';
+  button.append(createIcon('signpost'), label);
+  return button;
+}
+
 export function createContentCardActions(output, { disabled = false } = {}) {
   const actions = document.createElement('span');
   actions.className = 'output-card-actions';

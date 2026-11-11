@@ -25,7 +25,7 @@ function setup(t) {
   const timers = new Map();
   Object.assign(globalThis, {
     document: { createElement: () => new Element(), documentElement: {} },
-    getComputedStyle: () => ({ getPropertyValue: name => name === '--csa-component-drafting-source-add-duration' ? '5000ms' : '' }),
+    getComputedStyle: () => ({ getPropertyValue: name => name === '--csa-component-drafting-source-add-duration' ? '10000ms' : '' }),
     setTimeout: (callback, delay) => { const id = ++sequence; timers.set(id, { at: now + delay, callback }); return id; },
     clearTimeout: id => timers.delete(id),
   });
@@ -52,7 +52,7 @@ function setup(t) {
   return { list, existing, controller, animations, timers, tick };
 }
 
-test('source-list shimmer sits below existing sources for exactly five seconds', async t => {
+test('source-list shimmer sits below existing sources for exactly ten seconds', async t => {
   const ui = setup(t);
   let completed = false;
   const pending = ui.controller.wait('one').then(result => { completed = result; });
@@ -61,7 +61,7 @@ test('source-list shimmer sits below existing sources for exactly five seconds',
   assert.equal(ui.list.lastElementChild.className, 'editor-source-addition');
   assert.equal(ui.animations[0].options.label, 'Adding Source');
   assert.equal(ui.list.scrollTop, ui.list.scrollHeight, 'only the source list scrolls to reveal loading');
-  ui.tick(4999);
+  ui.tick(9999);
   await Promise.resolve();
   assert.equal(completed, false);
   assert.equal(ui.controller.isPending('one'), true);
@@ -90,7 +90,7 @@ test('switching projects hides the unrelated shimmer and returning restores the 
   ui.controller.render('one');
   assert.equal(ui.list.lastElementChild, row, 'the pending row survives list rerenders without another animation');
   assert.equal(ui.animations.length, 2);
-  ui.tick(3000);
+  ui.tick(8000);
   assert.equal(await pending, true);
   assert.equal(ui.list.children.length, 1);
   assert.equal(ui.animations[1].destroyed, true);
@@ -102,7 +102,7 @@ test('overlapping batches retain loading until every batch finishes, and destroy
   ui.tick(1000);
   const second = ui.controller.wait('one');
   assert.equal(ui.animations[0].options.label, 'Adding Sources');
-  ui.tick(4000);
+  ui.tick(9000);
   assert.equal(await first, true);
   assert.equal(ui.animations[0].options.label, 'Adding Source');
   assert.equal(ui.controller.isPending('one'), true);
@@ -118,7 +118,7 @@ test('overlapping batches retain loading until every batch finishes, and destroy
 });
 
 
-test('a source row shimmers in place for five seconds and returns after rerendering without moving its neighbors', async t => {
+test('a source row shimmers in place for ten seconds and returns after rerendering without moving its neighbors', async t => {
   const ui = setup(t);
   const source = { title: 'Selected source' };
   const following = new Element();
@@ -137,7 +137,7 @@ test('a source row shimmers in place for five seconds and returns after rerender
   assert.equal(ui.existing.className, '');
   assert.equal(replacement.className, 'is-adding-source');
   assert.equal(ui.animations[0].destroyed, true);
-  ui.tick(2999);
+  ui.tick(7999);
   assert.equal(replacement.className, 'is-adding-source');
   ui.tick(1);
   assert.equal(await pending, true);
@@ -148,11 +148,11 @@ test('a source row shimmers in place for five seconds and returns after rerender
 });
 
 
-test('a batch of multiple new sources uses Adding Sources for the same five-second wait', async t => {
+test('a batch of multiple new sources uses Adding Sources for the same ten-second wait', async t => {
   const ui = setup(t);
   const pending = ui.controller.wait('one', null, 3);
   assert.equal(ui.animations[0].options.label, 'Adding Sources');
-  ui.tick(4999);
+  ui.tick(9999);
   assert.equal(ui.controller.isPending('one'), true);
   ui.tick(1);
   assert.equal(await pending, true);

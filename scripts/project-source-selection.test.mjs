@@ -83,7 +83,7 @@ function setup(t, callbacks = {}) {
   preview.showModal = () => { preview.open = true; preview.openCount += 1; };
   preview.close = () => { preview.open = false; preview.fire('close'); };
   doc.body.append(sourcePanel, preview);
-  Object.assign(globalThis, { document: doc, window: new Element('window'), setTimeout: (callback, delay) => { additionTimers.push({ callback, delay }); return additionTimers.length; }, clearTimeout() {}, getComputedStyle: () => ({ getPropertyValue: () => '5000ms' }) });
+  Object.assign(globalThis, { document: doc, window: new Element('window'), setTimeout: (callback, delay) => { additionTimers.push({ callback, delay }); return additionTimers.length; }, clearTimeout() {}, getComputedStyle: () => ({ getPropertyValue: () => '10000ms' }) });
   t.after(() => Object.assign(globalThis, previous));
   const controller = createProjectSources({ createAddingAnimation: () => ({ element: new Element(), destroy() {} }), onSelectionChange() {}, onDownloadSource() {}, onRemoveSource() {}, ...callbacks });
   return { doc, list, status, preview, controller, additionTimers };

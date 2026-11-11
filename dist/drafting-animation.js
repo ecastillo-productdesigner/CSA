@@ -7,10 +7,18 @@ function durationMilliseconds(path) {
   return duration * (value.endsWith('ms') ? 1 : 1000);
 }
 
-export function createDraftingAnimation({ compact = true, selectionKeys = [], variant = 'drafting', label } = {}) {
+export function createDraftingAnimation({ compact = true, selectionKeys = [], variant = 'drafting', label, illustration = 'paper', illustrationCompact = false } = {}) {
   const addingSource = variant === 'source';
   const revising = variant === 'revision';
-  const depths = addingSource ? ['front'] : ['back', 'middle', 'front'];
+  const audiencePeople = addingSource && illustration === 'audience';
+  const isSingleDraft = value => !addingSource && !/^(creating|revising) drafts$/i.test((value || '').trim());
+  const isSingleAudience = value => audiencePeople && /^suggesting audience$/i.test((value || '').trim());
+  let singlePaperDraft = isSingleDraft(label);
+  let singleAudience = isSingleAudience(label);
+  const isSingleSource = value => addingSource && !audiencePeople && !/^adding sources$/i.test(value || '');
+  let singlePaperSource = isSingleSource(label);
+  const illustrationDepths = () => singlePaperSource || singlePaperDraft || singleAudience ? ['front'] : ['back', 'middle', 'front'];
+  const depths = illustrationDepths();
   const element = document.createElement('div');
   element.className = 'drafting-animation';
   element.dataset.compact = String(compact);
@@ -33,19 +41,23 @@ export function createDraftingAnimation({ compact = true, selectionKeys = [], va
   const stack = document.createElement('div');
   stack.className = 'drafting-paper-stack';
   stack.setAttribute('aria-hidden', 'true');
-  const papers = depths.map(depth => {
-    const paper = document.createElement('div');
-    paper.className = 'drafting-paper';
+  if (audiencePeople) stack.className = 'drafting-audience-people';
+  function createPaper(depth) {
+    const paper = document.createElement(audiencePeople ? 'span' : 'div');
+    paper.className = audiencePeople ? 'drafting-audience-person' : 'drafting-paper';
     paper.dataset.depth = depth;
-    for (let index = 0; index < 7; index += 1) {
-      const line = document.createElement('span');
-      line.className = 'drafting-paper-line';
-      line.style.setProperty('--rule', String(index));
-      paper.append(line);
+    if (!audiencePeople) {
+      for (let index = 0; index < 7; index += 1) {
+        const line = document.createElement('span');
+        line.className = 'drafting-paper-line';
+        line.style.setProperty('--rule', String(index));
+        paper.append(line);
+      }
     }
-    stack.append(paper);
     return paper;
-  });
+  }
+  let papers = depths.map(createPaper);
+  stack.append(...papers);
   const message = document.createElement('p');
   message.className = 'drafting-message';
   message.setAttribute('role', 'status');
@@ -66,17 +78,34 @@ export function createDraftingAnimation({ compact = true, selectionKeys = [], va
   const frontOffset = tokenNumber('component.drafting.paper-front-offset');
   const handoffDuration = durationMilliseconds('foundation.motion.duration.800');
   const colorPhases = Math.max(1, shimmerColors.length);
-  // Fit every selected category into the short revision job, preserving color order.
-  const holdDuration = revising && colorPhases > 1
-    ? Math.max(0, (tokenNumber('component.drafting.revision-duration') - handoffDuration * (colorPhases - 1)) / colorPhases)
-    : durationMilliseconds('component.drafting.message-hold-duration');
+  // Fit every selected category into the draft or revision job, preserving color order.
+  function holdDuration() {
+    if (audiencePeople) return durationMilliseconds('component.drafting.audience-hold-duration');
+    if (!addingSource) {
+      const durationToken = revising && !/^creating drafts?$/i.test(message.textContent.trim())
+        ? 'component.drafting.revision-duration' : 'component.drafting.processing-duration';
+      const duration = tokenNumber(durationToken);
+      if (singlePaperDraft) return duration / colorPhases;
+      if (colorPhases > 1) return Math.max(0, (duration - handoffDuration * (colorPhases - 1)) / colorPhases);
+    }
+    return durationMilliseconds('component.drafting.message-hold-duration');
+  }
   const timing = {
     duration: handoffDuration,
     easing: tokenValue('foundation.motion.easing.arrive'),
     fill: 'both',
   };
   const pose = (x, y, rotation, scale) => `translate(${x}px, ${y}px) rotate(${rotation}deg) scale(${scale})`;
-  const poses = {
+  const audienceScale = audiencePeople
+    ? tokenNumber(illustrationCompact ? 'component.drafting.audience-compact-scale' : 'component.drafting.audience-panel-scale') : 1;
+  const audiencePose = (x, y, rotation, scale) => pose(x * audienceScale, y * audienceScale, rotation, scale);
+  const poses = audiencePeople ? {
+    front: audiencePose(0, 0, 0, 1),
+    middle: audiencePose(tokenNumber('foundation.space.25'), tokenNumber('foundation.space.1'), 0, tokenNumber('component.drafting.audience-side-scale')),
+    back: audiencePose(-tokenNumber('foundation.space.25'), tokenNumber('foundation.space.1'), 0, tokenNumber('component.drafting.audience-side-scale')),
+    lift: audiencePose(-tokenNumber('foundation.space.32'), -tokenNumber('foundation.space.13'), -rotationStep * 3, tokenNumber('component.drafting.audience-lift-scale')),
+    settle: audiencePose(0, -tokenNumber('foundation.space.8'), rotationStep + 1, tokenNumber('component.drafting.audience-settle-scale')),
+  } : {
     front: pose(0, 0, 0, 1),
     middle: pose(tokenNumber('foundation.space.3'), -tokenNumber('foundation.space.2'), rotationStep, 1 - scaleStep),
     back: pose(tokenNumber('foundation.space.6'), -tokenNumber('foundation.space.4'), rotationStep * 2, 1 - scaleStep * 2),
@@ -115,16 +144,22 @@ export function createDraftingAnimation({ compact = true, selectionKeys = [], va
   }
 
   function schedule() {
-    if (addingSource || destroyed || !playing || moving || timer !== null) return;
+    if (singlePaperSource || singleAudience || destroyed || !playing || moving || timer !== null) return;
     timer = setTimeout(() => {
       timer = null;
       updateVisibility();
       if (playing) { clearTimer(); advance(); }
-    }, holdDuration);
+    }, holdDuration());
   }
 
   function advance() {
-    if (addingSource || destroyed || moving || !playing) return;
+    if (singlePaperSource || singleAudience || destroyed || moving || !playing) return;
+    if (singlePaperDraft) {
+      if (shimmerColors.length > 1) shimmerIndex = (shimmerIndex + 1) % shimmerColors.length;
+      updateShimmerColor();
+      schedule();
+      return;
+    }
     const front = papers.find(paper => paper.dataset.depth === 'front');
     const middle = papers.find(paper => paper.dataset.depth === 'middle');
     const incoming = papers.find(paper => paper.dataset.depth === 'back');
@@ -154,7 +189,12 @@ export function createDraftingAnimation({ compact = true, selectionKeys = [], va
         { offset: liftOffset, transform: poses.front, zIndex: 3 },
         { offset: 1, transform: poses.middle, zIndex: 2 },
       ], timing),
-      middle.animate([
+      middle.animate(audiencePeople ? [
+        { offset: 0, transform: poses.middle, zIndex: 2 },
+        { offset: tokenNumber('component.drafting.audience-retire-offset'), transform: poses.middle, zIndex: 1 },
+        { offset: tokenNumber('component.drafting.audience-settle-offset'), transform: poses.settle, zIndex: 1 },
+        { offset: 1, transform: poses.back, zIndex: 1 },
+      ] : [
         { transform: poses.middle, zIndex: 2 },
         { transform: poses.back, zIndex: 1 },
       ], timing),
@@ -264,11 +304,38 @@ export function createDraftingAnimation({ compact = true, selectionKeys = [], va
   }
 
   updateVisibility();
-  return { element, destroy, setLabel(value) { if (message.textContent !== value) message.textContent = value; } };
+  function setLabel(value) {
+    if (message.textContent !== value) message.textContent = value;
+    const nextSingleSource = isSingleSource(value);
+    const nextSingleDraft = isSingleDraft(value);
+    const nextSingleAudience = isSingleAudience(value);
+    if (destroyed || (nextSingleSource === singlePaperSource && nextSingleDraft === singlePaperDraft && nextSingleAudience === singleAudience)) return;
+    clearTimer();
+    cancelAnimations();
+    singlePaperSource = nextSingleSource;
+    singlePaperDraft = nextSingleDraft;
+    singleAudience = nextSingleAudience;
+    papers = illustrationDepths().map(createPaper);
+    stack.replaceChildren(...papers);
+    for (const paper of papers) setDepth(paper, paper.dataset.depth);
+    phaseIndex = 0;
+    element.dataset.phaseIndex = '0';
+    element.dataset.phaseCount = String(papers.length);
+    schedule();
+  }
+
+  return { element, destroy, setLabel };
 }
 
 export function createSourceAddingAnimation({ label = 'Adding Source' } = {}) {
   return createDraftingAnimation({ compact: true, variant: 'source', label });
+}
+
+export function createAudienceSuggestingAnimation({ compact = false, label = 'Suggesting Audiences' } = {}) {
+  const animation = createDraftingAnimation({ compact: true, variant: 'source', label, illustration: 'audience', illustrationCompact: compact });
+  animation.element.dataset.audienceSuggesting = 'true';
+  animation.element.dataset.audienceCompact = String(compact);
+  return animation;
 }
 
 export function createRevisionAnimation({ selectionKeys = [], label = 'Revising Draft' } = {}) {

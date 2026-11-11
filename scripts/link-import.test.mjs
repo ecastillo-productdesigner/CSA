@@ -10,6 +10,7 @@ import { partitionSourceAdditions, findDuplicateSource, sourceIdentityKey } from
 import { projectTitleFromSources } from '../dist/dashboard.js';
 import { normalizeWordCount } from '../dist/variant-word-count.js';
 import { createNewProjectUpload } from '../dist/new-project-upload.js';
+import { INITIAL_DRAFT_WORD_LIMIT, requestedEditorialWordCount } from '../dist/editorial-word-count.js';
 import { projectOutputs, selectedOutputs, outputIsReady, populateOutputContent, reviseSampleOutput } from '../dist/outputs.js';
 
 // Run the production functions without booting Quill, navigation, or the rest
@@ -27,7 +28,7 @@ const production = [
   productionFunction('async function appendProjectSources(', '\nfunction showSourceAdditionResults('),
   productionFunction('function setWorkspaceSearchQuery(', '\nasync function submitSource('),
   productionFunction('async function submitSource(', "\n$('#new-project-query').addEventListener"),
-  productionFunction('function finishOutputProcessing(', '\nfunction resumeOutputProcessing('),
+  productionFunction('function cancelOutputProcessing(', '\nfunction resumeOutputProcessing('),
   productionFunction('function renderDeferredOutput(', "\n$('#new-project-dialog').addEventListener"),
 ].join('\n');
 
@@ -101,12 +102,14 @@ function setup(t, { target = null, active = null, projects = [], dialogOpen = tr
     partitionSourceAdditions, findDuplicateSource, sourceIdentityKey, sourceAlreadyAdded: { open: options => calls.duplicatePopups.push(options) },
     AbortController, crypto: { randomUUID }, document, classifyProjectSearchInput, sampleSearchSources, parseSourceLinks, formatSourceLinks, sourceLinkArticles, projectTitleFromSources, normalizeWordCount,
     projectOutputs, selectedOutputs, outputIsReady, populateOutputContent, reviseSampleOutput, clearTimeout,
+    INITIAL_DRAFT_WORD_LIMIT, requestedEditorialWordCount,
     projectSourcesPanel: { waitForAddition: (id, source, count) => { calls.additionWaits.push(id); calls.additionCounts.push(count); assert.equal(calls.sourcePanels.at(-1), 'sources', 'Project Sources must open before its loading animation starts'); return holdAddition ? addition.promise : Promise.resolve(true); } },
     renderProjectSources: (project, options) => { calls.sourceRenders.push(project.id); calls.sourceRenderOptions.push(options); },
     updateComposerActions() {},
     searchExperience: { show(project, options) { calls.resultDisplays.push({ project: clone(project), options }); } },
     deleteDocuments: async ids => { calls.deletedDocuments.push(...ids); },
-    outputTimers: new Map(), outputViews: new Map(), deferredOutputProjectId: null,
+    outputTimers: new Map(), outputViews: new Map(), outputWordCountReviews: new WeakSet(), deferredOutputProjectId: null,
+    queueMicrotask, draftLengthNotice: { confirm() { assert.fail('A word count notice must not interrupt source importing'); } },
     richEditor: { close: () => { calls.editorCloses++; } },
     $: selector => document.querySelector(selector),
     projects: structuredClone(projects), activeProjectId: active, sourceTargetProjectId: target, sourceImport: null,
@@ -301,6 +304,31 @@ test('a draft completing during a headline import is saved without closing the d
 });
 
 
+test('an oversized draft waits for review without interrupting a new project headline import', async t => {
+  const output = { id: 'pending', title: 'Existing pending story', status: 'pending', editorialDirection: 'Write 750 words' };
+  const original = { id: 'origin', title: 'Existing project', sources: [], outputs: [output], selectedOutputIds: ['pending'], outputProcessing: { ids: ['pending'], openOutputId: 'pending', editorialDirections: ['Write 750 words'] } };
+  const ui = setup(t, { active: 'origin', projects: [original] });
+  const work = ui.submit();
+  const project = ui.context.projects[0];
+  const job = project.outputProcessing;
+  ui.context.finishOutputProcessing(project);
+  assert.equal(project.outputs[0].status, 'pending');
+  assert.equal(project.outputProcessing, job);
+  assert.equal(job.awaitingWordCountReview, true);
+  assert.equal(ui.calls.saved.length, 1, 'The waiting review survives a reload');
+  assert.equal(ui.get('dialog').open, true);
+  assert.equal(ui.calls.editorCloses, 0);
+  assert.deepEqual(ui.calls.shown, []);
+  assert.equal(ui.context.deferredOutputProjectId, 'origin');
+  ui.pending.resolve([metadata()]);
+  assert.equal(await work, true);
+  assert.equal(ui.calls.shown.length, 1);
+  assert.notEqual(ui.calls.shown[0], 'origin', 'The new project stays active when its import finishes');
+  assert.equal(project.outputProcessing, job, 'The original project keeps its review until reopened');
+  assert.equal(project.outputs[0].status, 'pending');
+  assert.equal(ui.context.deferredOutputProjectId, null);
+});
+
 const flush = async () => { await Promise.resolve(); await Promise.resolve(); };
 
 test('adding a source closes the picker and waits before changing or saving project sources', async t => {
@@ -355,7 +383,7 @@ test('deleting a project during source loading releases its new documents withou
   assert.equal(ui.calls.notifications.length, 0);
 });
 
-test('an already-added source does not show a five-second loading state or duplicate its row', async t => {
+test('an already-added source does not show a ten-second loading state or duplicate its row', async t => {
   const ui = setup(t, { target: 'target', active: 'target', projects: [{ id: 'target', title: 'Existing', sources: [{ type: 'link', url, title }] }] });
   const work = ui.submit();
   ui.pending.resolve([metadata()]);

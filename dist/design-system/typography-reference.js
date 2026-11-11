@@ -1,4 +1,4 @@
-import { typographyRoleGroups } from './typography-roles.js?v=20261103-type-reference';
+import { typographyRoleGroups } from './typography-roles.js?v=20261111-labels-restored';
 
 const textProperties = ['fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing'];
 const propertySuffix = property => property.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);

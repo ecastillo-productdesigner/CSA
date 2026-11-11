@@ -1,3 +1,5 @@
+import { audienceSuggestionLibrary } from './audience-suggestions.js?v=20261111-audience-name-variation';
+
 export const draftOptions = [
   {
     label: 'Format',
@@ -32,31 +34,36 @@ export const draftOptions = [
   },
 ];
 
-export function populateDraftOptions(root = document) {
+export function getDraftOptions(key, { library = audienceSuggestionLibrary } = {}) {
+  const configuration = draftOptions.find(item => item.key === key);
+  if (!configuration) return [];
+  return [...configuration.options, ...(key === 'audience' ? library.options() : [])]
+    .map(option => ({ ...option }));
+}
+
+export function populateDraftOptions(root = document, { library = audienceSuggestionLibrary } = {}) {
   const fields = [...(root.matches?.('.composer-field') ? [root] : []), ...root.querySelectorAll('.composer-field')];
   for (const field of fields) {
     const configuration = draftOptions.find(item => item.label === field.dataset.label);
     const select = field.querySelector('select');
     if (!configuration || !select) continue;
     const previous = select.value;
-    const options = configuration.options.map(item => {
+    const options = getDraftOptions(configuration.key, { library }).map(item => {
       const option = document.createElement('option');
       option.value = item.value;
       option.textContent = item.label;
       return option;
     });
     select.replaceChildren(...options);
-    select.value = draftPreferenceValue(configuration.key, previous);
+    select.value = draftPreferenceValue(configuration.key, previous, { library });
     delete field.dataset.fixedValue;
   }
 }
 
-export function draftPreferenceValue(key, value) {
-  const configuration = draftOptions.find(item => item.key === key);
-  if (!configuration) return '';
-  return configuration.options.some(option => option.value === value) ? value : '';
+export function draftPreferenceValue(key, value, { library = audienceSuggestionLibrary } = {}) {
+  return getDraftOptions(key, { library }).some(option => option.value === value) ? value : '';
 }
 
-export function hasDraftSelection(preferences = {}) {
-  return draftOptions.some(({ key }) => Boolean(draftPreferenceValue(key, preferences?.[key])));
+export function hasDraftSelection(preferences = {}, options = {}) {
+  return draftOptions.some(({ key }) => Boolean(draftPreferenceValue(key, preferences?.[key], options)));
 }

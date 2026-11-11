@@ -135,7 +135,7 @@ test('populating replaces fixed fields with options, retains valid selections, a
   assert.equal(format.select.options.length, 5);
 });
 
-test('empty draft fields show their purpose while retaining the None Selected reset choice', t => {
+test('draft fields without an explicit placeholder show their purpose and retain the None Selected reset choice', t => {
   const ui = setup(t);
   const entries = draftOptions.map(({ label }) => ui.field(label));
   populateDraftOptions();
@@ -158,6 +158,54 @@ test('empty draft fields show their purpose while retaining the None Selected re
   for (const { field, select } of entries) {
     assert.equal(select.value, '');
     assert.equal(field.querySelector('.tool-dropdown-trigger').children[0].textContent, field.dataset.label);
+  }
+});
+
+test('explicit draft placeholders preserve field context while selecting and clearing choices', t => {
+  const ui = setup(t);
+  const entries = draftOptions.map(({ label }) => {
+    const entry = ui.field(label);
+    entry.field.dataset.placeholder = 'None Selected';
+    return entry;
+  });
+  populateDraftOptions();
+  const controller = ui.dropdowns();
+  for (const { field, select } of entries) {
+    const label = field.dataset.label;
+    const trigger = field.querySelector('.tool-dropdown-trigger');
+    const menu = field.querySelector('.tool-dropdown-menu');
+    const options = menu.querySelectorAll('.tool-dropdown-option');
+    let changes = 0;
+    select.addEventListener('change', () => { changes++; });
+    assert.equal(select.value, '');
+    assert.equal(trigger.children[0].textContent, 'None Selected');
+    assert.equal(trigger.getAttribute('aria-label'), `${label}: None Selected`);
+    assert.equal(field.dataset.hasValue, 'false');
+
+    trigger.emit('click');
+    options[1].emit('click');
+    assert.equal(select.value, select.options[1].value);
+    assert.equal(trigger.children[0].textContent, select.options[1].textContent);
+    assert.equal(trigger.getAttribute('aria-label'), `${label}: ${select.options[1].textContent}`);
+    assert.equal(field.dataset.hasValue, 'true');
+    assert.equal(menu.hidden, true);
+
+    trigger.emit('click');
+    options[0].emit('click');
+    assert.equal(select.value, '');
+    assert.equal(trigger.children[0].textContent, 'None Selected');
+    assert.equal(trigger.getAttribute('aria-label'), `${label}: None Selected`);
+    assert.equal(field.dataset.hasValue, 'false');
+    assert.equal(menu.hidden, true);
+    assert.equal(document.activeElement, trigger);
+    assert.equal(changes, 2);
+  }
+  populateDraftOptions();
+  controller.refresh();
+  for (const { field } of entries) {
+    const trigger = field.querySelector('.tool-dropdown-trigger');
+    assert.equal(trigger.children[0].textContent, 'None Selected');
+    assert.equal(trigger.getAttribute('aria-label'), `${field.dataset.label}: None Selected`);
   }
 });
 

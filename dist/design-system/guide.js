@@ -1,29 +1,63 @@
+import { mountAnimationSpecimens } from './animation-specimens.js?v=20261111-source-paper-count';
+import { createContentDirectionIndicator } from '../content-card-editing.js?v=20261111-direction-badge';
+import { createEditorPopover } from '../editor-popover.js?v=20261111-direction-badge';
+import { createEditorialWordCountNotice } from '../editorial-word-count-notice.js?v=20261111-direction-badge';
 import { createToast } from '../toast.js?v=20261027-toast-timing';
 import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-drafting-card-size';
 import { bindTabSelection } from '../selection-controls.js?v=20261026-drafting-card-size';
-import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261105-filter-settings';
+import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261111-loading-ten-seconds';
 import { mountProjectSpecimens } from './project-specimens.js?v=20261105-filter-settings';
 import { mountFormSpecimens } from './form-specimens.js?v=20261026-drafting-card-size';
-import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261105-filter-settings';
+import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261111-audience-ready';
 import { colorRoleGroups } from './color-roles.js?v=20261028-revision-indicator';
-import { mountTypographyReference } from './typography-reference.js?v=20261103-typography-reference';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261105-filter-settings';
+import { mountTypographyReference } from './typography-reference.js?v=20261111-labels-restored';
+import { createAudienceSuggestionLibrary } from '../audience-suggestions.js?v=20261111-audience-name-variation';
+import { createProjectAudienceSuggestions } from '../project-audience-suggestions.js?v=20261111-audience-name-variation';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261111-audience-ready';
 import { createToolFavorites } from '../tool-favorites.js?v=20261105-filter-settings';
-import { populateDraftOptions } from '../draft-options.js?v=20261026-drafting-card-size';
-import { iconInventory } from './icon-inventory.js?v=20261106-direction-icon';
+import { populateDraftOptions } from '../draft-options.js?v=20261111-audience-name-variation';
+import { iconInventory } from './icon-inventory.js?v=20261111-audience-name-variation';
 import { tokenNumber } from './runtime.js?v=20261029-revision-indicator-location';
-import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261105-filter-settings';
+import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261111-direction-badge';
 import { createDraftSourcesPopover } from '../draft-sources-popover.js?v=20261105-filter-settings';
 import { createSourcePreview } from '../sources.js?v=20261029-preview-direction';
 const $ = selector => document.querySelector(selector);
-populateDraftOptions(document);
-// Keep interactive documentation separate from the app's favorites.
+// Keep interactive documentation separate from app suggestions and favorites.
 const specimenFavorites = new Map();
+const specimenSuggestionLibrary = createAudienceSuggestionLibrary({ storage: () => ({
+  getItem: key => specimenFavorites.get(key) || null,
+  setItem: (key, value) => specimenFavorites.set(key, value),
+}) });
+populateDraftOptions(document, { library: specimenSuggestionLibrary });
+const audienceProject = { id: 'ds-audiences', sources: [
+  { id: 'garden', title: 'Community garden', text: 'Local volunteers reopen a neighborhood garden and plan community events.', selected: true },
+  { id: 'food', title: 'Local food markets', text: 'Restaurant chefs share cooking ideas for food and seasonal meals.', selected: false },
+  { id: 'style', title: 'Practical style guide', text: 'Fashion and shopping advice for practical everyday wardrobes.', selected: false },
+] };
+const audienceSuggestions = createProjectAudienceSuggestions({
+  getProject: () => audienceProject, library: specimenSuggestionLibrary,
+});
 const specimenFavoritesStore = createToolFavorites({ storage: () => ({
   getItem: key => specimenFavorites.get(key) || null,
   setItem: (key, value) => specimenFavorites.set(key, value),
 }) });
-const toolDropdowns = createToolDropdowns({ favoritesStore: specimenFavoritesStore });
+const toolDropdowns = createToolDropdowns({
+  favoritesStore: specimenFavoritesStore, audienceSuggestions, notify,
+  onAudienceSourcesOpen(groupId) {
+    const selection = audienceSuggestions.selectSources(groupId);
+    if (!selection) return;
+    const inputs = [...$('#ds-audience-source-selection').querySelectorAll('input')];
+    for (const input of inputs) input.checked = audienceProject.sources.find(source => source.id === input.dataset.audienceSource)?.selected !== false;
+    toolDropdowns.refresh();
+    (inputs.find(input => input.checked) || inputs[0])?.focus();
+  },
+});
+$('#ds-audience-source-selection').addEventListener('change', event => {
+  const source = audienceProject.sources.find(item => item.id === event.target.dataset.audienceSource);
+  if (!source) return;
+  source.selected = event.target.checked;
+  toolDropdowns.refresh();
+});
 const sourcePreview = createSourcePreview();
 const toast = createToast({ root: $('#ds-toast'), message: $('#ds-toast-message'), action: $('#ds-toast-action') });
 function notify(message, action = null) { toast.show(message, action); }
@@ -54,10 +88,11 @@ function renderIconInventory() {
   $('#ds-icon-count').textContent = `${iconInventory.length} product icons`;
 }
 renderIconInventory();
+mountAnimationSpecimens($('#animations'));
 mountProjectSpecimens($('#ds-project-sample-root'));
 mountFormSpecimens($('#ds-form-sample-root'));
 mountNavigationSpecimens($('#ds-navigation-sample-root'), { onOpenSource: (source, opener) => sourcePreview.open(source, opener) });
-mountStateSpecimens($('#ds-state-sample-root'), { favoritesStore: specimenFavoritesStore });
+mountStateSpecimens($('#ds-state-sample-root'), { favoritesStore: specimenFavoritesStore, library: specimenSuggestionLibrary, audienceSuggestions, notify });
 mountFeedbackSpecimens($('#ds-feedback-sample-root'), toolDropdowns);
 function mountDraftSourcesSpecimen(root) {
   if (!root) return;
@@ -120,6 +155,7 @@ const contentContext = $('#ds-content-context');
 const contentAdaptFooter = $('#ds-content-adapt-footer');
 const contentAdapt = $('#ds-content-adapt');
 const pendingContent = {
+  editorialDirection: 'Focus on how sharing unfinished ideas helped the collaborators find a new direction.',
   id: 'ds-content-example', title: 'A Surprise Studio Session Sparks a New Creative Chapter', status: 'pending', draftText: '',
   labels: [{ key: 'format', label: 'Standard Format' }, { key: 'audience', label: 'General Audience' }, { key: 'voice', label: 'Us Weekly' }],
   sourceSnapshots: [
@@ -134,6 +170,17 @@ adaptedContent.status = 'ready';
 let contentState = 'selected';
 let pendingContentSelected = true;
 let contentDeleted = false;
+const contentDirection = createContentDirectionIndicator(pendingContent, { popoverId: 'ds-content-direction-popover' });
+const contentDirectionPopover = createEditorPopover({
+  container: contentCard, trigger: contentDirection,
+  popover: $('#ds-content-direction-popover'), dismiss: $('#ds-content-direction-close'), compact: true,
+  onOpen() {
+    closeContentMenu(false);
+    contentSourcesPopover.close();
+    $('#ds-content-direction-copy').textContent = (contentState === 'pending' ? pendingContent : adaptedContent).editorialDirection;
+  },
+});
+
 function updateContentBadgeOverflow() {
   const overflows = contentBadges.scrollWidth > contentBadges.clientWidth + 1;
   contentBadges.dataset.fadeStart = String(overflows && contentBadges.scrollLeft > 1);
@@ -141,6 +188,7 @@ function updateContentBadgeOverflow() {
   contentBadges.tabIndex = overflows ? 0 : -1;
 }
 function renderContentCard() {
+  contentDirectionPopover.close();
   const pending = contentState === 'pending';
   const selected = pending ? pendingContentSelected : contentState === 'selected';
   const output = pending ? pendingContent : adaptedContent;
@@ -150,7 +198,7 @@ function renderContentCard() {
   contentCard.dataset.selected = String(selected);
   contentCard.dataset.active = String(selected);
   contentCard.querySelector('.output-card-dash').toggleAttribute('hidden', !pending);
-  contentBadges.replaceChildren(...createOutputBadges(output, { includeWordCount: false }));
+  contentBadges.replaceChildren(...createOutputBadges(output, { includeWordCount: false, includeEditorialDirection: true, directionPopoverId: 'ds-content-direction-popover' }));
   const heading = contentCard.querySelector('.output-card-title');
   heading.textContent = output.title;
   heading.title = output.title;
@@ -183,9 +231,12 @@ function togglePendingContentSelection() {
 for (const button of document.querySelectorAll('[data-card-state]')) button.addEventListener('click', () => { closeContentMenu(false); setContentCardState(button.dataset.cardState); });
 contentOpen.addEventListener('click', togglePendingContentSelection);
 contentCard.addEventListener('click', event => {
+  const direction = event.target.closest('[data-variant-direction]');
+  if (direction) { contentDirectionPopover.toggleFor(direction); return; }
   const sources = event.target.closest('[data-variant-sources]');
   if (sources) {
     closeContentMenu(false);
+    contentDirectionPopover.close();
     contentSourcesPopover.toggle(sources, { output: contentState === 'pending' ? pendingContent : adaptedContent });
     return;
   }
@@ -209,6 +260,7 @@ function closeContentMenu(restoreFocus = true) {
   if (restoreFocus && contentEdit.isConnected) contentEdit.focus({ preventScroll: true });
 }
 function openContentMenu() {
+  contentDirectionPopover.close();
   const rect = contentEdit.getBoundingClientRect();
   const inset = tokenNumber('foundation.space.12');
   const gap = tokenNumber('foundation.space.4');
@@ -374,3 +426,8 @@ const segmentSelection = bindTabSelection({
   },
 });
 segmentSelection.sync(segmentView);
+
+const wordCountNoticePreview = createEditorialWordCountNotice({ id: 'ds-editorial-word-count-dialog' });
+document.querySelector('#ds-word-count-notice').addEventListener('click', event => {
+  wordCountNoticePreview.confirm('Write a 750-word draft', { trigger: event.currentTarget });
+});

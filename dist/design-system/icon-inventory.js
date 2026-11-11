@@ -45,4 +45,5 @@ export const iconInventory = [
   ['upload', 'Upload'],
   ['view_module', 'Grid View'],
   ['visibility', 'Preview'],
+  ['wand_stars', 'Suggested Audiences'],
 ];

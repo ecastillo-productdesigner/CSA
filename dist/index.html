@@ -8,11 +8,11 @@
     <title>CSA — Your creative workspace</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css?v=20261026-ds-consolidation">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=add_circle,arrow_forward,article,badge,check,chevron_forward,close,delete,description,draw,edit,edit_document,favorite,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,post_add,redo,right_panel_open,search,send,signpost,thumb_down,thumb_up,undo,unfold_less,upload,view_module,visibility&amp;display=block">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=add_circle,arrow_forward,article,badge,check,chevron_forward,close,delete,description,draw,edit,edit_document,favorite,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,post_add,redo,right_panel_open,search,send,signpost,thumb_down,thumb_up,undo,unfold_less,upload,view_module,visibility,wand_stars&amp;display=block">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
-    <link rel="stylesheet" href="./design-system/tokens.css?v=20261029-revision-indicator-location">
-    <link rel="stylesheet" href="./styles.css?v=20261109-revision-first">
-    <script src="./demo-access.js?v=20261109-revision-label" type="module"></script>
+    <link rel="stylesheet" href="./design-system/tokens.css?v=20261111-ready-neutral">
+    <link rel="stylesheet" href="./styles.css?v=20261111-ready-neutral">
+    <script src="./demo-access.js?v=20261111-direction-badge" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -161,22 +161,26 @@
             <div class="composer-tools-header"><h2 id="composer-tools-heading" tabindex="-1"><span class="mobile-panel-title"><span class="material-symbols-outlined" aria-hidden="true">post_add</span><span>New Draft</span></span><button class="composer-tools-toggle" id="toggle-new-variant" type="button" aria-label="Collapse New Draft" aria-expanded="true" aria-controls="composer-variant-form"><span class="material-symbols-outlined" aria-hidden="true">post_add</span><span>New Draft</span><span class="material-symbols-outlined" data-collapse-chevron aria-hidden="true">keyboard_arrow_up</span></button></h2><button class="icon-button mobile-panel-close" type="button" data-close-navigation="newVariant" aria-label="Close New Draft panel"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>
             <div id="composer-variant-form">
             <div id="saved-drafts" class="saved-drafts">
-              <button id="saved-drafts-trigger" class="saved-drafts-trigger" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="saved-drafts-menu"><span data-saved-drafts-label>Saved Settings</span><span class="material-symbols-outlined" aria-hidden="true">keyboard_arrow_down</span></button>
+              <label id="saved-drafts-field-label" class="composer-field-label" for="saved-drafts-trigger">Saved Settings</label>
+              <button id="saved-drafts-trigger" class="saved-drafts-trigger" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="saved-drafts-menu" aria-labelledby="saved-drafts-field-label saved-drafts-value"><span id="saved-drafts-value" data-saved-drafts-label>None Selected</span><span class="material-symbols-outlined" aria-hidden="true">keyboard_arrow_down</span></button>
             </div>
             <div class="composer-fields">
-              <div class="composer-field" data-label="Format">
+              <div class="composer-field" data-label="Format" data-placeholder="None Selected">
+                <label class="composer-field-label" for="composer-format-trigger">Format</label>
                 <select id="composer-format" aria-label="Format" hidden><option value="" selected>None Selected</option></select>
               </div>
-              <div class="composer-field" data-label="Audience">
+              <div class="composer-field" data-label="Audience" data-placeholder="None Selected">
+                <label class="composer-field-label" for="composer-audience-trigger">Audience</label>
                 <select id="composer-audience" aria-label="Audience" hidden><option value="" selected>None Selected</option></select>
               </div>
-              <div class="composer-field" data-label="Voice">
+              <div class="composer-field" data-label="Voice" data-placeholder="None Selected">
+                <label class="composer-field-label" for="composer-voice-trigger">Voice</label>
                 <select id="composer-voice" aria-label="Voice" hidden><option value="" selected>None Selected</option></select>
               </div>
             </div>
             <div class="composer-direction">
-              <label for="composer-editorial-direction">Editorial Direction <span>(optional)</span></label>
-              <textarea id="composer-editorial-direction" rows="2" maxlength="8000" placeholder="Add more facts or give directions on framing (for example, &quot;focus on the economy&quot;)"></textarea>
+              <label for="composer-editorial-direction">Editorial Direction</label>
+              <textarea id="composer-editorial-direction" rows="2" maxlength="8000" placeholder="Add facts or framing.&#10;Example: focus on the economy."></textarea>
             </div>
             <input id="composer-target-word-count" type="hidden" value="short">
             <div class="composer-actions">

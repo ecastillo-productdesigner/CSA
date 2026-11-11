@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createDraftingAnimation, createSourceAddingAnimation, createRevisionAnimation } from '../dist/drafting-animation.js';
+import { createDraftingAnimation, createSourceAddingAnimation, createAudienceSuggestingAnimation, createRevisionAnimation } from '../dist/drafting-animation.js';
 
 class Events {
   constructor() { this.listeners = new Map(); }
@@ -29,6 +29,7 @@ class Element extends Events {
   get textContent() { return this._textContent; }
   set textContent(value) { this._textContent = value; this.textWrites += 1; }
   append(...children) { this.children.push(...children); }
+  replaceChildren(...children) { this.children = children; }
   setAttribute(name, value) { this.attributes.set(name, String(value)); }
   getAttribute(name) { return this.attributes.get(name); }
   getClientRects() { return this.hasLayout ? [{}] : []; }
@@ -70,12 +71,24 @@ function setup(t, { reduced = false, observers = true } = {}) {
       '--csa-component-drafting-paper-lift-offset': '0.44',
       '--csa-component-drafting-paper-front-offset': '0.47',
       '--csa-component-drafting-message-hold-duration': '5000ms',
-      '--csa-component-drafting-revision-duration': '5000ms',
+      '--csa-component-drafting-processing-duration': '10000ms',
+      '--csa-component-drafting-revision-duration': '10000ms',
+      '--csa-component-drafting-audience-hold-duration': '2400ms',
+      '--csa-component-drafting-audience-panel-scale': String(64 / 88),
+      '--csa-component-drafting-audience-compact-scale': String(32 / 88),
+      '--csa-component-drafting-audience-side-scale': '0.74',
+      '--csa-component-drafting-audience-lift-scale': '0.83',
+      '--csa-component-drafting-audience-settle-scale': '0.68',
+      '--csa-component-drafting-audience-retire-offset': '0.15',
+      '--csa-component-drafting-audience-settle-offset': '0.6',
       '--csa-foundation-motion-duration-800': '0.8s',
       '--csa-foundation-motion-easing-arrive': 'cubic-bezier(0.2, 0.7, 0.2, 1)',
       '--csa-foundation-space-2': '2px', '--csa-foundation-space-3': '3px',
       '--csa-foundation-space-4': '4px', '--csa-foundation-space-6': '6px',
       '--csa-foundation-space-12': '12px', '--csa-foundation-space-14': '14px',
+      '--csa-foundation-space-1': '1px', '--csa-foundation-space-8': '8px',
+      '--csa-foundation-space-25': '25px', '--csa-foundation-space-32': '32px',
+      '--csa-foundation-space-13': '13px',
     }[name] || '') }),
     setTimeout: (callback, delay) => { const id = ++sequence; timers.set(id, { at: now + delay, callback }); return id; },
     clearTimeout: id => timers.delete(id),
@@ -133,16 +146,16 @@ function provideGeometry(env, ui) {
   return update => Object.assign(bounds, update);
 }
 
-test('the shared component has three decorative white-sheet layers and one static drafting status label', t => {
+test('the shared component has one decorative white sheet and one static drafting status label', t => {
   const env = setup(t);
   const ui = env.create();
   assert.equal(ui.root.className, 'drafting-animation');
   assert.equal(ui.root.dataset.compact, 'true');
-  assert.equal(ui.root.dataset.phaseCount, '3');
+  assert.equal(ui.root.dataset.phaseCount, '1');
   assert.equal(ui.root.dataset.shimmerColors, '');
   assertActiveShimmer(ui, 'neutral');
   assert.equal(ui.stack.getAttribute('aria-hidden'), 'true');
-  assert.deepEqual(ui.papers.map(paper => paper.dataset.depth), ['back', 'middle', 'front']);
+  assert.deepEqual(ui.papers.map(paper => paper.dataset.depth), ['front']);
   assert.equal(ui.papers.every(paper => paper.children.length === 7), true);
   assert.deepEqual(ui.papers[0].children.map(line => line.style['--rule']), ['0', '1', '2', '3', '4', '5', '6']);
   assert.equal(ui.message.getAttribute('role'), 'status');
@@ -181,7 +194,7 @@ test('draft shimmer includes exactly the selected categories in canonical order'
   }
 });
 
-test('selected shimmer colors advance separately from the three-phase paper loop and pause safely', async t => {
+test('draft shimmer colors cycle without moving the single paper and pause safely', t => {
   const env = setup(t, { observers: false });
   const sequences = [
     [[], ['neutral', 'neutral', 'neutral', 'neutral', 'neutral', 'neutral']],
@@ -192,29 +205,26 @@ test('selected shimmer colors advance separately from the three-phase paper loop
   ];
   for (const [selectionKeys, expected] of sequences) {
     const ui = env.create({ selectionKeys });
+    const hold = 10000 / new Set(expected).size;
     ui.mount();
     assertActiveShimmer(ui, expected[0]);
     for (let step = 1; step < expected.length; step += 1) {
-      env.tick(5000);
-      assert.equal(ui.root.dataset.phaseIndex, String(step % 3));
+      env.tick(hold);
+      assert.equal(ui.root.dataset.phaseIndex, '0');
+      assert.equal(ui.papers.length, 1);
+      assert.equal(allAnimations(ui).length, 0);
       assertActiveShimmer(ui, expected[step]);
-      env.tick(800);
-      allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
-      await flush();
     }
     env.document.hidden = true;
     env.document.fire('visibilitychange');
     env.tick(60000);
     assert.equal(ui.root.dataset.playing, 'false');
-    assert.equal(ui.root.dataset.phaseIndex, '2');
     assertActiveShimmer(ui, expected.at(-1));
     env.document.hidden = false;
     env.document.fire('visibilitychange');
-    env.tick(5000);
+    env.tick(hold);
     assert.equal(ui.root.dataset.phaseIndex, '0');
     assertActiveShimmer(ui, expected[0]);
-    allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
-    await flush();
     ui.controller.destroy();
   }
 });
@@ -264,15 +274,15 @@ test('source adding keeps one page and a fixed message without scheduling handof
 
 test('each visual phase brings the back sheet forward without changing or animating the status text', async t => {
   const env = setup(t);
-  const ui = env.create({ compact: false });
+  const ui = env.create({ compact: false, variant: 'source', label: 'Adding Sources' });
   ui.mount();
   assert.equal(ui.root.dataset.compact, 'false');
   assert.equal(ui.root.dataset.playing, 'true');
   assert.equal(env.timers.size, 1);
   env.tick(4999);
-  assert.equal(ui.message.textContent, 'Creating Draft');
+  assert.equal(ui.message.textContent, 'Adding Sources');
   env.tick(1);
-  assert.equal(ui.message.textContent, 'Creating Draft');
+  assert.equal(ui.message.textContent, 'Adding Sources');
   assert.deepEqual(ui.papers.map(paper => paper.dataset.depth), ['front', 'back', 'middle']);
   assert.equal(ui.papers[0].classList.contains('is-drawing'), true);
   assert.equal(ui.papers[2].classList.contains('is-drawing'), false);
@@ -288,7 +298,7 @@ test('each visual phase brings the back sheet forward without changing or animat
   assert.equal(env.timers.size, 1);
   for (let next = 2; next <= 6; next += 1) {
     env.tick(5000);
-    assert.equal(ui.message.textContent, 'Creating Draft');
+    assert.equal(ui.message.textContent, 'Adding Sources');
     assert.equal(ui.message.textWrites, 1);
     allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
     await flush();
@@ -296,56 +306,39 @@ test('each visual phase brings the back sheet forward without changing or animat
   ui.controller.destroy();
 });
 
-test('a 15-second drafting job keeps one status label while visual phases advance at 0, 5, and 10.8 seconds', async t => {
+test('a ten-second drafting job shows both category colors on one paper with a fixed label', t => {
   const tokens = JSON.parse(readFileSync(new URL('../dist/design-system/tokens.json', import.meta.url), 'utf8'));
-  assert.deepEqual(tokens.component.drafting['message-hold-duration'].$value, { value: 5000, unit: 'ms' });
-  assert.deepEqual(tokens.component.drafting['processing-duration'].$value, { value: 15000, unit: 'ms' });
+  assert.deepEqual(tokens.component.drafting['processing-duration'].$value, { value: 10000, unit: 'ms' });
   const env = setup(t);
   const ui = env.create({ selectionKeys: ['voice', 'format'] });
   ui.mount();
-  const seen = [ui.root.dataset.phaseIndex];
   assert.equal(ui.root.dataset.shimmerColors, 'format voice');
   assertActiveShimmer(ui, 'format');
   env.tick(4999);
-  assert.equal(ui.root.dataset.phaseIndex, '0');
+  assertActiveShimmer(ui, 'format');
   env.tick(1);
-  seen.push(ui.root.dataset.phaseIndex);
-  assert.equal(ui.root.dataset.phaseIndex, '1');
-  assert.equal(ui.root.dataset.shimmerColors, 'format voice');
   assertActiveShimmer(ui, 'voice');
-  env.tick(800);
-  allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
-  await flush();
+  assert.equal(ui.papers.length, 1);
+  assert.equal(ui.root.dataset.phaseIndex, '0');
+  assert.equal(allAnimations(ui).length, 0, 'category colors change without a paper handoff');
   env.tick(4999);
-  assert.equal(ui.root.dataset.phaseIndex, '1');
-  env.tick(1);
-  seen.push(ui.root.dataset.phaseIndex);
-  assert.equal(ui.root.dataset.phaseIndex, '2');
-  assert.equal(ui.root.dataset.shimmerColors, 'format voice');
-  assertActiveShimmer(ui, 'format');
-  env.tick(800);
-  allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
-  await flush();
-  env.tick(3400);
-  assert.equal(ui.root.dataset.phaseIndex, '2', 'the third visual phase remains active when the 15-second job finishes');
-  assert.deepEqual(seen, ['0', '1', '2']);
+  assertActiveShimmer(ui, 'voice');
   assert.equal(ui.message.textContent, 'Creating Draft');
-  assert.equal(ui.message.textWrites, 1, 'paper/color steps must not reannounce identical status text');
-  assert.equal(Math.min(...[...env.timers.values()].map(task => task.at)), 16600, 'no fourth transition can start before the app finishes');
+  assert.equal(ui.message.textWrites, 1, 'color steps must not reannounce identical status text');
   ui.controller.destroy();
-  env.tick(100000);
-  assert.equal(ui.root.dataset.phaseIndex, '2');
+  env.tick(100001);
+  assert.equal(ui.root.dataset.phaseIndex, '0');
   assert.equal(env.timers.size, 0);
 });
 
 test('the reference repeats three visual phases while its status text is written only once', async t => {
   const env = setup(t);
-  const ui = env.create();
+  const ui = env.create({ label: 'Adding Sources' }, createSourceAddingAnimation);
   ui.mount();
   for (const expected of [1, 2, 0, 1]) {
     env.tick(5000);
     assert.equal(ui.root.dataset.phaseIndex, String(expected));
-    assert.equal(ui.message.textContent, 'Creating Draft');
+    assert.equal(ui.message.textContent, 'Adding Sources');
     assert.equal(ui.message.textWrites, 1);
     env.tick(800);
     allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
@@ -356,7 +349,7 @@ test('the reference repeats three visual phases while its status text is written
 
 test('browsers without animation APIs keep the same hold and handoff timing', t => {
   const env = setup(t, { observers: false });
-  const ui = env.create();
+  const ui = env.create({ label: 'Adding Sources' }, createSourceAddingAnimation);
   ui.papers.forEach(paper => { paper.animate = undefined; });
   ui.mount();
   env.tick(5000);
@@ -372,7 +365,7 @@ test('browsers without animation APIs keep the same hold and handoff timing', t 
 
 test('offscreen or hidden animation cancels current motion and resumes without accumulating timers', async t => {
   const env = setup(t);
-  const ui = env.create();
+  const ui = env.create({ label: 'Adding Sources' }, createSourceAddingAnimation);
   ui.mount();
   env.tick(5000);
   assert.equal(allAnimations(ui).some(animation => !animation.cancelled), true);
@@ -383,7 +376,7 @@ test('offscreen or hidden animation cancels current motion and resumes without a
   await flush();
   assert.equal(env.timers.size, 0);
   env.tick(100000);
-  assert.equal(ui.message.textContent, 'Creating Draft');
+  assert.equal(ui.message.textContent, 'Adding Sources');
   env.intersections[0].visible(true);
   assert.equal(env.timers.size, 1);
   env.document.hidden = true;
@@ -509,7 +502,7 @@ test('reduced motion is static and changing the preference stops and restarts th
 
 test('removal and destroy clean up every timer, observer and listener, including in-flight motion', async t => {
   const env = setup(t);
-  const ui = env.create();
+  const ui = env.create({ label: 'Adding Sources' }, createSourceAddingAnimation);
   ui.mount();
   env.tick(5000);
   ui.root.isConnected = false;
@@ -543,11 +536,11 @@ test('back-forward cache pauses the loop and resumes it on page restore', t => {
 
 test('browsers without animation or observer APIs still rotate papers while keeping the label static', t => {
   const env = setup(t, { observers: false });
-  const ui = env.create();
+  const ui = env.create({ label: 'Adding Sources' }, createSourceAddingAnimation);
   ui.papers.forEach(paper => { paper.animate = undefined; });
   ui.mount();
   env.tick(5000);
-  assert.equal(ui.message.textContent, 'Creating Draft');
+  assert.equal(ui.message.textContent, 'Adding Sources');
   assert.equal(env.timers.size, 1);
   ui.root.hasLayout = false;
   env.document.fire('visibilitychange');
@@ -555,11 +548,13 @@ test('browsers without animation or observer APIs still rotate papers while keep
   ui.controller.destroy();
 });
 
-test('revision progress keeps the paper stack, neutral fallback and a fixed accessible status', t => {
+test('revision progress uses one paper, neutral fallback and a fixed accessible status', t => {
   const env = setup(t);
   const ui = env.create(undefined, createRevisionAnimation);
   assert.equal(ui.root.dataset.variant, 'revision');
-  assert.equal(ui.root.dataset.phaseCount, '3');
+  assert.equal(ui.root.dataset.phaseCount, '1');
+  assert.equal(ui.papers.length, 1);
+  assert.equal(ui.papers[0].dataset.depth, 'front');
   assertActiveShimmer(ui, 'neutral');
   assert.equal(ui.message.textContent, 'Revising Draft');
   assert.equal(ui.message.getAttribute('role'), 'status');
@@ -581,7 +576,8 @@ test('revision progress keeps the paper stack, neutral fallback and a fixed acce
 test('new draft cards use Creating Draft with the same shared loading animation', t => {
   const env = setup(t);
   const ui = env.create({ selectionKeys: ['audience'], label: 'Creating Draft' }, createRevisionAnimation);
-  assert.equal(ui.root.dataset.variant, 'revision', 'the existing overlay layout and motion are retained');
+  assert.equal(ui.root.dataset.variant, 'revision', 'the existing overlay layout is retained');
+  assert.equal(ui.papers.length, 1, 'Creating Draft cards use one paper in the existing overlay');
   assertActiveShimmer(ui, 'audience');
   assert.equal(ui.message.textContent, 'Creating Draft');
   assert.equal(ui.message.getAttribute('role'), 'status');
@@ -606,25 +602,31 @@ test('revision colors follow saved categories in canonical order, never the sour
   }
 });
 
-test('three-category revision shows pink, lavender and peach within the five-second job', async t => {
-  const tokens = JSON.parse(readFileSync(new URL('../dist/design-system/tokens.json', import.meta.url), 'utf8'));
-  const duration = tokens.component.drafting['revision-duration'].$value.value;
-  assert.equal(duration, 5000);
-  const hold = (duration - 2 * 800) / 3;
-  const env = setup(t, { observers: false });
-  const ui = env.create({ selectionKeys: ['voice', 'audience', 'format'] }, createRevisionAnimation);
-  ui.mount();
-  assertActiveShimmer(ui, 'format');
-  env.tick(hold);
-  assertActiveShimmer(ui, 'audience');
-  env.tick(800);
-  allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
-  await flush();
-  env.tick(hold);
-  assertActiveShimmer(ui, 'voice');
-  assert.equal(ui.message.textContent, 'Revising Draft');
-  ui.controller.destroy();
-});
+for (const [name, factory, options, durationToken, label] of [
+  ['draft', createDraftingAnimation, {}, 'processing-duration', 'Creating Draft'],
+  ['draft overlay', createRevisionAnimation, { label: 'Creating Draft' }, 'processing-duration', 'Creating Draft'],
+  ['revision', createRevisionAnimation, {}, 'revision-duration', 'Revising Draft'],
+]) {
+  test(`three-category ${name} shows pink, lavender and peach on one paper within ten seconds`, t => {
+    const tokens = JSON.parse(readFileSync(new URL('../dist/design-system/tokens.json', import.meta.url), 'utf8'));
+    const duration = tokens.component.drafting[durationToken].$value.value;
+    assert.equal(duration, 10000);
+    const hold = duration / 3;
+    const env = setup(t, { observers: false });
+    const ui = env.create({ ...options, selectionKeys: ['voice', 'audience', 'format'] }, factory);
+    ui.mount();
+    assertActiveShimmer(ui, 'format');
+    env.tick(hold);
+    assertActiveShimmer(ui, 'audience');
+    assert.equal(ui.papers.length, 1);
+    assert.equal(allAnimations(ui).length, 0, 'single-draft statuses do not perform a paper handoff');
+    env.tick(hold);
+    assertActiveShimmer(ui, 'voice');
+    assert.equal(ui.message.textContent, label);
+    assert.equal(ui.message.textWrites, 1);
+    ui.controller.destroy();
+  });
+}
 
 test('revision indicator stays centered in the visible part of a long draft while its background covers the full area', t => {
   const env = setup(t);
@@ -641,12 +643,178 @@ test('revision indicator stays centered in the visible part of a long draft whil
 });
 
 
-test('source-list loading can label the same mint animation Adding sources', t => {
+test('Adding Sources uses three papers with the shared handoff and green shimmer', async t => {
   const env = setup(t);
-  const ui = env.create({ label: 'Adding sources' }, createSourceAddingAnimation);
-  assert.equal(ui.message.textContent, 'Adding sources');
-  assert.equal(ui.message.textWrites, 1);
+  const ui = env.create({ label: 'Adding Sources' }, createSourceAddingAnimation);
+  assert.equal(ui.message.textContent, 'Adding Sources');
   assertActiveShimmer(ui, 'source');
+  assert.equal(ui.root.dataset.phaseCount, '3');
+  assert.deepEqual(ui.papers.map(paper => paper.dataset.depth), ['back', 'middle', 'front']);
+  ui.mount();
+  env.tick(5000);
+  assert.equal(ui.root.dataset.phaseIndex, '1');
+  assert.deepEqual(ui.papers.map(paper => paper.dataset.depth), ['front', 'back', 'middle']);
+  assert.equal(allAnimations(ui).length, 3);
+  allAnimations(ui).forEach(animation => animation.finish());
+  await flush();
+  assert.equal(ui.message.textWrites, 1, 'the status stays fixed while the papers swap');
+  env.motion.matches = true;
+  env.motion.fire('change');
+  assert.equal(ui.root.dataset.playing, 'false');
+  assert.equal(env.timers.size, 0);
+  ui.controller.destroy();
+});
+
+test('overlapping source imports update paper count as the label changes', async t => {
+  const env = setup(t);
+  const ui = env.create(undefined, createSourceAddingAnimation);
+  ui.mount();
+  ui.controller.setLabel('Adding Sources');
+  assert.equal(ui.stack.children.length, 3);
+  assert.equal(ui.root.dataset.phaseCount, '3');
+  env.tick(5000);
+  const handoffs = ui.stack.children.flatMap(paper => paper.animations);
+  assert.equal(handoffs.length, 3);
+  ui.controller.setLabel('Adding Source');
+  await flush();
+  assert.equal(ui.stack.children.length, 1);
+  assert.equal(ui.stack.children[0].dataset.depth, 'front');
+  assert.equal(ui.root.dataset.phaseCount, '1');
+  assert.equal(ui.root.dataset.phaseIndex, '0');
+  assert.equal(ui.message.textContent, 'Adding Source');
+  assert.ok(handoffs.every(animation => animation.cancelled));
+  assert.equal(env.timers.size, 0, 'one source resumes without a paper handoff');
+  ui.controller.destroy();
+});
+
+for (const compact of [false, true]) {
+  test(`audience suggestions use compact green people animation with a fixed label (${compact ? 'trigger' : 'panel'})`, async t => {
+    const tokens = JSON.parse(readFileSync(new URL('../dist/design-system/tokens.json', import.meta.url), 'utf8'));
+    assert.deepEqual(tokens.component.drafting['audience-suggest-duration'].$value, { value: 10000, unit: 'ms' });
+    assert.equal(tokens.component.drafting[compact ? 'audience-icon-compact-size' : 'audience-icon-size'].$value, compact ? '{foundation.space.32}' : '{foundation.space.64}');
+    assert.equal(tokens.component.drafting[compact ? 'audience-compact-scale' : 'audience-panel-scale'].$value, (compact ? 32 : 64) / 88);
+    const env = setup(t);
+    const ui = env.create(compact ? { compact } : undefined, createAudienceSuggestingAnimation);
+    assert.equal(ui.root.dataset.compact, 'true');
+    assert.equal(ui.root.dataset.audienceCompact, String(compact));
+    assert.equal(ui.root.dataset.audienceSuggesting, 'true');
+    assert.equal(ui.root.dataset.variant, 'source');
+    assert.equal(ui.stack.className, 'drafting-audience-people');
+    assert.equal(ui.stack.getAttribute('aria-hidden'), 'true');
+    assert.deepEqual(ui.papers.map(person => person.dataset.depth), ['back', 'middle', 'front']);
+    assert.ok(ui.papers.every(person => person.className === 'drafting-audience-person'));
+    assert.ok(ui.papers.every(person => person.children.length === 0), 'each complete silhouette is drawn by CSS rather than clipped glyph slices');
+    assertActiveShimmer(ui, 'source');
+    assert.equal(ui.message.textContent, 'Suggesting Audiences');
+    assert.equal(ui.message.getAttribute('role'), 'status');
+    assert.equal(ui.message.getAttribute('aria-live'), 'polite');
+    ui.mount();
+    assert.equal(ui.root.dataset.playing, 'true');
+    env.tick(2399);
+    assert.equal(ui.root.dataset.phaseIndex, '0');
+    env.tick(1);
+    assert.deepEqual(ui.papers.map(person => person.dataset.depth), ['front', 'back', 'middle']);
+    assert.equal(allAnimations(ui).length, 3);
+    assert.ok(allAnimations(ui).every(animation => animation.timing.duration === 800));
+    const scale = (compact ? 32 : 64) / 88;
+    assert.equal(ui.papers[0].animations[0].frames[1].transform, `translate(${-32 * scale}px, ${-13 * scale}px) rotate(-9deg) scale(0.83)`);
+    assert.equal(ui.papers[0].animations[0].frames[1].zIndex, 1, 'the arriving person lifts behind the foreground silhouette');
+    assert.equal(ui.papers[0].animations[0].frames[2].zIndex, 4, 'then moves in front before landing');
+    assert.equal(ui.papers[1].animations[0].frames[2].transform, `translate(0px, ${-8 * scale}px) rotate(4deg) scale(0.68)`);
+    env.tick(800);
+    allAnimations(ui).forEach(animation => animation.finish());
+    await flush();
+    assert.equal(ui.message.textContent, 'Suggesting Audiences');
+    assert.equal(ui.message.textWrites, 1);
+    assert.equal(ui.root.dataset.phaseIndex, '1');
+    assert.equal(env.timers.size, 1, 'the owner controls completion while visual handoffs continue');
+    ui.root.hasLayout = false;
+    env.document.fire('visibilitychange');
+    assert.equal(ui.root.dataset.playing, 'false');
+    assert.equal(env.timers.size, 0, 'hidden loading panels do not run visual timers');
+    ui.root.hasLayout = true;
+    env.document.fire('visibilitychange');
+    assert.equal(ui.root.dataset.playing, 'true');
+    env.motion.matches = true;
+    env.motion.fire('change');
+    assert.equal(ui.root.dataset.playing, 'false');
+    assert.equal(ui.root.dataset.reducedMotion, 'true');
+    assert.equal(env.timers.size, 0);
+    assert.ok(allAnimations(ui).every(animation => animation.cancelled));
+    assert.equal(ui.message.textContent, 'Suggesting Audiences');
+    ui.controller.destroy();
+    assert.equal(env.document.listenerCount(), 0);
+    assert.equal(env.window.listenerCount(), 0);
+    assert.equal(env.motion.listenerCount(), 0);
+  });
+}
+
+for (const [name, factory, label] of [['draft', createDraftingAnimation, 'Creating Drafts'], ['draft overlay', createRevisionAnimation, 'Creating Drafts'], ['revision', createRevisionAnimation, 'Revising Drafts']]) {
+  test(`plural ${name} has three papers and fits all category colors into ten seconds`, async t => {
+    const env = setup(t);
+    const ui = env.create({ label, selectionKeys: ['format', 'audience', 'voice'] }, factory);
+    assert.equal(ui.papers.length, 3);
+    assert.equal(ui.root.dataset.phaseCount, '3');
+    assert.equal(ui.message.textContent, label);
+    ui.mount();
+    assertActiveShimmer(ui, 'format');
+    env.tick(2800);
+    assertActiveShimmer(ui, 'audience');
+    assert.equal(ui.root.dataset.phaseIndex, '1');
+    env.tick(800);
+    allAnimations(ui).filter(animation => !animation.cancelled).forEach(animation => animation.finish());
+    await flush();
+    env.tick(2800);
+    assertActiveShimmer(ui, 'voice');
+    assert.equal(ui.root.dataset.phaseIndex, '2');
+    assert.equal(ui.message.textWrites, 1);
+    env.motion.matches = true;
+    env.motion.fire('change');
+    assert.equal(ui.root.dataset.playing, 'false');
+    assert.equal(env.timers.size, 0);
+    ui.controller.destroy();
+  });
+}
+
+test('draft label changes synchronize paper count and cancel an in-flight plural handoff', async t => {
+  const env = setup(t);
+  const ui = env.create({ selectionKeys: ['format', 'audience', 'voice'] });
+  ui.mount();
+  ui.controller.setLabel('Creating Drafts');
+  assert.equal(ui.stack.children.length, 3);
+  env.tick(2800);
+  const handoffs = ui.stack.children.flatMap(paper => paper.animations);
+  assert.equal(handoffs.length, 3);
+  ui.controller.setLabel('Creating Draft');
+  await flush();
+  assert.equal(ui.stack.children.length, 1);
+  assert.equal(ui.root.dataset.phaseCount, '1');
+  assert.equal(ui.message.textContent, 'Creating Draft');
+  assert.ok(handoffs.every(animation => animation.cancelled));
+  const currentColor = ui.root.dataset.shimmerColor;
+  env.tick(10000 / 3);
+  assert.notEqual(ui.root.dataset.shimmerColor, currentColor, 'one paper still cycles its category colors');
+  assert.equal(ui.stack.children[0].animations.length, 0);
+  ui.controller.destroy();
+});
+
+test('audience status follows the singular and plural illustration rule', async t => {
+  const env = setup(t);
+  const ui = env.create({ label: 'Suggesting Audience' }, createAudienceSuggestingAnimation);
   assert.equal(ui.papers.length, 1);
+  assert.equal(ui.papers[0].className, 'drafting-audience-person');
+  assert.equal(ui.message.textContent, 'Suggesting Audience');
+  ui.mount();
+  assert.equal(env.timers.size, 0);
+  ui.controller.setLabel('Suggesting Audiences');
+  assert.equal(ui.stack.children.length, 3);
+  env.tick(2400);
+  const handoffs = ui.stack.children.flatMap(person => person.animations);
+  assert.equal(handoffs.length, 3);
+  ui.controller.setLabel('Suggesting Audience');
+  await flush();
+  assert.equal(ui.stack.children.length, 1);
+  assert.ok(handoffs.every(animation => animation.cancelled));
+  assert.equal(env.timers.size, 0);
   ui.controller.destroy();
 });

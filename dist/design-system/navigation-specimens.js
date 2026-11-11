@@ -7,8 +7,8 @@ import { createSourceAlreadyAddedDialog } from '../source-already-added.js?v=202
 import { createSourceAdditionLoading } from '../source-addition-loading.js?v=20261026-drafting-card-size';
 import { createIcon } from '../icons.js?v=20261026-drafting-card-size';
 import { tokenNumber } from './runtime.js?v=20261026-drafting-card-size';
-import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261026-drafting-card-size';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261105-filter-settings';
+import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261111-audience-name-variation';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261111-audience-ready';
 
 const navigationMounts = new WeakMap();
 const stateMounts = new WeakMap();
@@ -159,7 +159,7 @@ export function mountNavigationSpecimens(root, { onOpenSource } = {}) {
     if (sourceAddition.isPending('navigation-example')) return;
     addSource.disabled = true;
     if (await sourceAddition.wait('navigation-example')) {
-      const source = { type: 'text', title: `Additional source ${exampleSources.length - 1}`, text: 'This example source was added after the five-second green shimmer.', selected: true };
+      const source = { type: 'text', title: `Additional source ${exampleSources.length - 1}`, text: 'This example source was added after the ten-second green shimmer.', selected: true };
       exampleSources.push(source);
       appendExampleSource(source);
       sourceAddition.render('navigation-example', sourceRows);
@@ -173,7 +173,7 @@ export function mountNavigationSpecimens(root, { onOpenSource } = {}) {
   const duplicateSource = button('secondary-button', 'Try duplicate source');
   duplicateSource.textContent = 'Try duplicate source';
   duplicateSource.addEventListener('click', () => duplicateDialog.open({ source: exampleSources[0], trigger: duplicateSource }));
-  selectedPreview.append(sourceList, duplicateSource, element('p', 'ds-caption', 'Add New Source uses the shared outlined secondary button above the source list, with a 24 px gap before the selection count. In the app it opens the existing source picker for the current project, supporting article URLs and uploaded documents. After submission, the shared mint shimmer and Inter Medium Italic label “Adding Source” for one new source or “Adding Sources” for multiple new sources appear at the bottom of Project Sources for five seconds before the new rows appear. Newly added sources are checked automatically for new drafts without changing the current draft’s captured sources. Checking or unchecking an existing source updates its selection immediately without an adding animation. The five-second shimmer appears only when new sources are actually added to the project. Duplicate sources show “Source Already Added” with View Source as a secondary action and Close as the primary action. View Source opens the existing source preview within the app. Existing sources remain visible. Try Add New Source here to preview the same timing. Switch between the 2 Sources and 1 Source examples to show the sources captured by each active draft. Its exact saved set becomes checked and the counter says used in this draft. Editing a checkbox chooses sources for the next draft and changes the counter to selected for new drafts; it does not rewrite the current article or saved snapshots. Switching drafts restores that draft’s captured set. Every source row has the same three-dot Delete menu. Deleting a saved-only source hides it from this list while preserving the draft’s source history; Undo brings it back. Source titles open the shared read-only preview independently of their checkbox. Links without saved article text show five paragraphs of illustrative preview copy, with the publisher summary first when available; saved article text stays unchanged. The first source demonstrates the five-paragraph link preview. Their hover uses the shared light-gray surface, 8 px corners, and near-black text without an underline; keyboard focus keeps its visible outline.'));
+  selectedPreview.append(sourceList, duplicateSource, element('p', 'ds-caption', 'Add New Source uses the shared outlined secondary button above the source list, with a 24 px gap before the selection count. In the app it opens the existing source picker for the current project, supporting article URLs and uploaded documents. After submission, the shared mint shimmer and Inter Medium Italic label “Adding Source” for one new source or “Adding Sources” for multiple new sources appear at the bottom of Project Sources for ten seconds before the new rows appear. Newly added sources are checked automatically for new drafts without changing the current draft’s captured sources. Checking or unchecking an existing source updates its selection immediately without an adding animation. The ten-second shimmer appears only when new sources are actually added to the project. Duplicate sources show “Source Already Added” with View Source as a secondary action and Close as the primary action. View Source opens the existing source preview within the app. Existing sources remain visible. Try Add New Source here to preview the same timing. Switch between the 2 Sources and 1 Source examples to show the sources captured by each active draft. Its exact saved set becomes checked and the counter says used in this draft. Editing a checkbox chooses sources for the next draft and changes the counter to selected for new drafts; it does not rewrite the current article or saved snapshots. Switching drafts restores that draft’s captured set. Every source row has the same three-dot Delete menu. Deleting a saved-only source hides it from this list while preserving the draft’s source history; Undo brings it back. Source titles open the shared read-only preview independently of their checkbox. Links without saved article text show five paragraphs of illustrative preview copy, with the publisher summary first when available; saved article text stays unchanged. The first source demonstrates the five-paragraph link preview. Their hover uses the shared light-gray surface, 8 px corners, and near-black text without an underline; keyboard focus keeps its visible outline.'));
   const tooltips = [];
 
   function hideTooltips() {
@@ -276,7 +276,7 @@ export function mountNavigationSpecimens(root, { onOpenSource } = {}) {
   return mounted;
 }
 
-export function mountStateSpecimens(root, { favoritesStore } = {}) {
+export function mountStateSpecimens(root, { favoritesStore, library, audienceSuggestions, notify } = {}) {
   if (!root) return;
   if (stateMounts.has(root)) return stateMounts.get(root);
   root.classList.add('ds-state-specimens');
@@ -299,23 +299,25 @@ export function mountStateSpecimens(root, { favoritesStore } = {}) {
   for (const { label, key } of draftOptions) {
     const field = element('div', 'composer-field');
     field.dataset.label = label;
+    field.dataset.placeholder = 'None Selected';
     const select = element('select');
     select.id = `ds-new-draft-${key}`;
     select.hidden = true;
     select.setAttribute('aria-label', label);
-    field.append(select);
+    const fieldLabel = element('label', 'composer-field-label', label);
+    fieldLabel.htmlFor = `${select.id}-trigger`;
+    field.append(fieldLabel, select);
     fields.append(field);
   }
   body.append(fields);
   const direction = element('div', 'composer-direction');
-  const directionLabel = element('label', '', 'Editorial Direction ');
+  const directionLabel = element('label', '', 'Editorial Direction');
   directionLabel.htmlFor = 'ds-editorial-direction';
-  directionLabel.append(element('span', '', '(optional)'));
   const directionField = element('textarea');
   directionField.id = 'ds-editorial-direction';
   directionField.rows = 2;
   directionField.maxLength = 8000;
-  directionField.placeholder = 'Add more facts or give directions on framing (for example, "focus on the economy")';
+  directionField.placeholder = 'Add facts or framing.\nExample: focus on the economy.';
   direction.append(directionLabel, directionField);
   body.append(direction);
   const add = button('create-variant', 'Add to List example');
@@ -394,11 +396,11 @@ export function mountStateSpecimens(root, { favoritesStore } = {}) {
     draftingPreviews.append(draftingStage);
     return drafting;
   });
-  loading.append(draftingPreviews, element('p', 'ds-caption', 'These white cards match drafted content cards with a shared 90 px minimum height, 8 px corners, and the same specimen width. Loading outlines are 1 px Neutral 200 (#E5E5E5). Revision overlays preserve the active card’s outer footprint, including its 92 px selected height. The fixed label “Creating Draft” stays visible while paper and shimmer colors cycle. The examples show one selected category (Format), two (Audience + Voice), and all three. Each visual phase uses one matching selected-category color: pink for Format, lavender for Audience, or peach for Voice. Colors cycle in Format/Audience/Voice order, skipping unselected categories. One selection keeps its color, Audience + Voice alternates lavender and peach, and all three cycle pink, lavender, then peach. With no choices, legacy content uses a neutral shimmer. Each sweep lasts 2.4 seconds; each paper phase holds for 5 seconds before an 800 ms handoff. Paper sheets stay white, paper lines use Neutral 500 (#737373), and the label stays dark and unchanged. The reference previews repeat the visual phases. Reduced motion hides the shimmer sweep and keeps a static sheet and label.'));
+  loading.append(draftingPreviews, element('p', 'ds-caption', 'These white cards match drafted content cards with a shared 90 px minimum height, 8 px corners, and the same specimen width. Loading outlines are 1 px Neutral 200 (#E5E5E5). Revision overlays preserve the active card’s outer footprint, including its 92 px selected height. One white paper draws its lines beside the fixed label “Creating Draft” while the shimmer colors cycle. The examples show one selected category (Format), two (Audience + Voice), and all three. Each visual phase uses one matching selected-category color: pink for Format, lavender for Audience, or peach for Voice. Colors cycle in Format/Audience/Voice order, skipping unselected categories. One selection keeps its color, Audience + Voice alternates lavender and peach, and all three cycle pink, lavender, then peach. With no choices, legacy content uses a neutral shimmer. Each sweep lasts 2.4 seconds, and selected colors divide the 10-second processing window evenly. The single sheet stays white, its animated lines use Neutral 500 (#737373), and the label stays dark and unchanged. Creating Draft and Revising Draft each use one paper without a handoff. The plural label Creating Drafts uses three papers with 800 ms handoffs. Its holds are 5 seconds with one or no selected category; with multiple categories, holds adjust to fit every selected color and handoff within ten seconds. These reference previews repeat the visual phases for inspection. Reduced motion hides the shimmer sweep and keeps a static sheet and label.'));
   const sourceAdding = createSourceAddingAnimation();
   const addingStage = element('div', 'ds-drafting-specimen');
   addingStage.append(sourceAdding.element);
-  loading.append(element('h4', '', 'Adding a source'), addingStage, element('p', 'ds-caption', 'A white card centers one paper beside the text “Adding Source”. A fixed Teal 50 (#F0FDFA) shimmer sweeps every 2.4 seconds. The paper and Inter Medium Italic (500) label stay centered as a row, with a fixed label and no paper handoff. Reduced motion hides the shimmer sweep and keeps the paper and text static.'));
+  loading.append(element('h4', '', 'Adding a source'), addingStage, element('p', 'ds-caption', 'Adding Source and Adding Sources run for 10 seconds in the app. A white card centers one paper beside “Adding Source”; “Adding Sources” uses three exchanging papers. A fixed Teal 50 (#F0FDFA) shimmer sweeps every 2.4 seconds. The paper and Inter Medium Italic (500) label stay centered as a row, with a fixed label. Only the plural source state has a paper handoff, after a 5-second hold and lasting 800 ms. The same label rule applies to audiences: Suggesting Audience uses one person and Suggesting Audiences uses three. Three represents a plural state, independent of the exact item count. Reduced motion hides the shimmer sweep and keeps the illustration and text static.'));
   const status = element('p', 'ds-specimen-status');
   status.setAttribute('role', 'status');
   let dropdowns;
@@ -420,9 +422,9 @@ export function mountStateSpecimens(root, { favoritesStore } = {}) {
     fields.querySelector('.tool-dropdown-trigger')?.focus({ preventScroll: true });
   });
   root.append(panel, guidance, emptyPreview, loading, status);
-  populateDraftOptions(panel);
-  dropdowns = createToolDropdowns({ root: panel, favoritesStore });
-  const updateAdd = () => { add.disabled = !hasDraftSelection(Object.fromEntries([...fields.querySelectorAll('select')].map(select => [select.closest('.composer-field').dataset.label.toLowerCase(), select.value]))); };
+  populateDraftOptions(panel, { library });
+  dropdowns = createToolDropdowns({ root: panel, favoritesStore, audienceSuggestions, notify });
+  const updateAdd = () => { add.disabled = !hasDraftSelection(Object.fromEntries([...fields.querySelectorAll('select')].map(select => [select.closest('.composer-field').dataset.label.toLowerCase(), select.value])), { library }); };
   fields.addEventListener('change', updateAdd);
   updateAdd();
   const mounted = { setExpanded, destroy() { disclosure.destroy(); contentDisclosure.destroy(); emptySelection.destroy(); emptyTransition.destroy(); draftingAnimations.forEach(drafting => drafting.destroy()); sourceAdding.destroy(); dropdowns.close(); stateMounts.delete(root); } };

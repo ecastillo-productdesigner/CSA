@@ -543,14 +543,26 @@
   --csa-component-drafting-paper-scale-step: 0.04;
   --csa-component-drafting-paper-lift-offset: 0.44;
   --csa-component-drafting-paper-front-offset: 0.47;
-  --csa-component-drafting-processing-duration: 15000ms;
+  --csa-component-drafting-processing-duration: 10000ms;
   --csa-component-drafting-shimmer-format: var(--csa-component-chip-format-background);
   --csa-component-drafting-shimmer-audience: var(--csa-component-chip-audience-background);
   --csa-component-drafting-shimmer-voice: var(--csa-component-chip-voice-background);
   --csa-component-drafting-shimmer-source: var(--csa-foundation-color-teal-50);
   --csa-component-drafting-shimmer-duration: 2400ms;
-  --csa-component-drafting-revision-duration: 5000ms;
-  --csa-component-drafting-source-add-duration: 5000ms;
+  --csa-component-drafting-revision-duration: 10000ms;
+  --csa-component-drafting-audience-suggest-duration: 10000ms;
+  --csa-component-drafting-source-add-duration: 10000ms;
+  --csa-component-drafting-audience-icon-size: var(--csa-foundation-space-64);
+  --csa-component-drafting-audience-icon-compact-size: var(--csa-foundation-space-32);
+  --csa-component-drafting-audience-person-height: 51px;
+  --csa-component-drafting-audience-side-scale: 0.74;
+  --csa-component-drafting-audience-lift-scale: 0.83;
+  --csa-component-drafting-audience-settle-scale: 0.68;
+  --csa-component-drafting-audience-retire-offset: 0.15;
+  --csa-component-drafting-audience-settle-offset: 0.6;
+  --csa-component-drafting-audience-hold-duration: var(--csa-component-drafting-shimmer-duration);
+  --csa-component-drafting-audience-panel-scale: 0.7272727272727273;
+  --csa-component-drafting-audience-compact-scale: 0.36363636363636365;
   --csa-component-composer-panel-heading-font-size: var(--csa-foundation-font-size-16);
   --csa-component-composer-panel-heading-line-height: var(--csa-foundation-line-height-24);
   --csa-component-composer-panel-gap: var(--csa-foundation-space-16);
@@ -558,4 +570,6 @@
   --csa-component-editor-tab-revision-dot-size: var(--csa-foundation-space-8);
   --csa-component-editor-tab-revision-dot-color: var(--csa-semantic-color-status-revision-unread);
   --csa-component-editor-tab-revision-dot-active-duration: 10000ms;
+  --csa-component-audience-ready-dot-size: var(--csa-component-editor-tab-revision-dot-size);
+  --csa-component-audience-ready-dot-color: var(--csa-foundation-color-red-700);
 }

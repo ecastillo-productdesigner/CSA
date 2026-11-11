@@ -1,4 +1,4 @@
-import { draftOptions } from './draft-options.js?v=20261026-drafting-card-size';
+import { getDraftOptions } from './draft-options.js?v=20261111-audience-name-variation';
 import { normalizeWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
 
 const preferenceKeys = ['format', 'audience', 'voice'];
@@ -79,7 +79,7 @@ export function removeSavedDraftSetup(projects, projectId, outputId) {
 }
 
 function currentPreference(key, configuration) {
-  const options = draftOptions.find(option => option.key === key)?.options || [];
+  const options = getDraftOptions(key);
   const value = configuration.toolPreferences[key];
   // An explicit None Selected must not be undone by an older display label.
   if (Object.hasOwn(configuration.toolPreferences, key) && !value) return '';

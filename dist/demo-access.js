@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261109-revision-label');
+  await import('./app.js?v=20261111-direction-badge');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

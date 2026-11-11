@@ -4,7 +4,7 @@ import { syncSelection } from './selection-controls.js?v=20261026-drafting-card-
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { normalizeWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
 import { countPreviewWords } from './content-preview.js?v=20261026-drafting-card-size';
-import { createContentCardActions } from './content-card-editing.js?v=20261105-filter-settings';
+import { createContentCardActions, createContentDirectionIndicator } from './content-card-editing.js?v=20261111-direction-badge';
 import { createRevisionAnimation } from './drafting-animation.js?v=20261030-draft-status-and-history';
 import { topicDraftContent } from './topic-draft.js?v=20261026-drafting-card-size';
 import { formatDraftContent } from './draft-format.js?v=20261026-drafting-card-size';
@@ -125,7 +125,7 @@ export function createOutputWordCountBadge(output) {
   return badge;
 }
 
-export function createOutputBadges(output, { maxLabelLength = 20, includeSourceCount = true, includeWordCount = true } = {}) {
+export function createOutputBadges(output, { maxLabelLength = 20, includeSourceCount = true, includeWordCount = true, includeEditorialDirection = false, directionPopoverId } = {}) {
   const badges = (Array.isArray(output?.labels) ? output.labels : [])
     .filter(label => label && ['format', 'audience', 'voice'].includes(label.key) && typeof label.label === 'string')
     .map(label => {
@@ -161,6 +161,10 @@ export function createOutputBadges(output, { maxLabelLength = 20, includeSourceC
     text.textContent = label;
     badge.append(icon, text);
     badges.push(badge);
+  }
+  if (includeEditorialDirection) {
+    const direction = createContentDirectionIndicator(output, { popoverId: directionPopoverId });
+    if (direction) badges.push(direction);
   }
   return badges;
 }
@@ -413,11 +417,12 @@ export function renderOutputs(project, requestedView) {
   document.querySelector('#output-status-content').setAttribute('aria-labelledby', `output-${state.view}-tab`);
   document.querySelector('.outputs-footer').hidden = state.view !== 'pending';
   const processing = Boolean(project?.outputProcessing);
-  const processingLabel = project?.outputProcessing?.kind === 'revision' ? 'Revising Draft' : 'Creating Draft';
+  const awaitingReview = Boolean(project?.outputProcessing?.awaitingWordCountReview);
+  const processingLabel = awaitingReview ? 'Review Word Count Notice' : project?.outputProcessing?.kind === 'revision' ? 'Revising Draft' : 'Creating Draft';
   const selectedPending = selectedPendingOutputs(project);
   const selectedIds = new Set(selectedOutputs(project).map(output => output.id));
   const list = document.querySelector('#output-list');
-  document.querySelector('.composer-outputs').setAttribute('aria-busy', String(processing));
+  document.querySelector('.composer-outputs').setAttribute('aria-busy', String(processing && !awaitingReview));
   const create = document.querySelector('#create-output');
   create.disabled = processing || !selectedPending.length;
   create.title = processing ? processingLabel : selectedPending.length ? 'Draft Selected Content' : 'Select Content to Draft';
@@ -432,7 +437,7 @@ export function renderOutputs(project, requestedView) {
     const item = document.createElement('li');
     const card = document.createElement('article');
     const ready = outputIsReady(output);
-    const revising = Boolean(project?.outputProcessing?.ids.includes(output.id));
+    const revising = Boolean(!awaitingReview && project?.outputProcessing?.ids.includes(output.id));
     const active = Boolean(((ready || output.needsRegeneration) && project.selectedOutputId === output.id)
       || (project.viewOriginalDraft && !ready && project.lastPendingOutputId === output.id && selectedIds.has(output.id)));
     const selected = ready ? active : selectedIds.has(output.id);
@@ -473,7 +478,7 @@ export function renderOutputs(project, requestedView) {
     let drag = null;
     let draggedBadges = false;
     badges.addEventListener('pointerdown', event => {
-      if (event.target.closest('[data-variant-sources]')) return;
+      if (event.target.closest('[data-variant-sources], [data-variant-direction]')) return;
       if (event.pointerType !== 'mouse' || event.button !== 0 || badges.scrollWidth <= badges.clientWidth + 1) return;
       draggedBadges = false;
       drag = { pointerId: event.pointerId, x: event.clientX, scrollLeft: badges.scrollLeft };
@@ -495,7 +500,7 @@ export function renderOutputs(project, requestedView) {
       drag = null;
       delete badges.dataset.dragging;
     });
-    badges.append(...createOutputBadges(output, { includeWordCount: false }));
+    badges.append(...createOutputBadges(output, { includeWordCount: false, includeEditorialDirection: true }));
     const heading = document.createElement('strong');
     heading.className = 'output-card-title';
     heading.textContent = output.title;

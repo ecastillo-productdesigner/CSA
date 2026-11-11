@@ -6748,7 +6748,7 @@
       "category": "drafting",
       "value": "5000ms",
       "reference": "",
-      "description": "Time each visual paper/color phase holds before the next sheet moves to the front; the Drafting Content label stays fixed.",
+      "description": "Default hold before a paper handoff in Creating Drafts or Adding Sources. Multiple selected draft colors shorten the hold so their phases and handoffs fit the processing duration. Status labels stay fixed.",
       "status": "observed"
     },
     {
@@ -6806,9 +6806,9 @@
       "type": "duration",
       "layer": "component",
       "category": "drafting",
-      "value": "15000ms",
+      "value": "10000ms",
       "reference": "",
-      "description": "Prototype draft-generation duration, expressed in milliseconds for the processing timer.",
+      "description": "Ten-second prototype draft-generation duration, expressed in milliseconds for the processing timer.",
       "status": "observed"
     },
     {
@@ -6886,7 +6886,7 @@
       "category": "drafting",
       "value": "#f0fdfa",
       "reference": "foundation.color.teal.50",
-      "description": "Teal 50 (#F0FDFA) shimmer for the single-page source-adding card.",
+      "description": "Teal 50 (#F0FDFA) shimmer for source adding and audience suggestions.",
       "status": "observed",
       "color": {
         "colorSpace": "srgb",
@@ -6918,9 +6918,21 @@
       "type": "duration",
       "layer": "component",
       "category": "drafting",
-      "value": "5000ms",
+      "value": "10000ms",
       "reference": "",
-      "description": "Five-second prototype revision-processing duration, expressed in milliseconds for the selected-draft timer.",
+      "description": "Ten-second prototype revision-processing duration, expressed in milliseconds for the selected-draft timer.",
+      "status": "observed"
+    },
+    {
+      "name": "component.drafting.audience-suggest-duration",
+      "designName": "component/drafting/audience-suggest-duration",
+      "cssVariable": "--csa-component-drafting-audience-suggest-duration",
+      "type": "duration",
+      "layer": "component",
+      "category": "drafting",
+      "value": "10000ms",
+      "reference": "",
+      "description": "Show Suggesting Audiences for ten seconds before revealing the prototype audience suggestions, including when the dropdown is closed.",
       "status": "observed"
     },
     {
@@ -6930,9 +6942,141 @@
       "type": "duration",
       "layer": "component",
       "category": "drafting",
-      "value": "5000ms",
+      "value": "10000ms",
       "reference": "",
-      "description": "Show Adding Source or Adding Sources in Project Sources for five seconds before inserting new sources.",
+      "description": "Show Adding Source or Adding Sources in Project Sources for ten seconds before inserting new sources.",
+      "status": "observed"
+    },
+    {
+      "name": "component.drafting.audience-icon-size",
+      "designName": "component/drafting/audience-icon-size",
+      "cssVariable": "--csa-component-drafting-audience-icon-size",
+      "type": "dimension",
+      "layer": "component",
+      "category": "drafting",
+      "value": "64px",
+      "reference": "foundation.space.64",
+      "description": "Width of the approved three-person silhouette in the audience generation panel.",
+      "status": "observed"
+    },
+    {
+      "name": "component.drafting.audience-icon-compact-size",
+      "designName": "component/drafting/audience-icon-compact-size",
+      "cssVariable": "--csa-component-drafting-audience-icon-compact-size",
+      "type": "dimension",
+      "layer": "component",
+      "category": "drafting",
+      "value": "32px",
+      "reference": "foundation.space.32",
+      "description": "Scaled three-person silhouette width inside a closed audience dropdown.",
+      "status": "observed"
+    },
+    {
+      "name": "component.drafting.audience-person-height",
+      "designName": "component/drafting/audience-person-height",
+      "cssVariable": "--csa-component-drafting-audience-person-height",
+      "type": "dimension",
+      "layer": "component",
+      "category": "drafting",
+      "value": "51px",
+      "reference": "",
+      "description": "Height of one complete audience silhouette before the panel or closed-dropdown scale is applied.",
+      "status": "observed"
+    },
+    {
+      "name": "component.drafting.audience-side-scale",
+      "designName": "component/drafting/audience-side-scale",
+      "cssVariable": "--csa-component-drafting-audience-side-scale",
+      "type": "number",
+      "layer": "component",
+      "category": "drafting",
+      "value": "0.74",
+      "reference": "",
+      "description": "Relative size of the two people behind the front person.",
+      "status": "observed"
+    },
+    {
+      "name": "component.drafting.audience-lift-scale",
+      "designName": "component/drafting/audience-lift-scale",
+      "cssVariable": "--csa-component-drafting-audience-lift-scale",
+      "type": "number",
+      "layer": "component",
+      "category": "drafting",
+      "value": "0.83",
+      "reference": "",
+      "description": "Scale while the incoming audience silhouette lifts to the foreground.",
+      "status": "observed"
+    },
+    {
+      "name": "component.drafting.audience-settle-scale",
+      "designName": "component/drafting/audience-settle-scale",
+      "cssVariable": "--csa-component-drafting-audience-settle-scale",
+      "type": "number",
+      "layer": "component",
+      "category": "drafting",
+      "value": "0.68",
+      "reference": "",
+      "description": "Scale while the retiring silhouette crosses behind the group.",
+      "status": "observed"
+    },
+    {
+      "name": "component.drafting.audience-retire-offset",
+      "designName": "component/drafting/audience-retire-offset",
+      "cssVariable": "--csa-component-drafting-audience-retire-offset",
+      "type": "number",
+      "layer": "component",
+      "category": "drafting",
+      "value": "0.15",
+      "reference": "",
+      "description": "Normalized handoff moment when the side person starts to move behind the group.",
+      "status": "observed"
+    },
+    {
+      "name": "component.drafting.audience-settle-offset",
+      "designName": "component/drafting/audience-settle-offset",
+      "cssVariable": "--csa-component-drafting-audience-settle-offset",
+      "type": "number",
+      "layer": "component",
+      "category": "drafting",
+      "value": "0.6",
+      "reference": "",
+      "description": "Normalized handoff moment when the retiring person crosses the center.",
+      "status": "observed"
+    },
+    {
+      "name": "component.drafting.audience-hold-duration",
+      "designName": "component/drafting/audience-hold-duration",
+      "cssVariable": "--csa-component-drafting-audience-hold-duration",
+      "type": "duration",
+      "layer": "component",
+      "category": "drafting",
+      "value": "2400ms",
+      "reference": "component.drafting.shimmer-duration",
+      "description": "Hold the audience silhouettes for 2400 ms before their shared 800 ms paper-style handoff.",
+      "status": "observed"
+    },
+    {
+      "name": "component.drafting.audience-panel-scale",
+      "designName": "component/drafting/audience-panel-scale",
+      "cssVariable": "--csa-component-drafting-audience-panel-scale",
+      "type": "number",
+      "layer": "component",
+      "category": "drafting",
+      "value": "0.7272727272727273",
+      "reference": "",
+      "description": "Scale the 88 px reference people group and its motion to 64 px in the open audience panel.",
+      "status": "observed"
+    },
+    {
+      "name": "component.drafting.audience-compact-scale",
+      "designName": "component/drafting/audience-compact-scale",
+      "cssVariable": "--csa-component-drafting-audience-compact-scale",
+      "type": "number",
+      "layer": "component",
+      "category": "drafting",
+      "value": "0.36363636363636365",
+      "reference": "",
+      "description": "Scale the approved 88 px people group to 32 px in the closed dropdown.",
       "status": "observed"
     },
     {
@@ -7028,6 +7172,40 @@
       "reference": "",
       "description": "Acknowledge the tab notification after 10 seconds while its draft stays selected. Inactive tabs retain their dot until activated. The separate Request Revision notification has no timeout and clears only when that action is opened.",
       "status": "observed"
+    },
+    {
+      "name": "component.audience-ready.dot-size",
+      "designName": "component/audience-ready/dot-size",
+      "cssVariable": "--csa-component-audience-ready-dot-size",
+      "type": "dimension",
+      "layer": "component",
+      "category": "audience-ready",
+      "value": "8px",
+      "reference": "component.editor-tab.revision-dot-size",
+      "description": "Use the shared 8 px unread indicator size on the audience dropdown.",
+      "status": "observed"
+    },
+    {
+      "name": "component.audience-ready.dot-color",
+      "designName": "component/audience-ready/dot-color",
+      "cssVariable": "--csa-component-audience-ready-dot-color",
+      "type": "color",
+      "layer": "component",
+      "category": "audience-ready",
+      "value": "#b91c1c",
+      "reference": "foundation.color.red.700",
+      "description": "Red unread indicator for audience suggestions that finished while their dropdown was closed.",
+      "status": "observed",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [
+          0.7254901960784313,
+          0.10980392156862745,
+          0.10980392156862745
+        ],
+        "alpha": 1,
+        "hex": "#b91c1c"
+      }
     }
   ]
 }

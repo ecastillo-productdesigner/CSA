@@ -1,4 +1,4 @@
-import { createSourceAddingAnimation } from './drafting-animation.js?v=20261026-drafting-card-size';
+import { createSourceAddingAnimation } from './drafting-animation.js?v=20261111-source-paper-count';
 import { tokenNumber } from './design-system/runtime.js?v=20261026-drafting-card-size';
 
 // Jobs keep their original deadline when a source list rerenders or changes project.

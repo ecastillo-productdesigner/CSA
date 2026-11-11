@@ -302,7 +302,12 @@ function renderOutputs(project) {
   const selectedOutput = projectOutputs(project).find(output => output.id === project?.selectedOutputId && (outputIsReady(output) || output.needsRegeneration));
   richEditor.setRevisionBusy(Boolean(project?.outputProcessing?.kind === 'revision' && project.outputProcessing.ids.includes(selectedOutput?.id)), outputLoadingSelectionKeys(selectedOutput));
   const labels = $('#editor-variant-labels');
-  labels.replaceChildren(...createOutputBadges(selectedOutput, { includeWordCount: false }), $('#editor-direction-empty'), $('#editor-direction-button'));
+  const ownMaterial = selectedOutput && (selectedOutput.ownMaterial === true || selectedOutput.id === project?.ownMaterialOutputId);
+  labels.replaceChildren(...createOutputBadges(selectedOutput, { includeWordCount: false, includeSourceCount: !ownMaterial }), $('#editor-direction-empty'), $('#editor-direction-button'));
+  if (ownMaterial) {
+    $('#editor-direction-empty').hidden = true;
+    $('#editor-direction-button').hidden = true;
+  }
   const revisionTools = $('#editor-revision-tools');
   revisionTools.replaceChildren();
   if (selectedOutput && outputIsReady(selectedOutput) && !selectedOutput.needsRegeneration) {

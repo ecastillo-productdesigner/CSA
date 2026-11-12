@@ -26,7 +26,7 @@ import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js
 import { removeProjectContent } from './project-deletion.js?v=20261026-drafting-card-size';
 import { createContentPreview } from './content-preview.js?v=20261026-drafting-card-size';
 import { createProjectAudienceSuggestions } from './project-audience-suggestions.js?v=20261111-audience-name-variation';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261111-audience-ready';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261112-audiences-tab';
 import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261111-audience-name-variation';
 import { createNewProjectUpload } from './new-project-upload.js?v=20261026-drafting-card-size';
 import { createRailNavigation } from './navigation.js?v=20261105-role-selector';

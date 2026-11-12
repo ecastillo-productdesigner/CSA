@@ -207,12 +207,13 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
       return { row, button, favorite, option, groupId };
     }
     function refreshRows() {
-      // Keep generated options in the native select for saved settings and the
-      // selected trigger label, but show them only in the Suggested tab.
+      // Keep all generated options available for saved settings and the selected
+      // trigger label. Only hearted suggestions join the Audiences catalog.
+      const favorites = new Set(favoritesStore.values(key));
       const generatedValues = new Set(suggestionProvider ? descriptors([
         ...suggestionProvider.getOptions(), ...suggestions, ...suggestionGroups.flatMap(group => group.suggestions),
       ]).map(choice => choice.value) : []);
-      const options = [...select.options].filter(option => !suggestionProvider
+      const options = [...select.options].filter(option => !suggestionProvider || favorites.has(option.value)
         || (!generatedValues.has(option.value) && !option.value.startsWith('suggested-audience:')));
       const signature = JSON.stringify(options.map(option => [option.value, option.textContent, option.disabled]));
       if (signature === optionsSignature && options.every((option, index) => rows[index]?.option === option)) return;
@@ -423,7 +424,7 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
         tab.type = 'button';
         tab.id = `${select.id}-${value}-tab`;
         tab.value = value;
-        const tabLabel = value === 'all' ? 'All Audiences' : 'Suggested';
+        const tabLabel = value === 'all' ? 'Audiences' : 'Suggested';
         tab.setAttribute('aria-label', tabLabel);
         if (value === 'suggested') tab.append(createIcon('wand_stars'), document.createTextNode(tabLabel));
         else tab.textContent = tabLabel;

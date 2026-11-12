@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { populateDraftOptions } from '../dist/draft-options.js';
 import { createToolDropdowns } from '../dist/tool-dropdowns.js';
 import { createToolFavorites } from '../dist/tool-favorites.js';
+import { createAudienceSuggestionLibrary } from '../dist/audience-suggestions.js?v=20261111-audience-name-variation';
+import { createProjectAudienceSuggestions } from '../dist/project-audience-suggestions.js';
 
 class Element {
   constructor(tag = 'div') {
@@ -132,7 +134,7 @@ function setup(t, savedFavorites = {}) {
     parent.append(field);
     return { field, select };
   }
-  return { doc, field, dropdowns, favoritesStore, animations, notices, async advance(milliseconds = 10000) { t.mock.timers.tick(milliseconds); await flush(); } };
+  return { doc, field, dropdowns, favoritesStore, storage, animations, notices, async advance(milliseconds = 10000) { t.mock.timers.tick(milliseconds); await flush(); } };
 }
 
 
@@ -218,7 +220,7 @@ test('Audience without a suggestions provider retains its existing dropdown', t 
 
 test('suggestions stay scoped to Audience and require sources', async t => {
   const ui = suggestionFixture(t, { available: false });
-  assert.deepEqual(ui.tabs().querySelectorAll('button').map(button => button.getAttribute('aria-label')), ['All Audiences', 'Suggested']);
+  assert.deepEqual(ui.tabs().querySelectorAll('button').map(button => button.getAttribute('aria-label')), ['Audiences', 'Suggested']);
   assert.equal(ui.format.field.querySelector('.output-status-tabs'), null);
   const suggestedTab = ui.tab('Suggested');
   const icon = suggestedTab.querySelector('.material-symbols-outlined');
@@ -283,7 +285,7 @@ test('explicit generation yields three selectable audiences and retains the nati
   assert.equal(ui.trigger.getAttribute('aria-label'), 'Audience: None Selected');
 });
 
-test('generated audience favorites stay in Suggested and remain on reopening', async t => {
+test('generated audience favorites appear in both tabs and remain on reopening', async t => {
   const ui = suggestionFixture(t);
   ui.trigger.emit('click');
   ui.show('Suggested');
@@ -300,11 +302,12 @@ test('generated audience favorites stay in Suggested and remain on reopening', a
   assert.equal(pinned.getAttribute('aria-label'), 'Favorite audiences');
   assert.equal(pinned.querySelector('.audience-generation-header'), null);
   assert.equal(pinned.querySelector('.audience-generation-source-link'), null);
-  ui.show('All Audiences');
+  ui.show('Audiences');
   const labels = ui.allList().querySelectorAll('.tool-dropdown-option').map(button => button.textContent);
-  assert.equal(labels.length, 5);
+  assert.equal(labels.length, 6);
   assert.equal(labels[0], 'None Selected');
-  for (const choice of choices) assert.ok(!labels.includes(choice.label));
+  assert.equal(labels[1], choices[2].label);
+  for (const choice of choices.slice(0, 2)) assert.ok(!labels.includes(choice.label));
   ui.show('Suggested');
   ui.menu.emit('keydown', { key: 'Escape' });
   ui.trigger.emit('click');
@@ -400,7 +403,7 @@ test('failed generation presents an alert and can be retried without changing th
 test('tab, row, heart, and action keyboard navigation stays within the active pane until dismissal', async t => {
   const ui = suggestionFixture(t);
   ui.trigger.emit('click');
-  const all = ui.tab('All Audiences');
+  const all = ui.tab('Audiences');
   const suggested = ui.tab('Suggested');
   all.focus();
   ui.tabs().emit('keydown', { target: all, key: 'End' });
@@ -494,7 +497,7 @@ test('ready audiences preserve the selected value until keyboard opening acknowl
   ui.trigger.emit('click');
   ui.show('Suggested');
   ui.action().emit('click');
-  ui.show('All Audiences');
+  ui.show('Audiences');
   ui.menu.emit('keydown', { key: 'Escape' });
   await ui.advance();
   ui.requests[0].resolve(choices);
@@ -527,7 +530,7 @@ test('ready audiences preserve the selected value until keyboard opening acknowl
   assert.deepEqual(ui.notices, ['Suggested audiences are ready']);
 });
 
-for (const tab of ['Suggested', 'All Audiences']) {
+for (const tab of ['Suggested', 'Audiences']) {
   test(`completion while ${tab} is open never creates a ready notification`, async t => {
     const ui = suggestionFixture(t);
     ui.trigger.emit('click');
@@ -700,7 +703,7 @@ test('new source selections retain historical choices while offering a new gener
   assert.equal(ui.view().querySelector('.saved-drafts-empty').textContent, 'Suggest audiences for your current source selection.');
 });
 
-test('All Audiences excludes history and persisted suggestions without losing the selected value', t => {
+test('Audiences includes favorited persisted suggestions and excludes other history without losing the selected value', t => {
   const ui = suggestionFixture(t);
   const persisted = document.createElement('option');
   persisted.value = 'suggested-audience:previous%20project';
@@ -717,12 +720,95 @@ test('All Audiences excludes history and persisted suggestions without losing th
   assert.equal(ui.audience.select.value, persisted.value);
   ui.trigger.emit('click');
   const labels = ui.allList().querySelectorAll('.tool-dropdown-option').map(button => button.textContent);
-  assert.equal(labels.length, 5);
-  assert.ok(!labels.includes(persisted.textContent));
+  assert.equal(labels.length, 6);
+  assert.equal(labels[1], persisted.textContent);
   for (const choice of choices) assert.ok(!labels.includes(choice.label));
-  const general = ui.allList().querySelectorAll('.tool-dropdown-row')[1];
+  const general = ui.allList().querySelectorAll('.tool-dropdown-row')[2];
   general.querySelector('.tool-option-favorite').emit('click');
   assert.equal(ui.allList().querySelectorAll('.tool-dropdown-row')[1], general);
+});
+
+test('hearting a suggested audience adds one favorite to Audiences and unhearting preserves the selected value', t => {
+  const ui = suggestionFixture(t);
+  ui.setContext({ groups: [generation('current', 'project-a:sources-a', ['Current source']),
+    generation('older', 'project-a:older-sources', ['Earlier source'])], suggestions: choices });
+  ui.controller.refresh();
+  ui.trigger.emit('click');
+  ui.show('Suggested');
+  let changes = 0;
+  ui.audience.select.addEventListener('change', () => { changes++; });
+  const suggested = ui.generatedRows().find(row => row.querySelector('.tool-dropdown-option').textContent === choices[1].label);
+  suggested.querySelector('.tool-option-favorite').emit('click');
+  assert.equal(ui.audience.select.value, '', 'hearting does not select the audience');
+  assert.equal(changes, 0);
+  ui.show('Audiences');
+  const rows = () => ui.allList().querySelectorAll('.tool-dropdown-row');
+  assert.equal(rows().length, 6, 'duplicate generation identities produce one catalog choice');
+  const saved = rows()[1];
+  assert.equal(saved.querySelector('.tool-dropdown-option').textContent, choices[1].label);
+  assert.equal(saved.querySelector('.tool-option-favorite').getAttribute('aria-pressed'), 'true');
+  assert.equal(rows()[0].querySelector('.tool-dropdown-option').textContent, 'None Selected');
+  saved.querySelector('.tool-dropdown-option').emit('click');
+  assert.equal(ui.audience.select.value, choices[1].value);
+  assert.equal(changes, 1);
+  ui.trigger.emit('click');
+  const heart = rows()[1].querySelector('.tool-option-favorite');
+  heart.focus();
+  heart.emit('click');
+  assert.equal(rows().length, 5);
+  assert.ok(!rows().some(row => row.querySelector('.tool-dropdown-option').textContent === choices[1].label));
+  assert.equal(ui.audience.select.value, choices[1].value);
+  assert.equal(ui.trigger.children[0].textContent, choices[1].label);
+  assert.ok([...ui.audience.select.options].some(option => option.value === choices[1].value));
+  assert.equal(changes, 1, 'removing a heart preserves the draft audience');
+  assert.equal(document.activeElement, ui.tab('Audiences'), 'focus stays in the menu after the row disappears');
+  ui.show('Suggested');
+  const restored = ui.generatedRows().filter(row => row.querySelector('.tool-dropdown-option').textContent === choices[1].label);
+  assert.equal(restored.length, 2, 'unhearting keeps the source history');
+  assert.ok(restored.every(row => row.querySelector('.tool-option-favorite').getAttribute('aria-pressed') === 'false'));
+});
+
+test('hearted suggested audiences restore in Audiences on a new visit and project without source history', async t => {
+  const ui = setup(t);
+  const library = createAudienceSuggestionLibrary({ storage: () => ui.storage });
+  const originalProject = { id: 'original-project', sources: [{ title: 'Local community garden plans' }] };
+  const provider = createProjectAudienceSuggestions({ getProject: () => originalProject, library });
+  const generated = await provider.generate();
+  const original = ui.field('Audience');
+  populateDraftOptions(original.field, { library });
+  const controller = ui.dropdowns({ audienceSuggestions: provider });
+  const originalMenu = original.field.querySelector('.tool-dropdown-menu');
+  original.field.querySelector('.tool-dropdown-trigger').emit('click');
+  const tabs = originalMenu.querySelector('.output-status-tabs');
+  tabs.emit('click', { target: tabs.querySelectorAll('button').find(button => button.getAttribute('aria-label') === 'Suggested') });
+  const favorite = originalMenu.querySelector('.audience-suggestion-view').querySelectorAll('.tool-dropdown-row')
+    .find(row => row.querySelector('.tool-dropdown-option').textContent === generated[0].label);
+  favorite.querySelector('.tool-option-favorite').emit('click');
+  controller.destroy();
+  original.field.remove();
+
+  const restoredLibrary = createAudienceSuggestionLibrary({ storage: () => ui.storage });
+  const restoredFavorites = createToolFavorites({ storage: () => ui.storage });
+  const newProject = { id: 'new-project', sources: [] };
+  const restoredProvider = createProjectAudienceSuggestions({ getProject: () => newProject, library: restoredLibrary });
+  const restored = ui.field('Audience');
+  populateDraftOptions(restored.field, { library: restoredLibrary });
+  ui.dropdowns({ audienceSuggestions: restoredProvider, favoritesStore: restoredFavorites });
+  const restoredMenu = restored.field.querySelector('.tool-dropdown-menu');
+  restored.field.querySelector('.tool-dropdown-trigger').emit('click');
+  const allRows = restoredMenu.querySelector('.tool-dropdown-list').querySelectorAll('.tool-dropdown-row');
+  assert.equal(restoredProvider.getContext().available, false);
+  assert.deepEqual(restoredProvider.getContext().groups, []);
+  assert.deepEqual(restoredFavorites.values('audience'), [generated[0].value]);
+  assert.equal(allRows.length, 6);
+  assert.equal(allRows[1].querySelector('.tool-dropdown-option').textContent, generated[0].label);
+  assert.equal(allRows[1].querySelector('.tool-option-favorite').getAttribute('aria-pressed'), 'true');
+  for (const choice of generated.slice(1)) {
+    assert.ok(!allRows.some(row => row.querySelector('.tool-dropdown-option').textContent === choice.label));
+  }
+  allRows[1].querySelector('.tool-dropdown-option').emit('click');
+  assert.equal(restored.select.value, generated[0].value);
+  assert.equal(restored.field.querySelector('.tool-dropdown-trigger').children[0].textContent, generated[0].label);
 });
 
 test('generation headers omit source-title text and keep full names available on hover', t => {

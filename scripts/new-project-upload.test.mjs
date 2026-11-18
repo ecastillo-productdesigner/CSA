@@ -57,6 +57,7 @@ function setup(t, callbacks = {}) {
   const deleted = [];
   const api = createNewProjectUpload({
     isBlocked: callbacks.isBlocked,
+    onIdle: callbacks.onIdle,
     saveFiles: callbacks.saveFiles || (async incoming => { saved.push(incoming); return incoming.map((entry, index) => ({ type: 'file', title: entry.name, attachmentId: `attachment-${index}` })); }),
     onCreate: callbacks.onCreate || (async sources => { created.push(sources); }),
     deleteFiles: callbacks.deleteFiles || (async ids => { deleted.push(ids); }),
@@ -220,4 +221,27 @@ test('an active link import blocks file browse, drops and document creation unti
   await ui.get('use-material').click();
   assert.equal(ui.saved.length, 1);
   assert.equal(ui.saved[0][0].name, 'Saved.txt');
+});
+
+
+test('idle callbacks run after busy state and controls are restored on success or failure', async t => {
+  for (const fail of [false, true]) {
+    const creating = deferred();
+    const observations = [];
+    const ui = setup(t, {
+      onCreate: () => creating.promise,
+      onIdle() {
+        observations.push({ busy: ui.api.isBusy(), ariaBusy: ui.get('dialog').getAttribute('aria-busy'), inputDisabled: ui.get('file-input').disabled, remainingFiles: ui.get('selected-files').children.length });
+      },
+    });
+    ui.select([file('Notes.txt')]);
+    const work = ui.get('use-material').click();
+    await Promise.resolve();
+    assert.equal(ui.api.isBusy(), true);
+    assert.deepEqual(observations, []);
+    if (fail) creating.reject(new Error('Could not add sources'));
+    else creating.resolve(true);
+    await work;
+    assert.deepEqual(observations, [{ busy: false, ariaBusy: undefined, inputDisabled: false, remainingFiles: fail ? 1 : 0 }]);
+  }
 });

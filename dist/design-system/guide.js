@@ -1,7 +1,8 @@
+import { mountEditorialPlanSpecimen } from './editorial-plan-specimen.js?v=20261117-plan-review';
 import { mountAnimationSpecimens } from './animation-specimens.js?v=20261111-source-paper-count';
 import { createContentDirectionIndicator } from '../content-card-editing.js?v=20261111-direction-badge';
 import { createEditorPopover } from '../editor-popover.js?v=20261111-direction-badge';
-import { createEditorialWordCountNotice } from '../editorial-word-count-notice.js?v=20261111-direction-badge';
+import { mountWordCountSpecimen } from './word-count-specimen.js?v=20261117-word-count-popover';
 import { createToast } from '../toast.js?v=20261027-toast-timing';
 import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-drafting-card-size';
 import { bindTabSelection } from '../selection-controls.js?v=20261026-drafting-card-size';
@@ -13,7 +14,7 @@ import { colorRoleGroups } from './color-roles.js?v=20261028-revision-indicator'
 import { mountTypographyReference } from './typography-reference.js?v=20261111-labels-restored';
 import { createAudienceSuggestionLibrary } from '../audience-suggestions.js?v=20261111-audience-name-variation';
 import { createProjectAudienceSuggestions } from '../project-audience-suggestions.js?v=20261111-audience-name-variation';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261112-audiences-tab';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261117-audience-headings';
 import { createToolFavorites } from '../tool-favorites.js?v=20261105-filter-settings';
 import { populateDraftOptions } from '../draft-options.js?v=20261111-audience-name-variation';
 import { iconInventory } from './icon-inventory.js?v=20261111-audience-name-variation';
@@ -43,14 +44,6 @@ const specimenFavoritesStore = createToolFavorites({ storage: () => ({
 }) });
 const toolDropdowns = createToolDropdowns({
   favoritesStore: specimenFavoritesStore, audienceSuggestions, notify,
-  onAudienceSourcesOpen(groupId) {
-    const selection = audienceSuggestions.selectSources(groupId);
-    if (!selection) return;
-    const inputs = [...$('#ds-audience-source-selection').querySelectorAll('input')];
-    for (const input of inputs) input.checked = audienceProject.sources.find(source => source.id === input.dataset.audienceSource)?.selected !== false;
-    toolDropdowns.refresh();
-    (inputs.find(input => input.checked) || inputs[0])?.focus();
-  },
 });
 $('#ds-audience-source-selection').addEventListener('change', event => {
   const source = audienceProject.sources.find(item => item.id === event.target.dataset.audienceSource);
@@ -427,7 +420,20 @@ const segmentSelection = bindTabSelection({
 });
 segmentSelection.sync(segmentView);
 
-const wordCountNoticePreview = createEditorialWordCountNotice({ id: 'ds-editorial-word-count-dialog' });
-document.querySelector('#ds-word-count-notice').addEventListener('click', event => {
-  wordCountNoticePreview.confirm('Write a 750-word draft', { trigger: event.currentTarget });
+mountWordCountSpecimen($('#ds-word-count-specimen'), {
+  onAddSources() {
+    const sources = $('#ds-navigation-sample-root [aria-controls="ds-navigation-selection-preview"]');
+    if (sources.getAttribute('aria-expanded') !== 'true') sources.click();
+    const add = $('#ds-navigation-selection-preview .editor-add-source-button');
+    add.scrollIntoView({ block: 'center' });
+    add.focus({ preventScroll: true });
+  },
+  onRequestRevision() {
+    const revision = $('#ds-feedback-sample-root [data-request-revision]');
+    revision.scrollIntoView({ block: 'center' });
+    revision.focus({ preventScroll: true });
+    revision.click();
+  },
 });
+
+mountEditorialPlanSpecimen(document.querySelector('#ds-editorial-plan-specimen'));

@@ -1,5 +1,6 @@
+import { buildEditorialPlans, applyEditorialPlan } from './editorial-plans.js?v=20261117-plan-review';
+import { createEditorialPlanReview } from './editorial-plan-review.js?v=20261117-plan-review';
 import { INITIAL_DRAFT_WORD_LIMIT, requestedEditorialWordCount } from './editorial-word-count.js?v=20261111-word-count-notice';
-import { createEditorialWordCountNotice } from './editorial-word-count-notice.js?v=20261111-direction-badge';
 import { syncOwnMaterialSource } from './own-material-source.js?v=20261106-material-tabs';
 import { listSavedDraftSetups, saveDraftSetup, removeSavedDraftSetup, applySavedDraftSetup, clearSavedDraftSetup } from './saved-draft-setups.js?v=20261111-audience-name-variation';
 import { createSavedDrafts } from './saved-drafts.js?v=20261110-saved-settings-label';
@@ -21,18 +22,18 @@ import { createProfile } from './profile.js?v=20261026-drafting-card-size';
 import { createSearchExperience, sampleSearchSources } from './search.js?v=20261106-multi-publications';
 import { classifyProjectSearchInput } from './project-search-input.js?v=20261102-topic-search';
 import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261105-filter-settings';
-import { createMaterialEditor } from './editor.js?v=20261111-direction-badge';
+import { createMaterialEditor } from './editor.js?v=20261117-word-count-popover';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-drafting-card-size';
 import { removeProjectContent } from './project-deletion.js?v=20261026-drafting-card-size';
 import { createContentPreview } from './content-preview.js?v=20261026-drafting-card-size';
 import { createProjectAudienceSuggestions } from './project-audience-suggestions.js?v=20261111-audience-name-variation';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261112-audiences-tab';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261117-word-count-popover';
 import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261111-audience-name-variation';
-import { createNewProjectUpload } from './new-project-upload.js?v=20261026-drafting-card-size';
+import { createNewProjectUpload } from './new-project-upload.js?v=20261117-word-count-popover';
 import { createRailNavigation } from './navigation.js?v=20261105-role-selector';
 import { createProjectSources } from './sources.js?v=20261106-own-material-source';
 import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261106-own-material-source';
-import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261111-direction-badge';
+import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, outputWordCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261117-plan-review';
 import { createEditorTabs } from './editor-tabs.js?v=20261105-filter-settings';
 import { createContentCardEditing } from './content-card-editing.js?v=20261111-direction-badge';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-drafting-card-size';
@@ -40,7 +41,6 @@ import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js
 import { createRevisionButton, updateRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261110-content-tabs';
 
 const $ = (selector) => document.querySelector(selector);
-const draftLengthNotice = createEditorialWordCountNotice();
 const storageKey = 'csa.projects.v1';
 const acceptedExtensions = new Set(['pdf', 'docx', 'pptx', 'txt', 'md']);
 const sampleStories = [
@@ -103,7 +103,6 @@ const sourceAlreadyAdded = createSourceAlreadyAddedDialog({
 });
 let dashboard = null;
 const outputTimers = new Map();
-const outputWordCountReviews = new WeakSet();
 const outputViews = new Map();
 populateDraftOptions(document);
 const audienceSuggestions = createProjectAudienceSuggestions({
@@ -111,12 +110,13 @@ const audienceSuggestions = createProjectAudienceSuggestions({
   beforeGenerate: () => richEditor.flush(),
   save: saveProjects, notify,
 });
-const toolDropdowns = createToolDropdowns({ notify, audienceSuggestions, onAudienceSourcesOpen: openAudienceSources });
+const toolDropdowns = createToolDropdowns({ notify, audienceSuggestions });
 const newDraftDisclosure = createPanelDisclosure({ body: $('#composer-variant-form'), trigger: $('#toggle-new-variant'), panel: $('.composer-tools'), expanded: true });
 const contentDisclosure = createPanelDisclosure({ body: $('#composer-outputs-body'), trigger: $('#toggle-content'), panel: $('#composer-outputs'), label: 'Content', expanded: true });
 const outputTabTransition = createTabPanelTransition($('#output-status-content'));
 const newProjectUpload = createNewProjectUpload({
   isBlocked: () => Boolean(sourceImport),
+  onIdle: () => renderDeferredOutput(),
   async onCreate(sources) {
     if (sourceTargetProjectId) {
       const target = projects.find(project => project.id === sourceTargetProjectId && !project.deletedAt);
@@ -177,6 +177,10 @@ const roleSelector = createRoleSelector({
   onOpen() { railNavigation.close(); savedDrafts.close(); toolDropdowns.close(); richEditor.closePanels(); draftSourcesPopover.close(); },
   notify,
 });
+const editorialPlanReview = createEditorialPlanReview({
+  onConfirm: confirmEditorialPlans,
+  closePanels() { roleSelector.close(); railNavigation.closeTransient(); savedDrafts.close(); toolDropdowns.close(); richEditor.closePanels(); draftSourcesPopover.close(); },
+});
 const railNavigation = createRailNavigation({
   onSourcesOpen() { renderProjectSources(projects.find(project => project.id === activeProjectId && project.kind === 'draft') || null); },
   onNewVariantOpen() { setNewVariantCollapsed(false); },
@@ -195,6 +199,18 @@ const richEditor = createMaterialEditor({
   onSendToCms: projectId => sendDestinationDialog.open(projectId),
   onContentChange: updateComposerActions,
   onToolbarChange: toolDropdowns.refresh,
+  onDirectionNoticeDismiss: (projectId, outputId) => dismissWordCountNotice(projectId, outputId),
+  onDirectionAddSources(projectId) {
+    if (projectId !== activeProjectId) return;
+    $('#editor-add-source-button').click();
+  },
+  onDirectionRequestRevision(projectId, outputId) {
+    const project = projects.find(entry => entry.id === projectId && entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
+    const output = projectOutputs(project).find(entry => entry.id === outputId && outputIsReady(entry) && !entry.needsRegeneration);
+    if (!output || project.outputProcessing) return;
+    richEditor.flush();
+    revisionRequests.open(project, output);
+  },
   notify,
   onSave(snapshot) {
     const project = projects.find(entry => entry.id === snapshot.id);
@@ -292,7 +308,7 @@ function removeSavedDraft(projectId, outputId) {
 
 function renderOutputs(project) {
   draftSourcesPopover.close();
-  richEditor.closeDirection();
+  richEditor.closeDirectionForRender();
   $('#show-sources').hidden = project?.kind !== 'draft';
   const view = variantPanelState(project, outputViews.get(project?.id)).view;
   outputViews.set(project?.id, view);
@@ -335,25 +351,6 @@ bindTabSelection({
   panel: $('#output-status-content'),
   onSelect: selectOutputView,
 });
-
-function openAudienceSources(groupId) {
-  const selection = audienceSuggestions.selectSources(groupId);
-  const project = projects.find(entry => entry.id === activeProjectId);
-  if (!selection || !project) {
-    notify('These sources are no longer available');
-    return;
-  }
-  // Establish the next-draft selection before opening the rail, so an active
-  // output's saved source set cannot replace the audience generation's sources.
-  renderProjectSources(project, { forNewDraft: true });
-  railNavigation.open('sources');
-  if ($('#composer').classList.contains('has-link-cards')) searchExperience.show(project, { embedded: true });
-  else if ($('#composer').classList.contains('has-search-results')) searchExperience.refreshSources(project);
-  updateComposerActions();
-  toolDropdowns.refresh();
-  ($('#editor-source-list').querySelector('input:checked:not(:disabled)') || $('#editor-sources').querySelector('[data-close-navigation]'))?.focus({ preventScroll: true });
-  if (selection.missingCount) notify('Some sources are no longer available');
-}
 
 function renderProjectSources(project, { forNewDraft = false } = {}) {
   const variant = project?.viewOriginalDraft ? null : projectOutputs(project).find(output => output.id === project?.selectedOutputId) || null;
@@ -905,6 +902,26 @@ function renderSourceStory(project) {
   $('#output-placeholder').scrollTop = 0;
 }
 
+function dismissWordCountNotice(projectId, outputId) {
+  const project = projects.find(entry => entry.id === projectId && !entry.deletedAt && !entry.archivedAt);
+  const output = projectOutputs(project).find(entry => entry.id === outputId);
+  if (!output?.wordCountNoticePending) return;
+  delete output.wordCountNoticePending;
+  saveProjects();
+}
+
+function showPendingWordCountNotice(project, output) {
+  if (!output?.wordCountNoticePending || !output.shorterDraftCreated || !outputIsReady(output) || output.needsRegeneration || project.outputProcessing) return;
+  // Let the completed draft paint before opening its saved Editorial Direction.
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    if (!projects.includes(project) || project.deletedAt || project.archivedAt || activeProjectId !== project.id || $('#composer').hidden
+      || project.viewOriginalDraft || project.selectedOutputId !== output.id || !projectOutputs(project).includes(output)
+      || !output.wordCountNoticePending || !outputIsReady(output) || output.needsRegeneration || project.outputProcessing) return;
+    if (document.querySelector('dialog[open]') || sourceImport || newProjectUpload.isBusy()) { deferredOutputProjectId = project.id; return; }
+    richEditor.showWordCountNotice();
+  }));
+}
+
 function showEditorProject(project) {
   if (project.searchQuery && pruneUnusedSearchCandidates(project)) saveProjects();
   closeComposer();
@@ -944,7 +961,7 @@ function showEditorProject(project) {
     document.body.classList.add('editing-material');
     $('#composer').classList.add('has-editor');
     $('#composer-heading').textContent = 'Story editor';
-    richEditor.open(selectedOutput ? { ...project, ...selectedOutput, shareText: typeof selectedOutput.shareText === 'string' ? selectedOutput.shareText : undefined, shareTextEdited: selectedOutput.shareTextEdited === true, editorialDirection: typeof selectedOutput.editorialDirection === 'string' ? selectedOutput.editorialDirection : '', id: project.id, toolPreferences: project.toolPreferences } : project);
+    richEditor.open(selectedOutput ? { ...project, ...selectedOutput, shareText: typeof selectedOutput.shareText === 'string' ? selectedOutput.shareText : undefined, shareTextEdited: selectedOutput.shareTextEdited === true, editorialDirection: typeof selectedOutput.editorialDirection === 'string' ? selectedOutput.editorialDirection : '', id: project.id, directionOutputId: selectedOutput.id, toolPreferences: project.toolPreferences } : project);
   }
   $('#composer-editorial-direction').value = typeof project.editorialDirection === 'string' ? project.editorialDirection : '';
   $('#composer-target-word-count').value = normalizeWordCount(project.targetWordCount);
@@ -967,6 +984,7 @@ function showEditorProject(project) {
   document.title = `${selectedOutput?.title || project.title} — CSA`;
   try { sessionStorage.setItem('csa.editor.active.v1', project.id); } catch { /* Drafts still save to local project storage. */ }
   window.scrollTo({ top: 0 });
+  showPendingWordCountNotice(project, selectedOutput);
 }
 
 function closeProfile() {
@@ -978,7 +996,7 @@ function updateComposerActions() {
   const hasSources = hasSelectedSources(project);
   const hasContent = ($('#composer').classList.contains('has-link-cards') || $('#composer').classList.contains('has-search-results')) ? hasSources : !$('#material-editor').hidden ? richEditor.hasContent() : !$('#output-placeholder').hidden && ($('#content-preview').hidden || contentPreview.hasContent());
   const processing = Boolean(project?.outputProcessing);
-  const processingLabel = project?.outputProcessing?.awaitingWordCountReview ? 'Review Word Count Notice' : project?.outputProcessing?.kind === 'revision' ? 'Revising Draft' : 'Creating Draft';
+  const processingLabel = project?.outputProcessing?.kind === 'revision' ? 'Revising Draft' : 'Creating Draft';
   const canConfigure = (hasSources || hasContent || Boolean(project?.variantPreset)) && !processing;
   let changed = false;
   for (const key of ['format', 'audience', 'voice']) {
@@ -1124,8 +1142,8 @@ function openVariantDirection(button) {
   const output = projectOutputs(project).find(entry => entry.id === outputId);
   const trigger = button.isConnected ? button : [...$('#output-list').querySelectorAll('[data-variant-direction]')].find(entry => entry.dataset.variantDirection === outputId);
   if (!project || !output || !trigger || trigger.disabled) { richEditor.closeDirection(); return; }
-  if (wasOpen) { richEditor.closeDirection(); trigger.focus({ preventScroll: true }); return; }
-  richEditor.showDirectionFor(trigger, output);
+  if (wasOpen) { richEditor.closeDirection(); dismissWordCountNotice(project.id, output.id); trigger.focus({ preventScroll: true }); return; }
+  richEditor.showDirectionFor(trigger, output, project.id);
 }
 
 function openVariantSources(button) {
@@ -1211,68 +1229,41 @@ function cancelOutputProcessing(project, job) {
   }
 }
 
-function reviewOutputWordCount(project, job, renderWhenReady) {
-  if (!job.awaitingWordCountReview) {
-    job.awaitingWordCountReview = true;
-    saveProjects();
-  }
-  const active = () => activeProjectId === project.id && !$('#composer').hidden;
-  const interrupted = () => $('#new-project-dialog').open || sourceImport || newProjectUpload.isBusy();
-  if (!active()) return;
-  if (interrupted()) { deferredOutputProjectId = project.id; return; }
-  if (renderWhenReady) { renderOutputs(project); updateComposerActions(); }
-  if (outputWordCountReviews.has(job)) return;
-  outputWordCountReviews.add(job);
-  // showEditorProject resumes persisted jobs before finishing its render.
-  queueMicrotask(async () => {
-    try {
-      if (project.outputProcessing !== job || !projects.includes(project) || project.deletedAt || project.archivedAt || !active()) return;
-      if (interrupted()) { deferredOutputProjectId = project.id; return; }
-      const outputs = job.ids.map(id => projectOutputs(project).find(output => output.id === id));
-      const directions = outputs.map(output => output?.editorialDirection || '');
-      if (outputs.some(output => !output) || (job.editorialDirections && directions.some((text, index) => text !== job.editorialDirections[index]))) {
-        cancelOutputProcessing(project, job);
-        return;
-      }
-      const accepted = await draftLengthNotice.confirm(directions, { trigger: $('#create-output') });
-      if (project.outputProcessing !== job || !projects.includes(project) || project.deletedAt || project.archivedAt) return;
-      if (!active()) return;
-      if (interrupted()) { deferredOutputProjectId = project.id; return; }
-      const unchanged = outputs.every((output, index) => projectOutputs(project).includes(output) && (output.editorialDirection || '') === directions[index]);
-      if (!accepted || !unchanged) { cancelOutputProcessing(project, job); return; }
-      job.wordCountAccepted = true;
-      finishOutputProcessing(project);
-    } finally {
-      outputWordCountReviews.delete(job);
-    }
-  });
-}
-
 function finishOutputProcessing(project, renderWhenReady = true) {
   const job = project.outputProcessing;
   if (!job || !projects.includes(project) || project.deletedAt || project.archivedAt) return;
   clearTimeout(outputTimers.get(project.id));
   outputTimers.delete(project.id);
-  const directions = job.editorialDirections || job.ids.map(id => projectOutputs(project).find(output => output.id === id)?.editorialDirection);
-  if (job.kind !== 'revision' && !job.wordCountAccepted && directions.some(text => requestedEditorialWordCount(text) > INITIAL_DRAFT_WORD_LIMIT)) {
-    reviewOutputWordCount(project, job, renderWhenReady);
+  const outputs = job.ids.map(id => projectOutputs(project).find(output => output.id === id));
+  if (job.kind !== 'revision' && (outputs.some(output => !output) || (job.editorialDirections && outputs.some((output, index) => (output.editorialDirection || '') !== job.editorialDirections[index])))) {
+    cancelOutputProcessing(project, job);
     return;
   }
   const ids = new Set(job.ids);
   project.selectedOutputIds = [...new Set([...selectedOutputs(project).map(output => output.id), ...ids])];
   const active = activeProjectId === project.id && !$('#composer').hidden;
-  const deferRender = $('#new-project-dialog').open || sourceImport || newProjectUpload.isBusy();
+  const deferRender = document.querySelector('dialog[open]') || sourceImport || newProjectUpload.isBusy();
   if (active && !deferRender) richEditor.close();
   for (const output of projectOutputs(project)) {
     if (ids.has(output.id)) {
-      if (job.kind === 'revision') reviseSampleOutput(output, job.instructions, job.requestedAt);
+      if (job.kind === 'revision') {
+        reviseSampleOutput(output, job.instructions, job.requestedAt);
+        delete output.wordCountNoticePending;
+      }
       else {
         output.status = 'ready';
         delete output.needsRegeneration;
         output.processedAt = Date.now();
-        if (job.wordCountAccepted && requestedEditorialWordCount(output.editorialDirection) > INITIAL_DRAFT_WORD_LIMIT) output.shorterDraftAccepted = true;
-        else delete output.shorterDraftAccepted;
         populateOutputContent(output);
+        const requested = requestedEditorialWordCount(output.editorialDirection);
+        delete output.shorterDraftAccepted;
+        if (requested > INITIAL_DRAFT_WORD_LIMIT && outputWordCount(output) < requested) {
+          output.shorterDraftCreated = true;
+          output.wordCountNoticePending = true;
+        } else {
+          delete output.shorterDraftCreated;
+          delete output.wordCountNoticePending;
+        }
       }
     }
   }
@@ -1301,11 +1292,8 @@ function resumeOutputProcessing(project, renderWhenReady = true) {
   }, job.readyAt - Date.now()));
 }
 
-$('#create-output').addEventListener('click', () => {
-  const project = projects.find(entry => entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
-  if (!project || project.outputProcessing) return;
-  const outputs = selectedPendingOutputs(project);
-  if (!outputs.length) return;
+function startOutputProcessing(project, outputs) {
+  if (project.outputProcessing || !outputs.length) return false;
   richEditor.flush();
   project.outputProcessing = {
     ids: outputs.map(output => output.id),
@@ -1313,10 +1301,42 @@ $('#create-output').addEventListener('click', () => {
     openOutputId: outputs[0].id,
     readyAt: Date.now() + tokenNumber('component.drafting.processing-duration')
   };
-  saveProjects();
+  if (!saveProjects()) { delete project.outputProcessing; return false; }
   renderOutputs(project);
   updateComposerActions();
   resumeOutputProcessing(project);
+  return true;
+}
+
+function confirmEditorialPlans({ projectId, plans }) {
+  const project = projects.find(entry => entry.id === projectId && entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
+  if (!project || project.outputProcessing || roleSelector.value !== 'Trend Hunter' || !Array.isArray(plans)) return false;
+  const outputs = selectedPendingOutputs(project);
+  const planIds = new Set(plans.map(plan => plan?.outputId));
+  if (outputs.length < 2 || plans.length !== outputs.length || planIds.size !== outputs.length ||
+      outputs.some(output => !planIds.has(output.id)) ||
+      plans.some(plan => ['angle', 'focus', 'structure', 'tone'].some(key => typeof plan?.[key] !== 'string' || !plan[key].trim()))) return false;
+  const previous = outputs.map(output => ({ output, hadPlan: Object.hasOwn(output, 'editorialPlan'), plan: output.editorialPlan }));
+  for (const output of outputs) applyEditorialPlan(output, plans.find(plan => plan.outputId === output.id));
+  if (startOutputProcessing(project, outputs)) return true;
+  for (const entry of previous) {
+    if (entry.hadPlan) entry.output.editorialPlan = entry.plan;
+    else delete entry.output.editorialPlan;
+  }
+  return false;
+}
+
+$('#create-output').addEventListener('click', () => {
+  const project = projects.find(entry => entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
+  if (!project || project.outputProcessing) return;
+  const outputs = selectedPendingOutputs(project);
+  if (!outputs.length) return;
+  if (roleSelector.value === 'Trend Hunter' && outputs.length > 1) {
+    richEditor.flush();
+    editorialPlanReview.open({ projectId: project.id, plans: buildEditorialPlans(outputs), opener: $('#create-output') });
+    return;
+  }
+  startOutputProcessing(project, outputs);
 });
 
 $('#composer-editorial-direction').addEventListener('input', () => {
@@ -1677,13 +1697,17 @@ $('#use-material').addEventListener('click', useMaterial);
 $('#material-dialog').addEventListener('cancel', event => { if (materialBusy) event.preventDefault(); });
 
 function renderDeferredOutput() {
-  if (!deferredOutputProjectId || $('#new-project-dialog').open || sourceImport || newProjectUpload.isBusy()) return;
+  if (!deferredOutputProjectId || document.querySelector('dialog[open]') || sourceImport || newProjectUpload.isBusy()) return;
   const projectId = deferredOutputProjectId;
   deferredOutputProjectId = null;
-  const project = projects.find(entry => entry.id === projectId && !entry.deletedAt);
+  const project = projects.find(entry => entry.id === projectId && !entry.deletedAt && !entry.archivedAt);
   if (project && activeProjectId === projectId && !$('#composer').hidden) showEditorProject(project);
 }
-$('#new-project-dialog').addEventListener('close', () => { newProjectUpload.reset(); renderDeferredOutput(); });
+$('#new-project-dialog').addEventListener('close', () => { newProjectUpload.reset(); });
+document.addEventListener('close', event => {
+  // Dialog close does not bubble; wait until its cleanup and navigation settle.
+  if (event.target?.tagName === 'DIALOG') setTimeout(renderDeferredOutput, 0);
+}, true);
 for (const id of ['material-dialog', 'new-project-dialog']) $(`#${id}`).addEventListener('cancel', event => {
   if (id === 'new-project-dialog' && newProjectUpload.isBusy()) { event.preventDefault(); return; }
   if (sourceTargetProjectId && !materialBusy) { event.preventDefault(); returnFromSourceAddition(); }

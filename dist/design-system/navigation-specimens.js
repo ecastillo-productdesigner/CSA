@@ -8,7 +8,7 @@ import { createSourceAdditionLoading } from '../source-addition-loading.js?v=202
 import { createIcon } from '../icons.js?v=20261026-drafting-card-size';
 import { tokenNumber } from './runtime.js?v=20261026-drafting-card-size';
 import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261111-audience-name-variation';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261111-audience-ready';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261117-audience-headings';
 
 const navigationMounts = new WeakMap();
 const stateMounts = new WeakMap();

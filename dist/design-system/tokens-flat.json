@@ -5902,9 +5902,9 @@
       "type": "dimension",
       "layer": "component",
       "category": "navigation",
-      "value": "16px",
-      "reference": "foundation.radius.16",
-      "description": "16 px corners for the navigation rail and expanded panel; the homepage layout switch keeps its separate 8 px radius.",
+      "value": "8px",
+      "reference": "foundation.radius.8",
+      "description": "8 px corners on all four corners of the navigation rail and expanded panel.",
       "status": "observed"
     },
     {

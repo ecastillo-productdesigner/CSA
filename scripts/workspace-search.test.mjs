@@ -144,7 +144,7 @@ function editorSetup(project) {
     document: { body: get('body'), title: '' }, $: get, activeProjectId: null, sampleSearchSources, sourceIdentityKey,
     closeComposer() {}, railNavigation: { closeTransient() {} },
     searchExperience: { hide() {}, show(current, options) { calls.search.push({ project: current, options: clone(options) }); } },
-    resumeOutputProcessing() {}, projectOutputs, outputIsReady, selectedPendingOutputs, syncOwnMaterialSource,
+    resumeOutputProcessing() {}, showPendingWordCountNotice() {}, projectOutputs, outputIsReady, selectedPendingOutputs, syncOwnMaterialSource,
     populateOutputContent() {}, saveProjects() { calls.saved++; },
     renderSourceStory(current) { calls.welcome.push(current); },
     draftPreferenceValue: (key, value) => value || '',

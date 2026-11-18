@@ -65,7 +65,7 @@ class Element {
   get offsetHeight() { return this.getBoundingClientRect().height; }
 }
 
-function setup(t, { metadata = false } = {}) {
+function setup(t, { metadata = false, bindings = false } = {}) {
   const previous = { document: globalThis.document, window: globalThis.window, getComputedStyle: globalThis.getComputedStyle, MutationObserver: globalThis.MutationObserver };
   const doc = new Element('document');
   doc.body = new Element('body');
@@ -105,9 +105,10 @@ function setup(t, { metadata = false } = {}) {
   globalThis.window = new Element('window');
   globalThis.getComputedStyle = () => ({ getPropertyValue: name => ({ '--csa-foundation-size-360': '360px', '--csa-foundation-size-620': '620px', '--csa-component-chip-height': '24px', '--csa-foundation-size-420': '420px', '--csa-foundation-space-8': '8px', '--csa-foundation-space-12': '12px', '--csa-foundation-space-24': '24px' }[name] || '') });
   t.after(() => { Object.assign(globalThis, previous); });
+  if (bindings) doc.querySelector = () => { throw new Error('Explicit bindings must not query app nodes'); };
   const api = metadata
     ? createEditorPopover({ container: root, trigger, popover, dismiss: close })
-    : createEditorialDirectionMetadata();
+    : createEditorialDirectionMetadata(bindings ? { container: root, trigger, empty, popover, copy, dismiss: close } : undefined);
   return { api, doc, root, trigger, empty, popover, copy, close, chevron, window, mutate() { for (const observer of observers) if (observer.observing) observer.callback(); } };
 }
 
@@ -269,16 +270,16 @@ test('accepted shorter drafts keep the saved direction and a compact explanatory
   const direction = 'Create 750 words about the community garden';
   ui.api.update(direction, { shorterDraftAccepted: true });
   ui.trigger.click();
-  assert.equal(ui.copy.textContent, `${direction}\n\nWord count notice: Created a shorter draft from the available sources. Add sources or use Request Revision to expand it.`);
+  assert.equal(ui.copy.textContent, `${direction}\n\nWord count notice: Your draft is ready, but shorter than requested. Add more detailed sources or use Request Revision to expand it.`);
   const labels = ui.copy.querySelectorAll('strong');
   assert.equal(labels.length, 1);
   assert.equal(labels[0].textContent, 'Word count notice:');
   assert.equal(labels[0].className, 'editor-direction-notice-label');
   assert.equal(ui.copy.children.at(-1).tagName, '#text');
-  assert.match(ui.copy.children.at(-1).textContent, /^ Created a shorter draft/);
+  assert.match(ui.copy.children.at(-1).textContent, /^ Your draft is ready, but shorter than requested/);
   ui.close.click();
   ui.trigger.click();
-  assert.match(ui.copy.textContent, /Word count notice: Created a shorter draft/);
+  assert.match(ui.copy.textContent, /Word count notice: Your draft is ready, but shorter than requested/);
 });
 
 test('shorter-draft label preserves literal user markup and multiline direction', t => {
@@ -324,7 +325,7 @@ test('card anchors share the direction popover without leaking content or note s
   const first = cardTrigger(ui, 'first-card');
   const second = cardTrigger(ui, 'second-card', 700);
   ui.api.toggleFor(first, { editorialDirection: 'Write 750 words about the first story', shorterDraftAccepted: true });
-  assert.match(ui.copy.textContent, /^Write 750 words about the first story\n\nWord count notice: Created a shorter draft/);
+  assert.match(ui.copy.textContent, /^Write 750 words about the first story\n\nWord count notice: Your draft is ready, but shorter than requested/);
   assert.equal(first.getAttribute('aria-expanded'), 'true');
   assert.equal(ui.trigger.getAttribute('aria-expanded'), 'false');
   assert.equal(ui.popover.style.left, '100px');
@@ -469,4 +470,240 @@ test('the shared popover exposes external toggling while its default trigger ret
   assert.equal(ui.trigger.getAttribute('aria-expanded'), 'true');
   ui.close.click();
   assert.equal(document.activeElement, ui.trigger);
+});
+
+
+function noticeActions(ui) {
+  const footer = ui.popover.querySelector('.editor-publish-actions');
+  const [addSources, requestRevision] = footer.querySelectorAll('button');
+  return { footer, addSources, requestRevision };
+}
+
+test('a newly created shorter draft exposes its saved request and approved notice without opening during update', t => {
+  const ui = setup(t);
+  const direction = 'Write 750 words.\nFocus on the garden’s neighbors.';
+  ui.api.update(direction, { shorterDraftCreated: true });
+  assert.equal(ui.popover.hidden, true);
+  assert.equal(ui.copy.textContent, `${direction}\n\nWord count notice: Your draft is ready, but shorter than requested. Add more detailed sources or use Request Revision to expand it.`);
+  assert.equal(ui.api.showNotice(), true);
+  const { footer, addSources, requestRevision } = noticeActions(ui);
+  assert.equal(footer.hidden, false);
+  assert.equal(addSources.textContent, 'Add Sources');
+  assert.equal(addSources.className, 'secondary-button');
+  assert.equal(requestRevision.textContent, 'Request Revision');
+  assert.equal(requestRevision.className, 'primary-button');
+  assert.equal(ui.popover.style.width, '360px');
+});
+
+test('the automatic notice opens idempotently and stays open through outside interaction and scrolling', t => {
+  const ui = setup(t);
+  let acknowledged = 0;
+  ui.api.update('Write 750 words', { shorterDraftCreated: true, onDismiss: () => acknowledged++ });
+  assert.equal(ui.api.showNotice(), true);
+  const outside = cardTrigger(ui, 'outside');
+  outside.focus();
+  ui.popover.scrollTop = 50;
+  assert.equal(ui.api.showNotice(), true);
+  assert.equal(document.activeElement, outside, 'Repeated opening must not steal focus');
+  assert.equal(ui.popover.scrollTop, 50);
+  ui.doc.emit('pointerdown', { target: outside });
+  ui.doc.emit('focusin', { target: outside });
+  ui.popover.emit('focusout', { relatedTarget: outside });
+  assert.equal(ui.popover.hidden, false);
+  const previousTop = ui.popover.style.top;
+  ui.trigger.rect = { left: 100, right: 220, top: 200, bottom: 218, width: 120, height: 18 };
+  ui.doc.emit('scroll', { target: ui.root });
+  assert.equal(ui.popover.hidden, false);
+  assert.notEqual(ui.popover.style.top, previousTop, 'Scrolling repositions the notice at its anchor');
+  ui.doc.documentElement.clientWidth = 320;
+  ui.doc.documentElement.clientHeight = 568;
+  ui.window.emit('resize');
+  const bounds = ui.popover.getBoundingClientRect();
+  assert.ok(bounds.left >= 0 && bounds.right <= 320);
+  assert.ok(bounds.top >= 0 && bounds.bottom <= 568);
+  assert.equal(acknowledged, 0);
+});
+
+test('close, Escape and trigger toggle each acknowledge the manual notice once', t => {
+  const ui = setup(t);
+  let acknowledged = 0;
+  const dismissals = [() => ui.close.click(), () => ui.doc.emit('keydown', { key: 'Escape' }), () => ui.trigger.click()];
+  for (const [index, dismiss] of dismissals.entries()) {
+    ui.api.update('Write 750 words', { shorterDraftCreated: true, onDismiss: () => acknowledged++ });
+    ui.api.showNotice();
+    dismiss();
+    assert.equal(ui.popover.hidden, true);
+    assert.equal(ui.trigger.getAttribute('aria-expanded'), 'false');
+    assert.equal(document.activeElement, ui.trigger);
+    assert.equal(acknowledged, index + 1);
+    ui.close.click();
+    assert.equal(acknowledged, index + 1, 'A closed notice cannot be acknowledged twice');
+  }
+});
+
+test('programmatic close, draft changes and an unavailable anchor do not acknowledge the notice', t => {
+  const ui = setup(t);
+  let acknowledged = 0;
+  const setNotice = () => ui.api.update('Write 750 words', { shorterDraftCreated: true, onDismiss: () => acknowledged++ });
+  setNotice();
+  ui.api.showNotice();
+  ui.api.close();
+  assert.equal(acknowledged, 0);
+  ui.api.showNotice();
+  ui.api.update('Another draft direction');
+  assert.equal(ui.popover.hidden, true);
+  assert.equal(acknowledged, 0);
+  setNotice();
+  ui.api.showNotice();
+  ui.root.hidden = true;
+  ui.mutate();
+  assert.equal(ui.popover.hidden, true);
+  assert.equal(acknowledged, 0);
+  assert.equal(ui.api.showNotice(), false);
+  ui.root.hidden = false;
+  ui.api.update('Ordinary draft direction');
+  assert.equal(ui.api.showNotice(), false);
+  assert.equal(noticeActions(ui).footer.hidden, true);
+  ui.api.update('', { shorterDraftCreated: true });
+  assert.equal(ui.api.showNotice(), false);
+});
+
+test('notice actions acknowledge first and retain the correct action if dismissal updates the editor', t => {
+  const ui = setup(t);
+  const calls = [];
+  for (const action of ['addSources', 'requestRevision']) {
+    ui.api.update('Write 750 words', {
+      shorterDraftCreated: true,
+      onDismiss() {
+        assert.equal(ui.popover.hidden, true);
+        calls.push('dismiss');
+        ui.api.update('A different draft direction');
+      },
+      onAddSources() { calls.push('addSources'); },
+      onRequestRevision() { calls.push('requestRevision'); },
+    });
+    ui.api.showNotice();
+    noticeActions(ui)[action].click();
+    assert.deepEqual(calls.splice(0), ['dismiss', action]);
+    assert.equal(ui.popover.hidden, true);
+    assert.equal(noticeActions(ui).footer.hidden, true);
+  }
+});
+
+test('legacy notes retain callbacks on ordinary reopening and remove the footer on ordinary drafts', t => {
+  const ui = setup(t);
+  const calls = [];
+  ui.api.update('Write 750 words', { shorterDraftAccepted: true, onAddSources: () => calls.push('sources') });
+  ui.api.showNotice({ onDismiss: () => calls.push('dismiss'), onRequestRevision: () => calls.push('revision') });
+  ui.close.click();
+  assert.deepEqual(calls.splice(0), ['dismiss']);
+  ui.trigger.click();
+  noticeActions(ui).addSources.click();
+  assert.deepEqual(calls.splice(0), ['dismiss', 'sources']);
+  ui.trigger.click();
+  noticeActions(ui).requestRevision.click();
+  assert.deepEqual(calls.splice(0), ['dismiss', 'revision']);
+  ui.trigger.click();
+  const outside = cardTrigger(ui, 'outside');
+  ui.doc.emit('pointerdown', { target: outside });
+  assert.equal(ui.popover.hidden, true, 'A manually reopened notice uses ordinary popover dismissal');
+  assert.deepEqual(calls, [], 'Outside dismissal does not acknowledge a notice');
+  ui.api.update('Write 300 words');
+  ui.trigger.click();
+  assert.equal(noticeActions(ui).footer.hidden, true);
+  assert.equal(ui.copy.textContent, 'Write 300 words');
+});
+
+test('shorter-draft card actions use their card callbacks without leaking into the editor', t => {
+  const ui = setup(t);
+  const calls = [];
+  ui.api.update('Editor direction', { shorterDraftCreated: true, onAddSources: () => calls.push('editor') });
+  const card = cardTrigger(ui, 'card');
+  for (const flag of ['shorterDraftCreated', 'shorterDraftAccepted']) {
+    ui.api.toggleFor(card, { editorialDirection: 'Card direction', [flag]: true }, {
+      onDismiss: () => calls.push('card-dismiss'),
+      onAddSources: () => calls.push('card-sources'),
+    });
+    assert.match(ui.copy.textContent, /^Card direction\n\nWord count notice:/);
+    noticeActions(ui).addSources.click();
+    assert.deepEqual(calls.splice(0), ['card-dismiss', 'card-sources']);
+    assert.equal(document.activeElement, card);
+  }
+  ui.trigger.click();
+  noticeActions(ui).addSources.click();
+  assert.deepEqual(calls, ['editor']);
+});
+
+test('the shared openFor API preserves manual behavior and calls its per-opening dismissal callback', t => {
+  const ui = setup(t, { metadata: true });
+  const card = cardTrigger(ui, 'card');
+  let dismissed = 0;
+  const options = { manualDismiss: true, onDismiss: () => dismissed++ };
+  assert.equal(ui.api.openFor(card, options), true);
+  assert.equal(ui.api.openFor(card, options), true);
+  ui.doc.emit('focusin', { target: ui.trigger });
+  assert.equal(ui.popover.hidden, false);
+  ui.api.close();
+  assert.equal(dismissed, 0);
+  ui.api.openFor(card, options);
+  ui.api.dismiss();
+  assert.equal(dismissed, 1);
+  assert.equal(document.activeElement, card);
+  card.hidden = true;
+  assert.equal(ui.api.openFor(card, options), false);
+  ui.trigger.click();
+  ui.doc.emit('pointerdown', { target: ui.root });
+  assert.equal(ui.popover.hidden, true, 'The next ordinary opening restores outside dismissal');
+  assert.equal(dismissed, 1);
+});
+
+test('explicit element bindings support independent design-system specimens', t => {
+  const ui = setup(t, { bindings: true });
+  ui.api.update('Write 750 words', { shorterDraftCreated: true });
+  let acknowledged = false;
+  assert.equal(ui.api.showNotice({ onDismiss: () => { acknowledged = true; } }), true);
+  ui.close.click();
+  assert.equal(acknowledged, true);
+  assert.equal(ui.popover.hidden, true);
+});
+
+
+test('rendering draft labels preserves and repositions only the manual editor notice', async t => {
+  const ui = setup(t);
+  let acknowledged = 0;
+  ui.api.update('Write 750 words', { shorterDraftCreated: true, onDismiss: () => acknowledged++ });
+  ui.api.showNotice();
+  const previousLeft = ui.popover.style.left;
+  assert.equal(ui.api.closeForRender(), true);
+  ui.trigger.isConnected = false;
+  ui.root.append(ui.trigger);
+  ui.trigger.isConnected = true;
+  ui.trigger.rect = { left: 100, right: 220, top: 200, bottom: 218, width: 120, height: 18 };
+  await Promise.resolve();
+  ui.mutate();
+  assert.equal(ui.popover.hidden, false);
+  assert.notEqual(ui.popover.style.left, previousLeft);
+  assert.equal(ui.copy.textContent.startsWith('Write 750 words\n\nWord count notice:'), true);
+  assert.equal(acknowledged, 0);
+  ui.api.close();
+  ui.trigger.click();
+  assert.equal(ui.api.closeForRender(), false);
+  assert.equal(ui.popover.hidden, true, 'Ordinary editor popovers close on render');
+  const card = cardTrigger(ui, 'card');
+  ui.api.toggleFor(card, { editorialDirection: 'Card direction', shorterDraftCreated: true }, { onDismiss: () => acknowledged++ });
+  assert.equal(ui.api.closeForRender(), false);
+  assert.equal(ui.popover.hidden, true, 'Card anchors are replaced on render');
+  assert.equal(card.getAttribute('aria-expanded'), 'false');
+  assert.equal(acknowledged, 0);
+});
+
+test('a queued notice refresh cannot reopen it after a context change', async t => {
+  const ui = setup(t);
+  ui.api.update('Write 750 words', { shorterDraftCreated: true });
+  ui.api.showNotice();
+  ui.api.closeForRender();
+  ui.api.update('Another draft direction');
+  await Promise.resolve();
+  assert.equal(ui.popover.hidden, true);
+  assert.equal(ui.copy.textContent, 'Another draft direction');
 });

@@ -50,7 +50,7 @@ function setup() {
     railNavigation: { closeTransient() {}, closeDrawer() {}, close(name) { calls.sourcePanels.push(name); } },
     toolDropdowns: { refresh() {} }, updateComposerActions() { calls.actionUpdates++; }, renderOutputs() {}, renderProjectSources(project) { calls.sourceRenders.push(clone(project)); },
     closeComposer() { $('#new-project-dialog').close(); }, closeProfile() {}, updateStarterInput() {},
-    setNewVariantCollapsed() {}, setContentCollapsed() {}, resumeOutputProcessing() {},
+    setNewVariantCollapsed() {}, setContentCollapsed() {}, resumeOutputProcessing() {}, showPendingWordCountNotice() {},
     renderSourceStory(project) { calls.sourceStories.push(project); },
     searchExperience: { hide() {}, show(project) { calls.searches.push(project); } },
     requestAnimationFrame(callback) { callback(); }, sessionStorage: { setItem() {} },

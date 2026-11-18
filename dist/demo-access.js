@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261112-audiences-tab');
+  await import('./app.js?v=20261117-plan-review');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

@@ -481,7 +481,7 @@
   --csa-component-navigation-outer-inset: var(--csa-component-layout-outer-inset);
   --csa-component-navigation-profile-menu-width: 200px;
   --csa-component-navigation-cursor-hotspot: 20;
-  --csa-component-navigation-radius: var(--csa-foundation-radius-16);
+  --csa-component-navigation-radius: var(--csa-foundation-radius-8);
   --csa-component-navigation-cursor-size: var(--csa-foundation-space-40);
   --csa-component-navigation-cursor-background: var(--csa-semantic-color-surface-default);
   --csa-component-navigation-cursor-border: var(--csa-semantic-color-border-default);

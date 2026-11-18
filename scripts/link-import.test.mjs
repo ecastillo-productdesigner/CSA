@@ -11,7 +11,7 @@ import { projectTitleFromSources } from '../dist/dashboard.js';
 import { normalizeWordCount } from '../dist/variant-word-count.js';
 import { createNewProjectUpload } from '../dist/new-project-upload.js';
 import { INITIAL_DRAFT_WORD_LIMIT, requestedEditorialWordCount } from '../dist/editorial-word-count.js';
-import { projectOutputs, selectedOutputs, outputIsReady, populateOutputContent, reviseSampleOutput } from '../dist/outputs.js';
+import { projectOutputs, selectedOutputs, outputIsReady, outputWordCount, populateOutputContent, reviseSampleOutput } from '../dist/outputs.js';
 
 // Run the production functions without booting Quill, navigation, or the rest
 // of the app. Dependencies below are observable UI/storage boundaries.
@@ -29,7 +29,7 @@ const production = [
   productionFunction('function setWorkspaceSearchQuery(', '\nasync function submitSource('),
   productionFunction('async function submitSource(', "\n$('#new-project-query').addEventListener"),
   productionFunction('function cancelOutputProcessing(', '\nfunction resumeOutputProcessing('),
-  productionFunction('function renderDeferredOutput(', "\n$('#new-project-dialog').addEventListener"),
+  productionFunction('function renderDeferredOutput(', "\nfor (const id of ['material-dialog', 'new-project-dialog'])"),
 ].join('\n');
 
 class Control {
@@ -68,7 +68,7 @@ const url = 'https://www.charlotteobserver.com/opinion/article317717272.html';
 const title = 'NC Democrats see the strongest start to early voting ‘in the entire country’ | Opinion';
 const metadata = (href = url, heading = title) => ({ url: href, title: heading, description: 'A public article description', headlineSource: 'json-ld', metadataStatus: 'resolved' });
 
-function setup(t, { target = null, active = null, projects = [], dialogOpen = true, holdAddition = false } = {}) {
+function setup(t, { target = null, active = null, projects = [], dialogOpen = true, holdAddition = false, uploadAddsSources = false } = {}) {
   const priorDocument = globalThis.document;
   const tags = { dialog: 'dialog', query: 'textarea', submit: 'button', 'file-input': 'input', 'drop-zone': 'label', 'upload-selection': 'div', 'selected-files': 'ul', 'file-status': 'p', 'use-material': 'button', 'material-error': 'p', 'link-status': 'p', 'link-error': 'p', close: 'button' };
   const nodes = Object.fromEntries(Object.entries(tags).map(([key, tag]) => [key, new Control(tag)]));
@@ -81,13 +81,18 @@ function setup(t, { target = null, active = null, projects = [], dialogOpen = tr
   get('upload-selection').append(get('selected-files'), get('file-status'), get('use-material'));
   get('dialog').append(get('query'), get('submit'), get('close'), get('drop-zone'), get('upload-selection'), get('material-error'));
   get('dialog').open = dialogOpen;
-  get('dialog').close = () => { get('dialog').open = false; get('dialog').fire('close'); };
+  get('dialog').close = () => {
+    get('dialog').open = false;
+    document.closeListener?.({ target: { tagName: 'DIALOG' } });
+    get('dialog').fire('close');
+  };
   const otherInput = new Control('input');
   const alreadyDisabled = new Control('button');
   alreadyDisabled.disabled = true;
   const document = {
     createElement: tag => new Control(tag),
-    querySelector: selector => selector.startsWith('#new-project-') ? get(selector.slice('#new-project-'.length)) : null,
+    addEventListener(name, callback, capture) { assert.equal(name, 'close'); assert.equal(capture, true); this.closeListener = callback; },
+    querySelector: selector => selector === 'dialog[open]' ? (get('dialog').open ? get('dialog') : null) : selector.startsWith('#new-project-') ? get(selector.slice('#new-project-'.length)) : null,
     querySelectorAll: () => [...get('dialog').querySelectorAll('button, input, textarea'), otherInput, alreadyDisabled],
   };
   globalThis.document = document;
@@ -100,16 +105,15 @@ function setup(t, { target = null, active = null, projects = [], dialogOpen = tr
   const calls = { searches: [], resultDisplays: [], navigation: [], resolve: [], saved: [], shown: [], sourcePanels: [], notifications: [], fileSaves: 0, resets: 0, editorCloses: 0, additionWaits: [], additionCounts: [], sourceRenders: [], sourceRenderOptions: [], deletedDocuments: [], duplicatePopups: [] };
   const context = createContext({
     partitionSourceAdditions, findDuplicateSource, sourceIdentityKey, sourceAlreadyAdded: { open: options => calls.duplicatePopups.push(options) },
-    AbortController, crypto: { randomUUID }, document, classifyProjectSearchInput, sampleSearchSources, parseSourceLinks, formatSourceLinks, sourceLinkArticles, projectTitleFromSources, normalizeWordCount,
-    projectOutputs, selectedOutputs, outputIsReady, populateOutputContent, reviseSampleOutput, clearTimeout,
+    AbortController, setTimeout, crypto: { randomUUID }, document, classifyProjectSearchInput, sampleSearchSources, parseSourceLinks, formatSourceLinks, sourceLinkArticles, projectTitleFromSources, normalizeWordCount,
+    projectOutputs, selectedOutputs, outputIsReady, outputWordCount, populateOutputContent, reviseSampleOutput, clearTimeout,
     INITIAL_DRAFT_WORD_LIMIT, requestedEditorialWordCount,
     projectSourcesPanel: { waitForAddition: (id, source, count) => { calls.additionWaits.push(id); calls.additionCounts.push(count); assert.equal(calls.sourcePanels.at(-1), 'sources', 'Project Sources must open before its loading animation starts'); return holdAddition ? addition.promise : Promise.resolve(true); } },
     renderProjectSources: (project, options) => { calls.sourceRenders.push(project.id); calls.sourceRenderOptions.push(options); },
     updateComposerActions() {},
     searchExperience: { show(project, options) { calls.resultDisplays.push({ project: clone(project), options }); } },
     deleteDocuments: async ids => { calls.deletedDocuments.push(...ids); },
-    outputTimers: new Map(), outputViews: new Map(), outputWordCountReviews: new WeakSet(), deferredOutputProjectId: null,
-    queueMicrotask, draftLengthNotice: { confirm() { assert.fail('A word count notice must not interrupt source importing'); } },
+    outputTimers: new Map(), outputViews: new Map(), deferredOutputProjectId: null,
     richEditor: { close: () => { calls.editorCloses++; } },
     $: selector => document.querySelector(selector),
     projects: structuredClone(projects), activeProjectId: active, sourceTargetProjectId: target, sourceImport: null,
@@ -129,13 +133,13 @@ function setup(t, { target = null, active = null, projects = [], dialogOpen = tr
   });
   const upload = createNewProjectUpload({
     isBlocked: () => Boolean(context.sourceImport),
-    saveFiles: async () => { calls.fileSaves++; return []; },
-    onCreate: () => true,
+    saveFiles: async () => { calls.fileSaves++; return uploadAddsSources ? [{ type: 'file', title: 'Uploaded notes', attachmentId: 'uploaded-notes' }] : []; },
+    onCreate: sources => uploadAddsSources ? context.appendProjectSources(sources, target) : true,
+    onIdle: () => context.renderDeferredOutput(),
   });
   const reset = upload.reset;
   upload.reset = () => { calls.resets++; return reset(); };
   context.newProjectUpload = upload;
-  get('dialog').addEventListener('close', () => { upload.reset(); context.renderDeferredOutput(); });
   runInContext(production, context, { filename: 'app-link-import-integration.js' });
   function selectFile() {
     get('file-input').files = [{ name: 'Original.txt', size: 12, lastModified: 1 }];
@@ -304,18 +308,20 @@ test('a draft completing during a headline import is saved without closing the d
 });
 
 
-test('an oversized draft waits for review without interrupting a new project headline import', async t => {
+test('a shorter draft finishes with a saved pending notice without interrupting a new project headline import', async t => {
   const output = { id: 'pending', title: 'Existing pending story', status: 'pending', editorialDirection: 'Write 750 words' };
   const original = { id: 'origin', title: 'Existing project', sources: [], outputs: [output], selectedOutputIds: ['pending'], outputProcessing: { ids: ['pending'], openOutputId: 'pending', editorialDirections: ['Write 750 words'] } };
   const ui = setup(t, { active: 'origin', projects: [original] });
   const work = ui.submit();
   const project = ui.context.projects[0];
-  const job = project.outputProcessing;
   ui.context.finishOutputProcessing(project);
-  assert.equal(project.outputs[0].status, 'pending');
-  assert.equal(project.outputProcessing, job);
-  assert.equal(job.awaitingWordCountReview, true);
-  assert.equal(ui.calls.saved.length, 1, 'The waiting review survives a reload');
+  assert.equal(project.outputs[0].status, 'ready');
+  assert.equal(project.outputProcessing, undefined);
+  assert.equal(project.outputs[0].shorterDraftCreated, true);
+  assert.equal(project.outputs[0].wordCountNoticePending, true);
+  assert.ok(outputWordCount(project.outputs[0]) < 750);
+  assert.equal(ui.calls.saved.length, 1, 'The completed draft and pending notice survive a reload');
+  assert.equal(ui.calls.saved[0][0].outputs[0].wordCountNoticePending, true);
   assert.equal(ui.get('dialog').open, true);
   assert.equal(ui.calls.editorCloses, 0);
   assert.deepEqual(ui.calls.shown, []);
@@ -324,12 +330,39 @@ test('an oversized draft waits for review without interrupting a new project hea
   assert.equal(await work, true);
   assert.equal(ui.calls.shown.length, 1);
   assert.notEqual(ui.calls.shown[0], 'origin', 'The new project stays active when its import finishes');
-  assert.equal(project.outputProcessing, job, 'The original project keeps its review until reopened');
-  assert.equal(project.outputs[0].status, 'pending');
+  assert.equal(project.outputProcessing, undefined);
+  assert.equal(project.outputs[0].status, 'ready');
+  assert.equal(project.outputs[0].wordCountNoticePending, true, 'The completed draft keeps its notice for the next time it opens');
   assert.equal(ui.context.deferredOutputProjectId, null);
 });
 
 const flush = async () => { await Promise.resolve(); await Promise.resolve(); };
+
+test('a draft completing during an Add Source upload renders when its busy addition finishes', async t => {
+  const output = { id: 'pending', title: 'Existing pending story', status: 'pending', editorialDirection: 'Write 750 words' };
+  const original = { id: 'origin', title: 'Existing project', sources: [], outputs: [output], selectedOutputIds: ['pending'], outputProcessing: { ids: ['pending'], openOutputId: 'pending', editorialDirections: ['Write 750 words'] } };
+  const ui = setup(t, { target: 'origin', active: 'origin', projects: [original], holdAddition: true, uploadAddsSources: true });
+  ui.selectFile();
+  const work = ui.get('use-material').fire('click');
+  await flush();
+  const project = ui.context.projects[0];
+  assert.equal(ui.get('dialog').open, false, 'The source addition has already closed its picker');
+  assert.equal(ui.upload.isBusy(), true, 'The upload remains busy through the source addition animation');
+  assert.deepEqual(ui.calls.shown, ['origin']);
+  ui.context.finishOutputProcessing(project);
+  assert.equal(project.outputProcessing, undefined);
+  assert.equal(project.outputs[0].status, 'ready');
+  assert.equal(project.outputs[0].wordCountNoticePending, true);
+  assert.equal(ui.context.deferredOutputProjectId, 'origin');
+  assert.deepEqual(ui.calls.shown, ['origin'], 'Completion cannot interrupt the upload');
+  ui.addition.resolve(true);
+  await work;
+  await flush();
+  assert.equal(ui.upload.isBusy(), false);
+  assert.equal(ui.context.deferredOutputProjectId, null);
+  assert.deepEqual(ui.calls.shown, ['origin', 'origin'], 'Upload idle resumes the completed editor without another dialog close');
+  assert.equal(project.outputs[0].wordCountNoticePending, true, 'The editor still needs to show the notice');
+});
 
 test('adding a source closes the picker and waits before changing or saving project sources', async t => {
   const project = { id: 'target', title: 'Existing', sources: [{ type: 'text', title: 'Original', text: 'Keep this' }] };

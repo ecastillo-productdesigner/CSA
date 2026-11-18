@@ -2,85 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createContext, runInContext } from 'node:vm';
-import { createEditorialWordCountNotice } from '../dist/editorial-word-count-notice.js';
 import { INITIAL_DRAFT_WORD_LIMIT, requestedEditorialWordCount } from '../dist/editorial-word-count.js';
-import { projectOutputs, selectedOutputs, selectedPendingOutputs, outputIsReady } from '../dist/outputs.js';
-
-class Element {
-  constructor(tag) { this.tagName = tag; this.children = []; this.attributes = new Map(); this.listeners = new Map(); this.isConnected = true; }
-  append(...children) { this.children.push(...children); }
-  setAttribute(key, value) { this.attributes.set(key, value); }
-  getAttribute(key) { return this.attributes.get(key); }
-  addEventListener(key, callback) { this.listeners.set(key, callback); }
-  fire(key, values = {}) { this.listeners.get(key)?.({ target: this, ...values }); }
-  focus() { document.activeElement = this; }
-  closest() { return null; }
-  showModal() { this.open = true; }
-  close() { this.open = false; this.fire('close'); }
-  remove() { this.isConnected = false; }
-}
-function setup(t) {
-  const previous = globalThis.document;
-  const body = new Element('body');
-  globalThis.document = { body, createElement: tag => new Element(tag), activeElement: null };
-  t.after(() => { globalThis.document = previous; });
-  const controller = createEditorialWordCountNotice();
-  const dialog = body.children[0];
-  const [heading, description, recommendation, footer] = dialog.children;
-  return { controller, dialog, title: heading.children[0], dismiss: heading.children[1], description, recommendation,
-    back: footer.children[0], proceed: footer.children[1] };
-}
-
-test('requests at or below500 and non-length directions continue without opening a notice', async t => {
-  const ui = setup(t);
-  for (const text of ['', 'Keep it focused', 'Write 500 words', 'Write 300 words', 'Do not exceed 500 words']) {
-    assert.equal(await ui.controller.confirm([text]), true);
-    assert.notEqual(ui.dialog.open, true);
-  }
-});
-
-test('an over500 request pauses a batch, explains next steps, and requires an explicit decision', async t => {
-  const ui = setup(t);
-  const trigger = new Element('button');
-  let resolved = false;
-  const answer = ui.controller.confirm(['Write 300 words', 'Write a 750-word draft'], { trigger });
-  answer.then(() => { resolved = true; });
-  assert.equal(ui.dialog.open, true);
-  assert.equal(ui.dialog.getAttribute('role'), 'alertdialog');
-  assert.equal(ui.dialog.getAttribute('data-manual-dismiss'), 'true');
-  assert.equal(ui.dialog.getAttribute('aria-labelledby'), ui.title.id);
-  assert.equal(ui.dialog.getAttribute('aria-describedby'), `${ui.description.id} ${ui.recommendation.id}`);
-  assert.equal(ui.description.textContent, 'An initial draft can’t guarantee the requested length from the available source material.');
-  assert.match(ui.recommendation.textContent, /sources.*Request Revision/);
-  assert.equal(document.activeElement, ui.back);
-  ui.dialog.fire('click', { clientX: 0, clientY: 0 });
-  await Promise.resolve();
-  assert.equal(ui.dialog.open, true, 'backdrop click must not dismiss');
-  assert.equal(resolved, false);
-  assert.equal(ui.controller.confirm('Write 900 words'), answer, 'repeated actions share one pending decision');
-  ui.proceed.fire('click');
-  assert.equal(await answer, true);
-  assert.equal(ui.dialog.open, false);
-  assert.equal(document.activeElement, trigger);
-});
-
-test('Go Back, Close, and Escape cancel drafting and a later attempt needs another decision', async t => {
-  const ui = setup(t);
-  for (const dismiss of [() => ui.back.fire('click'), () => ui.dismiss.fire('click'), () => {
-    let prevented = false;
-    ui.dialog.fire('cancel', { preventDefault() { prevented = true; } });
-    assert.equal(prevented, true);
-  }]) {
-    const answer = ui.controller.confirm('Write 1000 words');
-    dismiss();
-    assert.equal(await answer, false);
-    assert.equal(ui.dialog.open, false);
-  }
-  const answer = ui.controller.confirm('Write 1000 words');
-  ui.controller.destroy();
-  assert.equal(await answer, false);
-  assert.equal(ui.dialog.isConnected, false);
-});
+import { projectOutputs, selectedOutputs, selectedPendingOutputs, outputIsReady, outputWordCount } from '../dist/outputs.js';
 
 const app = await readFile(new URL('../dist/app.js', import.meta.url), 'utf8');
 const flowStart = app.indexOf('function cancelOutputProcessing(');
@@ -89,8 +12,9 @@ assert.ok(flowStart >= 0 && flowEnd > flowStart);
 const production = app.slice(flowStart, flowEnd);
 const clone = value => JSON.parse(JSON.stringify(value));
 const flush = async () => { for (let index = 0; index < 5; index++) await Promise.resolve(); };
+const words = count => Array.from({ length: count }, () => 'word').join(' ');
 
-function draftFlow({ project: savedProject, now: initialNow = 1000, active = true } = {}) {
+function draftFlow({ project: savedProject, now: initialNow = 1000, active = true, content = {} } = {}) {
   const project = savedProject || {
     id: 'project', selectedOutputIds: ['one', 'two'],
     outputs: [
@@ -101,9 +25,8 @@ function draftFlow({ project: savedProject, now: initialNow = 1000, active = tru
   let now = initialNow;
   let handler;
   let timerId = 0;
-  let pendingDecision;
   const timers = new Map();
-  const calls = { saved: [], rendered: [], notices: [], timers: [], populated: [], revised: [], shown: [], notifications: [], focused: 0, actions: 0, flushed: 0, closed: 0 };
+  const calls = { saved: [], rendered: [], timers: [], populated: [], revised: [], shown: [], notifications: [], focused: 0, actions: 0, flushed: 0, closed: 0 };
   const button = {
     addEventListener(name, callback) { assert.equal(name, 'click'); handler = callback; },
     focus() { calls.focused++; },
@@ -117,23 +40,23 @@ function draftFlow({ project: savedProject, now: initialNow = 1000, active = tru
       assert.ok(control, `Unexpected selector: ${selector}`);
       return control;
     },
-    projectOutputs, selectedOutputs, selectedPendingOutputs, outputIsReady,
+    document: { querySelector: selector => { assert.equal(selector, 'dialog[open]'); return dialog.open ? dialog : null; } },
+    projectOutputs, selectedOutputs, selectedPendingOutputs, outputIsReady, outputWordCount,
+    roleSelector: { value: '' },
     INITIAL_DRAFT_WORD_LIMIT, requestedEditorialWordCount,
-    outputTimers: new Map(), outputViews: new Map(), outputWordCountReviews: new WeakSet(),
+    outputTimers: new Map(), outputViews: new Map(),
     deferredOutputProjectId: null, sourceImport: null,
     newProjectUpload: { isBusy: () => false },
     richEditor: { flush() { calls.flushed++; }, close() { calls.closed++; } },
-    draftLengthNotice: {
-      confirm(directions) {
-        calls.notices.push(Array.from(directions));
-        assert.equal(pendingDecision, undefined, 'Only one notice may be pending');
-        return new Promise(resolve => { pendingDecision = resolve; });
-      },
-    },
     saveProjects() { calls.saved.push(clone(project)); return true; },
     renderOutputs(current) { calls.rendered.push(clone(current)); },
     updateComposerActions() { calls.actions++; },
-    populateOutputContent(output) { calls.populated.push(output.id); output.draftText = 'A shorter initial draft'; },
+    populateOutputContent(output) {
+      calls.populated.push(output.id);
+      const generated = content[output.id] ?? words(250);
+      if (typeof generated === 'string') { output.draftText = generated; delete output.document; }
+      else Object.assign(output, clone(generated));
+    },
     reviseSampleOutput(output, instructions, requestedAt) { calls.revised.push({ id: output.id, instructions, requestedAt }); },
     showEditorProject(current) { calls.shown.push(current.id); },
     railNavigation: { closeTransient() {} }, notify(message) { calls.notifications.push(message); },
@@ -151,13 +74,6 @@ function draftFlow({ project: savedProject, now: initialNow = 1000, active = tru
   return {
     project, calls, context, composer, dialog, timers, run: () => handler(), now: () => now,
     resume: render => context.resumeOutputProcessing(project, render),
-    async decide(value) {
-      assert.equal(typeof pendingDecision, 'function', 'A notice must be open before deciding');
-      const resolve = pendingDecision;
-      pendingDecision = undefined;
-      resolve(value);
-      await flush();
-    },
     async advance(milliseconds) {
       const target = now + milliseconds;
       let next;
@@ -174,7 +90,13 @@ function draftFlow({ project: savedProject, now: initialNow = 1000, active = tru
   };
 }
 
-test('Draft starts immediately, waits ten seconds, then requires a manual length decision', async () => {
+function assertNoLengthFlags(output) {
+  for (const key of ['shorterDraftCreated', 'wordCountNoticePending', 'shorterDraftAccepted']) {
+    assert.equal(Object.hasOwn(output, key), false, `${output.id} must not retain ${key}`);
+  }
+}
+
+test('Draft starts immediately and creates the batch after ten seconds without a length decision', async () => {
   const ui = draftFlow();
   ui.run();
   assert.equal(ui.calls.flushed, 1);
@@ -182,214 +104,214 @@ test('Draft starts immediately, waits ten seconds, then requires a manual length
   assert.equal(ui.project.outputProcessing.readyAt, 11000);
   assert.deepEqual(Array.from(ui.project.outputProcessing.editorialDirections), ['Write 750 words', 'Write 300 words']);
   assert.deepEqual(ui.calls.timers, [10000]);
-  assert.equal(ui.calls.notices.length, 0);
   assert.equal(ui.calls.rendered.length, 1);
   await ui.advance(9999);
-  assert.equal(ui.calls.notices.length, 0);
-  await ui.advance(1);
-  assert.deepEqual(ui.calls.notices, [['Write 750 words', 'Write 300 words']]);
-  assert.equal(ui.project.outputProcessing.awaitingWordCountReview, true);
-  assert.ok(ui.project.outputs.every(output => !outputIsReady(output)));
-  assert.equal(ui.timers.size, 0);
-  await ui.advance(60000);
-  assert.ok(ui.project.outputProcessing, 'Elapsed time must never accept or dismiss the notice');
   assert.equal(ui.calls.populated.length, 0);
-  assert.ok(ui.project.outputs.every(output => !Object.hasOwn(output, 'shorterDraftAccepted')), 'Waiting for review does not acknowledge a shorter draft');
-  await ui.decide(true);
+  assert.ok(ui.project.outputs.every(output => !outputIsReady(output)));
+  await ui.advance(1);
   assert.equal(ui.project.outputProcessing, undefined);
   assert.ok(ui.project.outputs.every(outputIsReady));
   assert.deepEqual(ui.calls.populated, ['one', 'two']);
-  assert.equal(ui.project.outputs[0].shorterDraftAccepted, true);
-  assert.equal(Object.hasOwn(ui.project.outputs[1], 'shorterDraftAccepted'), false, 'A normal recipe in the accepted batch has no shorter-draft note');
-  assert.deepEqual(ui.calls.timers, [10000], 'Continue completes without another ten-second wait');
+  assert.equal(ui.project.outputs[0].shorterDraftCreated, true);
+  assert.equal(ui.project.outputs[0].wordCountNoticePending, true);
+  assert.equal(Object.hasOwn(ui.project.outputs[0], 'shorterDraftAccepted'), false);
+  assertNoLengthFlags(ui.project.outputs[1]);
+  assert.equal(ui.project.selectedOutputId, 'one');
+  assert.equal(ui.project.viewOriginalDraft, false);
   assert.deepEqual(ui.calls.shown, ['project']);
+  assert.equal(ui.timers.size, 0);
+  assert.equal(ui.calls.saved.at(-1).outputs[0].wordCountNoticePending, true);
+  await ui.advance(60000);
+  assert.equal(ui.project.outputs[0].wordCountNoticePending, true, 'Elapsed time never dismisses a completed draft notice');
+  assert.deepEqual(ui.calls.populated, ['one', 'two']);
 });
 
-test('Go Back preserves pending recipes, restores controls, and a retry gets a fresh attempt', async () => {
-  const ui = draftFlow();
-  const outputs = clone(ui.project.outputs);
-  ui.run();
-  await ui.advance(10000);
-  await ui.decide(false);
-  assert.equal(ui.project.outputProcessing, undefined);
-  assert.deepEqual(ui.project.outputs, outputs);
-  assert.ok(ui.project.outputs.every(output => !Object.hasOwn(output, 'shorterDraftAccepted')), 'Canceling does not record an acknowledgement');
-  assert.deepEqual(Array.from(ui.project.selectedOutputIds), ['one', 'two']);
-  assert.equal(ui.calls.focused, 1);
-  assert.equal(ui.calls.populated.length, 0);
-  ui.run();
-  assert.deepEqual(ui.calls.timers, [10000, 10000]);
-  assert.equal(ui.calls.notices.length, 1);
-  await ui.advance(9999);
-  assert.equal(ui.calls.notices.length, 1);
-  await ui.advance(1);
-  assert.equal(ui.calls.notices.length, 2);
-  await ui.decide(true);
-  assert.ok(ui.project.outputs.every(outputIsReady));
-});
-
-test('duplicate Draft, timer resumes, and completion attempts share one job and one notice', async () => {
+test('duplicate Draft actions and timer resumes keep one generation job', async () => {
   const ui = draftFlow();
   ui.run();
   const job = ui.project.outputProcessing;
   ui.run();
   ui.resume();
+  ui.resume(false);
   assert.equal(ui.project.outputProcessing, job);
   assert.deepEqual(ui.calls.timers, [10000]);
   await ui.advance(10000);
   ui.resume();
-  ui.resume(false);
   ui.run();
   await flush();
-  assert.equal(ui.calls.notices.length, 1);
-  await ui.decide(true);
   assert.deepEqual(ui.calls.populated, ['one', 'two']);
+  assert.deepEqual(ui.calls.shown, ['project']);
+  assert.deepEqual(ui.calls.timers, [10000]);
 });
 
-test('ordinary drafts and revision jobs finish after their timer without a notice', async () => {
-  const ui = draftFlow();
-  ui.project.outputs[0].editorialDirection = 'Write 500 words';
-  ui.run();
-  await ui.advance(10000);
-  assert.equal(ui.calls.notices.length, 0);
-  assert.ok(ui.project.outputs.every(outputIsReady));
-  assert.ok(ui.project.outputs.every(output => !Object.hasOwn(output, 'shorterDraftAccepted')));
-  const revision = draftFlow();
-  const output = revision.project.outputs[0];
-  output.status = 'ready';
-  output.shorterDraftAccepted = true;
-  revision.project.outputProcessing = { kind: 'revision', ids: ['one'], openOutputId: 'one', instructions: 'Expand to 1000 words', requestedAt: 1000, readyAt: 11000 };
-  revision.resume();
-  await revision.advance(10000);
-  assert.equal(revision.calls.notices.length, 0);
-  assert.deepEqual(revision.calls.revised, [{ id: 'one', instructions: 'Expand to 1000 words', requestedAt: 1000 }]);
-  assert.deepEqual(revision.calls.notifications, ['Revision complete']);
-  assert.equal(revision.project.outputProcessing, undefined);
-  assert.equal(output.shorterDraftAccepted, true, 'A revision preserves the initial shorter-draft acknowledgement');
-  assert.equal(Object.hasOwn(revision.project.outputs[1], 'shorterDraftAccepted'), false);
+test('only a draft below an explicit request above 500 words receives a notice and history note', async () => {
+  for (const [direction, count, shorter] of [
+    ['Write 750 words', 749, true],
+    ['Write 750 words', 750, false],
+    ['Write 750 words', 751, false],
+    ['Write 501 words', 500, true],
+    ['Write 500 words', 499, false],
+    ['Write 300 words', 200, false],
+    ['Keep it focused', 200, false],
+    ['', 200, false],
+  ]) {
+    const ui = draftFlow({ content: { one: words(count) } });
+    ui.project.outputs[0].editorialDirection = direction;
+    ui.run();
+    await ui.advance(10000);
+    const output = ui.project.outputs[0];
+    assert.equal(outputWordCount(output), count);
+    assert.equal(outputIsReady(output), true);
+    if (shorter) {
+      assert.equal(output.shorterDraftCreated, true, direction);
+      assert.equal(output.wordCountNoticePending, true, direction);
+    } else assertNoLengthFlags(output);
+  }
 });
 
-test('shorter-draft acknowledgement persists across reload without affecting unselected recipes', async () => {
+test('the length decision uses populated content and the document word count', async () => {
+  for (const [generated, previousCount, expectedCount, shorter] of [
+    [{ document: { ops: [{ insert: words(750) }, { insert: '\n' }] }, draftText: 'Stale short text' }, 1, 750, false],
+    [words(249), 1000, 249, true],
+  ]) {
+    const ui = draftFlow({ content: { one: generated } });
+    ui.project.outputs[0].draftText = words(previousCount);
+    ui.run();
+    await ui.advance(10000);
+    const output = ui.project.outputs[0];
+    assert.equal(outputWordCount(output), expectedCount);
+    assert.equal(output.shorterDraftCreated === true, shorter);
+    assert.equal(output.wordCountNoticePending === true, shorter);
+  }
+});
+
+test('revision jobs retain historical length flags without creating another notice', async () => {
+  for (const flags of [
+    {},
+    { shorterDraftCreated: true },
+    { shorterDraftCreated: true, wordCountNoticePending: true },
+    { shorterDraftAccepted: true },
+  ]) {
+    const ui = draftFlow();
+    const output = ui.project.outputs[0];
+    output.status = 'ready';
+    Object.assign(output, flags);
+    ui.project.outputProcessing = { kind: 'revision', ids: ['one'], openOutputId: 'one', instructions: 'Expand to 1000 words', requestedAt: 1000, readyAt: 11000, editorialDirections: ['An old direction'] };
+    ui.resume();
+    await ui.advance(10000);
+    assert.deepEqual(ui.calls.revised, [{ id: 'one', instructions: 'Expand to 1000 words', requestedAt: 1000 }]);
+    assert.deepEqual(ui.calls.notifications, ['Revision complete']);
+    assert.equal(ui.project.outputProcessing, undefined);
+    assert.equal(ui.calls.populated.length, 0);
+    for (const key of ['shorterDraftCreated', 'shorterDraftAccepted']) {
+      assert.equal(output[key], flags[key], `A revision preserves ${key}`);
+    }
+    assert.equal(Object.hasOwn(output, 'wordCountNoticePending'), false, 'Completing a revision never reopens the initial notice');
+    assertNoLengthFlags(ui.project.outputs[1]);
+  }
+});
+
+test('each selected draft owns its notice and unselected recipes keep their existing history', async () => {
   const ui = draftFlow();
+  ui.project.outputs[1].editorialDirection = 'Write 900 words';
   ui.project.outputs.push(
     { id: 'unselected', title: 'Unselected oversized draft', status: 'pending', editorialDirection: 'Write 900 words' },
-    { id: 'historical', title: 'Earlier accepted draft', status: 'ready', editorialDirection: 'Write 800 words', shorterDraftAccepted: true },
+    { id: 'historical', title: 'Earlier shorter draft', status: 'ready', editorialDirection: 'Write 800 words', shorterDraftCreated: true },
   );
   ui.run();
   await ui.advance(10000);
-  await ui.decide(true);
-  assert.equal(ui.project.outputs[0].shorterDraftAccepted, true);
-  assert.equal(Object.hasOwn(ui.project.outputs[1], 'shorterDraftAccepted'), false);
-  assert.equal(Object.hasOwn(ui.project.outputs[2], 'shorterDraftAccepted'), false, 'Unselected oversized recipes do not inherit acceptance');
-  assert.equal(ui.project.outputs[3].shorterDraftAccepted, true, 'Existing acknowledgements remain unchanged');
+  for (const output of ui.project.outputs.slice(0, 2)) {
+    assert.equal(output.shorterDraftCreated, true);
+    assert.equal(output.wordCountNoticePending, true);
+  }
+  assertNoLengthFlags(ui.project.outputs[2]);
+  assert.equal(ui.project.outputs[2].status, 'pending');
+  assert.equal(ui.project.outputs[3].shorterDraftCreated, true);
+  assert.equal(Object.hasOwn(ui.project.outputs[3], 'wordCountNoticePending'), false);
   const restored = draftFlow({ project: clone(ui.calls.saved.at(-1)), now: ui.now() });
   restored.resume();
   await flush();
-  assert.equal(restored.project.outputs[0].shorterDraftAccepted, true);
-  assert.equal(Object.hasOwn(restored.project.outputs[1], 'shorterDraftAccepted'), false);
-  assert.equal(Object.hasOwn(restored.project.outputs[2], 'shorterDraftAccepted'), false);
-  assert.equal(restored.project.outputs[3].shorterDraftAccepted, true);
-  assert.equal(restored.calls.notices.length, 0);
+  assert.deepEqual(restored.project.outputs, ui.project.outputs);
+  assert.equal(restored.calls.populated.length, 0);
   assert.equal(restored.calls.timers.length, 0);
 });
 
-test('a fresh ordinary generation clears a previous shorter-draft acknowledgement', async () => {
-  const ui = draftFlow();
-  ui.project.outputs[0].editorialDirection = 'Write 300 words';
-  ui.project.outputs[0].shorterDraftAccepted = true;
-  ui.run();
-  await ui.advance(10000);
-  assert.equal(ui.calls.notices.length, 0);
-  assert.ok(ui.project.outputs.every(outputIsReady));
-  assert.ok(ui.project.outputs.every(output => !Object.hasOwn(output, 'shorterDraftAccepted')));
-  assert.ok(ui.calls.saved.at(-1).outputs.every(output => !Object.hasOwn(output, 'shorterDraftAccepted')));
+test('fresh generation clears obsolete acceptance and both old length flags when the draft meets its request', async () => {
+  for (const [direction, count] of [['Write 300 words', 250], ['Write 750 words', 750], ['Write 750 words', 751]]) {
+    const ui = draftFlow({ content: { one: words(count) } });
+    Object.assign(ui.project.outputs[0], { editorialDirection: direction, shorterDraftAccepted: true, shorterDraftCreated: true, wordCountNoticePending: true });
+    ui.run();
+    await ui.advance(10000);
+    assert.ok(ui.project.outputs.every(outputIsReady));
+    ui.project.outputs.forEach(assertNoLengthFlags);
+    ui.calls.saved.at(-1).outputs.forEach(assertNoLengthFlags);
+  }
 });
 
-test('reloading during generation waits only the remaining time and retains the saved directions', async () => {
+test('reloading during generation waits only the remaining time and retains saved directions', async () => {
   const first = draftFlow();
   first.run();
   const ui = draftFlow({ project: clone(first.project), now: 6000 });
   ui.resume(false);
   assert.deepEqual(ui.calls.timers, [5000]);
   await ui.advance(4999);
-  assert.equal(ui.calls.notices.length, 0);
+  assert.equal(ui.calls.populated.length, 0);
   await ui.advance(1);
-  assert.equal(ui.calls.notices.length, 1);
-  await ui.decide(true);
   assert.ok(ui.project.outputs.every(outputIsReady));
-});
-
-test('reloading an overdue notice waits for its project to open and does not restart generation', async () => {
-  const first = draftFlow();
-  first.run();
-  await first.advance(10000);
-  const ui = draftFlow({ project: clone(first.project), now: 25000, active: false });
-  ui.resume();
-  await flush();
-  assert.equal(ui.calls.notices.length, 0);
-  assert.equal(ui.calls.timers.length, 0);
-  ui.context.activeProjectId = ui.project.id;
-  ui.composer.hidden = false;
-  ui.resume(false);
-  assert.equal(ui.calls.notices.length, 0, 'The notice opens after the editor finishes rendering');
-  await flush();
-  assert.equal(ui.calls.notices.length, 1);
-  await ui.decide(true);
-  assert.ok(ui.project.outputs.every(outputIsReady));
-  assert.equal(ui.calls.timers.length, 0);
-});
-
-test('Go Back after reload restores the pending batch when the editor selected an existing ready draft', async () => {
-  const first = draftFlow();
-  first.run();
-  const restored = clone(first.project);
-  restored.outputs.push({ id: 'existing', title: 'Existing draft', status: 'ready' });
-  restored.selectedOutputId = 'existing';
-  restored.selectedOutputIds = ['existing'];
-  const ui = draftFlow({ project: restored, now: 25000 });
-  ui.context.outputViews.set(ui.project.id, 'created');
-  ui.resume(false);
-  await flush();
-  assert.equal(ui.calls.notices.length, 1);
-  await ui.decide(false);
+  assert.equal(ui.project.outputs[0].wordCountNoticePending, true);
   assert.equal(ui.project.outputProcessing, undefined);
-  assert.deepEqual(selectedPendingOutputs(ui.project).map(output => output.id), ['one', 'two']);
-  assert.ok(ui.project.selectedOutputIds.includes('existing'));
-  assert.equal(ui.context.outputViews.get(ui.project.id), 'pending');
-  assert.equal(ui.calls.focused, 1);
-  assert.equal(ui.calls.timers.length, 0);
-  ui.run();
-  assert.deepEqual(Array.from(ui.project.outputProcessing.ids), ['one', 'two']);
+  assert.deepEqual(ui.calls.populated, ['one', 'two']);
 });
 
-test('a mixed batch with a missing direction survives JSON storage and still completes after review', async () => {
+test('overdue legacy jobs waiting for a length decision finish immediately even while inactive', async () => {
+  const first = draftFlow();
+  first.run();
+  first.project.outputProcessing.awaitingWordCountReview = true;
+  for (const active of [true, false]) {
+    const ui = draftFlow({ project: clone(first.project), now: 25000, active });
+    ui.resume(false);
+    await flush();
+    assert.ok(ui.project.outputs.every(outputIsReady));
+    assert.equal(ui.project.outputProcessing, undefined);
+    assert.deepEqual(ui.calls.populated, ['one', 'two']);
+    assert.equal(ui.project.outputs[0].wordCountNoticePending, true);
+    assert.equal(ui.calls.timers.length, 0);
+    assert.equal(ui.calls.shown.length, 0);
+  }
+});
+
+test('a batch with a missing editorial direction survives storage and completes normally', async () => {
   const first = draftFlow();
   delete first.project.outputs[1].editorialDirection;
   first.run();
+  assert.deepEqual(Array.from(first.project.outputProcessing.editorialDirections), ['Write 750 words', '']);
   const ui = draftFlow({ project: clone(first.project), now: 25000 });
   ui.resume(false);
   await flush();
-  assert.deepEqual(ui.calls.notices, [['Write 750 words', '']]);
-  await ui.decide(true);
   assert.ok(ui.project.outputs.every(outputIsReady));
+  assert.equal(ui.project.outputs[0].wordCountNoticePending, true);
+  assertNoLengthFlags(ui.project.outputs[1]);
   assert.equal(ui.calls.timers.length, 0);
 });
 
-test('an inactive project never interrupts the current project with its word count notice', async () => {
-  const ui = draftFlow();
-  ui.run();
-  ui.context.activeProjectId = 'another';
-  await ui.advance(10000);
-  assert.equal(ui.calls.notices.length, 0);
-  assert.ok(ui.project.outputProcessing);
-  ui.context.activeProjectId = ui.project.id;
-  ui.resume();
-  await flush();
-  assert.equal(ui.calls.notices.length, 1);
-  await ui.decide(false);
+test('inactive and hidden projects finish and save without replacing the visible editor', async () => {
+  for (const hide of [ui => { ui.context.activeProjectId = 'another'; }, ui => { ui.composer.hidden = true; }]) {
+    const ui = draftFlow();
+    ui.run();
+    const rendered = ui.calls.rendered.length;
+    hide(ui);
+    await ui.advance(10000);
+    assert.equal(ui.project.outputProcessing, undefined);
+    assert.ok(ui.project.outputs.every(outputIsReady));
+    assert.equal(ui.project.outputs[0].wordCountNoticePending, true);
+    assert.equal(ui.calls.saved.at(-1).outputs[0].wordCountNoticePending, true);
+    assert.equal(ui.calls.closed, 0);
+    assert.equal(ui.calls.shown.length, 0);
+    assert.equal(ui.calls.rendered.length, rendered);
+  }
 });
 
-test('source imports, open project dialogs, and uploads defer the notice until they finish', async () => {
+test('source imports, project dialogs, and uploads defer rendering while creation still finishes', async () => {
   for (const block of ['import', 'dialog', 'upload']) {
     const ui = draftFlow();
     ui.run();
@@ -397,23 +319,24 @@ test('source imports, open project dialogs, and uploads defer the notice until t
     if (block === 'dialog') ui.dialog.open = true;
     if (block === 'upload') ui.context.newProjectUpload.isBusy = () => true;
     await ui.advance(10000);
-    assert.equal(ui.calls.notices.length, 0, block);
     assert.equal(ui.context.deferredOutputProjectId, ui.project.id, block);
-    assert.ok(ui.project.outputs.every(output => !outputIsReady(output)));
+    assert.equal(ui.project.outputProcessing, undefined, block);
+    assert.ok(ui.project.outputs.every(outputIsReady), block);
+    assert.equal(ui.project.outputs[0].wordCountNoticePending, true, block);
+    assert.equal(ui.calls.closed, 0, block);
+    assert.equal(ui.calls.shown.length, 0, block);
+    assert.equal(ui.calls.saved.at(-1).outputs[0].wordCountNoticePending, true, block);
     ui.context.sourceImport = null;
     ui.dialog.open = false;
     ui.context.newProjectUpload.isBusy = () => false;
     ui.resume();
     await flush();
-    assert.equal(ui.calls.notices.length, 1, block);
-    await ui.decide(true);
-    assert.ok(ui.project.outputs.every(outputIsReady));
+    assert.deepEqual(ui.calls.populated, ['one', 'two'], 'Reopening cannot generate completed drafts again');
   }
 });
 
-test('a replaced timer cannot finish a new job before that job is ready', async () => {
+test('a replaced timer cannot finish the replacement job before its deadline', async () => {
   const ui = draftFlow();
-  ui.project.outputs[0].editorialDirection = 'Write 500 words';
   ui.run();
   const replacement = { ...ui.project.outputProcessing, readyAt: 21000 };
   ui.project.outputProcessing = replacement;
@@ -424,42 +347,298 @@ test('a replaced timer cannot finish a new job before that job is ready', async 
   assert.equal(ui.calls.populated.length, 0);
   await ui.advance(1);
   assert.ok(ui.project.outputs.every(outputIsReady));
+  assert.deepEqual(ui.calls.timers, [10000, 10000]);
+  assert.deepEqual(ui.calls.populated, ['one', 'two']);
 });
 
-test('acceptance cannot complete a replaced job, deleted project, archived project, or another project', async () => {
+test('removed, deleted, and archived projects cannot finish an outstanding job', async () => {
   for (const mutate of [
-    ui => { ui.project.outputProcessing = { ids: ['other'], readyAt: 90000 }; },
     ui => { ui.context.projects = []; },
     ui => { ui.project.deletedAt = 1; },
     ui => { ui.project.archivedAt = 1; },
-    ui => { ui.context.activeProjectId = 'another'; },
   ]) {
     const ui = draftFlow();
     ui.run();
-    await ui.advance(10000);
+    const job = ui.project.outputProcessing;
     mutate(ui);
-    const currentJob = ui.project.outputProcessing;
-    await ui.decide(true);
+    await ui.advance(10000);
     assert.equal(ui.calls.populated.length, 0);
-    assert.equal(ui.project.outputProcessing, currentJob);
+    assert.equal(ui.project.outputProcessing, job);
+    assert.equal(ui.calls.shown.length, 0);
   }
 });
 
-test('changed or missing target recipes cancel the attempt before or after the notice', async () => {
-  for (const timing of ['before', 'after']) {
+test('changed or missing target recipes cancel before populating any draft, including after reload', async () => {
+  for (const reload of [false, true]) {
     for (const mutate of [
-      ui => { ui.project.outputs.pop(); },
-      ui => { ui.project.outputs[0].editorialDirection = 'Write 800 words'; },
-      ui => { ui.project.outputs[0] = { ...ui.project.outputs[0], editorialDirection: 'Write 900 words' }; },
+      project => { project.outputs.pop(); },
+      project => { project.outputs[0].editorialDirection = 'Write 800 words'; },
+      project => { project.outputs[0] = { ...project.outputs[0], editorialDirection: 'Write 900 words' }; },
     ]) {
-      const ui = draftFlow();
-      ui.run();
-      if (timing === 'before') mutate(ui);
-      await ui.advance(10000);
-      if (timing === 'after') { mutate(ui); await ui.decide(true); }
-      assert.equal(ui.project.outputProcessing, undefined, timing);
-      assert.equal(ui.calls.populated.length, 0, timing);
+      const first = draftFlow();
+      first.run();
+      mutate(first.project);
+      const ui = reload ? draftFlow({ project: clone(first.project), now: 25000 }) : first;
+      if (reload) ui.resume(false);
+      else await ui.advance(10000);
+      assert.equal(ui.project.outputProcessing, undefined);
+      assert.equal(ui.calls.populated.length, 0);
       assert.ok(ui.project.outputs.every(output => !outputIsReady(output)));
+      assert.ok(selectedPendingOutputs(ui.project).length > 0, 'Canceled recipes remain available to retry');
     }
+  }
+});
+
+const helpersStart = app.indexOf('function dismissWordCountNotice(');
+const helpersEnd = app.indexOf('\nfunction closeProfile(', helpersStart);
+assert.ok(helpersStart >= 0 && helpersEnd > helpersStart);
+const noticeProduction = app.slice(helpersStart, helpersEnd);
+
+function noticeFlow(savedProject) {
+  const project = savedProject || {
+    id: 'project', title: 'Project', selectedOutputId: 'one', selectedOutputIds: ['one'],
+    outputs: [
+      { id: 'one', title: 'First draft', status: 'ready', draftText: words(250), shorterDraftCreated: true, wordCountNoticePending: true },
+      { id: 'two', title: 'Second draft', status: 'ready', draftText: words(250), shorterDraftCreated: true, wordCountNoticePending: true },
+    ],
+  };
+  const frames = [];
+  const events = [];
+  const saved = [];
+  const nodes = new Map();
+  let dialogOpen = false;
+  const get = selector => {
+    if (!nodes.has(selector)) nodes.set(selector, {
+      hidden: false, classList: { add() {}, remove() {} },
+      getAttribute: () => 'false', querySelector: () => null,
+    });
+    return nodes.get(selector);
+  };
+  const context = createContext({
+    projects: [project], activeProjectId: project.id,
+    $, projectOutputs, selectedPendingOutputs, outputIsReady,
+    document: { body: get('body'), querySelector: selector => { assert.equal(selector, 'dialog[open]'); return dialogOpen ? {} : null; } },
+    sourceImport: null, newProjectUpload: { isBusy: () => false }, deferredOutputProjectId: null,
+    requestAnimationFrame(callback) { frames.push(callback); },
+    saveProjects() { saved.push(clone(project)); },
+    richEditor: {
+      open(output) { events.push({ action: 'open', outputId: output.directionOutputId }); },
+      showWordCountNotice() { events.push({ action: 'notice', outputId: project.selectedOutputId }); },
+    },
+    closeComposer() {}, railNavigation: { closeTransient() {} }, searchExperience: { hide() {} },
+    resumeOutputProcessing() {}, populateOutputContent() {}, syncOwnMaterialSource() {},
+    normalizeWordCount: value => value, toolDropdowns: { refresh() {} }, updateComposerActions() {},
+    renderOutputs() { events.push({ action: 'render' }); }, setNewVariantCollapsed() {}, setContentCollapsed() {},
+    closeProfile() {}, sessionStorage: { setItem() {} }, window: { scrollTo() { events.push({ action: 'scroll' }); } },
+  });
+  function $(selector) { return get(selector); }
+  runInContext(noticeProduction, context, { filename: 'app-completed-notice-integration.js' });
+  return {
+    project, context, events, saved, frames, composer: get('#composer'),
+    setDialogOpen(value) { dialogOpen = value; },
+    show: () => context.showEditorProject(project),
+    request: (output = project.outputs[0]) => context.showPendingWordCountNotice(project, output),
+    dismiss: (projectId = project.id, outputId = project.outputs[0].id) => context.dismissWordCountNotice(projectId, outputId),
+    frame() { for (const callback of frames.splice(0)) callback(); },
+  };
+}
+
+test('the completed draft opens and renders before its notice appears after painting', () => {
+  const ui = noticeFlow();
+  ui.show();
+  assert.deepEqual(ui.events, [{ action: 'open', outputId: 'one' }, { action: 'render' }, { action: 'scroll' }]);
+  assert.equal(ui.project.outputs[0].wordCountNoticePending, true);
+  ui.frame();
+  assert.equal(ui.events.some(event => event.action === 'notice'), false, 'The draft gets a frame before the notice opens');
+  ui.frame();
+  assert.deepEqual(ui.events.at(-1), { action: 'notice', outputId: 'one' });
+  assert.equal(ui.project.outputs[0].wordCountNoticePending, true, 'Showing a notice is not dismissing it');
+  assert.equal(ui.project.outputs[1].wordCountNoticePending, true, 'Another draft retains its own pending notice');
+});
+
+test('completed-notice scheduling ignores outputs without an eligible saved outcome', () => {
+  for (const mutate of [
+    ui => { delete ui.project.outputs[0].wordCountNoticePending; },
+    ui => { delete ui.project.outputs[0].shorterDraftCreated; },
+    ui => { ui.project.outputs[0].status = 'pending'; },
+    ui => { ui.project.outputs[0].needsRegeneration = true; },
+    ui => { ui.project.outputProcessing = { kind: 'revision', ids: ['one'] }; },
+  ]) {
+    const ui = noticeFlow();
+    mutate(ui);
+    ui.request();
+    assert.equal(ui.frames.length, 0);
+    assert.equal(ui.events.length, 0);
+  }
+  const ui = noticeFlow();
+  ui.request(null);
+  assert.equal(ui.frames.length, 0);
+});
+
+test('a scheduled notice cannot open for stale project, draft, or editor state', () => {
+  for (const mutate of [
+    ui => { ui.context.activeProjectId = 'another'; },
+    ui => { ui.composer.hidden = true; },
+    ui => { ui.project.viewOriginalDraft = true; },
+    ui => { ui.project.selectedOutputId = 'two'; },
+    ui => { ui.context.projects = []; },
+    ui => { ui.project.deletedAt = 1; },
+    ui => { ui.project.archivedAt = 1; },
+    ui => { ui.project.outputs[0] = clone(ui.project.outputs[0]); },
+    ui => { delete ui.project.outputs[0].wordCountNoticePending; },
+    ui => { ui.project.outputs[0].status = 'pending'; },
+    ui => { ui.project.outputs[0].needsRegeneration = true; },
+    ui => { ui.project.outputProcessing = { kind: 'revision', ids: ['one'] }; },
+  ]) {
+    const ui = noticeFlow();
+    ui.request();
+    ui.frame();
+    mutate(ui);
+    ui.frame();
+    assert.equal(ui.events.length, 0);
+    assert.equal(ui.saved.length, 0);
+  }
+});
+
+test('open dialogs, imports, and uploads defer the completed notice until the draft can reopen', () => {
+  for (const block of ['dialog', 'import', 'upload']) {
+    const ui = noticeFlow();
+    ui.show();
+    ui.frame();
+    if (block === 'dialog') ui.setDialogOpen(true);
+    if (block === 'import') ui.context.sourceImport = {};
+    if (block === 'upload') ui.context.newProjectUpload.isBusy = () => true;
+    ui.frame();
+    assert.equal(ui.events.some(event => event.action === 'notice'), false, block);
+    assert.equal(ui.context.deferredOutputProjectId, ui.project.id, block);
+    assert.equal(ui.project.outputs[0].wordCountNoticePending, true, block);
+    assert.equal(outputIsReady(ui.project.outputs[0]), true, block);
+    ui.setDialogOpen(false);
+    ui.context.sourceImport = null;
+    ui.context.newProjectUpload.isBusy = () => false;
+    ui.show();
+    ui.frame();
+    ui.frame();
+    assert.deepEqual(ui.events.at(-1), { action: 'notice', outputId: 'one' }, block);
+  }
+});
+
+test('dismissal clears only the identified draft notice and its saved history survives reload', () => {
+  const ui = noticeFlow();
+  ui.project.selectedOutputId = 'two';
+  ui.dismiss('project', 'one');
+  assert.equal(Object.hasOwn(ui.project.outputs[0], 'wordCountNoticePending'), false);
+  assert.equal(ui.project.outputs[0].shorterDraftCreated, true);
+  assert.equal(ui.project.outputs[1].wordCountNoticePending, true);
+  assert.equal(ui.saved.length, 1);
+  ui.dismiss('project', 'one');
+  assert.equal(ui.saved.length, 1, 'Repeated dismissals do not write again');
+  const restored = noticeFlow(clone(ui.saved[0]));
+  restored.project.selectedOutputId = 'one';
+  restored.request();
+  assert.equal(restored.frames.length, 0);
+  assert.equal(restored.project.outputs[0].shorterDraftCreated, true);
+  restored.project.selectedOutputId = 'two';
+  restored.request(restored.project.outputs[1]);
+  restored.frame();
+  restored.frame();
+  assert.deepEqual(restored.events, [{ action: 'notice', outputId: 'two' }]);
+});
+
+test('dismissal ignores unknown, removed, deleted, or archived targets', () => {
+  for (const [mutate, projectId, outputId] of [
+    [() => {}, 'missing', 'one'],
+    [() => {}, 'project', 'missing'],
+    [ui => { ui.context.projects = []; }, 'project', 'one'],
+    [ui => { ui.project.deletedAt = 1; }, 'project', 'one'],
+    [ui => { ui.project.archivedAt = 1; }, 'project', 'one'],
+  ]) {
+    const ui = noticeFlow();
+    mutate(ui);
+    ui.dismiss(projectId, outputId);
+    assert.equal(ui.project.outputs[0].wordCountNoticePending, true);
+    assert.equal(ui.project.outputs[0].shorterDraftCreated, true);
+    assert.equal(ui.saved.length, 0);
+  }
+});
+
+
+const deferredStart = app.indexOf('function renderDeferredOutput(');
+const deferredEnd = app.indexOf("\nfor (const id of ['material-dialog', 'new-project-dialog'])", deferredStart);
+assert.ok(deferredStart >= 0 && deferredEnd > deferredStart);
+const deferredProduction = app.slice(deferredStart, deferredEnd);
+
+function deferredFlow() {
+  const project = { id: 'project' };
+  const openDialogs = new Set();
+  const shown = [];
+  const listeners = new Map();
+  const composer = { hidden: false };
+  const newProjectDialog = { addEventListener() {} };
+  const context = createContext({
+    projects: [project], activeProjectId: project.id, deferredOutputProjectId: project.id,
+    sourceImport: null, newProjectUpload: { isBusy: () => false, reset() {} },
+    $: selector => selector === '#composer' ? composer : newProjectDialog,
+    document: {
+      querySelector(selector) { assert.equal(selector, 'dialog[open]'); return openDialogs.size ? {} : null; },
+      addEventListener(name, callback, capture) { listeners.set(name, { callback, capture }); },
+    },
+    setTimeout,
+    showEditorProject(current) { shown.push(current.id); },
+  });
+  runInContext(deferredProduction, context, { filename: 'app-dialog-retry-integration.js' });
+  return { project, context, openDialogs, shown, composer, listeners,
+    close(id) { openDialogs.delete(id); listeners.get('close').callback({ target: { tagName: 'DIALOG', id } }); },
+  };
+}
+
+test('closing any dialog retries deferred drafts after its close handlers settle', async () => {
+  for (const id of ['article-preview-dialog', 'revision-request-dialog', 'material-dialog', 'new-project-dialog']) {
+    const ui = deferredFlow();
+    ui.openDialogs.add(id);
+    ui.context.renderDeferredOutput();
+    assert.deepEqual(ui.shown, []);
+    assert.equal(ui.listeners.get('close').capture, true, 'Dialog close events require capture because they do not bubble');
+    ui.close(id);
+    assert.deepEqual(ui.shown, [], 'Cleanup and navigation finish before retrying');
+    await new Promise(resolve => setTimeout(resolve, 0));
+    assert.deepEqual(ui.shown, ['project'], id);
+    assert.equal(ui.context.deferredOutputProjectId, null);
+  }
+});
+
+test('closing one dialog cannot render through another open dialog, import, or upload', async () => {
+  for (const block of ['dialog', 'import', 'upload']) {
+    const ui = deferredFlow();
+    ui.openDialogs.add('article-preview-dialog');
+    if (block === 'dialog') ui.openDialogs.add('revision-request-dialog');
+    if (block === 'import') ui.context.sourceImport = {};
+    if (block === 'upload') ui.context.newProjectUpload.isBusy = () => true;
+    ui.close('article-preview-dialog');
+    await new Promise(resolve => setTimeout(resolve, 0));
+    assert.deepEqual(ui.shown, [], block);
+    assert.equal(ui.context.deferredOutputProjectId, 'project', block);
+    ui.openDialogs.clear();
+    ui.context.sourceImport = null;
+    ui.context.newProjectUpload.isBusy = () => false;
+    ui.context.renderDeferredOutput();
+    assert.deepEqual(ui.shown, ['project'], block);
+  }
+});
+
+test('close cleanup can navigate, hide, delete, or archive a project without the deferred retry reopening it', async () => {
+  for (const mutate of [
+    ui => { ui.context.activeProjectId = 'another'; },
+    ui => { ui.composer.hidden = true; },
+    ui => { ui.project.deletedAt = 1; },
+    ui => { ui.project.archivedAt = 1; },
+    ui => { ui.context.projects = []; },
+  ]) {
+    const ui = deferredFlow();
+    ui.close('article-preview-dialog');
+    mutate(ui);
+    await new Promise(resolve => setTimeout(resolve, 0));
+    assert.deepEqual(ui.shown, []);
+    assert.equal(ui.context.deferredOutputProjectId, null);
   }
 });

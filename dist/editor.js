@@ -3,7 +3,7 @@ import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-d
 import { initializeOutputShareText } from './outputs.js?v=20261105-filter-settings';
 import { createRevisionLoading } from './revision-loading.js?v=20261027-revision-loading';
 import { createStoryMetadata, storyMetadata } from './story-metadata.js?v=20261027-metadata';
-import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261111-word-count-label';
+import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261117-word-count-popover';
 import { draftPreferenceValue } from './draft-options.js?v=20261111-audience-name-variation';
 import './vendor/quill-2.0.3.js?v=20261026-drafting-card-size';
 
@@ -42,7 +42,7 @@ function savedDocument(value) {
   return { ops };
 }
 
-export function createMaterialEditor({ onSave, onSendToCms, onContentChange = () => {}, onToolbarChange = () => {}, notify }) {
+export function createMaterialEditor({ onSave, onSendToCms, onContentChange = () => {}, onToolbarChange = () => {}, onDirectionNoticeDismiss = () => {}, onDirectionAddSources = () => {}, onDirectionRequestRevision = () => {}, notify }) {
   const $ = (selector) => document.querySelector(selector);
   const root = $('#material-editor');
   const title = $('#editor-title');
@@ -355,7 +355,13 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   return {
     open(next) {
       flush(); metadata.close(); project = next; loading = true; root.hidden = false;
-      directionMetadata.update(next.editorialDirection, { shorterDraftAccepted: next.shorterDraftAccepted === true });
+      directionMetadata.update(next.editorialDirection, {
+        shorterDraftAccepted: next.shorterDraftAccepted === true,
+        shorterDraftCreated: next.shorterDraftCreated === true,
+        onDismiss: () => onDirectionNoticeDismiss(next.id, next.directionOutputId),
+        onAddSources: () => onDirectionAddSources(next.id, next.directionOutputId),
+        onRequestRevision: () => onDirectionRequestRevision(next.id, next.directionOutputId),
+      });
       initialize();
       setRevisionBusy(false);
       quill.enable(true);
@@ -396,8 +402,21 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
     close() { flush(); metadata.close(); directionMetadata.close(); setRevisionBusy(false); title.disabled = false; quill?.enable(true); project = null; root.hidden = true; setPanel('', false); if (linkDialog.open) linkDialog.close(); $('#editor-download').open = false; },
     setRevisionBusy,
     closePanels() { setPanel('', false); directionMetadata.close(); metadata.close(); },
-    showDirectionFor(button, output) { setPanel('', false); metadata.close(); directionMetadata.toggleFor(button, output); },
+    showDirectionFor(button, output, projectId = project?.id) {
+      setPanel('', false); metadata.close();
+      directionMetadata.toggleFor(button, output, {
+        onDismiss: () => onDirectionNoticeDismiss(projectId, output.id),
+        onAddSources: () => onDirectionAddSources(projectId, output.id),
+        onRequestRevision: () => onDirectionRequestRevision(projectId, output.id),
+      });
+    },
+    showWordCountNotice() {
+      if (!project || root.hidden || revisionBusy) return false;
+      setPanel('', false); metadata.close();
+      return directionMetadata.showNotice();
+    },
     closeDirection() { directionMetadata.close(); },
+    closeDirectionForRender() { directionMetadata.closeForRender(); },
     hasContent,
     canSend,
     markSent() {

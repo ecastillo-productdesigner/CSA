@@ -7,7 +7,7 @@ import { toolFavorites } from './tool-favorites.js?v=20261105-filter-settings';
 import { bindTabSelection } from './selection-controls.js?v=20261026-drafting-card-size';
 import { createTabPanelTransition } from './tab-panel-transition.js?v=20261026-drafting-card-size';
 
-export function createToolDropdowns({ root = document, favoritesStore = toolFavorites, notify = () => {}, audienceSuggestions = null, onAudienceSourcesOpen = null, createSuggestionAnimation = createAudienceSuggestingAnimation } = {}) {
+export function createToolDropdowns({ root = document, favoritesStore = toolFavorites, notify = () => {}, audienceSuggestions = null, createSuggestionAnimation = createAudienceSuggestingAnimation } = {}) {
   const controls = [...root.querySelectorAll('.composer-field, .results-sort-field, .results-source-field, .feedback-select-field, .editor-style-field, .word-count-field')].map(field => {
     const select = field.querySelector('select');
     const label = field.dataset.label;
@@ -159,7 +159,7 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
     function sourceSummary(group) {
       return group.sources.length ? group.sources.map(source => source.title).join(' + ') : 'Source details were not saved';
     }
-    function createChoiceRow(option, { groupId = '', describedBy = '' } = {}) {
+    function createChoiceRow(option, { groupId = '' } = {}) {
       const row = document.createElement('div');
       row.className = 'tool-dropdown-row';
       const button = document.createElement('button');
@@ -171,7 +171,6 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
       else if (!supportsFavorites) button.setAttribute('role', 'option');
       button.tabIndex = supportsFavorites ? 0 : -1;
       button.textContent = option.textContent;
-      if (describedBy) button.setAttribute('aria-describedby', describedBy);
       button.append(createIcon('check', 'tool-dropdown-check'));
       bindTapActivation(button, () => {
         if (!transition.expanded || select.disabled || option.disabled) return;
@@ -195,7 +194,6 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
         favorite.type = 'button';
         favorite.className = 'tool-option-favorite';
         favorite.append(createIcon('favorite'));
-        if (describedBy) favorite.setAttribute('aria-describedby', describedBy);
         bindTapActivation(favorite, () => {
           if (!transition.expanded || select.disabled) return;
           const { saved, persisted } = favoritesStore.toggle(key, option.value);
@@ -245,7 +243,7 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
         children.push(choice.row);
       }
       let favoriteSection;
-      groups.forEach((group, index) => {
+      groups.forEach(group => {
         if (group.favorite) {
           if (!favoriteSection) {
             favoriteSection = document.createElement('div');
@@ -268,46 +266,11 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
         section.className = 'audience-suggestion-group';
         section.dataset.generation = group.id;
         section.setAttribute('role', 'group');
-        const header = document.createElement('div');
-        header.className = 'audience-generation-header';
-        header.id = `${select.id}-generation-${index}`;
-        header.title = sourceSummary(group);
-        const label = document.createElement('p');
-        label.className = 'audience-generation-label';
-        const count = group.sources.length;
-        label.append(createIcon('folder_open'));
-        const caption = document.createElement('span');
-        caption.textContent = count ? 'Suggested from ' : 'Previously suggested';
-        if (count) {
-          const sourceCount = document.createElement(onAudienceSourcesOpen ? 'button' : 'span');
-          sourceCount.textContent = `${count} ${count === 1 ? 'source' : 'sources'}`;
-          sourceCount.title = sourceSummary(group);
-          if (onAudienceSourcesOpen) {
-            sourceCount.type = 'button';
-            sourceCount.className = 'text-button audience-generation-source-link';
-            sourceCount.setAttribute('aria-label', `Open Sources panel with ${count} ${count === 1 ? 'source' : 'sources'} used for these audiences`);
-            bindTapActivation(sourceCount, () => {
-              if (!transition.expanded || select.disabled || busy) return;
-              close(false, { animate: false });
-              onAudienceSourcesOpen(group.id);
-            });
-          }
-          caption.append(sourceCount);
-        }
-        label.append(caption);
-        header.append(label);
-        if (group.key === contextKey && count) {
-          const current = document.createElement('span');
-          current.className = 'audience-generation-current';
-          current.textContent = 'Current source selection';
-          header.append(current);
-        }
-        section.setAttribute('aria-labelledby', header.id);
-        section.append(header);
+        section.setAttribute('aria-label', 'Suggested audiences');
         for (const descriptor of group.suggestions) {
           const option = optionFor(descriptor.value);
           if (!option) continue;
-          const choice = createChoiceRow(option, { groupId: group.id, describedBy: header.id });
+          const choice = createChoiceRow(option, { groupId: group.id });
           suggestedRows.push(choice);
           section.append(choice.row);
         }

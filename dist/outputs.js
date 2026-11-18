@@ -1,3 +1,4 @@
+import { editorialPlanDraftContent } from './editorial-plans.js?v=20261117-plan-review';
 import { applyParagraphListRevision } from './paragraph-list-revision.js?v=20261030-bullet-request-fix';
 import { mentionsElephant, revisionChangeSummary } from './revision-change-summary.js?v=20261030-declined-revision-details';
 import { syncSelection } from './selection-controls.js?v=20261026-drafting-card-size';
@@ -313,11 +314,12 @@ export function populateOutputContent(output) {
   const index = sampleHeadlines.indexOf(output.title);
   const untouchedLegacy = !hasFormatting && normalized(current) === normalized(legacySampleContent(output.title));
   const untouchedSample = !hasFormatting && index >= 0 && normalized(current) === normalized(storyParagraphs[index].join('\n\n'));
-  const sourceTopic = !current.trim() && !output.contentInitialized ? topicDraftContent(output.sourceSnapshots) : null;
+  const sourceTopic = !current.trim() && !output.contentInitialized ? topicDraftContent(output.sourceSnapshots, { revision: output.editorialPlan?.variantIndex || 0 }) : null;
   if (sourceTopic) {
-    Object.assign(output, formatDraftContent(sourceTopic.paragraphs, {
-      format: output.toolPreferences?.format,
-      headings: sourceTopic.sectionHeadings,
+    const planned = editorialPlanDraftContent(output, sourceTopic);
+    Object.assign(output, formatDraftContent(planned.paragraphs, {
+      format: planned.format,
+      headings: planned.sectionHeadings,
     }));
     output.topicDraftVersion = 1;
     if (initializedShareText) output.shareText = sourceTopic.shareText;
@@ -327,7 +329,8 @@ export function populateOutputContent(output) {
       ...storyParagraphs[2].slice(1),
     ];
     const paragraphs = [...opening.slice(0, -1), ...extraStoryParagraphs[index >= 0 ? index : 2], opening.at(-1)];
-    Object.assign(output, formatDraftContent(paragraphs, { format: output.toolPreferences?.format }));
+    const planned = editorialPlanDraftContent(output, { paragraphs });
+    Object.assign(output, formatDraftContent(planned.paragraphs, { format: planned.format, headings: planned.sectionHeadings }));
   }
   output.contentInitialized = true;
   output.contentVersion = 3;
@@ -417,12 +420,11 @@ export function renderOutputs(project, requestedView) {
   document.querySelector('#output-status-content').setAttribute('aria-labelledby', `output-${state.view}-tab`);
   document.querySelector('.outputs-footer').hidden = state.view !== 'pending';
   const processing = Boolean(project?.outputProcessing);
-  const awaitingReview = Boolean(project?.outputProcessing?.awaitingWordCountReview);
-  const processingLabel = awaitingReview ? 'Review Word Count Notice' : project?.outputProcessing?.kind === 'revision' ? 'Revising Draft' : 'Creating Draft';
+  const processingLabel = project?.outputProcessing?.kind === 'revision' ? 'Revising Draft' : 'Creating Draft';
   const selectedPending = selectedPendingOutputs(project);
   const selectedIds = new Set(selectedOutputs(project).map(output => output.id));
   const list = document.querySelector('#output-list');
-  document.querySelector('.composer-outputs').setAttribute('aria-busy', String(processing && !awaitingReview));
+  document.querySelector('.composer-outputs').setAttribute('aria-busy', String(processing));
   const create = document.querySelector('#create-output');
   create.disabled = processing || !selectedPending.length;
   create.title = processing ? processingLabel : selectedPending.length ? 'Draft Selected Content' : 'Select Content to Draft';
@@ -437,7 +439,7 @@ export function renderOutputs(project, requestedView) {
     const item = document.createElement('li');
     const card = document.createElement('article');
     const ready = outputIsReady(output);
-    const revising = Boolean(!awaitingReview && project?.outputProcessing?.ids.includes(output.id));
+    const revising = Boolean(project?.outputProcessing?.ids.includes(output.id));
     const active = Boolean(((ready || output.needsRegeneration) && project.selectedOutputId === output.id)
       || (project.viewOriginalDraft && !ready && project.lastPendingOutputId === output.id && selectedIds.has(output.id)));
     const selected = ready ? active : selectedIds.has(output.id);

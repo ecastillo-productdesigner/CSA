@@ -150,7 +150,7 @@ function deferred() {
 }
 const flush = async () => { for (let index = 0; index < 6; index++) await Promise.resolve(); };
 
-function suggestionFixture(t, { available = true, withProvider = true, onAudienceSourcesOpen = null } = {}) {
+function suggestionFixture(t, { available = true, withProvider = true } = {}) {
   const ui = setup(t);
   const audience = ui.field('Audience');
   audience.field.dataset.placeholder = 'None Selected';
@@ -175,7 +175,7 @@ function suggestionFixture(t, { available = true, withProvider = true, onAudienc
       });
     },
   };
-  const controller = ui.dropdowns(withProvider ? { audienceSuggestions: provider, onAudienceSourcesOpen } : {});
+  const controller = ui.dropdowns(withProvider ? { audienceSuggestions: provider } : {});
   const trigger = audience.field.querySelector('.tool-dropdown-trigger');
   const menu = audience.field.querySelector('.tool-dropdown-menu');
   const tabs = () => menu.querySelector('.output-status-tabs');
@@ -678,15 +678,20 @@ test('suggested audiences retain source groups, one reset row, and duplicate aud
   ui.show('Suggested');
   const groups = ui.view().querySelectorAll('.audience-suggestion-group');
   assert.deepEqual(groups.map(group => group.dataset.generation), ['current', 'old']);
-  assert.equal(groups[0].querySelector('.audience-generation-header').title, 'Second source + Third source');
-  assert.equal(groups[1].querySelector('.audience-generation-header').title, 'First source');
+  for (const group of groups) {
+    assert.equal(group.getAttribute('role'), 'group');
+    assert.equal(group.getAttribute('aria-label'), 'Suggested audiences');
+    assert.equal(group.getAttribute('aria-labelledby'), undefined);
+    assert.equal(group.querySelector('.audience-generation-header'), null);
+    assert.equal(group.querySelector('.audience-generation-current'), null);
+    assert.equal(group.querySelector('.audience-generation-source-link'), null);
+  }
   assert.equal(ui.suggestedRows().length, 7, 'one reset plus two groups of three choices');
   assert.equal(new Set([...ui.audience.select.options].map(option => option.value)).size, ui.audience.select.options.length);
   assert.equal(ui.action().parentElement.hidden, true);
   const row = groups[1].querySelector('.tool-dropdown-row');
-  const header = groups[1].querySelector('.audience-generation-header');
-  assert.equal(row.querySelector('.tool-dropdown-option').getAttribute('aria-describedby'), header.id);
-  assert.equal(row.querySelector('.tool-option-favorite').getAttribute('aria-describedby'), header.id);
+  assert.equal(row.querySelector('.tool-dropdown-option').getAttribute('aria-describedby'), undefined);
+  assert.equal(row.querySelector('.tool-option-favorite').getAttribute('aria-describedby'), undefined);
   row.querySelector('.tool-dropdown-option').emit('click');
   assert.equal(ui.audience.select.value, choices[0].value);
 });
@@ -811,18 +816,6 @@ test('hearted suggested audiences restore in Audiences on a new visit and projec
   assert.equal(restored.field.querySelector('.tool-dropdown-trigger').children[0].textContent, generated[0].label);
 });
 
-test('generation headers omit source-title text and keep full names available on hover', t => {
-  const ui = suggestionFixture(t, { onAudienceSourcesOpen() {} });
-  const title = 'Remember Bank of America Stadium’s opening in 1996? Check out these Observer photos';
-  ui.setContext({ groups: [generation('first', 'project-a:first', [title, 'Second source'])] });
-  ui.controller.refresh();
-  ui.trigger.emit('click');
-  ui.show('Suggested');
-  assert.equal(ui.view().querySelector('.audience-generation-sources'), null);
-  const link = ui.view().querySelector('.audience-generation-source-link');
-  assert.equal(link.textContent, '2 sources');
-  assert.equal(link.title, title + ' + Second source');
-});
 
 test('focus stays within the same generation when repeated audience rows are rebuilt', t => {
   const ui = suggestionFixture(t);
@@ -838,15 +831,6 @@ test('focus stays within the same generation when repeated audience rows are reb
   ui.controller.refresh();
   const updatedOld = ui.view().querySelectorAll('.audience-suggestion-group').find(group => group.dataset.generation === 'old');
   assert.equal(document.activeElement, updatedOld.querySelector('.tool-option-favorite'));
-});
-
-test('historical choices without recorded source names disclose missing provenance', t => {
-  const ui = suggestionFixture(t);
-  ui.setContext({ groups: [generation('legacy', 'old-key', [])] });
-  ui.controller.refresh();
-  ui.trigger.emit('click');
-  ui.show('Suggested');
-  assert.equal(ui.view().querySelector('.audience-generation-header').title, 'Source details were not saved');
 });
 
 
@@ -874,28 +858,8 @@ test('the new-generation action precedes retained groups in visual and keyboard 
 });
 
 
-test('source count opens the correct generation and closes the audience menu without selecting an audience', t => {
-  const opened = [];
-  const ui = suggestionFixture(t, { onAudienceSourcesOpen: id => opened.push(id) });
-  ui.setContext({ groups: [generation('current', 'project-a:sources-a', ['First source']), generation('older', 'old-key', ['Second source', 'Third source'])], suggestions: choices });
-  ui.controller.refresh();
-  ui.trigger.emit('click');
-  ui.show('Suggested');
-  const links = ui.view().querySelectorAll('.audience-generation-source-link');
-  assert.deepEqual(links.map(link => link.textContent), ['1 source', '2 sources']);
-  assert.equal(links[1].type, 'button');
-  assert.match(links[1].getAttribute('aria-label'), /Open Sources panel with 2 sources/);
-  links[1].focus();
-  links[1].emit('click');
-  assert.deepEqual(opened, ['older']);
-  assert.equal(ui.trigger.getAttribute('aria-expanded'), 'false');
-  assert.equal(ui.audience.select.value, '');
-});
-
-
 test('favorites rise above source groups without headings and retain ordering and focus', t => {
-  const opened = [];
-  const ui = suggestionFixture(t, { onAudienceSourcesOpen: id => opened.push(id) });
+  const ui = suggestionFixture(t);
   const olderChoices = choices.map(choice => ({ value: `old-${choice.value}`, label: `Old ${choice.label}` }));
   ui.setContext({ groups: [generation('current', 'project-a:sources-a', ['Current source']), generation('older', 'older-key', ['Earlier source', 'Another source'], olderChoices)], suggestions: choices });
   ui.controller.refresh();
@@ -925,12 +889,12 @@ test('favorites rise above source groups without headings and retain ordering an
   assert.equal(ui.generatedRows()[1].querySelector('.tool-dropdown-option').title, 'Earlier source + Another source');
   assert.equal(ui.generatedRows()[1].querySelector('.tool-dropdown-option').getAttribute('aria-describedby'), undefined);
   assert.deepEqual(sections.slice(1).map(group => group.dataset.generation), ['current', 'older']);
-  const headers = sections.slice(1).map(group => group.querySelector('.audience-generation-header'));
-  assert.equal(new Set(headers.map(header => header.id)).size, headers.length);
-  assert.equal(headers[1].title, 'Earlier source + Another source');
-  sections[2].querySelector('.audience-generation-source-link').emit('click');
-  assert.deepEqual(opened, ['older']);
-  ui.trigger.emit('click');
+  for (const group of sections.slice(1)) {
+    assert.equal(group.getAttribute('aria-label'), 'Suggested audiences');
+    assert.equal(group.querySelector('.audience-generation-header'), null);
+    assert.equal(group.querySelector('.audience-generation-current'), null);
+    assert.equal(group.querySelector('.audience-generation-source-link'), null);
+  }
   assert.equal(labels()[0], choices[1].label);
   heart(choices[1].label).focus();
   heart(choices[1].label).emit('click');
@@ -959,7 +923,7 @@ test('persisted favorites shared across generations keep each source context and
 
 
 test('an entirely hearted generation shows only favorite rows until a heart is removed', t => {
-  const ui = suggestionFixture(t, { onAudienceSourcesOpen: () => {} });
+  const ui = suggestionFixture(t);
   for (const choice of choices) ui.favoritesStore.toggle('audience', choice.value);
   ui.setContext({ groups: [generation('current', 'project-a:sources-a', ['Current source'])], suggestions: choices });
   ui.controller.refresh();
@@ -971,8 +935,10 @@ test('an entirely hearted generation shows only favorite rows until a heart is r
   ui.generatedRows()[1].querySelector('.tool-option-favorite').emit('click');
   const sections = ui.view().querySelectorAll('.audience-suggestion-group');
   assert.equal(sections[0].querySelectorAll('.tool-dropdown-row').length, 2);
-  assert.equal(sections[1].querySelector('.audience-generation-header').title, 'Current source');
-  assert.equal(sections[1].querySelector('.audience-generation-source-link').textContent, '1 source');
+  assert.equal(sections[1].getAttribute('aria-label'), 'Suggested audiences');
+  assert.equal(sections[1].querySelector('.audience-generation-header'), null);
+  assert.equal(sections[1].querySelector('.audience-generation-current'), null);
+  assert.equal(sections[1].querySelector('.audience-generation-source-link'), null);
   assert.equal(sections[1].querySelector('.tool-dropdown-option').textContent, choices[1].label);
 });
 

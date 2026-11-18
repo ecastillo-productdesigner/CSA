@@ -9,7 +9,7 @@ function formatBytes(size) {
   return size < 1024 ? `${size} B` : size < 1048576 ? `${Math.round(size / 1024)} KB` : `${(size / 1048576).toFixed(1)} MB`;
 }
 
-export function createNewProjectUpload({ onCreate, saveFiles = saveDocuments, deleteFiles = deleteDocuments, isBlocked = () => false }) {
+export function createNewProjectUpload({ onCreate, saveFiles = saveDocuments, deleteFiles = deleteDocuments, isBlocked = () => false, onIdle = () => {} }) {
   if (typeof onCreate !== 'function') throw new TypeError('A project creation callback is required.');
   const get = name => document.querySelector(`#new-project-${name}`);
   const dialog = get('dialog');
@@ -134,6 +134,7 @@ export function createNewProjectUpload({ onCreate, saveFiles = saveDocuments, de
       for (const [control, disabled] of controls) control.disabled = disabled;
       if (completed) reset();
       else renderFiles();
+      onIdle();
     }
   }
 

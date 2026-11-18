@@ -1,7 +1,9 @@
 import { tokenNumber } from './design-system/runtime.js?v=20261026-drafting-card-size';
 
-export function createEditorPopover({ container, trigger, popover, dismiss, onOpen = () => {}, resetScroll = false, compact = false }) {
+export function createEditorPopover({ container, trigger, popover, dismiss, onOpen = () => {}, onDismiss = () => {}, resetScroll = false, compact = false }) {
   let activeTrigger = trigger;
+  let manualDismiss = false;
+  let dismissCallback = onDismiss;
   const usableTrigger = anchor => anchor && anchor.isConnected !== false && !anchor.hidden && !anchor.disabled
     && !anchor.closest?.('[hidden], [inert]') && (!anchor.getClientRects || anchor.getClientRects().length > 0);
   const anchorObserver = typeof MutationObserver === 'function' ? new MutationObserver(() => {
@@ -15,7 +17,16 @@ export function createEditorPopover({ container, trigger, popover, dismiss, onOp
     previousTrigger.setAttribute('aria-expanded', 'false');
     anchorObserver?.disconnect();
     activeTrigger = trigger;
+    manualDismiss = false;
+    dismissCallback = onDismiss;
     if (wasOpen && restoreFocus && usableTrigger(previousTrigger)) previousTrigger.focus({ preventScroll: true });
+  }
+
+  // Only intentional dismissals acknowledge a notice; context changes just close it.
+  function dismissPopover(restoreFocus = true) {
+    const callback = !popover.hidden ? dismissCallback : null;
+    close(restoreFocus);
+    callback?.();
   }
 
   function position() {
@@ -50,41 +61,64 @@ export function createEditorPopover({ container, trigger, popover, dismiss, onOp
     popover.style.top = `${Math.max(inset, Math.min(top, viewportHeight - height - inset))}px`;
   }
 
-  function toggleFor(nextTrigger = trigger) {
-    if (!usableTrigger(nextTrigger)) return;
-    if (!popover.hidden && activeTrigger === nextTrigger) { close(true); return; }
+  function openFor(nextTrigger = trigger, { manualDismiss: nextManualDismiss = false, onDismiss: nextOnDismiss = onDismiss } = {}) {
+    if (!usableTrigger(nextTrigger)) return false;
+    if (!popover.hidden && activeTrigger === nextTrigger) {
+      manualDismiss = nextManualDismiss;
+      dismissCallback = nextOnDismiss;
+      position();
+      return !popover.hidden;
+    }
     close();
     activeTrigger = nextTrigger;
+    manualDismiss = nextManualDismiss;
+    dismissCallback = nextOnDismiss;
     onOpen(activeTrigger);
     popover.hidden = false;
     activeTrigger.setAttribute('aria-expanded', 'true');
     position();
-    if (popover.hidden) return;
+    if (popover.hidden) return false;
     anchorObserver?.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'inert', 'disabled', 'class', 'style'] });
     if (resetScroll) popover.scrollTop = 0;
     popover.focus({ preventScroll: true });
+    return true;
+  }
+
+  function toggleFor(nextTrigger = trigger, options) {
+    if (!usableTrigger(nextTrigger)) return false;
+    if (!popover.hidden && activeTrigger === nextTrigger) { dismissPopover(); return false; }
+    return openFor(nextTrigger, options);
   }
 
   trigger.addEventListener('click', () => toggleFor(trigger));
-  dismiss.addEventListener('click', () => close(true));
+  dismiss.addEventListener('click', () => dismissPopover());
   document.addEventListener('pointerdown', event => {
-    if (!popover.hidden && !popover.contains(event.target) && !activeTrigger.contains(event.target)) close();
+    if (!popover.hidden && !manualDismiss && !popover.contains(event.target) && !activeTrigger.contains(event.target)) close();
   });
   popover.addEventListener('focusout', event => {
-    if (event.relatedTarget && !popover.contains(event.relatedTarget) && !activeTrigger.contains(event.relatedTarget)) close();
+    if (!manualDismiss && event.relatedTarget && !popover.contains(event.relatedTarget) && !activeTrigger.contains(event.relatedTarget)) close();
   });
   document.addEventListener('focusin', event => {
-    if (!popover.hidden && !popover.contains(event.target) && !activeTrigger.contains(event.target)) close();
+    if (!popover.hidden && !manualDismiss && !popover.contains(event.target) && !activeTrigger.contains(event.target)) close();
   });
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape' || popover.hidden) return;
     event.preventDefault();
     event.stopPropagation();
-    close(true);
+    dismissPopover();
   });
   document.addEventListener('scroll', event => {
-    if (!popover.hidden && !popover.contains(event.target)) close();
+    if (popover.hidden || popover.contains(event.target)) return;
+    if (manualDismiss) position();
+    else close();
   }, true);
   window.addEventListener('resize', position);
-  return { close, toggleFor, refresh() { if (!popover.hidden) { onOpen(activeTrigger); position(); } } };
+  return {
+    close,
+    dismiss: dismissPopover,
+    openFor,
+    toggleFor,
+    isManualOpenFor(anchor) { return !popover.hidden && manualDismiss && activeTrigger === anchor; },
+    refresh() { if (!popover.hidden) { onOpen(activeTrigger); position(); } },
+  };
 }

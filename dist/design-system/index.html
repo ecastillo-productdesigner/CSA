@@ -10,9 +10,9 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0&amp;icon_names=add_circle,arrow_forward,article,badge,check,chevron_forward,close,delete,description,draw,edit,edit_document,favorite,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,post_add,redo,right_panel_open,search,send,signpost,thumb_down,thumb_up,undo,unfold_less,upload,view_module,visibility,wand_stars&amp;display=block">
   <link rel="stylesheet" href="tokens.css?v=20261117-whole-tabs">
-  <link rel="stylesheet" href="../styles.css?v=20261117-whole-tabs">
+  <link rel="stylesheet" href="../styles.css?v=20261118-optional-plans">
   <link rel="stylesheet" href="guide.css?v=20261111-animations">
-  <script src="guide.js?v=20261117-whole-tabs" type="module"></script>
+  <script src="guide.js?v=20261118-optional-plans" type="module"></script>
 </head>
 <body class="ds-page">
   <a class="ds-skip" href="#overview">Skip to reference</a>
@@ -266,12 +266,13 @@
         <p class="ds-caption">Left and Right arrows, Home, and End select drafts in their original order, including those in More. The +N control announces the number of additional drafts. Down or Up opens its menu at the first or last item; menu arrows, Home, and End move focus, and Enter opens a draft. Escape closes the menu and returns focus to +N. Try Wide and Compact to see the same five sample drafts fit different widths. These examples use the production controller and temporary sample content.</p>
       </article>
       <article class="ds-panel" id="editorial-plans" aria-labelledby="ds-editorial-plans-title">
-        <div class="ds-panel-heading"><h3 id="ds-editorial-plans-title">Review Editorial Plans</h3><span>Trend Hunter · Before drafting</span></div>
+        <div class="ds-panel-heading"><h3 id="ds-editorial-plans-title">Review Editorial Plans</h3><span>Trend Hunter · Optional planning</span></div>
         <div class="ds-stack" id="ds-editorial-plan-specimen">
-          <div class="ds-inline"><button class="secondary-button" type="button">Preview Editorial Plans</button><span class="ds-caption" role="status">Two selected drafts</span></div>
+          <span class="ds-caption" role="status">Two selected drafts</span>
+          <div class="outputs-footer ds-drafting-specimen"><button class="review-output secondary-button" data-review-plans type="button" aria-haspopup="dialog">Review Plans</button><button class="create-output" data-draft-direct type="button">Draft 2</button></div>
           <div class="ds-stack" data-plan-preview></div>
         </div>
-        <p class="ds-caption">For Trend Hunter only, selecting Draft with two or more pending items opens this modal before the 10-second drafting animation begins. Content to Draft comparison cards sit directly below the introduction. Each card shows the draft’s heading beneath its format, audience, and voice chips for comparison. Chips stay on one horizontally scrollable line and use the same 20 px edge fades as Content to Draft cards when settings overflow. Selecting a card opens its plan below. Cards use equal-width grid columns, so an incomplete last row keeps the same card widths as the row above. They stack on narrow screens, with editable Editorial Angle, Content Focus, Content Structure, and Tone below. Switching plans keeps edits. Create Drafts saves all reviewed plans and starts drafting; Back, Close, and Escape return to Content to Draft without starting. One selected item and all other roles keep the direct drafting flow.</p>
+        <p class="ds-caption">For Trend Hunter with two or more selected pending items, show the secondary Review Plans button beside the primary Draft button. Draft starts the 10-second drafting animation immediately. Review Plans opens this optional modal without starting a draft. Content to Draft comparison cards sit directly below the introduction. Each card shows the draft’s heading beneath its format, audience, and voice chips for comparison. Chips stay on one horizontally scrollable line and use the same 20 px edge fades as Content to Draft cards when settings overflow. Selecting a card opens its plan below. Cards use equal-width grid columns, so an incomplete last row keeps the same card widths as the row above. They stack on narrow screens, with editable Editorial Angle, Content Focus, Content Structure, and Tone below. Switching plans keeps edits. Draft with These Plans saves the reviewed plans and starts drafting. Back, Close, and Escape return to Content to Draft without starting or changing the selection; plan edits remain available when the review is reopened during the session. Drafting directly does not apply unconfirmed edits. One selected item and all other roles show only Draft. Both buttons are unavailable while drafting. This isolated preview lets you try either path without changing app data.</p>
       </article>
       <article class="ds-panel" id="word-count-notice" aria-labelledby="ds-word-count-notice-title">
         <div class="ds-panel-heading"><h3 id="ds-word-count-notice-title">Editorial Direction Word Count</h3><span>Completed draft · Manual dismissal</span></div>

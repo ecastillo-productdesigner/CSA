@@ -31,12 +31,13 @@ function draftFlow({ project: savedProject, now: initialNow = 1000, active = tru
     addEventListener(name, callback) { assert.equal(name, 'click'); handler = callback; },
     focus() { calls.focused++; },
   };
+  const reviewButton = { addEventListener(name) { assert.equal(name, 'click'); } };
   const composer = { hidden: !active };
   const dialog = { open: false };
   const context = createContext({
     projects: [project], activeProjectId: active ? project.id : null,
     $: selector => {
-      const control = { '#create-output': button, '#composer': composer, '#new-project-dialog': dialog }[selector];
+      const control = { '#create-output': button, '#review-output': reviewButton, '#composer': composer, '#new-project-dialog': dialog }[selector];
       assert.ok(control, `Unexpected selector: ${selector}`);
       return control;
     },

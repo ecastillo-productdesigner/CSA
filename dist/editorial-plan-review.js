@@ -59,7 +59,7 @@ export function createEditorialPlanReview({ host = document.body, id = 'editoria
   error.hidden = true;
   const footer = node('div', 'dialog-footer editorial-plan-review-footer');
   const back = button('secondary-button', 'Back');
-  const confirm = button('primary-button', 'Create Drafts');
+  const confirm = button('primary-button', 'Draft with These Plans');
   footer.append(back, confirm);
   dialog.append(header, body, error, footer);
   host.append(dialog);
@@ -150,7 +150,7 @@ export function createEditorialPlanReview({ host = document.body, id = 'editoria
       tabs.append(item);
       return item;
     });
-    confirm.textContent = `Create ${target.plans.length} ${target.plans.length === 1 ? 'Draft' : 'Drafts'}`;
+    confirm.textContent = 'Draft with These Plans';
     confirm.disabled = !onConfirm;
     renderDetails();
   }

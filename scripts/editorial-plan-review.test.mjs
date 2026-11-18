@@ -48,7 +48,7 @@ test('opens a modal with plan selectors and no draft side effects', t => {
   assert.equal(ui.controller.isOpen, true);
   assert.equal(panelsClosed, 1);
   assert.equal(confirmed, 0);
-  assert.equal(ui.confirm.textContent, 'Create 2 Drafts');
+  assert.equal(ui.confirm.textContent, 'Draft with These Plans');
   assert.equal(ui.tabs.children.length, 2);
   assert.equal(ui.tabs.getAttribute('role'), 'tablist');
   assert.equal(ui.tabs.children[0].getAttribute('aria-selected'), 'true');

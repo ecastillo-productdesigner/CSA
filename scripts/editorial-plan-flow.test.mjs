@@ -24,18 +24,21 @@ function setup({ role = 'Trend Hunter', savedProject, now: initialNow = 1000 } =
   };
   let now = initialNow;
   let click;
+  let reviewClick;
   let timerId = 0;
   let saveSucceeds = true;
   const timers = new Map();
   const calls = { opened: [], saved: [], rendered: [], populated: [], shown: [], notifications: [], timers: [], flushed: 0 };
   const button = { addEventListener(name, handler) { assert.equal(name, 'click'); click = handler; }, focus() {} };
+  const reviewButton = { hidden: true, disabled: false, addEventListener(name, handler) { assert.equal(name, 'click'); reviewClick = handler; }, focus() {} };
+  const draftLabel = { textContent: 'Draft' };
   const composer = { hidden: false };
   const roleSelector = { value: role };
   const review = { open: false, target: null };
   const context = createContext({
     projects: [project], activeProjectId: project.id,
     $: selector => {
-      const found = { '#create-output': button, '#composer': composer, '#new-project-dialog': { open: false } }[selector];
+      const found = { '#create-output': button, '#review-output': reviewButton, '#create-output-label': draftLabel, '#composer': composer, '#new-project-dialog': { open: false } }[selector];
       assert.ok(found, `Unexpected selector ${selector}`);
       return found;
     },
@@ -72,9 +75,11 @@ function setup({ role = 'Trend Hunter', savedProject, now: initialNow = 1000 } =
   });
   runInContext(production, context, { filename: 'app-editorial-plan-flow.js' });
   return {
-    project, calls, context, button, composer, roleSelector, review, timers,
+    project, calls, context, button, reviewButton, draftLabel, composer, roleSelector, review, timers,
     run() { click(); },
-    cancel() { review.open = false; review.target = null; },
+    openReview() { reviewClick(); },
+    refreshActions() { context.updateEditorialPlanAction(project); },
+    cancel() { context.rememberEditorialPlanEdits(review.target); review.open = false; review.target = null; },
     confirm(plans = review.target?.plans, projectId = review.target?.projectId) {
       const result = context.confirmEditorialPlans({ projectId, plans });
       if (result) { review.open = false; review.target = null; }
@@ -94,13 +99,13 @@ function setup({ role = 'Trend Hunter', savedProject, now: initialNow = 1000 } =
   };
 }
 
-test('Trend Hunter reviews selected pending plans before any job or draft is created', async () => {
+test('Review Plans opens selected pending plans without starting a job or creating drafts', async () => {
   const ui = setup();
   const original = clone(ui.project.outputs);
-  ui.run();
+  ui.openReview();
   assert.equal(ui.calls.opened.length, 1);
   assert.equal(ui.calls.opened[0].projectId, ui.project.id);
-  assert.equal(ui.calls.opened[0].opener, ui.button);
+  assert.equal(ui.calls.opened[0].opener, ui.reviewButton);
   assert.deepEqual(ui.calls.opened[0].plans.map(plan => plan.outputId), ['one', 'two']);
   assert.equal(ui.project.outputProcessing, undefined);
   assert.equal(ui.calls.saved.length, 0);
@@ -111,9 +116,9 @@ test('Trend Hunter reviews selected pending plans before any job or draft is cre
   assert.equal(ui.calls.populated.length, 0);
 });
 
-test('canceling the review keeps selected content pending and a later click can reopen it', async () => {
+test('canceling keeps selected content pending and preserves edits when reopened', async () => {
   const ui = setup();
-  ui.run();
+  ui.openReview();
   ui.review.target.plans[0].angle = 'An edit that was not approved';
   ui.cancel();
   await ui.advance(20000);
@@ -122,14 +127,14 @@ test('canceling the review keeps selected content pending and a later click can 
   assert.equal(ui.project.outputs[0].editorialPlan, undefined);
   assert.ok(ui.project.outputs.every(output => output.status === 'pending'));
   assert.deepEqual(ui.project.selectedOutputIds, ['one', 'two']);
-  ui.run();
+  ui.openReview();
   assert.equal(ui.calls.opened.length, 2);
-  assert.notEqual(ui.review.target.plans[0].angle, 'An edit that was not approved');
+  assert.equal(ui.review.target.plans[0].angle, 'An edit that was not approved');
 });
 
 test('confirmation saves detached reviewed plans and starts the existing ten-second job', async () => {
   const ui = setup();
-  ui.run();
+  ui.openReview();
   await ui.advance(60000);
   const plans = ui.review.target.plans;
   plans[0].angle = 'Focus on the questions families still need answered.';
@@ -178,7 +183,7 @@ test('only selected pending drafts receive plans; unselected or completed items 
     { id: 'ready', title: 'Already drafted', status: 'ready' },
   );
   ui.project.selectedOutputIds.push('ready');
-  ui.run();
+  ui.openReview();
   assert.deepEqual(ui.review.target.plans.map(plan => plan.outputId), ['one', 'two']);
   assert.equal(ui.confirm(), true);
   assert.equal(ui.project.outputs[2].editorialPlan, undefined);
@@ -201,7 +206,7 @@ test('confirmation refuses stale projects, roles, target IDs, and changed select
     ui => { ui.review.target.projectId = 'missing'; },
     ui => { ui.project.outputs.push({ id: 'three', title: 'New selection', status: 'pending' }); ui.project.selectedOutputIds.push('three'); },
   ]) {
-    const ui = setup(); ui.run(); mutate(ui);
+    const ui = setup(); ui.openReview(); mutate(ui);
     assert.equal(ui.confirm(), false);
     assert.equal(ui.project.outputProcessing, undefined);
     assert.equal(ui.calls.saved.length, 0);
@@ -212,7 +217,7 @@ test('confirmation refuses stale projects, roles, target IDs, and changed select
 
 test('empty reviewed fields are rejected before any plan is applied', () => {
   for (const field of ['angle', 'focus', 'structure', 'tone']) {
-    const ui = setup(); ui.run(); ui.review.target.plans[1][field] = '   ';
+    const ui = setup(); ui.openReview(); ui.review.target.plans[1][field] = '   ';
     assert.equal(ui.confirm(), false, field);
     assert.equal(ui.calls.saved.length, 0, field);
     assert.equal(ui.project.outputProcessing, undefined, field);
@@ -224,7 +229,7 @@ test('failed persistence rolls reviewed plans and the pending job back for a saf
   const ui = setup();
   const originalPlan = { angle: 'Earlier angle', focus: 'Earlier focus', structure: 'Earlier structure', tone: 'Earlier tone' };
   ui.project.outputs[0].editorialPlan = clone(originalPlan);
-  ui.run();
+  ui.openReview();
   ui.review.target.plans[0].angle = 'New angle';
   ui.saveSucceeds(false);
   assert.equal(ui.confirm(), false);
@@ -240,7 +245,7 @@ test('failed persistence rolls reviewed plans and the pending job back for a saf
 });
 
 test('duplicate confirmation cannot replace an active job or apply a second plan set', () => {
-  const ui = setup(); ui.run();
+  const ui = setup(); ui.openReview();
   const plans = clone(ui.review.target.plans);
   assert.equal(ui.confirm(), true);
   const job = ui.project.outputProcessing;
@@ -252,7 +257,7 @@ test('duplicate confirmation cannot replace an active job or apply a second plan
 });
 
 test('approved plans survive reload and resumed drafting waits only the remaining time', async () => {
-  const first = setup(); first.run();
+  const first = setup(); first.openReview();
   first.review.target.plans[0].tone = 'Measured and direct.';
   assert.equal(first.confirm(), true);
   const ui = setup({ savedProject: clone(first.project), now: 6000 });
@@ -263,4 +268,115 @@ test('approved plans survive reload and resumed drafting waits only the remainin
   await ui.advance(5000);
   assert.ok(ui.project.outputs.every(outputIsReady));
   assert.equal(ui.project.outputs[0].editorialPlan.tone, 'Measured and direct.');
+});
+
+
+test('Draft bypasses planning for Trend Hunter with multiple selected drafts', async () => {
+  const ui = setup();
+  ui.run();
+  assert.equal(ui.calls.opened.length, 0);
+  assert.deepEqual(Array.from(ui.project.outputProcessing.ids), ['one', 'two']);
+  assert.deepEqual(ui.calls.timers, [10000]);
+  assert.ok(ui.project.outputs.every(output => !output.editorialPlan));
+  await ui.advance(10000);
+  assert.deepEqual(ui.calls.populated, ['one', 'two']);
+  assert.ok(ui.project.outputs.every(outputIsReady));
+});
+
+test('direct drafting after closing review does not silently apply unapproved edits', () => {
+  const ui = setup();
+  ui.openReview();
+  ui.review.target.plans[0].angle = 'An unapproved editorial angle';
+  ui.cancel();
+  ui.run();
+  assert.equal(ui.calls.opened.length, 1);
+  assert.deepEqual(Array.from(ui.project.outputProcessing.ids), ['one', 'two']);
+  assert.ok(ui.project.outputs.every(output => !output.editorialPlan));
+});
+
+test('Review Plans refuses ineligible roles, selections, archived projects, and active jobs', () => {
+  for (const mutate of [
+    ui => { ui.roleSelector.value = ''; },
+    ui => { ui.roleSelector.value = 'Journalist'; },
+    ui => { ui.roleSelector.value = 'Lifestyle & Entertainment'; },
+    ui => { ui.roleSelector.value = 'eCommerce'; },
+    ui => { ui.project.selectedOutputIds = []; },
+    ui => { ui.project.selectedOutputIds = ['one']; },
+    ui => { ui.project.outputs[1].status = 'ready'; },
+    ui => { ui.project.outputProcessing = { ids: ['one'], readyAt: 11000 }; },
+    ui => { ui.project.archivedAt = 1; },
+    ui => { ui.project.deletedAt = 1; },
+    ui => { ui.context.activeProjectId = 'another'; },
+  ]) {
+    const ui = setup();
+    mutate(ui);
+    ui.openReview();
+    assert.equal(ui.calls.opened.length, 0);
+    assert.equal(ui.calls.saved.length, 0);
+    assert.equal(ui.timers.size, 0);
+  }
+});
+
+test('retained plan edits follow their draft IDs when selection and card metadata change', () => {
+  const ui = setup();
+  ui.openReview();
+  ui.review.target.plans[0].angle = 'Keep my first draft angle';
+  ui.review.target.plans[1].tone = 'Keep my second draft tone';
+  ui.cancel();
+  ui.project.outputs[0].title = 'Updated first draft heading';
+  ui.project.outputs.push({ id: 'three', title: 'Third draft', status: 'pending' });
+  ui.project.selectedOutputIds = ['one', 'three'];
+  ui.openReview();
+  assert.deepEqual(ui.review.target.plans.map(plan => plan.outputId), ['one', 'three']);
+  assert.equal(ui.review.target.plans[0].title, 'Updated first draft heading');
+  assert.equal(ui.review.target.plans[0].angle, 'Keep my first draft angle');
+  assert.notEqual(ui.review.target.plans[1].tone, 'Keep my second draft tone');
+  ui.cancel();
+  ui.project.selectedOutputIds = ['one', 'two'];
+  ui.openReview();
+  assert.equal(ui.review.target.plans[1].tone, 'Keep my second draft tone');
+});
+
+
+test('Review Plans visibility follows role and selected pending count and disables during drafting', () => {
+  const ui = setup();
+  ui.refreshActions();
+  assert.equal(ui.reviewButton.hidden, false);
+  assert.equal(ui.reviewButton.disabled, false);
+  assert.equal(ui.draftLabel.textContent, 'Draft 2');
+  ui.roleSelector.value = 'Journalist';
+  ui.refreshActions();
+  assert.equal(ui.reviewButton.hidden, true);
+  ui.roleSelector.value = 'Trend Hunter';
+  ui.project.selectedOutputIds = ['one'];
+  ui.refreshActions();
+  assert.equal(ui.reviewButton.hidden, true);
+  assert.equal(ui.draftLabel.textContent, 'Draft');
+  ui.project.selectedOutputIds = ['one', 'two'];
+  ui.project.outputs[1].status = 'ready';
+  ui.refreshActions();
+  assert.equal(ui.reviewButton.hidden, true, 'A selected completed draft does not count toward planning');
+  ui.project.outputs[1].status = 'pending';
+  ui.project.outputProcessing = { ids: ['one', 'two'] };
+  ui.refreshActions();
+  assert.equal(ui.reviewButton.hidden, false);
+  assert.equal(ui.reviewButton.disabled, true);
+  delete ui.project.outputProcessing;
+  ui.refreshActions();
+  assert.equal(ui.reviewButton.disabled, false);
+});
+
+test('direct Draft ignores empty selection and cannot replace an active job', () => {
+  const ui = setup();
+  ui.project.selectedOutputIds = [];
+  ui.run();
+  assert.equal(ui.project.outputProcessing, undefined);
+  assert.equal(ui.calls.saved.length, 0);
+  ui.project.selectedOutputIds = ['one', 'two'];
+  ui.run();
+  const job = ui.project.outputProcessing;
+  ui.run();
+  assert.equal(ui.project.outputProcessing, job);
+  assert.equal(ui.calls.saved.length, 1);
+  assert.deepEqual(ui.calls.timers, [10000]);
 });

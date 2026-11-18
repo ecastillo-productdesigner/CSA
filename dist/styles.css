@@ -497,7 +497,9 @@ main:focus { outline: none; }
 .output-card-menu { position: fixed; z-index: var(--csa-foundation-layer-45); top: 0; right: auto; left: 0; max-width: calc(100vw - var(--csa-foundation-space-24)); }
 .output-card-menu .output-card-delete { min-height: var(--csa-foundation-space-44); color: var(--csa-foundation-color-red-700); }
 .output-card-menu .output-card-delete .material-symbols-outlined { width: var(--csa-foundation-icon-size-16); height: var(--csa-foundation-icon-size-16); font-size: var(--csa-foundation-icon-size-16); }
-.outputs-footer { position: relative; z-index: var(--csa-foundation-layer-1); margin-top: auto; padding: var(--csa-foundation-space-24) 0 0; }
+.outputs-footer { display: flex; align-items: stretch; gap: var(--csa-foundation-space-12); position: relative; z-index: var(--csa-foundation-layer-1); margin-top: auto; padding: var(--csa-foundation-space-24) 0 0; }
+.outputs-footer > button { flex: 1; min-width: 0; }
+.outputs-footer > .review-output { padding-inline: var(--csa-foundation-space-12); }
 .create-output { display: flex; align-items: center; justify-content: center; gap: var(--csa-foundation-space-10); width: 100%; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-16); background: var(--color-button-primary); color: var(--csa-foundation-color-neutral-0); }
 .create-output:is(:hover, :active):not(:disabled) { background: var(--color-button-primary-interaction); }
 .create-output:disabled { border-color: var(--line); background: var(--csa-foundation-color-neutral-100); color: var(--muted); }
@@ -1714,6 +1716,7 @@ body:has(.editorial-plan-review-dialog[open]) { overflow: hidden; }
   .editorial-plan-review-fields { grid-template-columns: minmax(0, 1fr); gap: var(--csa-foundation-space-16); }
   .editorial-plan-review-field textarea { font-size: var(--csa-foundation-font-size-16); line-height: var(--csa-foundation-line-height-24); }
   .editorial-plan-review-footer { padding-inline: var(--csa-foundation-space-20); gap: var(--csa-foundation-space-8); }
-  .editorial-plan-review-footer button { padding-inline: var(--csa-foundation-space-12); }
+  .editorial-plan-review-footer button { height: auto; padding-inline: var(--csa-foundation-space-12); }
+  .editorial-plan-review-footer .primary-button { flex: 1; }
   .editorial-plan-review-error { padding-inline: var(--csa-foundation-space-20); }
 }

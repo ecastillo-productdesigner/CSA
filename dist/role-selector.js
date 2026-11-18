@@ -5,7 +5,7 @@ const storageKey = 'csa.role.v1';
 const roles = new Set(['Trend Hunter', 'Lifestyle & Entertainment', 'Journalist', 'eCommerce']);
 const validRole = value => roles.has(value) ? value : '';
 
-export function createRoleSelector({ onOpen = () => {}, notify = () => {} } = {}) {
+export function createRoleSelector({ onOpen = () => {}, onChange = () => {}, notify = () => {} } = {}) {
   const trigger = document.querySelector('#show-role');
   const menu = document.querySelector('#role-menu');
   const label = trigger.querySelector('.role-label');
@@ -87,6 +87,7 @@ export function createRoleSelector({ onOpen = () => {}, notify = () => {} } = {}
     try { view.localStorage.setItem(storageKey, selected); }
     catch { notify('Role saved for this session only. Browser storage is unavailable'); }
     close(true);
+    onChange(selected);
   }
   function toggle() { if (transition.expanded) close(true); else open(); }
   function onTriggerKey(event) {
@@ -119,6 +120,7 @@ export function createRoleSelector({ onOpen = () => {}, notify = () => {} } = {}
     if (event.key !== storageKey && event.key !== null) return;
     selected = validRole(event.newValue);
     render();
+    onChange(selected);
   }
 
   trigger.setAttribute('aria-haspopup', 'menu');

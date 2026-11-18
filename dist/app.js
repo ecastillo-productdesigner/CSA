@@ -1,5 +1,5 @@
 import { buildEditorialPlans, applyEditorialPlan } from './editorial-plans.js?v=20261117-plan-review';
-import { createEditorialPlanReview } from './editorial-plan-review.js?v=20261117-plan-review';
+import { createEditorialPlanReview } from './editorial-plan-review.js?v=20261118-optional-plans';
 import { INITIAL_DRAFT_WORD_LIMIT, requestedEditorialWordCount } from './editorial-word-count.js?v=20261111-word-count-notice';
 import { syncOwnMaterialSource } from './own-material-source.js?v=20261106-material-tabs';
 import { listSavedDraftSetups, saveDraftSetup, removeSavedDraftSetup, applySavedDraftSetup, clearSavedDraftSetup } from './saved-draft-setups.js?v=20261111-audience-name-variation';
@@ -17,7 +17,7 @@ import { createPanelDisclosure } from './panel-disclosure.js?v=20261026-drafting
 import { createTabPanelTransition } from './tab-panel-transition.js?v=20261026-drafting-card-size';
 import { bindTabSelection } from './selection-controls.js?v=20261026-drafting-card-size';
 import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261105-filter-settings';
-import { createRoleSelector } from './role-selector.js?v=20261105-role-selector';
+import { createRoleSelector } from './role-selector.js?v=20261118-optional-plans';
 import { createProfile } from './profile.js?v=20261026-drafting-card-size';
 import { createSearchExperience, sampleSearchSources } from './search.js?v=20261106-multi-publications';
 import { classifyProjectSearchInput } from './project-search-input.js?v=20261102-topic-search';
@@ -174,11 +174,13 @@ const draftSourcesPopover = createDraftSourcesPopover({
   onOpenSource: (source, trigger) => projectSourcesPanel.openPreview(source, trigger),
 });
 const roleSelector = createRoleSelector({
+  onChange() { updateEditorialPlanAction(projects.find(project => project.id === activeProjectId)); },
   onOpen() { railNavigation.close(); savedDrafts.close(); toolDropdowns.close(); richEditor.closePanels(); draftSourcesPopover.close(); },
   notify,
 });
 const editorialPlanReview = createEditorialPlanReview({
   onConfirm: confirmEditorialPlans,
+  onCancel: rememberEditorialPlanEdits,
   closePanels() { roleSelector.close(); railNavigation.closeTransient(); savedDrafts.close(); toolDropdowns.close(); richEditor.closePanels(); draftSourcesPopover.close(); },
 });
 const railNavigation = createRailNavigation({
@@ -313,6 +315,7 @@ function renderOutputs(project) {
   const view = variantPanelState(project, outputViews.get(project?.id)).view;
   outputViews.set(project?.id, view);
   renderProjectOutputs(project, view);
+  updateEditorialPlanAction(project);
   contentCardEditing.render(project);
   editorTabs.render(project);
   const selectedOutput = projectOutputs(project).find(output => output.id === project?.selectedOutputId && (outputIsReady(output) || output.needsRegeneration));
@@ -1308,6 +1311,29 @@ function startOutputProcessing(project, outputs) {
   return true;
 }
 
+// Keep unfinished planning separate from approved plans used for drafting.
+const editorialPlanEdits = new Map();
+
+function rememberEditorialPlanEdits({ projectId, plans }) {
+  const project = projects.find(entry => entry.id === projectId && !entry.deletedAt && !entry.archivedAt);
+  if (!project || !Array.isArray(plans)) return;
+  const pendingIds = new Set(projectOutputs(project).filter(output => !outputIsReady(output) || output.needsRegeneration).map(output => output.id));
+  const edits = editorialPlanEdits.get(projectId) || new Map();
+  for (const plan of plans) {
+    if (!pendingIds.has(plan?.outputId)) continue;
+    edits.set(plan.outputId, Object.fromEntries(['angle', 'focus', 'structure', 'tone'].map(key => [key, plan[key]])));
+  }
+  editorialPlanEdits.set(projectId, edits);
+}
+
+function updateEditorialPlanAction(project) {
+  const outputs = selectedPendingOutputs(project);
+  const review = $('#review-output');
+  review.hidden = roleSelector.value !== 'Trend Hunter' || outputs.length < 2;
+  review.disabled = Boolean(project?.outputProcessing) || review.hidden;
+  $('#create-output-label').textContent = outputs.length > 1 ? `Draft ${outputs.length}` : 'Draft';
+}
+
 function confirmEditorialPlans({ projectId, plans }) {
   const project = projects.find(entry => entry.id === projectId && entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
   if (!project || project.outputProcessing || roleSelector.value !== 'Trend Hunter' || !Array.isArray(plans)) return false;
@@ -1318,7 +1344,11 @@ function confirmEditorialPlans({ projectId, plans }) {
       plans.some(plan => ['angle', 'focus', 'structure', 'tone'].some(key => typeof plan?.[key] !== 'string' || !plan[key].trim()))) return false;
   const previous = outputs.map(output => ({ output, hadPlan: Object.hasOwn(output, 'editorialPlan'), plan: output.editorialPlan }));
   for (const output of outputs) applyEditorialPlan(output, plans.find(plan => plan.outputId === output.id));
-  if (startOutputProcessing(project, outputs)) return true;
+  if (startOutputProcessing(project, outputs)) {
+    const edits = editorialPlanEdits.get(projectId);
+    for (const output of outputs) edits?.delete(output.id);
+    return true;
+  }
   for (const entry of previous) {
     if (entry.hadPlan) entry.output.editorialPlan = entry.plan;
     else delete entry.output.editorialPlan;
@@ -1331,12 +1361,18 @@ $('#create-output').addEventListener('click', () => {
   if (!project || project.outputProcessing) return;
   const outputs = selectedPendingOutputs(project);
   if (!outputs.length) return;
-  if (roleSelector.value === 'Trend Hunter' && outputs.length > 1) {
-    richEditor.flush();
-    editorialPlanReview.open({ projectId: project.id, plans: buildEditorialPlans(outputs), opener: $('#create-output') });
-    return;
-  }
   startOutputProcessing(project, outputs);
+});
+
+$('#review-output').addEventListener('click', () => {
+  const project = projects.find(entry => entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
+  if (!project || project.outputProcessing || roleSelector.value !== 'Trend Hunter') return;
+  const outputs = selectedPendingOutputs(project);
+  if (outputs.length < 2) return;
+  richEditor.flush();
+  const edits = editorialPlanEdits.get(project.id);
+  const plans = buildEditorialPlans(outputs).map(plan => ({ ...plan, ...edits?.get(plan.outputId) }));
+  editorialPlanReview.open({ projectId: project.id, plans, opener: $('#review-output') });
 });
 
 $('#composer-editorial-direction').addEventListener('input', () => {

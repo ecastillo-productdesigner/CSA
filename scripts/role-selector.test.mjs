@@ -83,12 +83,13 @@ function setup(t, { stored = null, readFails = false, writeFails = false, mobile
   globalThis.getComputedStyle = () => ({ getPropertyValue: name => ({ '--csa-foundation-space-12': '12px', '--csa-foundation-space-8': '8px', '--csa-foundation-breakpoint-mobile': '640px' })[name] || '' });
   let opens = 0;
   const notifications = [];
-  const controller = createRoleSelector({ onOpen() { opens++; }, notify: message => notifications.push(message) });
+  const changes = [];
+  const controller = createRoleSelector({ onChange: value => changes.push(value), onOpen() { opens++; }, notify: message => notifications.push(message) });
   t.after(() => {
     controller.destroy();
     for (const [key, value] of Object.entries(previous)) { if (value === undefined) delete globalThis[key]; else globalThis[key] = value; }
   });
-  return { controller, doc, view, media, portal, rail, trigger, label, menu, items, storage, notifications, opens: () => opens, choose: index => menu.emit('click', { target: items[index].querySelector('.role-check') }) };
+  return { controller, doc, view, media, portal, rail, trigger, label, menu, items, storage, notifications, changes, opens: () => opens, choose: index => menu.emit('click', { target: items[index].querySelector('.role-check') }) };
 }
 
 test('role starts unselected, opens in one click, and persists exactly one choice with selection focus returned', t => {
@@ -229,4 +230,21 @@ test('storage synchronization keeps one role selected and destroy removes intera
   ui.trigger.emit('click');
   assert.equal(ui.controller.isOpen, false);
   assert.equal(ui.opens(), 0);
+});
+
+
+test('role changes notify the workspace so optional planning availability can update', t => {
+  const ui = setup(t);
+  assert.deepEqual(ui.changes, [], 'Initialization does not invoke callbacks before the workspace is ready');
+  ui.trigger.emit('click');
+  ui.choose(0);
+  assert.equal(ui.controller.value, 'Trend Hunter');
+  assert.equal(ui.changes.at(-1), 'Trend Hunter');
+  ui.trigger.emit('click');
+  ui.choose(2);
+  assert.equal(ui.changes.at(-1), 'Journalist');
+  ui.view.emit('storage', { key: 'csa.role.v1', newValue: 'Trend Hunter' });
+  assert.equal(ui.changes.at(-1), 'Trend Hunter');
+  ui.view.emit('storage', { key: null, newValue: null });
+  assert.equal(ui.changes.at(-1), '');
 });

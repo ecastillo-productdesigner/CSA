@@ -570,6 +570,8 @@
   --csa-component-editor-tab-revision-dot-size: var(--csa-foundation-space-8);
   --csa-component-editor-tab-revision-dot-color: var(--csa-semantic-color-status-revision-unread);
   --csa-component-editor-tab-revision-dot-active-duration: 10000ms;
+  --csa-component-editor-tab-preferred-width: var(--csa-foundation-space-260);
+  --csa-component-editor-tab-more-width: var(--csa-foundation-space-64);
   --csa-component-audience-ready-dot-size: var(--csa-component-editor-tab-revision-dot-size);
   --csa-component-audience-ready-dot-color: var(--csa-foundation-color-red-700);
 }

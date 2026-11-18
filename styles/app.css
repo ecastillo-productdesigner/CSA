@@ -60,7 +60,7 @@
 .project-browser .dashboard-project:focus-within { border-color: var(--csa-semantic-color-border-selected); }
 .project-browser .dashboard-project:has(.project-title-button:focus-visible), .project-browser :is(button, a):focus-visible { outline-color: var(--csa-semantic-color-border-selected); }
 #workspace-app #new-project-dialog .new-project-upload:hover .browse-label { color: var(--csa-component-button-primary-hover); }
-#workspace-app .editor-variant-tabs button[aria-selected="true"] { background-color: var(--csa-semantic-color-surface-panel); }
+#workspace-app .editor-variant-tab-list > button[aria-selected="true"] { background-color: var(--csa-semantic-color-surface-panel); }
 #workspace-app :is(#composer-tools, #composer-outputs) { background-color: var(--csa-semantic-color-surface-panel); }
 #workspace-app #composer-tools .tool-dropdown-trigger { font-weight: var(--csa-semantic-typography-field-value-font-weight); }
 #workspace-app #editor-tab-original .editor-tab-draft { gap: var(--csa-foundation-space-4); }
@@ -264,21 +264,31 @@ main:focus { outline: none; }
 .composer-canvas { min-width: 0; }
 .editor-canvas-content { min-width: 0; }
 .composer-canvas { --editor-frame-inset: var(--csa-foundation-space-8); --editor-tabs-height: var(--csa-foundation-space-48); }
-.editor-variant-tabs { display: flex; align-items: stretch; gap: var(--csa-foundation-space-4); width: calc(100% - var(--editor-frame-inset) - var(--editor-frame-inset)); max-width: calc(var(--csa-foundation-size-980) - var(--editor-frame-inset) - var(--editor-frame-inset)); height: var(--editor-tabs-height); margin: 0 auto; padding: 0; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: none; border-radius: var(--csa-foundation-radius-8) var(--csa-foundation-radius-8) 0 0; background: var(--csa-semantic-color-background-canvas); box-shadow: none; }
-.editor-variant-tabs::-webkit-scrollbar { display: none; }
-.editor-variant-tabs button { position: relative; display: flex; flex: 0 0 var(--csa-foundation-space-260); align-items: center; gap: var(--csa-foundation-space-16); min-width: 0; max-width: calc(100% - var(--csa-foundation-space-8)); height: var(--editor-tabs-height); padding: var(--csa-foundation-space-11) var(--csa-foundation-space-14); border: var(--csa-foundation-border-width-1) solid var(--line); border-bottom: 0; border-radius: var(--csa-foundation-radius-8) var(--csa-foundation-radius-8) 0 0; background: transparent; color: var(--csa-semantic-color-text-secondary); text-align: left; }
-.editor-variant-tabs button:hover { background: var(--csa-foundation-color-neutral-0); }
-.editor-variant-tabs button[aria-selected="true"] { background: var(--csa-semantic-color-surface-panel); }
-.editor-variant-tabs button[aria-selected="true"] .editor-tab-title { color: var(--csa-semantic-color-action-primary); font-weight: var(--csa-foundation-font-weight-600); }
-.editor-variant-tabs button[data-editor-output=""] { flex: 0 0 var(--csa-foundation-size-120); width: var(--csa-foundation-size-120); }
-.editor-variant-tabs button[data-search-results="true"] { flex: 0 0 auto; width: auto; min-width: var(--csa-foundation-size-120); white-space: nowrap; }
-.editor-variant-tabs button[data-editor-output=""][aria-selected="false"] { background: var(--content-preview-background); }
-.editor-variant-tabs button:focus-visible { outline-offset: calc(-1 * var(--csa-foundation-border-width-4)); }
+.editor-variant-tabs { display: flex; align-items: stretch; gap: var(--csa-foundation-space-4); width: calc(100% - var(--editor-frame-inset) - var(--editor-frame-inset)); max-width: calc(var(--csa-foundation-size-980) - var(--editor-frame-inset) - var(--editor-frame-inset)); height: var(--editor-tabs-height); margin: 0 auto; padding: 0; overflow: visible; border-radius: 0; background: var(--csa-semantic-color-background-canvas); box-shadow: none; }
+.editor-variant-tab-list { display: flex; flex: 0 1 auto; align-items: stretch; gap: var(--csa-foundation-space-4); min-width: 0; }
+.editor-variant-tabs[hidden], .editor-variant-tab-list > button[hidden], .editor-tabs-more[hidden], .editor-tabs-more-menu[hidden] { display: none; }
+.editor-variant-tab-list > button { position: relative; display: flex; flex: 0 0 var(--editor-tab-visible-width, var(--csa-component-editor-tab-preferred-width)); width: var(--editor-tab-visible-width, var(--csa-component-editor-tab-preferred-width)); align-items: center; gap: var(--csa-foundation-space-16); min-width: 0; max-width: 100%; height: var(--editor-tabs-height); padding: var(--csa-foundation-space-11) var(--csa-foundation-space-14); border: var(--csa-foundation-border-width-1) solid var(--line); border-bottom: 0; border-radius: var(--csa-foundation-radius-8) var(--csa-foundation-radius-8) 0 0; background: transparent; color: var(--csa-semantic-color-text-secondary); text-align: left; }
+.editor-variant-tab-list > button:hover { background: var(--csa-foundation-color-neutral-0); }
+.editor-variant-tab-list > button[aria-selected="true"] { background: var(--csa-semantic-color-surface-panel); }
+.editor-variant-tab-list > button[aria-selected="true"] .editor-tab-title { color: var(--csa-semantic-color-action-primary); font-weight: var(--csa-foundation-font-weight-600); }
+.editor-variant-tab-list > button[data-editor-output=""] { flex: 0 0 var(--csa-foundation-size-120); width: var(--csa-foundation-size-120); }
+.editor-variant-tab-list > button[data-search-results="true"] { flex: 0 0 auto; width: auto; min-width: var(--csa-foundation-size-120); white-space: nowrap; }
+.editor-variant-tab-list > button[data-editor-output=""][aria-selected="false"] { background: var(--content-preview-background); }
+.editor-variant-tab-list > button:focus-visible { outline-offset: calc(-1 * var(--csa-foundation-border-width-4)); }
 .editor-tab-draft { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; gap: var(--csa-foundation-space-6); height: var(--csa-foundation-space-24); min-height: var(--csa-foundation-space-24); padding: var(--csa-foundation-space-2) var(--csa-foundation-space-8); border-radius: var(--csa-component-status-radius); background: var(--draft-background); color: var(--ink); font-size: var(--csa-semantic-typography-status-font-size); line-height: var(--csa-semantic-typography-status-line-height); font-weight: var(--csa-semantic-typography-status-font-weight); text-transform: none; }
 .editor-tab-draft > .material-symbols-outlined { flex-shrink: 0; width: var(--csa-foundation-icon-size-16); height: var(--csa-foundation-icon-size-16); font-size: var(--csa-foundation-icon-size-16); line-height: var(--csa-foundation-font-leading-1); }
 .editor-tab-draft[data-sent="true"] { background: var(--color-green-200); color: var(--ink); white-space: nowrap; }
 .editor-tab-draft[data-pending="true"] { border: var(--csa-foundation-border-width-1) dashed var(--ink); background: var(--csa-foundation-color-neutral-0); white-space: nowrap; }
 .editor-tab-title { display: flex; align-items: center; gap: var(--csa-foundation-space-8); color: var(--csa-semantic-color-text-primary); flex: 1; min-width: 0; overflow: hidden; font-size: var(--csa-foundation-font-size-14); line-height: var(--csa-foundation-line-height-24); font-weight: var(--csa-foundation-font-weight-400); text-overflow: ellipsis; white-space: nowrap; }
+/* Whole tabs stay visible; extra drafts live in the shared menu surface. */
+.editor-tabs-more { display: inline-flex; align-items: center; justify-content: center; gap: var(--csa-foundation-space-4); flex: 0 0 var(--csa-component-editor-tab-more-width); width: var(--csa-component-editor-tab-more-width); min-width: 0; height: var(--csa-foundation-space-44); align-self: flex-start; padding: var(--csa-foundation-space-8); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-8); background: var(--csa-semantic-color-surface-panel); color: var(--ink); font-size: var(--csa-foundation-font-size-14); line-height: var(--csa-foundation-line-height-24); }
+.editor-tabs-more > .material-symbols-outlined { font-size: var(--csa-foundation-icon-size-20); width: var(--csa-foundation-icon-size-20); height: var(--csa-foundation-icon-size-20); }
+.editor-tabs-more:hover, .editor-tabs-more[aria-expanded="true"] { background: var(--csa-semantic-color-surface-hover); }
+.editor-tabs-more:focus-visible { outline-offset: calc(-1 * var(--csa-foundation-border-width-4)); }
+.editor-tabs-more-menu { position: absolute; inset-inline-end: 0; top: calc(100% + var(--csa-foundation-space-8)); z-index: var(--csa-foundation-layer-10); width: min(100%, var(--csa-foundation-size-360)); max-height: min(var(--csa-foundation-size-360), 50svh); overflow-y: auto; overscroll-behavior: contain; padding: var(--csa-foundation-space-6); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-component-dropdown-radius); background: var(--csa-semantic-color-surface-panel); color: var(--ink); box-shadow: var(--csa-semantic-shadow-dropdown); }
+.editor-tabs-more-option { flex-wrap: wrap; min-height: var(--csa-component-icon-button-minimum-target); }
+.editor-tabs-more-title { min-width: 0; flex: 1 1 var(--csa-foundation-size-120); overflow-wrap: anywhere; }
+.editor-tabs-more-option .editor-tab-draft > .material-symbols-outlined { width: var(--csa-foundation-icon-size-16); height: var(--csa-foundation-icon-size-16); font-size: var(--csa-foundation-icon-size-16); }
 .editor-tab-title-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .editor-tab-revision-dot { display: inline-block; flex-shrink: 0; width: var(--csa-component-editor-tab-revision-dot-size); height: var(--csa-component-editor-tab-revision-dot-size); border-radius: var(--csa-foundation-radius-999); background: var(--csa-component-editor-tab-revision-dot-color); }
 .revision-request-dot { position: absolute; top: calc(50% - var(--csa-foundation-space-12)); inset-inline-end: var(--csa-foundation-space-1); width: var(--csa-component-editor-tab-revision-dot-size); height: var(--csa-component-editor-tab-revision-dot-size); border-radius: var(--csa-foundation-radius-999); background: var(--csa-component-editor-tab-revision-dot-color); pointer-events: none; }
@@ -1440,7 +1450,7 @@ html:has(#home:not([hidden])) { scrollbar-gutter: stable; }
 .source-metadata-label { font-weight: var(--csa-foundation-font-weight-600); }
 /* Only the selected editor tab bridges the sheet's top border. */
 .editor-variant-tabs { position: relative; z-index: var(--csa-foundation-layer-2); height: calc(var(--editor-tabs-height) + var(--csa-foundation-border-width-1)); margin-bottom: calc(-1 * var(--csa-foundation-border-width-1)); background: transparent; }
-.editor-variant-tabs button[aria-selected="true"] { height: calc(var(--editor-tabs-height) + var(--csa-foundation-border-width-1)); }
+.editor-variant-tab-list > button[aria-selected="true"] { height: calc(var(--editor-tabs-height) + var(--csa-foundation-border-width-1)); }
 
 /* Shared drafting state: the app card and DS render the same paper stack. */
 .drafting-animation {
@@ -1549,8 +1559,8 @@ html:has(#home:not([hidden])) { scrollbar-gutter: stable; }
 .drafting-audience-person::before { content: ''; position: absolute; top: 0; left: calc(var(--csa-foundation-space-11) * var(--audience-people-scale)); width: calc(var(--csa-foundation-space-26) * var(--audience-people-scale)); height: calc(var(--csa-foundation-space-26) * var(--audience-people-scale)); border-radius: 50%; background: currentColor; }
 .drafting-audience-person::after { content: ''; position: absolute; left: 0; bottom: 0; width: 100%; height: calc(var(--csa-foundation-space-18) * var(--audience-people-scale)); border-radius: 50% 50% 0 0 / 100% 100% 0 0; background: currentColor; }
 
-.editor-variant-tabs button[data-revising="true"] > :is(.editor-tab-draft, .editor-tab-title) { visibility: hidden; }
-.editor-variant-tabs button[data-revising="true"] > .drafting-animation[data-compact="true"] {
+.editor-variant-tab-list > button[data-revising="true"] > :is(.editor-tab-draft, .editor-tab-title) { visibility: hidden; }
+.editor-variant-tab-list > button[data-revising="true"] > .drafting-animation[data-compact="true"] {
   --drafting-paper-width: var(--csa-foundation-space-20);
   --drafting-paper-height: var(--csa-foundation-space-28);
   --drafting-paper-padding-top: var(--csa-foundation-space-4);
@@ -1561,9 +1571,9 @@ html:has(#home:not([hidden])) { scrollbar-gutter: stable; }
   --drafting-rule-gap: var(--csa-foundation-border-width-1);
   position: absolute; inset: 0; height: 100%; min-height: 0; padding: 0; border: 0; border-radius: inherit; pointer-events: none;
 }
-.editor-variant-tabs button[data-revising="true"] .revision-animation-content { gap: var(--csa-foundation-space-12); padding-inline: var(--csa-foundation-space-12); }
-.editor-variant-tabs button[data-revising="true"] .drafting-paper-line:first-child { width: 70%; }
-.editor-variant-tabs button[data-revising="true"] .drafting-paper-line:nth-child(3), .editor-variant-tabs button[data-revising="true"] .drafting-paper-line:nth-child(6) { width: 55%; }
+.editor-variant-tab-list > button[data-revising="true"] .revision-animation-content { gap: var(--csa-foundation-space-12); padding-inline: var(--csa-foundation-space-12); }
+.editor-variant-tab-list > button[data-revising="true"] .drafting-paper-line:first-child { width: 70%; }
+.editor-variant-tab-list > button[data-revising="true"] .drafting-paper-line:nth-child(3), .editor-variant-tab-list > button[data-revising="true"] .drafting-paper-line:nth-child(6) { width: 55%; }
 .drafting-paper-stack { position: relative; flex: 0 0 var(--drafting-paper-width); width: var(--drafting-paper-width); height: var(--drafting-paper-height); }
 .drafting-paper { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: flex-start; gap: var(--drafting-rule-gap); width: 100%; height: 100%; padding: var(--drafting-paper-padding-top) var(--drafting-paper-padding-inline) var(--drafting-paper-padding-bottom); border: var(--csa-foundation-border-width-1) solid var(--csa-semantic-color-border-default); border-radius: var(--csa-foundation-radius-4); background: var(--csa-semantic-color-surface-default); transform-origin: center bottom; }
 .drafting-paper[data-depth="back"] { z-index: var(--csa-foundation-layer-1); transform: translate(var(--csa-foundation-space-6), calc(-1 * var(--csa-foundation-space-4))) rotate(calc(var(--csa-component-drafting-paper-rotation-step) * 2deg)) scale(calc(1 - 2 * var(--csa-component-drafting-paper-scale-step))); }

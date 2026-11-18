@@ -13,15 +13,20 @@ class Element {
     this.dataset = {};
     this.attributes = {};
     this.className = '';
-    this.classList = { toggle() {} };
+    this.classList = { toggle() {}, add() {}, remove() {} };
+    this.style = { setProperty(name, value) { this[name] = String(value); }, removeProperty(name) { delete this[name]; } };
+    this.clientWidth = 600;
     this.listeners = new Map();
   }
   set textContent(value) { this.text = String(value); this.children = []; }
   get textContent() { return this.text ?? this.children.map(child => child.textContent).join(''); }
   setAttribute(name, value) { this.attributes[name] = String(value); }
+  getAttribute(name) { return this.attributes[name] ?? null; }
   removeAttribute(name) { delete this.attributes[name]; }
   matches(selector) {
     if (selector.startsWith('.')) return this.className?.split(' ').includes(selector.slice(1));
+    const data = selector.match(/^\[data-([\w-]+)(?:="([^"]*)")?\]$/);
+    if (data) { const key = data[1].replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()); return data[2] === undefined ? key in this.dataset : this.dataset[key] === data[2]; }
     const attribute = selector.match(/^\[([^=]+)="([^"]+)"\]$/);
     return Boolean(attribute && this.attributes[attribute[1]] === attribute[2]);
   }
@@ -32,24 +37,39 @@ class Element {
   querySelector(selector) { return this.querySelectorAll(selector)[0] || null; }
   append(...children) { for (const child of children) { child.parentElement = this; this.children.push(child); } }
   replaceChildren(...children) { this.children = []; this.append(...children); }
+  contains(other) { return other === this || this.children.some(child => child.contains?.(other)); }
+  remove() { if (this.parentElement) this.parentElement.children = this.parentElement.children.filter(child => child !== this); this.parentElement = null; }
   addEventListener(type, callback) { this.listeners.set(type, callback); }
-  emit(type, target = this, fields = {}) { this.listeners.get(type)?.({ type, target, preventDefault() {}, ...fields }); }
+  removeEventListener(type, callback) { if (this.listeners.get(type) === callback) this.listeners.delete(type); }
+  emit(type, target = this, fields = {}) { this.listeners.get(type)?.({ type, target, preventDefault() {}, stopPropagation() {}, ...fields }); }
   focus() { document.activeElement = this; }
-  getBoundingClientRect() { return { left: 0, right: 600 }; }
+  getBoundingClientRect() { return { left: 0, right: this.clientWidth, width: this.clientWidth, top: 0, bottom: 48, height: 48 }; }
 }
 
 function documentFor(t, roots = {}) {
   const names = ['document', 'ResizeObserver', 'requestAnimationFrame', 'getComputedStyle', 'setTimeout', 'clearTimeout'];
   const previous = Object.fromEntries(names.map(name => [name, globalThis[name]]));
-  const duration = JSON.parse(readFileSync(new URL('../dist/design-system/tokens.json', import.meta.url), 'utf8')).component['editor-tab']['revision-dot-active-duration'].$value;
+  const tokens = JSON.parse(readFileSync(new URL('../dist/design-system/tokens.json', import.meta.url), 'utf8'));
+  const cssTokens = new Map();
+  function cssValue(value) {
+    if (typeof value === 'string' && /^\{[^}]+\}$/.test(value)) return cssValue(value.slice(1, -1).split('.').reduce((node, key) => node[key], tokens).$value);
+    return typeof value === 'object' && value !== null && 'unit' in value ? `${value.value}${value.unit}` : String(value);
+  }
+  function collectTokens(node, path = []) {
+    if ('$value' in node) cssTokens.set(`--csa-${path.join('-')}`, cssValue(node.$value));
+    else for (const [key, value] of Object.entries(node)) if (!key.startsWith('$') && typeof value === 'object' && value !== null) collectTokens(value, [...path, key]);
+  }
+  collectTokens(tokens);
   let now = 0;
   let sequence = 0;
   const timers = new Map();
-  globalThis.getComputedStyle = () => ({ getPropertyValue: () => `${duration.value}${duration.unit}` });
+  globalThis.getComputedStyle = () => ({ getPropertyValue: name => cssTokens.get(name) || '' });
   globalThis.setTimeout = (callback, delay) => { const id = ++sequence; timers.set(id, { at: now + delay, callback }); return id; };
   globalThis.clearTimeout = id => timers.delete(id);
   globalThis.document = {
     documentElement: {},
+    addEventListener() {},
+    removeEventListener() {},
     createElement: tag => new Element(tag),
     createTextNode: text => ({ textContent: text }),
     querySelector: selector => roots[selector],
@@ -190,29 +210,29 @@ test('draft tabs retain status and heading while body counts stay in shared meta
   const output = { id: 'draft', title: 'Same article', status: 'ready', document: { ops: [{ insert: 'Two words\n' }] }, draftText: 'Stale fallback has many words' };
   const project = { id: 'project', outputs: [output], selectedOutputId: output.id };
   tabs.render(project);
-  const draftTab = root.children[0];
+  const draftTab = root.querySelectorAll('[role="tab"]')[0];
   assert.equal(draftTab.children.some(hasWords), false);
   assert.equal(draftTab.children.find(child => child.className === 'editor-tab-title').textContent, 'Same article');
   assert.equal(draftTab.attributes['aria-description'], 'Draft');
   assert.equal(createOutputBadges(output).find(hasWords).textContent, '2 Words');
   output.document = { ops: [{ insert: 'Now three words\n' }] };
   tabs.render(project);
-  assert.equal(root.children[0], draftTab, 'body-count changes must not replace the focused tab');
-  assert.equal(root.children[0].children.some(hasWords), false);
+  assert.equal(root.querySelectorAll('[role="tab"]')[0], draftTab, 'body-count changes must not replace the focused tab');
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].children.some(hasWords), false);
   assert.equal(createOutputBadges(output).find(hasWords).textContent, '3 Words');
   output.document = { ops: [] };
   tabs.render(project);
-  assert.equal(root.children[0].children.some(hasWords), false);
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].children.some(hasWords), false);
   assert.equal(createOutputBadges(output).some(hasWords), false);
   output.cmsSentAt = 1;
   tabs.render(project);
-  assert.equal(root.children[0].attributes['aria-description'], 'Sent');
-  assert.equal(root.children[0].children.some(hasWords), false);
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].attributes['aria-description'], 'Sent');
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].children.some(hasWords), false);
   tabs.render({ id: 'original', linkCards: true, outputs: [] });
   assert.equal(root.hidden, false);
-  assert.equal(root.children[0].attributes['aria-label'], 'Project workspace');
-  assert.equal(root.children[0].attributes['aria-description'], 'New draft workspace');
-  assert.equal(root.children[0].children.length, 0, 'welcome workspace keeps a blank tab without a To Draft badge');
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].attributes['aria-label'], 'Project workspace');
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].attributes['aria-description'], 'New draft workspace');
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].children.length, 0, 'welcome workspace keeps a blank tab without a To Draft badge');
 });
 
 test('completed revision dots appear only on inactive tabs and transfer away on activation', t => {
@@ -223,7 +243,7 @@ test('completed revision dots appear only on inactive tabs and transfer away on 
   const tabs = createEditorTabs({ onSelect() {} });
   const output = { id: 'draft', title: 'My draft', status: 'ready' };
   const project = { id: 'project', outputs: [output, { id: 'other', title: 'Other draft', status: 'ready' }], selectedOutputId: output.id };
-  const label = () => root.children[0].children.find(child => child.className === 'editor-tab-title');
+  const label = () => root.querySelectorAll('[role="tab"]')[0].children.find(child => child.className === 'editor-tab-title');
   const dot = () => label().children.find(child => child.className === 'editor-tab-revision-dot');
   tabs.render(project);
   assert.equal(dot(), undefined);
@@ -234,13 +254,13 @@ test('completed revision dots appear only on inactive tabs and transfer away on 
   project.selectedOutputId = 'other';
   tabs.render(project);
   assert.equal(dot().attributes['aria-hidden'], 'true');
-  assert.equal(root.children[0].attributes['aria-label'], 'My draft');
-  assert.match(root.children[0].attributes['aria-description'], /Revision complete/);
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].attributes['aria-label'], 'My draft');
+  assert.match(root.querySelectorAll('[role="tab"]')[0].attributes['aria-description'], /Revision complete/);
   project.selectedOutputId = output.id;
   tabs.render(project);
   assert.equal(dot(), undefined);
   assert.equal(output.revisionUnread, true, 'opening a tab transfers rather than consumes its notification');
-  assert.equal(root.children[0].attributes['aria-description'], 'Draft');
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].attributes['aria-description'], 'Draft');
   tabs.destroy();
 });
 
@@ -264,9 +284,9 @@ test('only inactive revising tabs animate, retain their identity, and clean up o
   tabs.render(project);
   assert.equal(controllers.length, 1);
   assert.deepEqual(controllers[0].options.selectionKeys, ['format', 'voice']);
-  assert.equal(root.children[0].dataset.revising, 'true');
-  assert.equal(root.children[0].attributes['aria-label'], 'First draft');
-  assert.equal(root.children[0].attributes['aria-description'], 'Revising Draft');
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].dataset.revising, 'true');
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].attributes['aria-label'], 'First draft');
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].attributes['aria-description'], 'Revising Draft');
   assert.equal(controllers[0].element.attributes['aria-hidden'], 'true');
   tabs.render(project);
   assert.equal(controllers.length, 1, 'unchanged renders preserve animation progress');
@@ -280,9 +300,9 @@ test('only inactive revising tabs animate, retain their identity, and clean up o
   first.revisionUnread = true;
   tabs.render(project);
   assert.equal(controllers[1].destroyed, true);
-  assert.equal(root.children[0].dataset.revising, undefined);
-  assert.match(root.children[0].attributes['aria-description'], /Revision complete/);
-  assert.equal(root.children[1].attributes['aria-selected'], 'true', 'completion keeps the user on their chosen draft');
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].dataset.revising, undefined);
+  assert.match(root.querySelectorAll('[role="tab"]')[0].attributes['aria-description'], /Revision complete/);
+  assert.equal(root.querySelectorAll('[role="tab"]')[1].attributes['aria-selected'], 'true', 'completion keeps the user on their chosen draft');
   tabs.destroy();
 });
 
@@ -296,7 +316,7 @@ function unreadFixture(t) {
   const first = { id: 'first', title: 'First draft', status: 'ready', revisionUnread: true, revisionRequests: [{ completedAt: 1 }] };
   const second = { id: 'second', title: 'Second draft', status: 'ready', revisionUnread: true };
   const project = { id: 'project', outputs: [first, second], selectedOutputId: first.id };
-  const dot = id => root.children.find(tab => tab.dataset.editorOutput === id)?.children.find(child => child.className === 'editor-tab-title')?.children.some(child => child.className === 'editor-tab-revision-dot');
+  const dot = id => root.querySelectorAll('[role="tab"]').find(tab => tab.dataset.editorOutput === id)?.children.find(child => child.className === 'editor-tab-title')?.children.some(child => child.className === 'editor-tab-revision-dot');
   const requestDot = () => !createRevisionButton(project.outputs.find(output => output.id === project.selectedOutputId)).querySelector('.revision-request-dot').hidden;
   return { ...clock, reads, tabs, first, second, project, dot, requestDot };
 }
@@ -436,39 +456,39 @@ test('Searching Topic remains through pending recipes and disappears when the fi
     tabs.render(project);
   } });
   tabs.render(project);
-  assert.equal(root.children.length, 1);
-  assert.equal(root.children[0].textContent, 'Searching Topic');
-  assert.equal(root.children[0].attributes['aria-label'], 'Searching Topic');
-  assert.equal(root.children[0].attributes['aria-selected'], 'true');
+  assert.equal(root.querySelectorAll('[role="tab"]').length, 1);
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].textContent, 'Searching Topic');
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].attributes['aria-label'], 'Searching Topic');
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].attributes['aria-selected'], 'true');
   assert.equal(panel.attributes['aria-labelledby'], 'editor-tab-original');
 
   const first = { id: 'draft-one', title: 'First article', status: 'pending' };
   project.outputs.push(first);
   tabs.render(project);
-  assert.deepEqual(root.children.map(tab => tab.dataset.editorOutput), ['']);
-  assert.equal(root.children[0].textContent, 'Searching Topic');
+  assert.deepEqual(root.querySelectorAll('[role="tab"]').map(tab => tab.dataset.editorOutput), ['']);
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].textContent, 'Searching Topic');
 
   first.status = 'ready';
   project.selectedOutputId = first.id;
   project.awaitingOutput = false;
   tabs.render(project);
-  assert.deepEqual(root.children.map(tab => tab.dataset.editorOutput), ['draft-one']);
-  assert.equal(root.children[0].attributes['aria-selected'], 'true');
-  assert.equal(root.children[0].tabIndex, 0);
+  assert.deepEqual(root.querySelectorAll('[role="tab"]').map(tab => tab.dataset.editorOutput), ['draft-one']);
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].attributes['aria-selected'], 'true');
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].tabIndex, 0);
   assert.equal(panel.attributes['aria-labelledby'], 'editor-tab-draft-one');
 
   project.outputs.push({ id: 'draft-two', title: 'Second article', status: 'ready' });
   project.selectedOutputId = 'draft-two';
   tabs.render(project);
-  assert.deepEqual(root.children.map(tab => tab.dataset.editorOutput), ['draft-one', 'draft-two']);
-  assert.equal(root.children[1].attributes['aria-selected'], 'true');
+  assert.deepEqual(root.querySelectorAll('[role="tab"]').map(tab => tab.dataset.editorOutput), ['draft-one', 'draft-two']);
+  assert.equal(root.querySelectorAll('[role="tab"]')[1].attributes['aria-selected'], 'true');
   assert.equal(panel.attributes['aria-labelledby'], 'editor-tab-draft-two');
-  root.emit('keydown', root.children[1], { key: 'ArrowLeft' });
+  root.emit('keydown', root.querySelectorAll('[role="tab"]')[1], { key: 'ArrowLeft' });
   assert.deepEqual(selections, ['draft-one']);
-  assert.equal(root.children[0].attributes['aria-selected'], 'true');
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].attributes['aria-selected'], 'true');
   assert.equal(project.viewOriginalDraft, false);
   assert.equal(panel.attributes['aria-labelledby'], 'editor-tab-draft-one');
-  assert.equal(document.activeElement, root.children[0]);
+  assert.equal(document.activeElement, root.querySelectorAll('[role="tab"]')[0]);
   tabs.destroy();
 });
 
@@ -482,9 +502,9 @@ test('a completed search draft stays active despite a stale search-view flag', t
   const output = { id: 'draft', title: 'Completed article', status: 'ready', revisionUnread: true };
   const project = { id: 'search-project', searchQuery: 'School openings', viewOriginalDraft: true, selectedOutputId: output.id, outputs: [output] };
   tabs.render(project);
-  assert.deepEqual(root.children.map(tab => tab.dataset.editorOutput), ['draft']);
-  assert.equal(root.children[0].attributes['aria-selected'], 'true');
-  assert.equal(root.children[0].tabIndex, 0);
+  assert.deepEqual(root.querySelectorAll('[role="tab"]').map(tab => tab.dataset.editorOutput), ['draft']);
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].attributes['aria-selected'], 'true');
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].tabIndex, 0);
   assert.equal(panel.attributes['aria-labelledby'], 'editor-tab-draft');
   assert.equal(clock.timers.size, 1);
   clock.tick(10000);
@@ -502,11 +522,11 @@ test('adding search to an existing blank workspace relabels its tab without chan
   const tabs = createEditorTabs({ onSelect() {} });
   const project = { id: 'project', awaitingOutput: true, outputs: [] };
   tabs.render(project);
-  assert.equal(root.children[0].textContent, '');
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].textContent, '');
   project.searchQuery = 'School openings';
   tabs.render(project);
-  assert.equal(root.children[0].textContent, 'Searching Topic');
-  assert.equal(root.children[0].attributes['aria-label'], 'Searching Topic');
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].textContent, 'Searching Topic');
+  assert.equal(root.querySelectorAll('[role="tab"]')[0].attributes['aria-label'], 'Searching Topic');
   tabs.destroy();
 });
 

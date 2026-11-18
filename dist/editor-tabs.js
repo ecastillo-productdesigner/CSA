@@ -4,9 +4,52 @@ import { projectOutputs, outputIsReady, outputIsSent, outputLoadingSelectionKeys
 import { tokenNumber } from './design-system/runtime.js?v=20261028-revision-dot';
 import { createRevisionAnimation } from './drafting-animation.js?v=20261027-revision-tabs';
 
-export function createEditorTabs({ onSelect, onRevisionRead = () => {}, createAnimation = createRevisionAnimation }) {
-  const root = document.querySelector('#editor-variant-tabs');
-  const panel = document.querySelector('#editor-canvas-content');
+// Keep every displayed tab whole, reserving the overflow control only when needed.
+export function editorTabLayout({ count, activeIndex = 0, width, tabWidth, moreWidth, gap }) {
+  if (!count) return { visibleIndexes: [], hiddenIndexes: [], tabWidth: 0 };
+  const available = Math.max(0, width);
+  const overflow = count * tabWidth + (count - 1) * gap > available;
+  const tabSpace = Math.max(0, available - (overflow ? moreWidth + gap : 0));
+  const capacity = overflow ? Math.max(1, Math.min(count, Math.floor((tabSpace + gap) / (tabWidth + gap)))) : count;
+  const visibleIndexes = Array.from({ length: capacity }, (_, index) => index);
+  const active = Math.max(0, Math.min(count - 1, activeIndex));
+  if (!visibleIndexes.includes(active)) visibleIndexes[capacity - 1] = active;
+  const hiddenIndexes = Array.from({ length: count }, (_, index) => index).filter(index => !visibleIndexes.includes(index));
+  return {
+    visibleIndexes,
+    hiddenIndexes,
+    tabWidth: hiddenIndexes.length ? Math.max(0, (tabSpace - (capacity - 1) * gap) / capacity) : Math.min(tabWidth, available),
+  };
+}
+
+export function createEditorTabs({ onSelect, onRevisionRead = () => {}, createAnimation = createRevisionAnimation,
+  root = document.querySelector('#editor-variant-tabs'), panel = document.querySelector('#editor-canvas-content') }) {
+  const prefix = root.id && root.id !== 'editor-variant-tabs' ? `${root.id}-tab` : 'editor-tab';
+  const list = document.createElement('div');
+  list.className = 'editor-variant-tab-list';
+  list.setAttribute('role', 'tablist');
+  list.setAttribute('aria-label', 'Drafts');
+  const more = document.createElement('button');
+  more.type = 'button';
+  more.className = 'editor-tabs-more';
+  more.hidden = true;
+  more.setAttribute('aria-haspopup', 'menu');
+  more.setAttribute('aria-expanded', 'false');
+  const menu = document.createElement('div');
+  menu.id = `${root.id || 'editor-variant-tabs'}-more-menu`;
+  menu.className = 'editor-tabs-more-menu';
+  menu.setAttribute('role', 'menu');
+  menu.setAttribute('aria-label', 'More Drafts');
+  menu.hidden = true;
+  more.setAttribute('aria-controls', menu.id);
+  root.removeAttribute('role');
+  root.removeAttribute('aria-label');
+  root.replaceChildren(list, more, menu);
+  let entries = [];
+  let tabs = [];
+  let hiddenIndexes = [];
+  let layoutSignature = '';
+  let destroyed = false;
   let signature = '';
   let currentProject = null;
   let currentActiveId = null;
@@ -46,37 +89,111 @@ export function createEditorTabs({ onSelect, onRevisionRead = () => {}, createAn
     animations.clear();
   }
 
-  function revealSelected() {
-    const tab = root.querySelector('[aria-selected="true"]');
-    if (!tab || root.hidden) return;
-    const row = root.getBoundingClientRect();
-    const item = tab.getBoundingClientRect();
-    if (item.left < row.left + 8) root.scrollLeft += item.left - row.left - 8;
-    else if (item.right > row.right - 8) root.scrollLeft += item.right - row.right + 8;
+  function closeMenu(restoreFocus = false) {
+    const wasOpen = !menu.hidden;
+    menu.hidden = true;
+    more.setAttribute('aria-expanded', 'false');
+    if (wasOpen && restoreFocus && !more.hidden) more.focus({ preventScroll: true });
   }
-  const resizeObserver = new ResizeObserver(revealSelected);
+  function menuItems() { return [...menu.querySelectorAll('[role="menuitem"]')]; }
+  function openMenu(last = false) {
+    if (more.hidden || !hiddenIndexes.length) return;
+    menu.hidden = false;
+    more.setAttribute('aria-expanded', 'true');
+    const items = menuItems();
+    (last ? items.at(-1) : items[0])?.focus();
+  }
+  function layout() {
+    if (destroyed || root.hidden || !tabs.length) return;
+    const width = root.getBoundingClientRect().width;
+    if (!width) return; // Hidden DS specimens are laid out when they become visible.
+    const arrangement = editorTabLayout({ count: tabs.length, activeIndex: entries.findIndex(entry => entry.id === currentActiveId), width,
+      tabWidth: tokenNumber('component.editor-tab.preferred-width'), moreWidth: tokenNumber('component.editor-tab.more-width'), gap: tokenNumber('foundation.space.4') });
+    root.style.setProperty('--editor-tab-visible-width', `${arrangement.tabWidth}px`);
+    const nextLayout = JSON.stringify(arrangement.hiddenIndexes);
+    if (layoutSignature === nextLayout) return;
+    const focusInMenu = menu.contains(document.activeElement);
+    const focusOnMore = document.activeElement === more;
+    closeMenu();
+    layoutSignature = nextLayout;
+    hiddenIndexes = arrangement.hiddenIndexes;
+    tabs.forEach((tab, index) => { tab.hidden = hiddenIndexes.includes(index); });
+    more.hidden = hiddenIndexes.length === 0;
+    more.replaceChildren(document.createTextNode(`+${hiddenIndexes.length}`), createIcon('keyboard_arrow_down'));
+    more.setAttribute('aria-label', `${hiddenIndexes.length} more ${hiddenIndexes.length === 1 ? 'draft' : 'drafts'}`);
+    menu.replaceChildren(...hiddenIndexes.map(index => {
+      const entry = entries[index];
+      const tab = tabs[index];
+      const revising = tab.dataset.revising === 'true';
+      const status = revising ? 'Revising Draft' : outputIsSent(entry) ? 'Sent' : 'Draft';
+      const unread = entry.revisionUnread && !revising;
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'project-card-menu-item editor-tabs-more-option';
+      item.dataset.editorOutput = entry.id || '';
+      item.setAttribute('role', 'menuitem');
+      item.tabIndex = -1;
+      item.setAttribute('aria-label', `${entry.title} · ${status}${unread ? ' · Revision complete, unread' : ''}`);
+      const badge = document.createElement('span');
+      badge.className = 'editor-tab-draft';
+      badge.dataset.sent = String(status === 'Sent');
+      badge.append(createIcon(status === 'Sent' ? 'send' : 'draw'), document.createTextNode(status));
+      const label = document.createElement('span');
+      label.className = 'editor-tabs-more-title';
+      label.textContent = entry.title;
+      item.append(badge, label);
+      if (unread) {
+        const dot = document.createElement('span');
+        dot.className = 'editor-tab-revision-dot';
+        dot.setAttribute('aria-hidden', 'true');
+        item.append(dot);
+      }
+      return item;
+    }));
+    if (focusInMenu || (focusOnMore && more.hidden)) {
+      (more.hidden ? tabs.find(tab => tab.getAttribute('aria-selected') === 'true') : more)?.focus({ preventScroll: true });
+    }
+  }
+  const resizeObserver = new ResizeObserver(layout);
   resizeObserver.observe(root);
 
   function select(tab) {
+    closeMenu();
     onSelect(tab.dataset.editorOutput || null);
+    layout();
     const current = root.querySelector('[aria-selected="true"]');
     current?.focus({ preventScroll: true });
-    revealSelected();
   }
 
-  root.addEventListener('click', event => {
-    const tab = event.target.closest('[role="tab"]');
-    if (tab) select(tab);
-  });
-  root.addEventListener('keydown', event => {
+  function onClick(event) {
+    if (more.contains(event.target)) { if (menu.hidden) openMenu(); else closeMenu(true); return; }
+    const tab = event.target.closest('[role="tab"]') || event.target.closest('[role="menuitem"]');
+    if (tab && root.contains(tab)) select(tab);
+  }
+  function onKeyDown(event) {
+    if (event.key === 'Escape' && !menu.hidden) { event.preventDefault(); event.stopPropagation(); closeMenu(true); return; }
+    if (event.target === more && ['ArrowDown', 'ArrowUp'].includes(event.key)) { event.preventDefault(); openMenu(event.key === 'ArrowUp'); return; }
+    if (menu.contains(event.target)) {
+      if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const items = menuItems();
+      const index = items.indexOf(event.target.closest('[role="menuitem"]'));
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? items.length - 1 : (index + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
+      items[next]?.focus();
+      return;
+    }
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-    const tabs = [...root.querySelectorAll('[role="tab"]')];
     const index = tabs.indexOf(event.target.closest('[role="tab"]'));
     if (index < 0) return;
     event.preventDefault();
     const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
     select(tabs[next]);
-  });
+  }
+  function onOutside(event) { if (!menu.hidden && !root.contains(event.target)) closeMenu(); }
+  root.addEventListener('click', onClick);
+  root.addEventListener('keydown', onKeyDown);
+  document.addEventListener('pointerdown', onOutside);
+  document.addEventListener('focusin', onOutside);
 
   const controller = {
     render(project) {
@@ -87,27 +204,34 @@ export function createEditorTabs({ onSelect, onRevisionRead = () => {}, createAn
       const revisingIds = project?.outputProcessing?.kind === 'revision' ? project.outputProcessing.ids || [] : [];
       syncReadTimer(project, activeId, outputs, revisingIds);
       const nextSignature = JSON.stringify([project?.id, activeId, showCreateTab, Boolean(project?.searchQuery), revisingIds, outputs.map(output => [output.id, output.title, output.cmsSentAt, output.revisionUnread, revisingIds.includes(output.id) ? outputLoadingSelectionKeys(output) : null])]);
-      if (signature === nextSignature) return;
+      if (signature === nextSignature) { layout(); return; }
       signature = nextSignature;
+      const menuHadFocus = !menu.hidden && menu.contains(document.activeElement);
+      closeMenu();
       clearAnimations();
       const hasTabs = showCreateTab || Boolean(outputs.length);
       root.hidden = !hasTabs;
       panel.classList.toggle('has-variant-tabs', hasTabs);
       if (!hasTabs) {
-        root.replaceChildren();
+        list.replaceChildren();
+        menu.replaceChildren();
+        more.hidden = true;
+        entries = [];
+        tabs = [];
+        hiddenIndexes = [];
         panel.removeAttribute('role');
         panel.removeAttribute('aria-labelledby');
         return;
       }
-      const entries = [...(showCreateTab ? [{ id: null, title: 'Project workspace', preview: true }] : []), ...outputs];
-      root.replaceChildren(...entries.map(output => {
+      entries = [...(showCreateTab ? [{ id: null, title: 'Project workspace', preview: true }] : []), ...outputs];
+      tabs = entries.map(output => {
         const { id, cmsSentAt, preview } = output;
         const title = output.title;
         const sent = outputIsSent({ cmsSentAt });
         const status = preview ? 'To Draft' : sent ? 'Sent' : 'Draft';
         const tab = document.createElement('button');
         tab.type = 'button';
-        tab.id = `editor-tab-${id || 'original'}`;
+        tab.id = `${prefix}-${id || 'original'}`;
         tab.dataset.editorOutput = id || '';
         tab.setAttribute('role', 'tab');
         tab.setAttribute('aria-controls', panel.id);
@@ -154,13 +278,24 @@ export function createEditorTabs({ onSelect, onRevisionRead = () => {}, createAn
           tab.append(animation.element);
         }
         return tab;
-      }));
+      });
+      list.replaceChildren(...tabs);
       panel.setAttribute('role', 'tabpanel');
-      panel.setAttribute('aria-labelledby', `editor-tab-${activeId || 'original'}`);
-      requestAnimationFrame(revealSelected);
+      panel.setAttribute('aria-labelledby', `${prefix}-${activeId || 'original'}`);
+      layoutSignature = '';
+      layout();
+      if (menuHadFocus) (more.hidden ? tabs.find(tab => tab.getAttribute('aria-selected') === 'true') : more)?.focus({ preventScroll: true });
+      requestAnimationFrame(layout);
     },
-    suspend() { clearReadTimer(); currentProject = null; currentActiveId = null; },
-    destroy() { controller.suspend(); clearAnimations(); resizeObserver.disconnect(); },
+    suspend() { clearReadTimer(); closeMenu(); currentProject = null; currentActiveId = null; },
+    destroy() {
+      destroyed = true;
+      controller.suspend(); clearAnimations(); resizeObserver.disconnect();
+      root.removeEventListener('click', onClick);
+      root.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('pointerdown', onOutside);
+      document.removeEventListener('focusin', onOutside);
+    },
   };
   return controller;
 }

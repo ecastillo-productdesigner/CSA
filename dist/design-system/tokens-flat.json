@@ -7174,6 +7174,30 @@
       "status": "observed"
     },
     {
+      "name": "component.editor-tab.preferred-width",
+      "designName": "component/editor-tab/preferred-width",
+      "cssVariable": "--csa-component-editor-tab-preferred-width",
+      "type": "dimension",
+      "layer": "component",
+      "category": "editor-tab",
+      "value": "260px",
+      "reference": "foundation.space.260",
+      "description": "Preferred complete-tab width used to decide how many drafts fit before the More menu. Visible tabs share remaining row width when overflow exists.",
+      "status": "observed"
+    },
+    {
+      "name": "component.editor-tab.more-width",
+      "designName": "component/editor-tab/more-width",
+      "cssVariable": "--csa-component-editor-tab-more-width",
+      "type": "dimension",
+      "layer": "component",
+      "category": "editor-tab",
+      "value": "64px",
+      "reference": "foundation.space.64",
+      "description": "Reserved width for the +N More drafts control, keeping it outside the tablist.",
+      "status": "observed"
+    },
+    {
       "name": "component.audience-ready.dot-size",
       "designName": "component/audience-ready/dot-size",
       "cssVariable": "--csa-component-audience-ready-dot-size",

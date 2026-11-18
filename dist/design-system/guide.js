@@ -1,4 +1,5 @@
 import { mountEditorialPlanSpecimen } from './editorial-plan-specimen.js?v=20261117-plan-review';
+import { mountEditorTabsSpecimen } from './editor-tabs-specimen.js?v=20261117-whole-tabs';
 import { mountAnimationSpecimens } from './animation-specimens.js?v=20261111-source-paper-count';
 import { createContentDirectionIndicator } from '../content-card-editing.js?v=20261111-direction-badge';
 import { createEditorPopover } from '../editor-popover.js?v=20261111-direction-badge';
@@ -437,3 +438,4 @@ mountWordCountSpecimen($('#ds-word-count-specimen'), {
 });
 
 mountEditorialPlanSpecimen(document.querySelector('#ds-editorial-plan-specimen'));
+mountEditorTabsSpecimen($('#ds-editor-tabs-specimen'));

@@ -1,7 +1,7 @@
 import { revisionChangeSummary } from '../revision-change-summary.js?v=20261030-declined-revision-details';
 import { createFeedbackPill, createVariantFeedback } from '../variant-feedback.js?v=20261026-drafting-card-size';
 import { createRevisionButton, updateRevisionButton, createRevisionRequests } from '../revision-requests.js?v=20261030-revision-headings';
-import { createEditorTabs } from '../editor-tabs.js?v=20261105-filter-settings';
+import { createEditorTabs } from '../editor-tabs.js?v=20261117-whole-tabs';
 import { createStoryMetadata, storyMetadata } from '../story-metadata.js?v=20261027-metadata';
 import { createRevisionLoading } from '../revision-loading.js?v=20261027-revision-loading';
 import { tokenNumber } from './runtime.js?v=20261029-revision-indicator-location';

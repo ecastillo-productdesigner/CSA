@@ -1,5 +1,5 @@
 import { buildEditorialPlans, applyEditorialPlan } from './editorial-plans.js?v=20261117-plan-review';
-import { createEditorialPlanReview } from './editorial-plan-review.js?v=20261118-optional-plans';
+import { createEditorialPlanReview } from './editorial-plan-review.js?v=20261119-plan-copy';
 import { INITIAL_DRAFT_WORD_LIMIT, requestedEditorialWordCount } from './editorial-word-count.js?v=20261111-word-count-notice';
 import { syncOwnMaterialSource } from './own-material-source.js?v=20261106-material-tabs';
 import { listSavedDraftSetups, saveDraftSetup, removeSavedDraftSetup, applySavedDraftSetup, clearSavedDraftSetup } from './saved-draft-setups.js?v=20261111-audience-name-variation';
@@ -1331,7 +1331,7 @@ function updateEditorialPlanAction(project) {
   const review = $('#review-output');
   review.hidden = roleSelector.value !== 'Trend Hunter' || outputs.length < 2;
   review.disabled = Boolean(project?.outputProcessing) || review.hidden;
-  $('#create-output-label').textContent = outputs.length > 1 ? `Draft ${outputs.length}` : 'Draft';
+  $('#create-output-label').textContent = 'Draft';
 }
 
 function confirmEditorialPlans({ projectId, plans }) {

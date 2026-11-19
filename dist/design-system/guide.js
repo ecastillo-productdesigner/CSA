@@ -1,4 +1,4 @@
-import { mountEditorialPlanSpecimen } from './editorial-plan-specimen.js?v=20261118-optional-plans';
+import { mountEditorialPlanSpecimen } from './editorial-plan-specimen.js?v=20261119-plan-copy';
 import { mountEditorTabsSpecimen } from './editor-tabs-specimen.js?v=20261117-whole-tabs';
 import { mountAnimationSpecimens } from './animation-specimens.js?v=20261111-source-paper-count';
 import { createContentDirectionIndicator } from '../content-card-editing.js?v=20261111-direction-badge';

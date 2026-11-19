@@ -34,14 +34,11 @@ export function createEditorialPlanReview({ host = document.body, id = 'editoria
   const dialog = node('dialog', 'editorial-plan-review-dialog');
   dialog.id = id;
   dialog.setAttribute('aria-labelledby', `${id}-title`);
-  dialog.setAttribute('aria-describedby', `${id}-description`);
   const header = node('div', 'editorial-plan-review-header');
   const heading = node('div', 'editorial-plan-review-heading');
-  const title = node('h2', '', 'Review Editorial Plans');
+  const title = node('h2', '', 'Review and Edit Plans');
   title.id = `${id}-title`;
-  const description = node('p', '', 'Review how each draft will differ before creating it.');
-  description.id = `${id}-description`;
-  heading.append(title, description);
+  heading.append(title);
   const dismiss = button('icon-button');
   dismiss.setAttribute('aria-label', 'Close editorial plan review');
   dismiss.append(createIcon('close'));

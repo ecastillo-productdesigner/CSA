@@ -343,7 +343,7 @@ test('Review Plans visibility follows role and selected pending count and disabl
   ui.refreshActions();
   assert.equal(ui.reviewButton.hidden, false);
   assert.equal(ui.reviewButton.disabled, false);
-  assert.equal(ui.draftLabel.textContent, 'Draft 2');
+  assert.equal(ui.draftLabel.textContent, 'Draft');
   ui.roleSelector.value = 'Journalist';
   ui.refreshActions();
   assert.equal(ui.reviewButton.hidden, true);

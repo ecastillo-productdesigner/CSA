@@ -1,4 +1,4 @@
-import { createEditorialPlanReview } from '../editorial-plan-review.js?v=20261118-optional-plans';
+import { createEditorialPlanReview } from '../editorial-plan-review.js?v=20261119-plan-copy';
 import { buildEditorialPlans, applyEditorialPlan } from '../editorial-plans.js?v=20261117-plan-review';
 import { populateOutputContent } from '../outputs.js?v=20261117-plan-review';
 import { createDraftingAnimation } from '../drafting-animation.js?v=20261111-source-paper-count';

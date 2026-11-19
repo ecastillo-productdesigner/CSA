@@ -1003,3 +1003,69 @@ test('restored audience values check at most one occurrence and resets clear gen
   assert.equal(checked().length, 1);
   assert.equal(checked()[0].querySelector('.tool-dropdown-option').textContent, choices[2].label);
 });
+
+
+test('voice hearts pin favorites without selecting, closing, or losing keyboard focus', t => {
+  const ui = setup(t);
+  const voice = ui.field('Voice', 'us-weekly');
+  populateDraftOptions();
+  ui.dropdowns();
+  const trigger = voice.field.querySelector('.tool-dropdown-trigger');
+  const menu = voice.field.querySelector('.tool-dropdown-menu');
+  const rows = () => menu.querySelectorAll('.tool-dropdown-row');
+  const row = label => rows().find(item => item.querySelector('.tool-dropdown-option').textContent === label);
+  const choice = label => row(label).querySelector('.tool-dropdown-option');
+  const heart = label => row(label).querySelector('.tool-option-favorite');
+  const labels = () => rows().map(item => item.querySelector('.tool-dropdown-option').textContent);
+  let changes = 0;
+  voice.select.addEventListener('change', () => { changes++; });
+  assert.equal(trigger.getAttribute('aria-haspopup'), 'dialog');
+  assert.equal(menu.getAttribute('aria-label'), 'Voice options');
+  assert.equal(heart('None Selected'), null);
+  trigger.emit('click');
+  assert.equal(choice('Us Weekly').getAttribute('aria-pressed'), 'true');
+  heart("Woman's World").focus();
+  heart("Woman's World").emit('click');
+  assert.deepEqual(labels(), ['None Selected', "Woman's World", 'Us Weekly']);
+  assert.deepEqual(ui.favoritesStore.values('voice'), ['womans-world']);
+  assert.equal(heart("Woman's World").getAttribute('aria-pressed'), 'true');
+  assert.equal(heart("Woman's World").getAttribute('aria-label'), "Remove Woman's World from favorites");
+  assert.equal(document.activeElement, heart("Woman's World"));
+  assert.equal(voice.select.value, 'us-weekly');
+  assert.equal(choice('Us Weekly').getAttribute('aria-pressed'), 'true');
+  assert.equal(choice("Woman's World").getAttribute('aria-pressed'), 'false');
+  assert.equal(changes, 0);
+  assert.equal(trigger.getAttribute('aria-expanded'), 'true');
+  menu.emit('keydown', { key: 'ArrowDown' });
+  assert.equal(document.activeElement, heart('Us Weekly'), 'keyboard follows the visible favorite-first order');
+  menu.emit('keydown', { key: 'ArrowLeft' });
+  assert.equal(document.activeElement, choice('Us Weekly'));
+  menu.emit('keydown', { key: 'Home' });
+  assert.equal(document.activeElement, choice('None Selected'));
+  menu.emit('keydown', { key: 'Escape' });
+  assert.equal(document.activeElement, trigger);
+  trigger.emit('click');
+  assert.deepEqual(labels(), ['None Selected', "Woman's World", 'Us Weekly']);
+  heart("Woman's World").focus();
+  heart("Woman's World").emit('click');
+  assert.deepEqual(labels(), ['None Selected', 'Us Weekly', "Woman's World"]);
+  assert.equal(heart("Woman's World").getAttribute('aria-pressed'), 'false');
+  assert.equal(document.activeElement, heart("Woman's World"));
+  assert.equal(voice.select.value, 'us-weekly');
+  assert.equal(changes, 0);
+});
+
+test('persisted voice favorites initialize consistently in new-draft and edit-card dropdowns', t => {
+  const ui = setup(t, { voice: ['womans-world'], format: ['standard'], audience: ['general'] });
+  const composer = ui.field('Voice');
+  const editor = ui.field('Voice', '', document.body, 'output-edit-');
+  populateDraftOptions();
+  ui.dropdowns();
+  for (const { field } of [composer, editor]) {
+    const rows = field.querySelectorAll('.tool-dropdown-row');
+    assert.deepEqual(rows.map(row => row.querySelector('.tool-dropdown-option').textContent), ['None Selected', "Woman's World", 'Us Weekly']);
+    assert.equal(rows[1].querySelector('.tool-option-favorite').getAttribute('aria-pressed'), 'true');
+  }
+  assert.deepEqual(ui.favoritesStore.values('format'), ['standard']);
+  assert.deepEqual(ui.favoritesStore.values('audience'), ['general']);
+});

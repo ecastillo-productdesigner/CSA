@@ -27,7 +27,7 @@ import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js
 import { removeProjectContent } from './project-deletion.js?v=20261026-drafting-card-size';
 import { createContentPreview } from './content-preview.js?v=20261026-drafting-card-size';
 import { createProjectAudienceSuggestions } from './project-audience-suggestions.js?v=20261111-audience-name-variation';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261117-word-count-popover';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261119-voice-favorites';
 import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261111-audience-name-variation';
 import { createNewProjectUpload } from './new-project-upload.js?v=20261117-word-count-popover';
 import { createRailNavigation } from './navigation.js?v=20261105-role-selector';

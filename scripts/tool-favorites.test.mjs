@@ -29,7 +29,7 @@ test('saving and removing a choice leaves the other category intact', () => {
   const { favorites, storage } = setup(JSON.stringify({ format: ['listicle'], audience: ['general'] }));
   assert.deepEqual(favorites.toggle('format', 'explainer'), { saved: true, persisted: true });
   assert.deepEqual(favorites.toggle('format', 'listicle'), { saved: false, persisted: true });
-  assert.deepEqual(JSON.parse(storage.getItem(storageKey)), { format: ['explainer'], audience: ['general'], source: [] });
+  assert.deepEqual(JSON.parse(storage.getItem(storageKey)), { format: ['explainer'], audience: ['general'], voice: [], source: [] });
   assert.deepEqual(favorites.toggle('audience', 'general'), { saved: false, persisted: true });
   assert.deepEqual(favorites.values('format'), ['explainer']);
   assert.deepEqual(favorites.values('audience'), []);
@@ -42,16 +42,16 @@ test('invalid records and category values are ignored safely', () => {
     assert.deepEqual(favorites.values('audience'), [], initial);
     assert.deepEqual(favorites.toggle('format', 'listicle'), { saved: true, persisted: true });
   }
-  const { favorites } = setup(JSON.stringify({ format: ['listicle', null, 0, false, {}, '', '  ', 'listicle'], audience: ['general'], voice: ['house-standard'] }));
+  const { favorites } = setup(JSON.stringify({ format: ['listicle', null, 0, false, {}, '', '  ', 'listicle'], audience: ['general'], voice: ['us-weekly', '', null, 0, {}, 'us-weekly'] }));
   assert.deepEqual(favorites.values('format'), ['listicle']);
   assert.deepEqual(favorites.values('audience'), ['general']);
-  assert.deepEqual(favorites.values('voice'), []);
+  assert.deepEqual(favorites.values('voice'), ['us-weekly']);
 });
 
 test('unsupported categories and empty or non-string values cannot change storage', () => {
   const initial = JSON.stringify({ format: ['listicle'], audience: ['general'] });
   const { favorites, storage } = setup(initial);
-  for (const [key, value] of [['voice', 'house-standard'], ['__proto__', 'x'], ['format', ''], ['format', '  '], ['format', null], ['format', 42]]) {
+  for (const [key, value] of [['unknown', 'house-standard'], ['__proto__', 'x'], ['format', ''], ['format', '  '], ['format', null], ['format', 42]]) {
     assert.deepEqual(favorites.toggle(key, value), { saved: false, persisted: false });
   }
   assert.equal(storage.getItem(storageKey), initial);
@@ -80,7 +80,7 @@ test('failed writes survive refresh and merge with external changes when saving 
   persist(storageKey, JSON.stringify({ format: ['listicle'], audience: ['local'] }));
   storage.setItem = persist;
   assert.deepEqual(favorites.toggle('audience', 'general'), { saved: true, persisted: true });
-  assert.deepEqual(JSON.parse(storage.getItem(storageKey)), { format: ['explainer'], audience: ['local', 'general'], source: [] });
+  assert.deepEqual(JSON.parse(storage.getItem(storageKey)), { format: ['explainer'], audience: ['local', 'general'], voice: [], source: [] });
 });
 
 test('separate instances preserve updates to both categories', () => {
@@ -91,7 +91,7 @@ test('separate instances preserve updates to both categories', () => {
   second.toggle('audience', 'general');
   first.toggle('format', 'explainer');
   second.toggle('audience', 'local');
-  assert.deepEqual(JSON.parse(storage.getItem(storageKey)), { format: ['listicle', 'explainer'], audience: ['general', 'local'], source: [] });
+  assert.deepEqual(JSON.parse(storage.getItem(storageKey)), { format: ['listicle', 'explainer'], audience: ['general', 'local'], voice: [], source: [] });
   first.refresh();
   assert.deepEqual(first.values('audience'), ['general', 'local']);
 });
@@ -117,6 +117,32 @@ test('source favorites persist by publication name alongside legacy draft favori
   assert.deepEqual(restored.values('source'), ['Bargain Hunter', 'Bellingham Herald']);
   restored.toggle('source', 'Bargain Hunter');
   assert.deepEqual(JSON.parse(storage.getItem(storageKey)), {
-    format: ['listicle'], audience: ['general'], source: ['Bellingham Herald'],
+    format: ['listicle'], audience: ['general'], voice: [], source: ['Bellingham Herald'],
   });
+});
+
+
+test('voice favorites upgrade legacy storage and survive removal and reload without erasing other categories', () => {
+  const { favorites, storage } = setup(JSON.stringify({ format: ['listicle'], audience: ['general'], source: ['The State'] }));
+  assert.deepEqual(favorites.values('voice'), []);
+  assert.deepEqual(favorites.toggle('voice', 'womans-world'), { saved: true, persisted: true });
+  assert.deepEqual(favorites.toggle('voice', 'us-weekly'), { saved: true, persisted: true });
+  const restored = createToolFavorites({ storage: () => storage });
+  assert.deepEqual(restored.values('voice'), ['womans-world', 'us-weekly']);
+  assert.deepEqual(restored.toggle('voice', 'us-weekly'), { saved: false, persisted: true });
+  favorites.toggle('format', 'standard');
+  const reloaded = createToolFavorites({ storage: () => storage });
+  assert.deepEqual(reloaded.values('voice'), ['womans-world']);
+  assert.deepEqual(JSON.parse(storage.getItem(storageKey)), {
+    format: ['listicle', 'standard'], audience: ['general'], voice: ['womans-world'], source: ['The State'],
+  });
+});
+
+test('voice favorites remain usable when browser storage is unavailable', () => {
+  const favorites = createToolFavorites({ storage: () => { throw new Error('Storage unavailable'); } });
+  assert.deepEqual(favorites.toggle('voice', 'us-weekly'), { saved: true, persisted: false });
+  favorites.refresh();
+  assert.deepEqual(favorites.values('voice'), ['us-weekly']);
+  assert.deepEqual(favorites.toggle('voice', 'us-weekly'), { saved: false, persisted: false });
+  assert.deepEqual(favorites.values('voice'), []);
 });

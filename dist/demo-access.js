@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261118-optional-plans');
+  await import('./app.js?v=20261119-voice-favorites');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

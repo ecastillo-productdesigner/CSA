@@ -461,7 +461,7 @@ test('Source uses the shared favorites menu and refreshes when search replaces i
   assert.deepEqual(ui.favoritesStore.values('format'), ['listicle']);
 });
 
-test('Voice retains listbox selection and keyboard behavior without favorite controls', t => {
+test('Voice selection and keyboard behavior use the shared favorite-enabled dialog', t => {
   const ui = setup(t);
   const { field, select } = ui.field('Voice', 'us-weekly');
   populateDraftOptions();
@@ -469,24 +469,27 @@ test('Voice retains listbox selection and keyboard behavior without favorite con
   const trigger = field.querySelector('.tool-dropdown-trigger');
   const menu = field.querySelector('.tool-dropdown-menu');
   const options = menu.querySelectorAll('.tool-dropdown-option');
-  assert.equal(trigger.getAttribute('aria-haspopup'), 'listbox');
-  assert.equal(menu.querySelector('.tool-dropdown-list').getAttribute('role'), 'listbox');
+  assert.equal(trigger.getAttribute('aria-haspopup'), 'dialog');
+  assert.equal(menu.getAttribute('role'), 'dialog');
+  assert.equal(menu.querySelector('.tool-dropdown-list').getAttribute('role'), 'group');
   assert.equal(menu.querySelector('.tool-dropdown-toolbar'), null);
   assert.equal(menu.querySelector('.tool-favorites-tab'), null);
   assert.equal(menu.querySelector('.tool-favorites-panel'), null);
-  assert.equal(menu.querySelectorAll('.tool-option-favorite').length, 0);
-  assert.ok(options.every(option => option.getAttribute('role') === 'option'));
-  assert.equal(options[1].getAttribute('aria-selected'), 'true');
+  assert.equal(menu.querySelectorAll('.tool-option-favorite').length, 2);
+  assert.ok(options.every(option => option.getAttribute('role') !== 'option'));
+  assert.equal(options[1].getAttribute('aria-pressed'), 'true');
   trigger.emit('click');
   assert.equal(document.activeElement, options[1]);
   menu.emit('keydown', { key: 'ArrowDown' });
   assert.equal(document.activeElement, options[2]);
   options[2].emit('click');
   assert.equal(select.value, 'womans-world');
-  assert.equal(options[2].getAttribute('aria-selected'), 'true');
-  assert.equal(options[1].getAttribute('aria-selected'), 'false');
+  assert.equal(options[2].getAttribute('aria-pressed'), 'true');
+  assert.equal(options[1].getAttribute('aria-pressed'), 'false');
   assert.equal(menu.hidden, true);
   trigger.emit('click');
+  menu.emit('keydown', { key: 'ArrowRight' });
+  assert.equal(document.activeElement, menu.querySelectorAll('.tool-option-favorite').at(-1));
   menu.emit('keydown', { key: 'Tab' });
   assert.equal(menu.hidden, true);
   assert.equal(document.activeElement, trigger);

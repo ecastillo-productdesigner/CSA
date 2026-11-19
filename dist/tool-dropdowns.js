@@ -3,7 +3,7 @@ import { createDropdownTransition } from './dropdown-transition.js?v=20261026-dr
 import { tokenNumber, tokenValue, breakpointQuery } from './design-system/runtime.js?v=20261026-drafting-card-size';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { bindTapActivation } from './tap-activation.js?v=20261026-drafting-card-size';
-import { toolFavorites } from './tool-favorites.js?v=20261105-filter-settings';
+import { toolFavorites } from './tool-favorites.js?v=20261119-voice-favorites';
 import { bindTabSelection } from './selection-controls.js?v=20261026-drafting-card-size';
 import { createTabPanelTransition } from './tab-panel-transition.js?v=20261026-drafting-card-size';
 
@@ -15,7 +15,7 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
     const sourceFilter = field.matches('.results-source-field');
     if (sourceFilter) select.multiple = true;
     const key = sourceFilter ? 'source' : draftSetting ? label.toLowerCase() : select.id.replace(/^(composer-|output-edit-)/, '');
-    const supportsFavorites = sourceFilter || (draftSetting && ['format', 'audience'].includes(key));
+    const supportsFavorites = sourceFilter || (draftSetting && ['format', 'audience', 'voice'].includes(key));
     const suggestionProvider = draftSetting && key === 'audience' ? audienceSuggestions : null;
     const favoriteChoice = option => Boolean(option.value) && !(sourceFilter && option.value === 'all');
     let opensUp = false;

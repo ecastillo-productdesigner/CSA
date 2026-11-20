@@ -177,13 +177,22 @@ test('legacy saved voice badges display current Us Weekly spelling without chang
   const badges = createOutputBadges(output, options);
   for (const [index, expected] of ['Us Weekly', 'General Audience', 'US Weekly', "Woman's World"].entries()) {
     assert.equal(badges[index].textContent, expected);
-    assert.equal(badges[index].title, expected);
+    assert.equal(badges[index].getAttribute('title'), expected);
     assert.equal(badges[index].attributes['aria-label'], expected);
   }
   const truncated = createOutputBadges(output, { ...options, maxLabelLength: 5 })[0];
   assert.equal(truncated.textContent, 'Us W…');
-  assert.equal(truncated.title, 'Us Weekly');
+  assert.equal(truncated.getAttribute('title'), 'Us Weekly');
   assert.equal(truncated.attributes['aria-label'], 'Us Weekly');
+  assert.equal(truncated.getAttribute('tabindex'), null);
+  truncated.emit('mouseenter');
+  assert.equal(truncated.textContent, 'Us W…');
+  truncated.emit('mouseleave');
+  assert.equal(truncated.textContent, 'Us W…');
+  truncated.emit('focus');
+  assert.equal(truncated.textContent, 'Us W…');
+  truncated.emit('blur');
+  assert.equal(truncated.textContent, 'Us W…');
   assert.deepEqual(output, before);
 });
 

@@ -1,4 +1,4 @@
-import { createOutputBadges } from './outputs.js?v=20261105-filter-settings';
+import { createOutputBadges } from './outputs.js?v=20261120-chip-tooltips';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { tokenNumber } from './design-system/runtime.js?v=20261029-revision-indicator-location';
 import { createDropdownTransition } from './dropdown-transition.js?v=20261026-drafting-card-size';

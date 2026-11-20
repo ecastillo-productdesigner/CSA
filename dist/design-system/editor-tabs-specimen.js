@@ -1,4 +1,4 @@
-import { createEditorTabs } from '../editor-tabs.js?v=20261117-whole-tabs';
+import { createEditorTabs } from '../editor-tabs.js?v=20261120-chip-tooltips';
 
 // Share the production tab controller while keeping every draft in page-local memory.
 export function mountEditorTabsSpecimen(root) {

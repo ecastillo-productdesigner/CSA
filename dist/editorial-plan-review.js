@@ -11,6 +11,7 @@ const clonePlans = plans => plans.map(plan => ({ ...plan }));
 
 export function createEditorialPlanReview({ host = document.body, id = 'editorial-plan-review-dialog', onConfirm, onCancel = () => {}, closePanels = () => {} } = {}) {
   const doc = host.ownerDocument || document;
+  const view = doc.defaultView || globalThis;
   const node = (tag, className = '', content) => {
     const element = doc.createElement(tag);
     element.className = className;
@@ -44,13 +45,15 @@ export function createEditorialPlanReview({ host = document.body, id = 'editoria
   dismiss.append(createIcon('close'));
   header.append(heading, dismiss);
   const body = node('div', 'editorial-plan-review-body');
+  const strip = node('div', 'editorial-plan-review-card-strip');
   const tabs = node('div', 'editorial-plan-review-tabs');
   tabs.setAttribute('role', 'tablist');
   tabs.setAttribute('aria-label', 'Content to Draft');
   const details = node('section', 'editorial-plan-review-details');
   details.id = `${id}-details`;
   details.setAttribute('role', 'tabpanel');
-  body.append(tabs, details);
+  strip.append(tabs);
+  body.append(strip, details);
   const error = node('p', 'editorial-plan-review-error');
   error.setAttribute('role', 'alert');
   error.hidden = true;
@@ -74,9 +77,56 @@ export function createEditorialPlanReview({ host = document.body, id = 'editoria
     chips.setAttribute('data-fade-start', String(overflows && chips.scrollLeft > 1));
     chips.setAttribute('data-fade-end', String(overflows && chips.scrollLeft + chips.clientWidth < chips.scrollWidth - 1));
   };
-  const chipResizeObserver = typeof ResizeObserver === 'function'
-    ? new ResizeObserver(() => chipRows.forEach(updateChipOverflow))
-    : null;
+  let resizeObserver = null;
+  let overflowFrame = null;
+
+  function updateOverflow() {
+    const maximum = Math.max(0, tabs.scrollWidth - tabs.clientWidth);
+    const offset = Math.max(0, Math.min(maximum, tabs.scrollLeft));
+    // Ignore subpixel rounding and overscroll at the ends of the card row.
+    strip.setAttribute('data-fade-start', String(offset > 1));
+    strip.setAttribute('data-fade-end', String(maximum - offset > 1));
+    chipRows.forEach(updateChipOverflow);
+  }
+
+  function scheduleOverflow() {
+    if (!dialog.open || destroyed || overflowFrame !== null) return;
+    if (typeof view.requestAnimationFrame !== 'function') {
+      updateOverflow();
+      return;
+    }
+    overflowFrame = view.requestAnimationFrame(() => {
+      overflowFrame = null;
+      if (dialog.open && !destroyed) updateOverflow();
+    });
+  }
+
+  function stopObservingOverflow() {
+    resizeObserver?.disconnect();
+    resizeObserver = null;
+    tabs.removeEventListener('scroll', scheduleOverflow);
+    view.removeEventListener?.('resize', scheduleOverflow);
+    if (overflowFrame !== null) view.cancelAnimationFrame?.(overflowFrame);
+    overflowFrame = null;
+    strip.setAttribute('data-fade-start', 'false');
+    strip.setAttribute('data-fade-end', 'false');
+  }
+
+  function observeOverflow() {
+    if (typeof view.ResizeObserver === 'function') {
+      resizeObserver = new view.ResizeObserver(scheduleOverflow);
+      resizeObserver.observe(tabs);
+      for (const item of tabButtons) resizeObserver.observe(item);
+      for (const chips of chipRows) {
+        resizeObserver.observe(chips);
+        for (const chip of chips.children) resizeObserver.observe(chip);
+      }
+    }
+    tabs.addEventListener('scroll', scheduleOverflow, { passive: true });
+    view.addEventListener?.('resize', scheduleOverflow);
+    updateOverflow();
+    scheduleOverflow();
+  }
 
   function renderDetails() {
     if (!target) return;
@@ -112,10 +162,12 @@ export function createEditorialPlanReview({ host = document.body, id = 'editoria
     active = index;
     renderDetails();
     if (focus) tabButtons[index].focus({ preventScroll: true });
+    tabButtons[index].scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+    scheduleOverflow();
   }
 
   function render() {
-    chipResizeObserver?.disconnect();
+    stopObservingOverflow();
     chipRows = [];
     tabs.replaceChildren();
     tabButtons = target.plans.map((plan, index) => {
@@ -131,7 +183,9 @@ export function createEditorialPlanReview({ host = document.body, id = 'editoria
         cardChips.hidden = false;
         cardChips.append(node('span', 'editorial-plan-review-empty', 'None Selected'));
       }
-      item.append(cardChips, node('strong', 'output-card-title editorial-plan-review-tab-title', draftTitle(plan, index)));
+      const cardTitle = node('strong', 'output-card-title editorial-plan-review-tab-title', draftTitle(plan, index));
+      cardTitle.title = draftTitle(plan, index);
+      item.append(cardChips, cardTitle);
       item.setAttribute('aria-label', draftTitle(plan, index));
       item.setAttribute('aria-describedby', cardChips.id);
       item.addEventListener('click', () => select(index));
@@ -196,7 +250,7 @@ export function createEditorialPlanReview({ host = document.body, id = 'editoria
     tabs.replaceChildren();
     details.replaceChildren();
     tabButtons = [];
-    chipResizeObserver?.disconnect();
+    stopObservingOverflow();
     chipRows = [];
     error.hidden = true;
     if (cancelled) onCancel(cancelled);
@@ -218,12 +272,9 @@ export function createEditorialPlanReview({ host = document.body, id = 'editoria
       error.hidden = true;
       render();
       dialog.showModal();
-      for (const chips of chipRows) {
-        updateChipOverflow(chips);
-        chipResizeObserver?.observe(chips);
-        for (const chip of chips.children) chipResizeObserver?.observe(chip);
-      }
+      tabs.scrollLeft = 0;
       body.scrollTop = 0;
+      observeOverflow();
       tabButtons[0].focus({ preventScroll: true });
       return true;
     },
@@ -232,7 +283,7 @@ export function createEditorialPlanReview({ host = document.body, id = 'editoria
       if (destroyed) return;
       close();
       destroyed = true;
-      chipResizeObserver?.disconnect();
+      stopObservingOverflow();
       dialog.remove();
     },
   };

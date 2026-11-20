@@ -1,4 +1,4 @@
-import { savedVariantName } from './outputs.js?v=20261105-filter-settings';
+import { savedVariantName } from './outputs.js?v=20261120-chip-tooltips';
 import { normalizeWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
 const keys = ['format', 'audience', 'voice'];
 export function presetConfiguration(output) {

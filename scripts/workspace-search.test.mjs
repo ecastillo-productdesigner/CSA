@@ -149,7 +149,7 @@ function editorSetup(project) {
     renderSourceStory(current) { calls.welcome.push(current); },
     draftPreferenceValue: (key, value) => value || '',
     richEditor: { open(current) { calls.editor.push(current); } },
-    normalizeWordCount, toolDropdowns: { refresh() {} }, updateComposerActions() {}, renderOutputs() {}, renderProjectSources() {},
+    normalizeWordCount, populateDraftOptions() {}, toolDropdowns: { refresh() {} }, updateComposerActions() {}, renderOutputs() {}, renderProjectSources() {},
     requestAnimationFrame(callback) { callback(); }, setNewVariantCollapsed() {}, setContentCollapsed() {}, closeProfile() {},
     sessionStorage: { setItem() {} }, window: { scrollTo() {} },
   });

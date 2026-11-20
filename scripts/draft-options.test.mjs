@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { draftOptions, populateDraftOptions, draftPreferenceValue, hasDraftSelection } from '../dist/draft-options.js';
+import { draftOptions, getDraftOptions, setDraftOptionsContext, populateDraftOptions, draftPreferenceValue, hasDraftSelection } from '../dist/draft-options.js';
 import { createToolDropdowns } from '../dist/tool-dropdowns.js';
 import { createToolFavorites } from '../dist/tool-favorites.js';
+import { createAudienceSuggestionLibrary, demoAudienceSuggestions } from '../dist/audience-suggestions.js';
 
 class Element {
   constructor(tag = 'div') {
@@ -603,4 +604,165 @@ test('publication choices toggle independently, keep the menu open, and use All 
   trigger.getBoundingClientRect = () => ({ left: 20, top: -100, bottom: -64, width: 500 });
   ui.doc.emit('scroll', { target: ui.doc.body });
   assert.equal(menu.hidden, true, 'scrolling the filter trigger off screen closes its popup');
+});
+
+
+const emptyAudienceLibrary = { options: () => [] };
+const trendHunterSources = [
+  { id: 'stadium', title: 'Charlotte council discusses Panthers stadium investment', selected: true },
+  { id: 'ignored', title: 'Fashion shoppers compare seasonal dresses', selected: false },
+];
+
+test('Trend Hunter has its own formats while other roles keep the legacy catalog', () => {
+  const context = { role: 'Trend Hunter', library: emptyAudienceLibrary };
+  assert.deepEqual(getDraftOptions('format', context), [
+    { value: '', label: 'None Selected' },
+    { value: 'what-to-know', label: 'What to Know' },
+    { value: 'video-script', label: 'Video Script' },
+    { value: 'listicle', label: 'Listicle' },
+  ]);
+  for (const role of ['', 'Journalist', 'Lifestyle & Entertainment', 'eCommerce']) {
+    for (const { key, options } of draftOptions) {
+      assert.deepEqual(getDraftOptions(key, { role, library: emptyAudienceLibrary }), options);
+    }
+  }
+  assert.deepEqual(getDraftOptions('unknown', context), []);
+  assert.equal(draftPreferenceValue('format', 'standard', context), '');
+  assert.equal(draftPreferenceValue('format', 'what-to-know', context), 'what-to-know');
+  assert.equal(draftPreferenceValue('format', 'video-script', context), 'video-script');
+  assert.equal(draftPreferenceValue('format', 'video-script', { role: 'Journalist' }), '');
+});
+
+test('Trend Hunter audiences include General Audience and three contextual source-related choices', () => {
+  const context = { role: 'Trend Hunter', sources: trendHunterSources, library: emptyAudienceLibrary };
+  const choices = getDraftOptions('audience', context);
+  assert.deepEqual(choices.slice(0, 2), [
+    { value: '', label: 'None Selected' },
+    { value: 'general', label: 'General Audience' },
+  ]);
+  assert.deepEqual(choices.slice(2), demoAudienceSuggestions(trendHunterSources)
+    .map(option => ({ ...option, contextual: true })));
+  assert.equal(choices.filter(option => option.contextual).length, 3);
+  assert.equal(new Set(choices.map(option => option.value)).size, choices.length);
+  assert.ok(choices.some(option => /Panthers|Stadium/.test(option.label)));
+  assert.ok(choices.some(option => /Charlotte/.test(option.label)));
+  for (const { value } of choices) assert.equal(draftPreferenceValue('audience', value, context), value);
+  assert.equal(getDraftOptions('audience', { ...context, sources: [] }).length, 2);
+});
+
+test('Trend Hunter voices use the approved labels and descriptions with existing favorite IDs', () => {
+  const context = { role: 'Trend Hunter' };
+  const choices = getDraftOptions('voice', context);
+  assert.deepEqual(choices.map(({ value, label }) => [value, label]), [
+    ['', 'None Selected'],
+    ['house-standard', 'House Standard'],
+    ['apple-news', 'Apple News'],
+    ['centre-daily-times', 'Centre Daily Times'],
+    ['idaho-statesman', 'Idaho Statesman Voice Guide'],
+    ['msn-syndication', 'MSN Syndication'],
+    ['national-team', 'National Team Voice Guide'],
+    ['kansas-city-star', 'The Kansas City Star Voice Guide'],
+    ['news-observer', 'The News & Observer Voice Guide'],
+    ['trend-hunter-b2c', 'Trend Hunter B2C'],
+    ['us-weekly', 'Us Weekly Voice Guide'],
+    ['womans-world', "Woman's World"],
+    ['yahoo-news', 'Yahoo News'],
+  ]);
+  assert.equal(choices.find(option => option.value === 'house-standard').description,
+    'McClatchy brand voice, tone, and style preferences');
+  assert.equal(choices.find(option => option.value === 'centre-daily-times').description,
+    'Emphasize local perspectives and community relevance');
+  for (const { value } of choices) assert.equal(draftPreferenceValue('voice', value, context), value);
+  const favorites = createToolFavorites({ storage: () => ({ getItem: () => JSON.stringify({ voice: ['us-weekly', 'womans-world'] }) }) });
+  assert.deepEqual(choices.filter(option => favorites.values('voice').includes(option.value)).map(option => option.value), ['us-weekly', 'womans-world']);
+});
+
+test('live context updates roles and sources while explicit overrides keep specimens independent', t => {
+  let context = { role: 'Trend Hunter', sources: trendHunterSources };
+  setDraftOptionsContext(() => context);
+  t.after(() => setDraftOptionsContext());
+  assert.equal(getDraftOptions('format')[1].value, 'what-to-know');
+  assert.equal(draftPreferenceValue('voice', 'house-standard'), 'house-standard');
+  assert.equal(hasDraftSelection({ format: 'video-script' }), true);
+  assert.equal(getDraftOptions('format', { role: '' })[1].value, 'standard');
+  assert.equal(draftPreferenceValue('format', 'standard', { role: 'Journalist' }), 'standard');
+  assert.equal(hasDraftSelection({ format: 'video-script' }, { role: 'Journalist' }), false);
+  const originalAudiences = getDraftOptions('audience').filter(option => option.contextual);
+  context = { ...context, sources: [{ title: 'Technology and software reshape digital tools' }] };
+  const changedAudiences = getDraftOptions('audience').filter(option => option.contextual);
+  assert.equal(changedAudiences.length, 3);
+  assert.notDeepEqual(changedAudiences, originalAudiences);
+  assert.deepEqual(getDraftOptions('audience', { sources: trendHunterSources }).filter(option => option.contextual), originalAudiences);
+  context = { ...context, role: 'Journalist' };
+  assert.equal(getDraftOptions('format')[1].value, 'standard');
+  assert.equal(draftPreferenceValue('voice', 'house-standard'), '');
+  assert.equal(hasDraftSelection({ format: 'video-script', voice: 'house-standard' }), false);
+  setDraftOptionsContext();
+  assert.equal(getDraftOptions('voice').length, 3);
+});
+
+test('populating role options preserves identical native options and resets unsupported selections', t => {
+  const ui = setup(t);
+  const context = { role: 'Trend Hunter', sources: trendHunterSources, library: emptyAudienceLibrary };
+  const format = ui.field('Format', 'what-to-know');
+  const audienceValue = demoAudienceSuggestions(trendHunterSources)[0].value;
+  const audience = ui.field('Audience', audienceValue);
+  const voice = ui.field('Voice', 'house-standard');
+  populateDraftOptions(ui.doc, context);
+  assert.deepEqual([format.select.options.length, audience.select.options.length, voice.select.options.length], [4, 5, 13]);
+  assert.deepEqual([format.select.value, audience.select.value, voice.select.value], ['what-to-know', audienceValue, 'house-standard']);
+  assert.equal(audience.select.options[2].dataset.contextual, 'true');
+  assert.equal(audience.select.options[1].dataset.contextual, 'false');
+  assert.equal(voice.select.options[1].title, 'McClatchy brand voice, tone, and style preferences');
+  const originalOptions = [format, audience, voice].map(({ select }) => [...select.options]);
+  populateDraftOptions(ui.doc, context);
+  [format, audience, voice].forEach(({ select }, index) => {
+    assert.ok(select.options.every((option, optionIndex) => option === originalOptions[index][optionIndex]));
+  });
+  populateDraftOptions(ui.doc, { role: 'Journalist', library: emptyAudienceLibrary });
+  assert.deepEqual([format.select.value, audience.select.value, voice.select.value], ['', '', '']);
+  assert.deepEqual([format.select.options.length, audience.select.options.length, voice.select.options.length], [5, 5, 3]);
+  format.select.value = 'listicle';
+  audience.select.value = 'general';
+  voice.select.value = 'us-weekly';
+  populateDraftOptions(ui.doc, context);
+  assert.deepEqual([format.select.value, audience.select.value, voice.select.value], ['listicle', 'general', 'us-weekly']);
+  const preferences = { format: 'video-script', audience: audienceValue, voice: 'house-standard' };
+  assert.equal(hasDraftSelection(preferences, context), true);
+  for (const key of ['format', 'audience', 'voice']) preferences[key] = '';
+  assert.equal(hasDraftSelection(preferences, context), false);
+});
+
+test('saved contextual audiences remain available after source changes without duplicate options or mutation', () => {
+  const records = new Map();
+  const library = createAudienceSuggestionLibrary({ storage: () => ({
+    getItem: key => records.get(key) ?? null,
+    setItem: (key, value) => records.set(key, value),
+  }) });
+  const context = { role: 'Trend Hunter', sources: trendHunterSources, library };
+  const original = getDraftOptions('audience', context).filter(option => option.contextual);
+  library.remember(original);
+  const withSaved = getDraftOptions('audience', context);
+  assert.equal(withSaved.length, 5);
+  assert.deepEqual(withSaved.filter(option => option.contextual), original);
+  withSaved[2].label = 'Changed returned option';
+  assert.deepEqual(getDraftOptions('audience', context).filter(option => option.contextual), original);
+  assert.equal(library.options()[0].label, original[0].label);
+  const nextContext = { ...context, sources: [{ title: 'Everyday health and exercise habits' }] };
+  assert.equal(getDraftOptions('audience', nextContext).filter(option => option.contextual).length, 3);
+  assert.equal(draftPreferenceValue('audience', original[0].value, nextContext), original[0].value);
+  assert.equal(hasDraftSelection({ audience: original[0].value }, nextContext), true);
+  const duplicatedLibrary = { options: () => [
+    { value: '', label: 'Duplicate None' },
+    { value: 'general', label: 'Duplicate General' },
+    ...original, ...original,
+  ] };
+  const deduplicated = getDraftOptions('audience', { ...context, library: duplicatedLibrary });
+  assert.equal(deduplicated.length, 5);
+  assert.equal(deduplicated[0].label, 'None Selected');
+  assert.equal(deduplicated[1].label, 'General Audience');
+  assert.ok(deduplicated.slice(2).every(option => option.contextual));
+  const formats = getDraftOptions('format', context);
+  formats[1].label = 'Changed format';
+  assert.equal(getDraftOptions('format', context)[1].label, 'What to Know');
 });

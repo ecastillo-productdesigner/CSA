@@ -428,7 +428,7 @@ function noticeFlow(savedProject) {
     },
     closeComposer() {}, railNavigation: { closeTransient() {} }, searchExperience: { hide() {} },
     resumeOutputProcessing() {}, populateOutputContent() {}, syncOwnMaterialSource() {},
-    normalizeWordCount: value => value, toolDropdowns: { refresh() {} }, updateComposerActions() {},
+    normalizeWordCount: value => value, populateDraftOptions() {}, toolDropdowns: { refresh() {} }, updateComposerActions() {},
     renderOutputs() { events.push({ action: 'render' }); }, setNewVariantCollapsed() {}, setContentCollapsed() {},
     closeProfile() {}, sessionStorage: { setItem() {} }, window: { scrollTo() { events.push({ action: 'scroll' }); } },
   });

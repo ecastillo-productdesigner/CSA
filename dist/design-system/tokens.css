@@ -11,7 +11,10 @@
   --csa-foundation-color-indigo-100: #e0e7ff;
   --csa-foundation-color-orange-100: #ffedd5;
   --csa-foundation-color-orange-200: #fed7aa;
+  --csa-foundation-color-orange-600: #ea580c;
+  --csa-foundation-color-orange-700: #c2410c;
   --csa-foundation-color-green-200: #bbf7d0;
+  --csa-foundation-color-red-50: #fef2f2;
   --csa-foundation-color-red-700: #b91c1c;
   --csa-foundation-color-red-800: #991b1b;
   --csa-foundation-color-overlay-loading: #ffffffe6;
@@ -23,6 +26,8 @@
   --csa-foundation-color-teal-50: #f0fdfa;
   --csa-foundation-color-teal-700: #00786f;
   --csa-foundation-color-teal-800: #005f5a;
+  --csa-foundation-color-blue-50: #eff6ff;
+  --csa-foundation-color-blue-100: #dbeafe;
   --csa-foundation-color-blue-500: #3b82f6;
   --csa-foundation-space-0: 0px;
   --csa-foundation-space-1: 1px;
@@ -574,4 +579,22 @@
   --csa-component-editor-tab-more-width: var(--csa-foundation-space-64);
   --csa-component-audience-ready-dot-size: var(--csa-component-editor-tab-revision-dot-size);
   --csa-component-audience-ready-dot-color: var(--csa-foundation-color-red-700);
+  --csa-component-audience-similarity-low-fill: var(--csa-foundation-color-teal-700);
+  --csa-component-audience-similarity-medium-fill: var(--csa-foundation-color-orange-600);
+  --csa-component-audience-similarity-high-fill: var(--csa-foundation-color-red-700);
+  --csa-component-audience-similarity-verdict-low-background: var(--csa-foundation-color-teal-50);
+  --csa-component-audience-similarity-verdict-low-text: var(--csa-foundation-color-teal-700);
+  --csa-component-audience-similarity-verdict-medium-background: var(--csa-foundation-color-orange-100);
+  --csa-component-audience-similarity-verdict-medium-text: var(--csa-foundation-color-orange-700);
+  --csa-component-audience-similarity-verdict-high-background: var(--csa-foundation-color-red-50);
+  --csa-component-audience-similarity-verdict-high-text: var(--csa-foundation-color-red-700);
+  --csa-component-audience-similarity-gauge-size: var(--csa-foundation-size-80);
+  --csa-component-audience-similarity-gauge-aspect-ratio: 1.8181818181818181;
+  --csa-component-audience-similarity-gauge-start-turn: 0.75;
+  --csa-component-audience-similarity-gauge-track: var(--csa-semantic-color-border-default);
+  --csa-component-audience-similarity-metric-min-width: var(--csa-foundation-size-72);
+  --csa-component-audience-similarity-processing-duration: var(--csa-component-drafting-processing-duration);
+  --csa-component-audience-similarity-loading-background: var(--csa-foundation-color-blue-50);
+  --csa-component-audience-similarity-loading-shimmer: var(--csa-foundation-color-blue-100);
+  --csa-component-audience-similarity-loading-sweep-duration: var(--csa-component-drafting-shimmer-duration);
 }

@@ -1,10 +1,10 @@
 import { documentStyles } from './design-system/export-styles.js?v=20261026-drafting-card-size';
 import { tokenNumber, tokenValue } from './design-system/runtime.js?v=20261026-drafting-card-size';
-import { initializeOutputShareText } from './outputs.js?v=20261105-filter-settings';
+import { initializeOutputShareText } from './outputs.js?v=20261120-chip-tooltips';
 import { createRevisionLoading } from './revision-loading.js?v=20261027-revision-loading';
 import { createStoryMetadata, storyMetadata } from './story-metadata.js?v=20261027-metadata';
 import { createEditorialDirectionMetadata } from './editorial-direction-metadata.js?v=20261117-word-count-popover';
-import { draftPreferenceValue } from './draft-options.js?v=20261111-audience-name-variation';
+import { draftPreferenceValue } from './draft-options.js?v=20261119-trend-hunter';
 import './vendor/quill-2.0.3.js?v=20261026-drafting-card-size';
 
 const Quill = window.Quill;
@@ -353,8 +353,11 @@ export function createMaterialEditor({ onSave, onSendToCms, onContentChange = ()
   document.addEventListener('visibilitychange', () => { if (document.hidden) flush(); });
 
   return {
-    open(next) {
-      flush(); metadata.close(); project = next; loading = true; root.hidden = false;
+    open(next, { discardPending = false } = {}) {
+      // A successfully saved popup edit replaces this same draft's older working copy.
+      if (discardPending) { clearTimeout(saveTimer); dirty = false; }
+      else flush();
+      metadata.close(); project = next; loading = true; root.hidden = false;
       directionMetadata.update(next.editorialDirection, {
         shorterDraftAccepted: next.shorterDraftAccepted === true,
         shorterDraftCreated: next.shorterDraftCreated === true,

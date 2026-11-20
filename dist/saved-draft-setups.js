@@ -1,4 +1,4 @@
-import { getDraftOptions } from './draft-options.js?v=20261111-audience-name-variation';
+import { getDraftOptions } from './draft-options.js?v=20261119-trend-hunter';
 import { normalizeWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
 
 const preferenceKeys = ['format', 'audience', 'voice'];

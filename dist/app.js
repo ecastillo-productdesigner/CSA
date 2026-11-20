@@ -1,13 +1,17 @@
-import { buildEditorialPlans, applyEditorialPlan } from './editorial-plans.js?v=20261117-plan-review';
-import { createEditorialPlanReview } from './editorial-plan-review.js?v=20261119-plan-copy';
+import { createAudienceSimilarityLoading } from './audience-similarity-loading.js?v=20261120-panel-recalculation';
+import { createSimilaritySourceDraft } from './audience-similarity-source.js?v=20261120-panel-recalculation';
+import { currentAudienceComparison, toggleAudienceComparison } from './audience-comparison-selection.js?v=20261119-plan-scroll';
+import { createAudienceSimilarityDialog } from './audience-similarity-dialog.js?v=20261120-panel-recalculation';
+import { buildEditorialPlans, applyEditorialPlan } from './editorial-plans.js?v=20261119-trend-hunter';
+import { createEditorialPlanReview } from './editorial-plan-review.js?v=20261119-plan-scroll';
 import { INITIAL_DRAFT_WORD_LIMIT, requestedEditorialWordCount } from './editorial-word-count.js?v=20261111-word-count-notice';
 import { syncOwnMaterialSource } from './own-material-source.js?v=20261106-material-tabs';
-import { listSavedDraftSetups, saveDraftSetup, removeSavedDraftSetup, applySavedDraftSetup, clearSavedDraftSetup } from './saved-draft-setups.js?v=20261111-audience-name-variation';
-import { createSavedDrafts } from './saved-drafts.js?v=20261110-saved-settings-label';
+import { listSavedDraftSetups, saveDraftSetup, removeSavedDraftSetup, applySavedDraftSetup, clearSavedDraftSetup } from './saved-draft-setups.js?v=20261119-trend-hunter';
+import { createSavedDrafts } from './saved-drafts.js?v=20261120-chip-tooltips';
 import { partitionSourceAdditions, sourceIdentityKey, findDuplicateSource } from './source-model.js?v=20261106-own-material-source';
 import { createSourceAlreadyAddedDialog } from './source-already-added.js?v=20261026-drafting-card-size';
 import { createToast } from './toast.js?v=20261027-toast-timing';
-import { updatePresetPreferences } from './preset-settings.js?v=20261105-filter-settings';
+import { updatePresetPreferences } from './preset-settings.js?v=20261120-chip-tooltips';
 import { normalizeWordCount, setProjectWordCount } from './variant-word-count.js?v=20261026-drafting-card-size';
 import { tokenNumber, breakpointQuery } from './design-system/runtime.js?v=20261029-revision-indicator-location';
 import { createIcon as icon } from './icons.js?v=20261026-drafting-card-size';
@@ -16,25 +20,25 @@ import { resolveArticleMetadata } from './article-metadata.js?v=20261026-draftin
 import { createPanelDisclosure } from './panel-disclosure.js?v=20261026-drafting-card-size';
 import { createTabPanelTransition } from './tab-panel-transition.js?v=20261026-drafting-card-size';
 import { bindTabSelection } from './selection-controls.js?v=20261026-drafting-card-size';
-import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261105-filter-settings';
+import { removeVariant, restoreVariant } from './variant-deletion.js?v=20261120-chip-tooltips';
 import { createRoleSelector } from './role-selector.js?v=20261118-optional-plans';
 import { createProfile } from './profile.js?v=20261026-drafting-card-size';
 import { createSearchExperience, sampleSearchSources } from './search.js?v=20261106-multi-publications';
 import { classifyProjectSearchInput } from './project-search-input.js?v=20261102-topic-search';
-import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261105-filter-settings';
-import { createMaterialEditor } from './editor.js?v=20261117-word-count-popover';
+import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261120-chip-tooltips';
+import { createMaterialEditor } from './editor.js?v=20261120-panel-recalculation';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-drafting-card-size';
 import { removeProjectContent } from './project-deletion.js?v=20261026-drafting-card-size';
 import { createContentPreview } from './content-preview.js?v=20261026-drafting-card-size';
-import { createProjectAudienceSuggestions } from './project-audience-suggestions.js?v=20261111-audience-name-variation';
-import { createToolDropdowns } from './tool-dropdowns.js?v=20261119-voice-favorites';
-import { populateDraftOptions, draftPreferenceValue, hasDraftSelection } from './draft-options.js?v=20261111-audience-name-variation';
+import { createProjectAudienceSuggestions } from './project-audience-suggestions.js?v=20261119-trend-hunter';
+import { createToolDropdowns } from './tool-dropdowns.js?v=20261119-trend-hunter';
+import { populateDraftOptions, draftPreferenceValue, hasDraftSelection, getDraftOptions, setDraftOptionsContext } from './draft-options.js?v=20261119-trend-hunter';
 import { createNewProjectUpload } from './new-project-upload.js?v=20261117-word-count-popover';
 import { createRailNavigation } from './navigation.js?v=20261105-role-selector';
 import { createProjectSources } from './sources.js?v=20261106-own-material-source';
-import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261106-own-material-source';
-import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, outputWordCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261117-plan-review';
-import { createEditorTabs } from './editor-tabs.js?v=20261117-whole-tabs';
+import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261120-chip-tooltips';
+import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, outputWordCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261120-chip-tooltips';
+import { createEditorTabs } from './editor-tabs.js?v=20261120-chip-tooltips';
 import { createContentCardEditing } from './content-card-editing.js?v=20261111-direction-badge';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-drafting-card-size';
 import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261026-drafting-card-size';
@@ -104,16 +108,18 @@ const sourceAlreadyAdded = createSourceAlreadyAddedDialog({
 let dashboard = null;
 const outputTimers = new Map();
 const outputViews = new Map();
+const audienceComparisonSelections = new Map();
 populateDraftOptions(document);
 const audienceSuggestions = createProjectAudienceSuggestions({
   getProject: () => projects.find(project => project.id === activeProjectId),
   beforeGenerate: () => richEditor.flush(),
   save: saveProjects, notify,
 });
-const toolDropdowns = createToolDropdowns({ notify, audienceSuggestions });
+const toolDropdowns = createToolDropdowns({ notify, audienceSuggestions, draftOptionsProvider: getDraftOptions });
 const newDraftDisclosure = createPanelDisclosure({ body: $('#composer-variant-form'), trigger: $('#toggle-new-variant'), panel: $('.composer-tools'), expanded: true });
 const contentDisclosure = createPanelDisclosure({ body: $('#composer-outputs-body'), trigger: $('#toggle-content'), panel: $('#composer-outputs'), label: 'Content', expanded: true });
 const outputTabTransition = createTabPanelTransition($('#output-status-content'));
+const audienceSimilarityLoading = createAudienceSimilarityLoading({ list: $('#output-list'), button: $('#check-audience-similarity'), status: $('#output-processing-status') });
 const newProjectUpload = createNewProjectUpload({
   isBlocked: () => Boolean(sourceImport),
   onIdle: () => renderDeferredOutput(),
@@ -174,13 +180,51 @@ const draftSourcesPopover = createDraftSourcesPopover({
   onOpenSource: (source, trigger) => projectSourcesPanel.openPreview(source, trigger),
 });
 const roleSelector = createRoleSelector({
-  onChange() { updateEditorialPlanAction(projects.find(project => project.id === activeProjectId)); },
+  onChange() { toolDropdowns.close(); toolDropdowns.refresh(); updateComposerActions(); updateEditorialPlanAction(projects.find(project => project.id === activeProjectId)); },
   onOpen() { railNavigation.close(); savedDrafts.close(); toolDropdowns.close(); richEditor.closePanels(); draftSourcesPopover.close(); },
   notify,
 });
+setDraftOptionsContext(() => ({
+  role: roleSelector.value,
+  sources: projects.find(project => project.id === activeProjectId && !project.deletedAt && !project.archivedAt)?.sources || [],
+}));
+populateDraftOptions(document);
+toolDropdowns.refresh();
 const editorialPlanReview = createEditorialPlanReview({
   onConfirm: confirmEditorialPlans,
   onCancel: rememberEditorialPlanEdits,
+  closePanels() { roleSelector.close(); railNavigation.closeTransient(); savedDrafts.close(); toolDropdowns.close(); richEditor.closePanels(); draftSourcesPopover.close(); },
+});
+const audienceSimilarityDialog = createAudienceSimilarityDialog({
+  onRecalculate(request) { startAudienceSimilarity(request); },
+  onSaveDraft(draft, patch) {
+    const project = projects.find(project => !project.deletedAt && !project.archivedAt && projectOutputs(project).includes(draft));
+    if (!project || !outputIsReady(draft) || draft.deletedAt || draft.needsRegeneration || project.outputProcessing?.ids?.includes(draft.id)) return false;
+    const previous = { ...draft };
+    const updatedAt = project.updatedAt;
+    Object.assign(draft, patch);
+    project.updatedAt = patch.updatedAt;
+    try { localStorage.setItem(storageKey, JSON.stringify(projects)); }
+    catch {
+      for (const key of Object.keys(patch)) {
+        if (Object.hasOwn(previous, key)) draft[key] = previous[key];
+        else delete draft[key];
+      }
+      project.updatedAt = updatedAt;
+      return false;
+    }
+    savedDrafts.render();
+    dashboard?.render(projects);
+    if (activeProjectId === project.id) {
+      renderOutputs(project);
+      if (project.selectedOutputId === draft.id) {
+        richEditor.open({ ...project, ...draft, id: project.id, directionOutputId: draft.id, toolPreferences: project.toolPreferences }, { discardPending: true });
+        document.title = `${draft.title} — CSA`;
+      }
+      updateComposerActions();
+    }
+    return true;
+  },
   closePanels() { roleSelector.close(); railNavigation.closeTransient(); savedDrafts.close(); toolDropdowns.close(); richEditor.closePanels(); draftSourcesPopover.close(); },
 });
 const railNavigation = createRailNavigation({
@@ -309,12 +353,16 @@ function removeSavedDraft(projectId, outputId) {
 }
 
 function renderOutputs(project) {
+  audienceSimilarityLoading.cancel();
   draftSourcesPopover.close();
   richEditor.closeDirectionForRender();
   $('#show-sources').hidden = project?.kind !== 'draft';
   const view = variantPanelState(project, outputViews.get(project?.id)).view;
   outputViews.set(project?.id, view);
-  renderProjectOutputs(project, view);
+  const comparison = currentAudienceComparison(project, audienceComparisonSelections.get(project?.id));
+  audienceComparisonSelections.set(project?.id, comparison.ids);
+  renderProjectOutputs(project, view, { comparisonIds: comparison.ids });
+  updateAudienceSimilarityAction(project, view);
   updateEditorialPlanAction(project);
   contentCardEditing.render(project);
   editorTabs.render(project);
@@ -337,10 +385,57 @@ function renderOutputs(project) {
   labels.hidden = !selectedOutput;
 }
 
+function updateAudienceSimilarityAction(project, view = outputViews.get(project?.id)) {
+  const footer = $('#audience-similarity-footer');
+  const button = $('#check-audience-similarity');
+  const unavailable = !project || Boolean(project.deletedAt || project.archivedAt);
+  footer.hidden = unavailable || view !== 'created';
+  const comparison = currentAudienceComparison(project, audienceComparisonSelections.get(project?.id));
+  audienceComparisonSelections.set(project?.id, comparison.ids);
+  button.disabled = footer.hidden || audienceSimilarityLoading.isRunning || !comparison.group;
+}
+
+function startAudienceSimilarity(request = {}) {
+  if (audienceSimilarityLoading.isRunning) return;
+  const project = projects.find(entry => entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
+  if (!project || outputViews.get(project.id) !== 'created') return;
+  if (request.editedDraft && !projectOutputs(project).includes(request.editedDraft)) return;
+  // Include the latest editor changes before calculating scores.
+  richEditor.flush();
+  const comparison = currentAudienceComparison(project, audienceComparisonSelections.get(project.id));
+  updateAudienceSimilarityAction(project);
+  if (!comparison.group) return;
+  const selectedIds = [...comparison.ids];
+  if (request.draftIds && (request.draftIds.length !== selectedIds.length || request.draftIds.some((id, index) => id !== selectedIds[index]))) return;
+  if (request.draftIds) {
+    setContentCollapsed(false);
+    if (window.matchMedia(breakpointQuery()).matches) railNavigation.open('variants');
+  }
+  const items = [...$('#output-list').querySelectorAll('.output-open')]
+    .filter(control => selectedIds.includes(control.dataset.outputId))
+    .map(control => control.closest('li'));
+  audienceSimilarityLoading.start({ items, onComplete() {
+    // A delayed result belongs only to this project, view, and exact selection.
+    const currentProject = projects.find(entry => entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
+    if (currentProject !== project || outputViews.get(project.id) !== 'created') {
+      updateAudienceSimilarityAction(currentProject);
+      return;
+    }
+    richEditor.flush();
+    const current = currentAudienceComparison(project, audienceComparisonSelections.get(project.id));
+    updateAudienceSimilarityAction(project);
+    if (!current.group || current.ids.length !== selectedIds.length || current.ids.some((id, index) => id !== selectedIds[index])) return;
+    if ($('#output-list').getClientRects?.().length === 0) return;
+    audienceSimilarityDialog.open({ ...request, groups: [current.group], sourceDraft: request.sourceDraft || createSimilaritySourceDraft(project, current.group.drafts), opener: $('#check-audience-similarity') });
+  } });
+}
+$('#check-audience-similarity').addEventListener('click', () => startAudienceSimilarity());
+
 function selectOutputView(view) {
   const project = projects.find(entry => entry.id === activeProjectId);
   if (!project || !['pending', 'created'].includes(view)) return;
   if (outputViews.get(project.id) === view) return;
+  audienceSimilarityLoading.cancel();
   outputTabTransition.run(() => {
     outputViews.set(project.id, view);
     renderOutputs(project);
@@ -615,6 +710,7 @@ function showSourceStart() {
 }
 
 function closeComposer() {
+  audienceSimilarityLoading.cancel();
   savedDrafts.close();
   editorTabs.suspend();
   draftSourcesPopover.close();
@@ -930,6 +1026,7 @@ function showEditorProject(project) {
   closeComposer();
   railNavigation.closeTransient();
   activeProjectId = project.id;
+  populateDraftOptions(document);
   searchExperience.hide();
   document.body.classList.remove('showing-results');
   document.body.classList.add('showing-composer');
@@ -1001,14 +1098,12 @@ function updateComposerActions() {
   const processing = Boolean(project?.outputProcessing);
   const processingLabel = project?.outputProcessing?.kind === 'revision' ? 'Revising Draft' : 'Creating Draft';
   const canConfigure = (hasSources || hasContent || Boolean(project?.variantPreset)) && !processing;
-  let changed = false;
   for (const key of ['format', 'audience', 'voice']) {
     const select = $(`#composer-${key}`);
-    if (select.disabled !== !canConfigure) changed = true;
     select.disabled = !canConfigure;
     select.title = canConfigure ? '' : processing ? processingLabel : 'Add content first';
   }
-  if (changed) toolDropdowns.refresh();
+  toolDropdowns.refresh();
   savedDrafts.render();
   const hasSelection = hasDraftSelection(Object.fromEntries(['format', 'audience', 'voice'].map(key => [key, $(`#composer-${key}`).value])));
   const enabled = hasSources && hasSelection && !processing;
@@ -1117,8 +1212,9 @@ $('#output-list').addEventListener('click', event => {
   const card = event.target.closest('.output-card')?.querySelector('.output-open');
   if (!card || card.disabled) return;
   const output = projectOutputs(project).find(entry => entry.id === card.dataset.outputId);
-  if (!output || project.outputProcessing) return;
+  if (!output) return;
   if (!outputIsReady(output)) {
+    if (project.outputProcessing) return;
     richEditor.flush();
     const ids = new Set(selectedPendingOutputs(project).map(entry => entry.id));
     if (ids.has(output.id)) ids.delete(output.id); else ids.add(output.id);
@@ -1129,8 +1225,13 @@ $('#output-list').addEventListener('click', event => {
     if (restoreFocus) [...$('#output-list').querySelectorAll('.output-open')].find(button => button.dataset.outputId === output.id)?.focus({ preventScroll: true });
     return;
   }
-  railNavigation.closeTransient();
-  openEditorTab(output.id);
+  if (outputViews.get(project.id) !== 'created' || project.deletedAt || project.archivedAt) return;
+  const restoreFocus = document.activeElement === card;
+  richEditor.flush();
+  const selection = toggleAudienceComparison(project, audienceComparisonSelections.get(project.id), output.id);
+  audienceComparisonSelections.set(project.id, selection.ids);
+  renderOutputs(project);
+  if (restoreFocus) [...$('#output-list').querySelectorAll('.output-open')].find(button => button.dataset.outputId === output.id)?.focus({ preventScroll: true });
 });
 
 function openVariantDirection(button) {

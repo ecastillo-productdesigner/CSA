@@ -1,5 +1,6 @@
-import { mountEditorialPlanSpecimen } from './editorial-plan-specimen.js?v=20261119-plan-copy';
-import { mountEditorTabsSpecimen } from './editor-tabs-specimen.js?v=20261117-whole-tabs';
+import { mountAudienceSimilaritySpecimen } from './audience-similarity-specimen.js?v=20261120-panel-recalculation';
+import { mountEditorialPlanSpecimen } from './editorial-plan-specimen.js?v=20261120-chip-tooltips';
+import { mountEditorTabsSpecimen } from './editor-tabs-specimen.js?v=20261120-chip-tooltips';
 import { mountAnimationSpecimens } from './animation-specimens.js?v=20261111-source-paper-count';
 import { createContentDirectionIndicator } from '../content-card-editing.js?v=20261111-direction-badge';
 import { createEditorPopover } from '../editor-popover.js?v=20261111-direction-badge';
@@ -7,21 +8,21 @@ import { mountWordCountSpecimen } from './word-count-specimen.js?v=20261117-word
 import { createToast } from '../toast.js?v=20261027-toast-timing';
 import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-drafting-card-size';
 import { bindTabSelection } from '../selection-controls.js?v=20261026-drafting-card-size';
-import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261111-loading-ten-seconds';
-import { mountProjectSpecimens } from './project-specimens.js?v=20261105-filter-settings';
+import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261120-chip-tooltips';
+import { mountProjectSpecimens } from './project-specimens.js?v=20261120-chip-tooltips';
 import { mountFormSpecimens } from './form-specimens.js?v=20261026-drafting-card-size';
-import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261119-voice-favorites';
-import { colorRoleGroups } from './color-roles.js?v=20261028-revision-indicator';
+import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261120-chip-tooltips';
+import { colorRoleGroups } from './color-roles.js?v=20261120-panel-recalculation';
 import { mountTypographyReference } from './typography-reference.js?v=20261111-labels-restored';
-import { createAudienceSuggestionLibrary } from '../audience-suggestions.js?v=20261111-audience-name-variation';
-import { createProjectAudienceSuggestions } from '../project-audience-suggestions.js?v=20261111-audience-name-variation';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261119-voice-favorites';
+import { createAudienceSuggestionLibrary } from '../audience-suggestions.js?v=20261119-trend-hunter';
+import { createProjectAudienceSuggestions } from '../project-audience-suggestions.js?v=20261119-trend-hunter';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261119-trend-hunter';
 import { createToolFavorites } from '../tool-favorites.js?v=20261119-voice-favorites';
-import { populateDraftOptions } from '../draft-options.js?v=20261111-audience-name-variation';
+import { populateDraftOptions } from '../draft-options.js?v=20261119-trend-hunter';
 import { iconInventory } from './icon-inventory.js?v=20261111-audience-name-variation';
 import { tokenNumber } from './runtime.js?v=20261029-revision-indicator-location';
-import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261111-direction-badge';
-import { createDraftSourcesPopover } from '../draft-sources-popover.js?v=20261105-filter-settings';
+import { createOutputBadges, populateOutputContent } from '../outputs.js?v=20261120-chip-tooltips';
+import { createDraftSourcesPopover } from '../draft-sources-popover.js?v=20261120-chip-tooltips';
 import { createSourcePreview } from '../sources.js?v=20261029-preview-direction';
 const $ = selector => document.querySelector(selector);
 // Keep interactive documentation separate from app suggestions and favorites.
@@ -82,6 +83,7 @@ function renderIconInventory() {
   $('#ds-icon-count').textContent = `${iconInventory.length} product icons`;
 }
 renderIconInventory();
+mountAudienceSimilaritySpecimen($('#ds-audience-similarity-specimen'));
 mountAnimationSpecimens($('#animations'));
 mountProjectSpecimens($('#ds-project-sample-root'));
 mountFormSpecimens($('#ds-form-sample-root'));

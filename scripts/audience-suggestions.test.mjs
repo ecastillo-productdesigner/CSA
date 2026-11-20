@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createAudienceSuggestionLibrary, audienceSuggestionLibrary, suggestedAudienceValue, demoAudienceSuggestions } from '../dist/audience-suggestions.js?v=20261111-audience-name-variation';
+import { createAudienceSuggestionLibrary, audienceSuggestionLibrary, suggestedAudienceValue, demoAudienceSuggestions } from '../dist/audience-suggestions.js?v=20261119-trend-hunter';
 import { draftOptions, getDraftOptions, populateDraftOptions, draftPreferenceValue, hasDraftSelection } from '../dist/draft-options.js';
 import { createToolFavorites } from '../dist/tool-favorites.js';
 import { saveDraftSetup, applySavedDraftSetup } from '../dist/saved-draft-setups.js';
@@ -13,14 +13,14 @@ function memoryStorage() {
 }
 
 function audienceField(value = '') {
-  const select = { value, children: [], replaceChildren(...children) { this.children = children; this.value = children[0]?.value || ''; } };
+  const select = { value, children: [], get options() { return this.children; }, replaceChildren(...children) { this.children = children; this.value = children[0]?.value || ''; } };
   return { select, dataset: { label: 'Audience' }, matches: selector => selector === '.composer-field',
     querySelector: selector => selector === 'select' ? select : null, querySelectorAll: () => [] };
 }
 
 function withDocument(run) {
   const previous = Object.getOwnPropertyDescriptor(globalThis, 'document');
-  Object.defineProperty(globalThis, 'document', { configurable: true, value: { createElement: () => ({}) } });
+  Object.defineProperty(globalThis, 'document', { configurable: true, value: { createElement: () => ({ dataset: {} }) } });
   try { run(); } finally {
     if (previous) Object.defineProperty(globalThis, 'document', previous); else delete globalThis.document;
   }
@@ -233,4 +233,95 @@ test('specific team and location wording requires evidence in the corresponding 
     { title: 'Congress votes on federal technology policy' },
   ]);
   assert.ok(mixed.every(option => !/Charlotte/.test(option.label)));
+});
+
+
+test('school and college articles suggest families, educators, and policy readers in their own context', () => {
+  const schools = [{ title: 'Angry CMS parents question new school boundaries',
+    text: 'Charlotte-Mecklenburg Schools shared the school district plan with families. Teachers asked the school board how students and classrooms would be affected.', selected: true }];
+  const schoolOptions = demoAudienceSuggestions(schools);
+  assert.equal(schoolOptions.length, 3);
+  assert.equal(new Set(schoolOptions.map(option => option.value)).size, 3);
+  assert.ok(schoolOptions.some(option => /parents|families/i.test(option.label)));
+  assert.ok(schoolOptions.some(option => /teachers|educators|staff/i.test(option.label)));
+  assert.ok(schoolOptions.some(option => /policy|funding|accountability/i.test(option.label)));
+  assert.ok(schoolOptions.every(option => /school|education|classroom/i.test(option.label)));
+  assert.deepEqual(demoAudienceSuggestions([...schools,
+    { title: 'Fashion shopping wardrobe guide', selected: false },
+    { title: 'Museum exhibition news', deletedAt: 10 }]), schoolOptions);
+  const collegeOptions = demoAudienceSuggestions([{ title: 'University tuition changes for college students',
+    description: 'Campus faculty discuss higher education funding.' }]);
+  assert.equal(new Set(collegeOptions.map(option => option.value)).size, 3);
+  assert.ok(collegeOptions.every(option => /college|university|higher education|campus/i.test(option.label)));
+  assert.notDeepEqual(collegeOptions, schoolOptions);
+  const retry = demoAudienceSuggestions(schools, { iteration: 1, previousSuggestions: schoolOptions });
+  assert.ok(retry.every(option => !schoolOptions.some(previous => previous.value === option.value)));
+});
+
+test('Discovery Place and museum stories keep suggestions tied to visits, learning, and institutions', () => {
+  const discovery = [{ title: 'Discovery Place museum introduces a new science exhibit',
+    text: 'Families can explore hands-on exhibits and science education programs at Discovery Place.' }];
+  const options = demoAudienceSuggestions(discovery);
+  assert.equal(options.length, 3);
+  assert.equal(new Set(options.map(option => option.value)).size, 3);
+  assert.ok(options.some(option => /Discovery Place/.test(option.label)));
+  assert.ok(options.some(option => /families|parents/i.test(option.label)));
+  assert.ok(options.every(option => /Discovery Place|science|museum/i.test(option.label)));
+  assert.ok(options.every(option => !/school|wardrobe|shopping|fitness|travel/i.test(option.label)));
+  assert.deepEqual(demoAudienceSuggestions([...discovery, { title: 'Schools teachers students', selected: false }]), options);
+  const museum = demoAudienceSuggestions([{ title: 'History museum opens a new exhibition',
+    summary: 'The museum is expanding its collection and visitor programs.' }]);
+  assert.equal(new Set(museum.map(option => option.value)).size, 3);
+  assert.ok(museum.every(option => /museum|cultural institution/i.test(option.label)));
+  assert.ok(museum.every(option => !/Discovery Place|science|school/i.test(option.label)));
+  assert.notDeepEqual(museum, options);
+});
+
+test('additional topic families provide three distinct relevant perspectives through each rotation', () => {
+  for (const [source, relevant] of [
+    [{ title: 'Art gallery exhibition features paintings and sculptures' }, /art|gallery|exhibition|museum|cultural/i],
+    [{ title: 'Music festival announces concert performances' }, /culture|cultural|music|performance|entertainment|event|creative|concert|theater/i],
+    [{ title: 'Small business owners hire employees for new company jobs' }, /business|work|career|employees|company|industry|entrepreneur|job/i],
+    [{ title: 'Inflation and grocery prices reshape household budgets' }, /household|consumer|economic|economy|prices|cost of living/i],
+  ]) {
+    for (let iteration = 0; iteration < 4; iteration++) {
+      const options = demoAudienceSuggestions([source], { iteration });
+      assert.equal(options.length, 3);
+      assert.equal(new Set(options.map(option => option.value)).size, 3);
+      assert.ok(options.every(option => relevant.test(option.label)), JSON.stringify(options));
+      assert.ok(options.every(option => option.value === suggestedAudienceValue(option.label)));
+    }
+  }
+});
+
+test('unclassified articles use bounded plain-text subjects and retain selected-source context', () => {
+  const algae = [{ title: 'Breaking: Rare bioluminescent algae bloom illuminates tidal pools' }];
+  const options = demoAudienceSuggestions(algae);
+  assert.equal(options.length, 3);
+  assert.equal(new Set(options.map(option => option.value)).size, 3);
+  assert.ok(options.every(option => /Rare bioluminescent algae bloom/.test(option.label)));
+  assert.deepEqual(demoAudienceSuggestions([...algae, { title: 'Unrelated comet observations', selected: false }]), options);
+  const comet = { title: 'Distant comet reveals icy fragments' };
+  const other = demoAudienceSuggestions([comet]);
+  assert.ok(other.every(option => /Distant comet/.test(option.label)));
+  assert.notDeepEqual(options, other);
+  const mixed = demoAudienceSuggestions([...algae, comet]);
+  assert.ok(mixed.some(option => /algae/.test(option.label)));
+  assert.ok(mixed.some(option => /comet/.test(option.label)));
+  assert.deepEqual(demoAudienceSuggestions([comet, ...algae]), mixed);
+  assert.ok(demoAudienceSuggestions([{ text: 'Bioluminescent algae illuminate tidal pools.' }])
+    .every(option => /Bioluminescent algae/.test(option.label)));
+  for (const title of [
+    '<img src=x onerror=alert(1)>Rare algae <script>alert("oops")</script>',
+    '<style>bad-selector</style>Rare algae &amp; coral: a report',
+    `Rare algae ${'x'.repeat(500)} ${'bloom '.repeat(200)}`,
+    '\ud800 Rare algae',
+  ]) {
+    const safe = demoAudienceSuggestions([{ title }]);
+    assert.equal(safe.length, 3);
+    assert.equal(new Set(safe.map(option => option.value)).size, 3);
+    assert.ok(safe.every(option => option.label.length <= 160 && option.value));
+    assert.ok(safe.every(option => !/[<>&]|script|onerror|alert|bad-selector/.test(option.label)));
+    assert.ok(safe.every(option => /Rare algae/.test(option.label)));
+  }
 });

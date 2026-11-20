@@ -48,7 +48,7 @@ function setup() {
     draftSourcesFor: () => [], draftPreferenceValue: (key, value) => value || '',
     newProjectUpload: { busy: false, isBusy() { return this.busy; }, reset() {} },
     railNavigation: { closeTransient() {}, closeDrawer() {}, close(name) { calls.sourcePanels.push(name); } },
-    toolDropdowns: { refresh() {} }, updateComposerActions() { calls.actionUpdates++; }, renderOutputs() {}, renderProjectSources(project) { calls.sourceRenders.push(clone(project)); },
+    populateDraftOptions() {}, toolDropdowns: { refresh() {} }, updateComposerActions() { calls.actionUpdates++; }, renderOutputs() {}, renderProjectSources(project) { calls.sourceRenders.push(clone(project)); },
     closeComposer() { $('#new-project-dialog').close(); }, closeProfile() {}, updateStarterInput() {},
     setNewVariantCollapsed() {}, setContentCollapsed() {}, resumeOutputProcessing() {}, showPendingWordCountNotice() {},
     renderSourceStory(project) { calls.sourceStories.push(project); },

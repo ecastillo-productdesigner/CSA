@@ -2,7 +2,7 @@ import test from 'node:test';
 import { createToolFavorites } from '../dist/tool-favorites.js';
 import assert from 'node:assert/strict';
 import { createProjectAudienceSuggestions } from '../dist/project-audience-suggestions.js';
-import { createAudienceSuggestionLibrary, demoAudienceSuggestions, suggestedAudienceValue } from '../dist/audience-suggestions.js?v=20261111-audience-name-variation';
+import { createAudienceSuggestionLibrary, demoAudienceSuggestions, suggestedAudienceValue } from '../dist/audience-suggestions.js?v=20261119-trend-hunter';
 
 const source = { title: 'Community garden', text: 'Local neighbors plan a community event' };
 function setup(overrides = {}) {
@@ -466,4 +466,45 @@ test('new generation preserves legacy audience names, references, and favorite I
   assert.deepEqual(state.provider.getContext().groups.find(group => group.key === key).suggestions, legacy);
   assert.deepEqual(favorites.values('audience'), [legacy[0].value]);
   assert.deepEqual(state.provider.getOptions().filter(option => legacy.some(old => old.value === option.value)), legacy.map(({value, label}) => ({value, label})));
+});
+
+
+test('rememberChoice persists one contextual audience without generating history or changing draft settings', () => {
+  const state = setup();
+  state.project.toolPreferences = { audience: 'general', format: 'listicle' };
+  const originalProject = structuredClone(state.project);
+  const [choice] = demoAudienceSuggestions(state.project.sources);
+  const result = state.provider.rememberChoice({ ...choice, contextual: true });
+  assert.equal(result.persisted, true);
+  assert.deepEqual(result.options, [choice]);
+  assert.equal(state.saved, 0);
+  assert.deepEqual(state.project, originalProject);
+  assert.deepEqual(state.provider.getContext().groups, []);
+  state.provider.rememberChoice(choice);
+  assert.deepEqual(state.provider.getOptions(), [choice], 'repeat selection and hearting use the same stable audience ID');
+  result.options[0].label = 'Changed returned label';
+  assert.deepEqual(state.provider.getOptions(), [choice]);
+  state.project.sources = [{ title: 'Software technology and digital tools' }];
+  assert.deepEqual(state.provider.getOptions(), [choice]);
+  const library = createAudienceSuggestionLibrary({ storage: state.storage });
+  const restored = createProjectAudienceSuggestions({ getProject: () => ({ id: 'different-project', sources: [] }), library });
+  assert.deepEqual(restored.getOptions(), [choice]);
+  assert.deepEqual(restored.getContext().groups, []);
+  assert.equal(restored.getContext().available, false);
+});
+
+test('rememberChoice preserves contextual selections for the session when storage rejects writes', () => {
+  const notices = [];
+  const library = createAudienceSuggestionLibrary({ storage: () => ({
+    getItem: () => null,
+    setItem() { throw new Error('Storage unavailable'); },
+  }) });
+  const state = setup({ library, notify: message => notices.push(message) });
+  const [choice] = demoAudienceSuggestions(state.project.sources);
+  assert.equal(state.provider.rememberChoice(choice).persisted, false);
+  assert.deepEqual(state.provider.getOptions(), [choice]);
+  state.project = { id: 'new-project', sources: [] };
+  assert.deepEqual(state.provider.getOptions(), [choice]);
+  assert.deepEqual(notices, ['Audience saved for this session only']);
+  assert.equal(state.saved, 0);
 });

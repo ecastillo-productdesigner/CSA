@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createEditorialPlanReview } from '../dist/editorial-plan-review.js';
 
 class Element {
-  constructor(tag) { this.tagName = tag; this.children = []; this.attributes = new Map(); this.listeners = new Map(); this.isConnected = true; this.disabled = false; }
+  constructor(tag) { this.tagName = tag; this.children = []; this.attributes = new Map(); this.listeners = new Map(); this.isConnected = true; this.disabled = false; this.scrollLeft = 0; this.scrollWidth = 0; this.clientWidth = 0; }
   append(...children) { this.children.push(...children); }
   replaceChildren(...children) { this.children = children; }
   setAttribute(key, value) { this.attributes.set(key, value); }
@@ -15,8 +15,10 @@ class Element {
     return this.children.map(child => child.querySelector(selector)).find(Boolean) || null;
   }
   addEventListener(key, callback) { this.listeners.set(key, callback); }
+  removeEventListener(key, callback) { if (this.listeners.get(key) === callback) this.listeners.delete(key); }
   fire(key, values = {}) { const event = { target: this, defaultPrevented: false, preventDefault() { this.defaultPrevented = true; }, ...values }; this.listeners.get(key)?.(event); return event; }
   focus() { document.activeElement = this; }
+  scrollIntoView(options) { this.lastScrollIntoView = options; }
   closest() { return null; }
   showModal() { this.open = true; }
   close() { if (!this.open) return; this.open = false; this.fire('close'); }
@@ -27,17 +29,36 @@ const plans = () => [
   { outputId: 'draft-a', title: 'What Families Need to Know', format: 'Standard Format', audience: 'Parents', voice: '', angle: 'Family angle', focus: 'Timing', structure: 'Questions and answers', tone: 'Clear' },
   { outputId: 'draft-b', title: 'Questions Behind the Debate', format: 'Listicle', audience: 'Civic Readers', voice: 'Us Weekly', angle: 'Accountability', focus: 'Funding', structure: 'Five points', tone: 'Measured' },
 ];
+const fivePlans = () => Array.from({ length: 5 }, (_, index) => ({ ...plans()[index % 2], outputId: `draft-${index + 1}`, title: `Plan ${index + 1}`, angle: `Angle ${index + 1}` }));
 function setup(t, options = {}) {
   const previous = globalThis.document;
+  const frames = new Map();
+  const observers = [];
+  const listeners = new Map();
+  let frameId = 0;
+  const view = {
+    requestAnimationFrame(callback) { frames.set(++frameId, callback); return frameId; },
+    cancelAnimationFrame(id) { frames.delete(id); },
+    addEventListener(name, listener) { listeners.set(name, listener); },
+    removeEventListener(name, listener) { if (listeners.get(name) === listener) listeners.delete(name); },
+    ResizeObserver: class {
+      constructor(callback) { this.callback = callback; this.targets = []; this.disconnected = false; observers.push(this); }
+      observe(element) { this.targets.push(element); }
+      disconnect() { this.disconnected = true; this.targets = []; }
+    },
+  };
   const body = new Element('body');
-  globalThis.document = { body, createElement: tag => new Element(tag), activeElement: null };
-  t.after(() => { globalThis.document = previous; });
+  globalThis.document = { body, createElement: tag => new Element(tag), activeElement: null, defaultView: view };
+  body.ownerDocument = globalThis.document;
   const controller = createEditorialPlanReview(options);
+  t.after(() => { controller.destroy(); globalThis.document = previous; });
   const dialog = controller.element;
   const tabs = byClass(dialog, 'editorial-plan-review-tabs');
   const details = byClass(dialog, 'editorial-plan-review-details');
   const footer = byClass(dialog, 'editorial-plan-review-footer');
-  return { controller, dialog, tabs, details, back: footer.children[0], confirm: footer.children[1], error: byClass(dialog, 'editorial-plan-review-error'), dismiss: byClass(dialog, 'icon-button'), inputs: () => byClass(details, 'editorial-plan-review-fields').children.map(field => field.children[1]) };
+  return { controller, dialog, tabs, strip: byClass(dialog, 'editorial-plan-review-card-strip'), view, frames, observers, listeners,
+    flushFrames() { const pending = [...frames.values()]; frames.clear(); for (const callback of pending) callback(); },
+    details, back: footer.children[0], confirm: footer.children[1], error: byClass(dialog, 'editorial-plan-review-error'), dismiss: byClass(dialog, 'icon-button'), inputs: () => byClass(details, 'editorial-plan-review-fields').children.map(field => field.children[1]) };
 }
 
 test('opens a modal with plan selectors and no draft side effects', t => {
@@ -54,6 +75,7 @@ test('opens a modal with plan selectors and no draft side effects', t => {
   assert.equal(ui.tabs.children[0].getAttribute('aria-selected'), 'true');
   assert.equal(ui.tabs.children[1].getAttribute('aria-selected'), 'false');
   assert.equal(ui.details.getAttribute('aria-labelledby'), ui.tabs.children[0].id);
+  assert.equal(byClass(ui.tabs.children[0], 'editorial-plan-review-tab-title').title, 'What Families Need to Know');
   assert.equal(document.activeElement, ui.tabs.children[0]);
   assert.deepEqual(ui.inputs().map(input => input.value), ['Family angle', 'Timing', 'Questions and answers', 'Clear']);
 });
@@ -203,4 +225,149 @@ test('destroy closes once and never restores focus to an unavailable opener', t 
   assert.equal(ui.dialog.isConnected, false);
   assert.notEqual(document.activeElement, opener);
   assert.equal(ui.controller.open({ projectId: 'project', plans: plans() }), false);
+});
+
+test('five plan cards reveal clicked and keyboard-selected cards while keeping edits and tab semantics', t => {
+  const ui = setup(t);
+  ui.controller.open({ projectId: 'project', plans: fivePlans() });
+  const cards = [...ui.tabs.children];
+  assert.equal(ui.strip.children[0], ui.tabs);
+  assert.equal(ui.tabs.getAttribute('role'), 'tablist');
+  ui.inputs()[0].value = 'An edited first angle';
+  ui.inputs()[0].fire('input');
+  cards[0].fire('keydown', { key: 'End' });
+  assert.equal(document.activeElement, cards[4]);
+  assert.equal(cards[4].getAttribute('aria-selected'), 'true');
+  assert.equal(ui.details.getAttribute('aria-labelledby'), cards[4].id);
+  assert.deepEqual(cards[4].lastScrollIntoView, { block: 'nearest', inline: 'nearest' });
+  assert.equal(ui.inputs()[0].value, 'Angle 5');
+  cards[4].fire('keydown', { key: 'ArrowLeft' });
+  assert.equal(document.activeElement, cards[3]);
+  assert.deepEqual(cards[3].lastScrollIntoView, { block: 'nearest', inline: 'nearest' });
+  cards[3].fire('keydown', { key: 'ArrowRight' });
+  assert.equal(document.activeElement, cards[4]);
+  cards[4].fire('keydown', { key: 'ArrowRight' });
+  assert.equal(document.activeElement, cards[0]);
+  assert.equal(ui.inputs()[0].value, 'An edited first angle');
+  cards[0].fire('keydown', { key: 'ArrowLeft' });
+  assert.equal(document.activeElement, cards[4]);
+  cards[4].fire('keydown', { key: 'Home' });
+  assert.equal(document.activeElement, cards[0]);
+  assert.deepEqual(cards[0].lastScrollIntoView, { block: 'nearest', inline: 'nearest' });
+  cards[3].lastScrollIntoView = null;
+  cards[3].fire('click');
+  assert.deepEqual(cards[3].lastScrollIntoView, { block: 'nearest', inline: 'nearest' });
+  assert.equal(ui.inputs()[0].value, 'Angle 4');
+  assert.deepEqual(cards.map(card => card.tabIndex), [-1, -1, -1, 0, -1]);
+  assert.equal(ui.tabs.children[0], cards[0], 'changing details preserves the scrolling row');
+});
+
+test('validation reveals a later plan card before focusing its missing field', t => {
+  let confirmed = 0;
+  const source = fivePlans();
+  source[4].structure = '';
+  const ui = setup(t, { onConfirm() { confirmed++; return true; } });
+  ui.controller.open({ projectId: 'project', plans: source });
+  ui.confirm.fire('click');
+  assert.equal(confirmed, 0);
+  assert.equal(ui.tabs.children[4].getAttribute('aria-selected'), 'true');
+  assert.deepEqual(ui.tabs.children[4].lastScrollIntoView, { block: 'nearest', inline: 'nearest' });
+  assert.equal(document.activeElement, ui.inputs()[2]);
+  assert.equal(ui.inputs()[2].getAttribute('aria-invalid'), 'true');
+  assert.equal(ui.error.textContent, 'Add a content structure for “Plan 5”.');
+});
+
+test('card row fades track initial layout, scrolling, resize, and independent chip overflow', t => {
+  const ui = setup(t);
+  ui.tabs.clientWidth = 900;
+  ui.tabs.scrollWidth = 1800;
+  ui.controller.open({ projectId: 'project', plans: fivePlans() });
+  const fades = element => [element.getAttribute('data-fade-start'), element.getAttribute('data-fade-end')];
+  assert.deepEqual(fades(ui.strip), ['false', 'true']);
+  assert.equal(ui.observers.length, 1, 'uses the document window ResizeObserver');
+  assert.ok(ui.observers[0].targets.includes(ui.tabs));
+  assert.ok(ui.observers[0].targets.includes(ui.tabs.children[4]));
+  ui.flushFrames();
+  ui.tabs.scrollLeft = 300;
+  ui.tabs.fire('scroll');
+  ui.tabs.fire('scroll');
+  assert.equal(ui.frames.size, 1, 'scroll updates share one animation frame');
+  ui.flushFrames();
+  assert.deepEqual(fades(ui.strip), ['true', 'true']);
+  ui.tabs.scrollLeft = 899.5;
+  ui.tabs.fire('scroll');
+  ui.flushFrames();
+  assert.deepEqual(fades(ui.strip), ['true', 'false']);
+  ui.tabs.scrollLeft = -20;
+  ui.tabs.fire('scroll');
+  ui.flushFrames();
+  assert.deepEqual(fades(ui.strip), ['false', 'true']);
+  ui.tabs.scrollLeft = 1000;
+  ui.tabs.fire('scroll');
+  ui.flushFrames();
+  assert.deepEqual(fades(ui.strip), ['true', 'false']);
+  const chips = byClass(ui.tabs.children[0], 'editorial-plan-review-card-chips');
+  chips.clientWidth = 100;
+  chips.scrollWidth = 250;
+  chips.scrollLeft = 50;
+  chips.fire('scroll');
+  assert.deepEqual(fades(chips), ['true', 'true']);
+  assert.deepEqual(fades(ui.strip), ['true', 'false'], 'chip scroll does not change the card row');
+  ui.tabs.clientWidth = 1800;
+  chips.clientWidth = 250;
+  ui.observers[0].callback();
+  ui.flushFrames();
+  assert.deepEqual(fades(ui.strip), ['false', 'false']);
+  assert.deepEqual(fades(chips), ['false', 'false']);
+  ui.tabs.clientWidth = 900;
+  ui.tabs.scrollLeft = 0;
+  ui.listeners.get('resize')();
+  ui.flushFrames();
+  assert.deepEqual(fades(ui.strip), ['false', 'true']);
+});
+
+test('close and destroy clean overflow observers, listeners, and frames; reopen starts at the first card', t => {
+  const ui = setup(t);
+  ui.tabs.clientWidth = 900;
+  ui.tabs.scrollWidth = 1800;
+  ui.controller.open({ projectId: 'project', plans: fivePlans() });
+  const firstObserver = ui.observers[0];
+  ui.tabs.scrollLeft = 900;
+  ui.controller.close();
+  assert.equal(firstObserver.disconnected, true);
+  assert.equal(firstObserver.targets.length, 0);
+  assert.equal(ui.listeners.has('resize'), false);
+  assert.equal(ui.tabs.listeners.has('scroll'), false);
+  assert.equal(ui.frames.size, 0);
+  assert.equal(ui.strip.getAttribute('data-fade-start'), 'false');
+  assert.equal(ui.strip.getAttribute('data-fade-end'), 'false');
+  firstObserver.callback();
+  assert.equal(ui.frames.size, 0, 'a queued observer callback cannot restart work after close');
+  ui.controller.open({ projectId: 'project', plans: fivePlans() });
+  assert.equal(ui.tabs.scrollLeft, 0);
+  assert.equal(ui.tabs.children[0].getAttribute('aria-selected'), 'true');
+  assert.equal(ui.strip.getAttribute('data-fade-end'), 'true');
+  assert.equal(ui.observers.length, 2);
+  assert.equal(ui.listeners.has('resize'), true);
+  assert.equal(ui.tabs.listeners.has('scroll'), true);
+  ui.controller.destroy();
+  assert.equal(ui.observers[1].disconnected, true);
+  assert.equal(ui.listeners.has('resize'), false);
+  assert.equal(ui.tabs.listeners.has('scroll'), false);
+  assert.equal(ui.frames.size, 0);
+});
+
+test('window resize updates fades when ResizeObserver and animation frames are unavailable', t => {
+  const ui = setup(t);
+  delete ui.view.ResizeObserver;
+  delete ui.view.requestAnimationFrame;
+  ui.tabs.clientWidth = 900;
+  ui.tabs.scrollWidth = 1800;
+  ui.controller.open({ projectId: 'project', plans: fivePlans() });
+  assert.equal(ui.strip.getAttribute('data-fade-end'), 'true');
+  ui.tabs.clientWidth = 1800;
+  ui.listeners.get('resize')();
+  assert.equal(ui.strip.getAttribute('data-fade-end'), 'false');
+  assert.equal(ui.observers.length, 0);
+  assert.equal(ui.frames.size, 0);
 });

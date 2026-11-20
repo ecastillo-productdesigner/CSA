@@ -36,12 +36,34 @@ const frames = [
 
 const knownLabels = {
   standard: 'Standard Format', listicle: 'Listicle', general: 'General Audience',
+  'what-to-know': 'What to Know', 'video-script': 'Video Script',
   'celebrity-relationship-timeline': 'Celebrity Relationship Timeline',
   'whos-returning-to-show': 'Who’s Returning to the Show?',
   'millennial-pop-culture': 'Millennial Pop-Culture Fan',
   'wellness-enthusiast': 'Wellness Enthusiast',
   'trend-chasing-fashion-shopper': 'Trend-Chasing Fashion Shopper',
+  'house-standard': 'House Standard', 'apple-news': 'Apple News',
+  'centre-daily-times': 'Centre Daily Times', 'idaho-statesman': 'Idaho Statesman Voice Guide',
+  'msn-syndication': 'MSN Syndication', 'national-team': 'National Team Voice Guide',
+  'kansas-city-star': 'The Kansas City Star Voice Guide', 'news-observer': 'The News & Observer Voice Guide',
+  'trend-hunter-b2c': 'Trend Hunter B2C', 'yahoo-news': 'Yahoo News',
   'us-weekly': 'Us Weekly', 'womans-world': "Woman's World",
+};
+
+// Conservative drafting defaults; no external publication guide is assumed.
+const voiceTones = {
+  'house-standard': 'Clear, measured, and carefully attributed, following any McClatchy brand voice, tone, and style preferences supplied with the draft.',
+  'apple-news': 'Clear and accessible, with the main point up front and enough context for readers new to the story.',
+  'centre-daily-times': 'Emphasize local perspectives and community relevance, with clear language and careful attribution.',
+  'idaho-statesman': 'Direct and grounded in the sources, explaining the local relevance when the material supports it.',
+  'msn-syndication': 'Accessible to a broad audience, with clear context and no assumed local knowledge.',
+  'national-team': 'Measured and clear, connecting the available local details to their broader significance without overstating them.',
+  'kansas-city-star': 'Direct and explanatory, emphasizing community relevance when supported by the sources.',
+  'news-observer': 'Clear and informative, connecting reported details with their relevance to the community.',
+  'trend-hunter-b2c': 'Engaging and practical, explaining consumer relevance without hype or unsupported claims.',
+  'yahoo-news': 'Approachable and informative, with clear context, direct language, and careful attribution.',
+  'us-weekly': 'Conversational and lively, with clear language and careful attribution.',
+  'womans-world': 'Warm, practical, and reassuring, without overstating what the sources establish.',
 };
 
 const text = value => typeof value === 'string' ? value.trim() : '';
@@ -65,14 +87,15 @@ function sourceTitlesFor(output) {
 
 function structureFor(format, frame) {
   if (format === 'listicle') return `Use a short introduction and four numbered takeaways. ${frame.structure}`;
+  if (format === 'what-to-know') return 'Use short What to Know, Key Details, and The Context sections. Lead with the main point and retain the source details without assuming future developments.';
+  if (format === 'video-script') return 'Use a Video Script with Opening, Voiceover, and Closing sections. Separate narration from on-screen text cues, using only the supplied details without inventing quotes, timings, or available footage.';
   if (format === 'celebrity-relationship-timeline') return 'Use the dates and sequence established in the sources to arrange key developments. Keep undated events clearly identified.';
   if (format === 'whos-returning-to-show') return 'Separate confirmed returns, departures, and unresolved questions. Include only people and details established in the sources.';
   return frame.structure;
 }
 
 function toneFor(voice, index) {
-  if (voice === 'us-weekly') return 'Conversational and lively, with clear language and careful attribution.';
-  if (voice === 'womans-world') return 'Warm, practical, and reassuring, without overstating what the sources establish.';
+  if (Object.hasOwn(voiceTones, voice)) return voiceTones[voice];
   return ['Clear, calm, and practical.', 'Measured, analytical, and plainspoken.', 'Curious, accessible, and grounded in the sources.'][index % 3];
 }
 
@@ -173,10 +196,14 @@ export function editorialPlanDraftContent(output, baseContent) {
   const structure = plan.structure.toLocaleLowerCase();
   if (/\b(?:standard format|continuous prose|no (?:list|numbered)|without (?:a )?(?:list|numbered))\b/.test(structure)) {
     base.format = 'standard';
+  } else if (/\bvideo[\s-]+script\b/.test(structure)) {
+    base.format = 'video-script';
+  } else if (/\bwhat[\s-]+to[\s-]+know\b/.test(structure)) {
+    base.format = 'what-to-know';
   } else if (/\b(?:numbered|listicle|list of|list items|takeaways)\b/.test(structure) && base.paragraphs.length >= 5) {
     base.format = 'listicle';
   }
-  if (/\b(?:short paragraphs|shorter paragraphs|brief paragraphs|concise)\b/.test(plan.tone.toLocaleLowerCase()) && base.format !== 'listicle') {
+  if (/\b(?:short paragraphs|shorter paragraphs|brief paragraphs|concise)\b/.test(plan.tone.toLocaleLowerCase()) && !['listicle', 'what-to-know', 'video-script'].includes(base.format)) {
     base.paragraphs = base.paragraphs.flatMap(paragraph => {
       const sentences = paragraph.split(/(?<=[.!?])\s+(?=[A-Z“"'])/);
       return sentences.length > 2 ? [sentences.slice(0, 2).join(' '), ...sentences.slice(2)] : [paragraph];

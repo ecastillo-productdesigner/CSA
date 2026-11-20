@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261119-plan-copy');
+  await import('./app.js?v=20261120-panel-recalculation');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

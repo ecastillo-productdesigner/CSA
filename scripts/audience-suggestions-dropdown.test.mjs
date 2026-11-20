@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { populateDraftOptions } from '../dist/draft-options.js';
+import { getDraftOptions, populateDraftOptions } from '../dist/draft-options.js';
 import { createToolDropdowns } from '../dist/tool-dropdowns.js';
 import { createToolFavorites } from '../dist/tool-favorites.js';
-import { createAudienceSuggestionLibrary } from '../dist/audience-suggestions.js?v=20261111-audience-name-variation';
+import { createAudienceSuggestionLibrary } from '../dist/audience-suggestions.js?v=20261119-trend-hunter';
 import { createProjectAudienceSuggestions } from '../dist/project-audience-suggestions.js';
 
 class Element {
@@ -1068,4 +1068,141 @@ test('persisted voice favorites initialize consistently in new-draft and edit-ca
   }
   assert.deepEqual(ui.favoritesStore.values('format'), ['standard']);
   assert.deepEqual(ui.favoritesStore.values('audience'), ['general']);
+});
+
+
+function contextualAudienceFixture(t) {
+  const ui = setup(t);
+  const library = createAudienceSuggestionLibrary({ storage: () => ui.storage });
+  const project = { id: 'trend-project', sources: [
+    { id: 'sports', title: 'Panthers stadium and football season news', selected: true },
+    { id: 'health', title: 'Health research and everyday exercise habits', selected: false },
+  ] };
+  let role = 'Trend Hunter';
+  const context = () => ({ role, sources: project.sources, library });
+  const provider = createProjectAudienceSuggestions({ getProject: () => project, library });
+  const format = ui.field('Format');
+  const audience = ui.field('Audience');
+  const voice = ui.field('Voice');
+  populateDraftOptions(ui.doc, context());
+  const controller = ui.dropdowns({ audienceSuggestions: provider,
+    draftOptionsProvider: key => getDraftOptions(key, context()) });
+  const trigger = audience.field.querySelector('.tool-dropdown-trigger');
+  const menu = audience.field.querySelector('.tool-dropdown-menu');
+  const rows = () => menu.querySelector('.tool-dropdown-list').querySelectorAll('.tool-dropdown-row');
+  const labels = () => rows().map(row => row.querySelector('.tool-dropdown-option').textContent);
+  const row = label => rows().find(row => row.querySelector('.tool-dropdown-option').textContent === label);
+  return { ...ui, library, project, provider, format, audience, voice, controller, trigger, menu, rows, labels, row, context,
+    setRole(next) { role = next; } };
+}
+
+test('live draft catalogs refresh contextual audiences with checked sources and isolate role-specific formats and voices', t => {
+  const ui = contextualAudienceFixture(t);
+  const initial = getDraftOptions('audience', ui.context()).filter(choice => choice.contextual);
+  assert.equal(initial.length, 3);
+  assert.deepEqual(ui.labels(), ['None Selected', 'General Audience', ...initial.map(choice => choice.label)]);
+  assert.deepEqual(ui.favoritesStore.values('audience'), []);
+  assert.deepEqual(ui.library.options(), [], 'displaying contextual audiences does not save them');
+  assert.equal(ui.format.select.options[1].value, 'what-to-know');
+  assert.equal(ui.voice.select.options.length, 13);
+  ui.format.select.value = 'video-script';
+  ui.voice.select.value = 'house-standard';
+  ui.trigger.emit('click');
+  ui.project.sources[0].selected = false;
+  ui.project.sources[1].selected = true;
+  ui.controller.refresh();
+  const updated = getDraftOptions('audience', ui.context()).filter(choice => choice.contextual);
+  assert.equal(updated.length, 3);
+  assert.notDeepEqual(updated, initial);
+  assert.deepEqual(ui.labels(), ['None Selected', 'General Audience', ...updated.map(choice => choice.label)]);
+  assert.ok(initial.every(choice => !ui.audience.select.options.some(option => option.value === choice.value)));
+  assert.equal(ui.menu.hidden, false);
+  assert.equal(ui.format.select.value, 'video-script');
+  assert.equal(ui.voice.select.value, 'house-standard');
+  ui.setRole('Journalist');
+  ui.controller.close();
+  ui.controller.refresh();
+  assert.equal(ui.format.select.value, '');
+  assert.equal(ui.voice.select.value, '');
+  assert.deepEqual(ui.format.select.options.map(option => option.value), ['', 'standard', 'celebrity-relationship-timeline', 'listicle', 'whos-returning-to-show']);
+  assert.deepEqual(ui.voice.select.options.map(option => option.value), ['', 'us-weekly', 'womans-world']);
+  assert.deepEqual(ui.labels(), ['None Selected', 'General Audience', 'Millennial Pop-Culture Fan', 'Wellness Enthusiast', 'Trend-Chasing Fashion Shopper']);
+  ui.setRole('Trend Hunter');
+  ui.controller.refresh();
+  assert.deepEqual(ui.labels(), ['None Selected', 'General Audience', ...updated.map(choice => choice.label)]);
+  ui.project.sources[1].selected = false;
+  ui.controller.refresh();
+  assert.deepEqual(ui.labels(), ['None Selected', 'General Audience']);
+});
+
+test('selecting a contextual audience remembers it before change handlers refresh the source catalog', t => {
+  const ui = contextualAudienceFixture(t);
+  const choice = getDraftOptions('audience', ui.context()).find(choice => choice.contextual);
+  let changes = 0;
+  ui.audience.select.addEventListener('change', () => {
+    changes++;
+    assert.ok(ui.library.options().some(saved => saved.value === choice.value), 'persistence precedes the native change event');
+    ui.project.sources[0].selected = false;
+    ui.project.sources[1].selected = true;
+    ui.controller.refresh();
+  });
+  ui.trigger.emit('click');
+  ui.row(choice.label).querySelector('.tool-dropdown-option').emit('click');
+  assert.equal(changes, 1);
+  assert.equal(ui.audience.select.value, choice.value);
+  assert.equal(ui.trigger.children[0].textContent, choice.label);
+  assert.equal(ui.menu.hidden, true);
+  assert.deepEqual(ui.favoritesStore.values('audience'), []);
+  assert.deepEqual(ui.provider.getContext().groups, [], 'selection does not fabricate a generated source group');
+  const restoredLibrary = createAudienceSuggestionLibrary({ storage: () => ui.storage });
+  assert.deepEqual(restoredLibrary.options(), [{ value: choice.value, label: choice.label }]);
+  assert.equal(ui.audience.select.options.filter(option => option.value === choice.value).length, 1);
+});
+
+test('hearting a contextual audience saves its label before favorite subscribers and restores it in another project', t => {
+  const ui = contextualAudienceFixture(t);
+  const choice = getDraftOptions('audience', ui.context()).find(choice => choice.contextual);
+  ui.trigger.emit('click');
+  let notifications = 0;
+  const unsubscribe = ui.favoritesStore.subscribe(() => {
+    notifications++;
+    assert.ok(ui.library.options().some(saved => saved.value === choice.value), 'audience library is ready before favorite subscribers run');
+  });
+  t.after(unsubscribe);
+  let changes = 0;
+  ui.audience.select.addEventListener('change', () => { changes++; });
+  const favorite = ui.row(choice.label).querySelector('.tool-option-favorite');
+  favorite.focus();
+  favorite.emit('click');
+  assert.equal(notifications, 1);
+  assert.equal(changes, 0);
+  assert.equal(ui.audience.select.value, '');
+  assert.equal(ui.menu.hidden, false);
+  assert.equal(document.activeElement, ui.row(choice.label).querySelector('.tool-option-favorite'));
+  assert.equal(ui.row(choice.label).querySelector('.tool-option-favorite').getAttribute('aria-pressed'), 'true');
+  assert.deepEqual(ui.labels(), ['None Selected', choice.label, 'General Audience',
+    ...getDraftOptions('audience', ui.context()).filter(option => option.contextual && option.value !== choice.value).map(option => option.label)]);
+  ui.controller.destroy();
+  for (const entry of [ui.format, ui.audience, ui.voice]) entry.field.remove();
+
+  const library = createAudienceSuggestionLibrary({ storage: () => ui.storage });
+  const favorites = createToolFavorites({ storage: () => ui.storage });
+  const project = { id: 'other-project', sources: [] };
+  const provider = createProjectAudienceSuggestions({ getProject: () => project, library });
+  const restored = ui.field('Audience');
+  const context = { role: 'Trend Hunter', sources: [], library };
+  populateDraftOptions(restored.field, context);
+  ui.dropdowns({ audienceSuggestions: provider, favoritesStore: favorites,
+    draftOptionsProvider: key => getDraftOptions(key, context) });
+  const trigger = restored.field.querySelector('.tool-dropdown-trigger');
+  const menu = restored.field.querySelector('.tool-dropdown-menu');
+  const rows = menu.querySelector('.tool-dropdown-list').querySelectorAll('.tool-dropdown-row');
+  assert.deepEqual(rows.map(row => row.querySelector('.tool-dropdown-option').textContent), ['None Selected', choice.label, 'General Audience']);
+  assert.equal(rows[1].querySelector('.tool-option-favorite').getAttribute('aria-pressed'), 'true');
+  assert.deepEqual(favorites.values('audience'), [choice.value]);
+  assert.deepEqual(provider.getContext().groups, []);
+  trigger.emit('click');
+  rows[1].querySelector('.tool-dropdown-option').emit('click');
+  assert.equal(restored.select.value, choice.value);
+  assert.equal(trigger.children[0].textContent, choice.label);
 });

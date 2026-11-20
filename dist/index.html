@@ -10,9 +10,9 @@
     <link rel="stylesheet" href="./vendor/quill-2.0.3.snow.css?v=20261026-ds-consolidation">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=add_circle,arrow_forward,article,badge,check,chevron_forward,close,delete,description,draw,edit,edit_document,favorite,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,post_add,redo,right_panel_open,search,send,signpost,thumb_down,thumb_up,undo,unfold_less,upload,view_module,visibility,wand_stars&amp;display=block">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
-    <link rel="stylesheet" href="./design-system/tokens.css?v=20261118-optional-plans">
-    <link rel="stylesheet" href="./styles.css?v=20261118-optional-plans">
-    <script src="./demo-access.js?v=20261119-plan-copy" type="module"></script>
+    <link rel="stylesheet" href="./design-system/tokens.css?v=20261120-panel-recalculation">
+    <link rel="stylesheet" href="./styles.css?v=20261120-panel-recalculation">
+    <script src="./demo-access.js?v=20261120-panel-recalculation" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -128,7 +128,7 @@
             </div>
             <div class="editor-sheet">
               <div class="editor-document-content">
-              <header class="editor-document-header"><div class="editor-document-status"><span class="editor-draft-badge editor-tab-draft"><span class="material-symbols-outlined" aria-hidden="true">draw</span>Draft</span></div><div class="editor-variant-labels" id="editor-variant-labels" role="group" aria-label="Draft settings" hidden><span class="editor-direction-setting" id="editor-direction-empty"><span class="material-symbols-outlined editor-direction-icon" aria-hidden="true">signpost</span>No Editorial Direction</span><button class="output-badge output-badge--sources editor-direction-setting" id="editor-direction-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-direction-popover" hidden><span class="material-symbols-outlined editor-direction-icon" aria-hidden="true">signpost</span>Editorial Direction</button></div><label class="visually-hidden" for="editor-title">Story title</label><textarea id="editor-title" rows="1" maxlength="180" placeholder="Untitled story"></textarea><div class="editor-subhead-field"><label class="visually-hidden" for="editor-share-text">Share text / Subhead</label><textarea id="editor-share-text" rows="1" maxlength="500" placeholder="Add a short share text or subhead for this draft…"></textarea></div><p class="editor-share-text-print" id="editor-share-text-print"></p></header>
+              <header class="editor-document-header"><div class="editor-document-status"><span class="editor-draft-badge editor-tab-draft"><span class="material-symbols-outlined" aria-hidden="true">draw</span>Draft</span></div><div class="editor-variant-labels" id="editor-variant-labels" role="group" aria-label="Draft settings" hidden><span class="editor-direction-setting" id="editor-direction-empty">No Editorial Direction</span><button class="output-badge output-badge--sources editor-direction-setting" id="editor-direction-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-direction-popover" hidden><span class="material-symbols-outlined editor-direction-icon" aria-hidden="true">signpost</span>Editorial Direction</button></div><label class="visually-hidden" for="editor-title">Story title</label><textarea id="editor-title" rows="1" maxlength="180" placeholder="Untitled story"></textarea><div class="editor-subhead-field"><label class="visually-hidden" for="editor-share-text">Share text / Subhead</label><textarea id="editor-share-text" rows="1" maxlength="500" placeholder="Add a short share text or subhead for this draft…"></textarea></div><p class="editor-share-text-print" id="editor-share-text-print"></p></header>
               <div class="editor-toolbar" id="editor-toolbar" role="toolbar" aria-label="Text formatting">
                 <div class="editor-toolbar-group" id="editor-revision-tools" hidden></div>
                 <div class="editor-toolbar-group"><button type="button" data-format="bold" aria-pressed="false" aria-label="Bold" title="Bold"><span class="material-symbols-outlined" aria-hidden="true">format_bold</span></button><button type="button" data-format="italic" aria-pressed="false" aria-label="Italic" title="Italic"><span class="material-symbols-outlined" aria-hidden="true">format_italic</span></button><button type="button" data-format="underline" aria-pressed="false" aria-label="Underline" title="Underline"><span class="material-symbols-outlined" aria-hidden="true">format_underlined</span></button></div>
@@ -200,6 +200,9 @@
             <div class="composer-empty" id="outputs-empty" role="status"><div class="composer-empty-copy"><p>Your draft recipes will appear here.</p></div></div>
             <ul class="output-list" id="output-list" aria-label="Content" hidden></ul>
             <div class="outputs-footer"><button class="review-output secondary-button" id="review-output" type="button" aria-haspopup="dialog" aria-controls="editorial-plan-review-dialog" hidden disabled>Review Plans</button><button class="create-output" id="create-output" type="button" disabled><span id="create-output-label">Draft</span></button></div>
+            <div class="audience-similarity-footer" id="audience-similarity-footer" hidden>
+              <button class="primary-button" id="check-audience-similarity" type="button" aria-haspopup="dialog" aria-controls="audience-similarity-dialog" disabled>Check Similarity</button>
+            </div>
             <p class="visually-hidden" id="output-processing-status" role="status" aria-live="polite"></p>
             </div>
             </div>

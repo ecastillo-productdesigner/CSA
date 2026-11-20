@@ -115,6 +115,41 @@ const demoTopics = [
       ['Destination Discovery Readers', 'Local Adventure Readers', 'Travel Itinerary Planners'],
       ['Readers Curious About New Places', 'Short Getaway Planners', 'Readers Comparing Travel Options'],
     ] },
+  { key: 'education', terms: /\b(cms parents?|education|educators?|schools?|students?|teachers?|classrooms?|curriculum|school district|school board|charlotte-mecklenburg|universit(?:y|ies)|colleges?|campus|tuition)\b/g,
+    names: [
+      ['Learners Following Education News', 'Educators Following Learning Programs', 'Education Policy Readers'],
+      ['Readers Exploring Learning Opportunities', 'Education Program Leaders', 'Readers Tracking Education Funding'],
+      ['Readers Seeking Education Information', 'Educators Exploring Learning Resources', 'Education Accountability Readers'],
+      ['Readers Following Education Programs', 'Teaching and Learning Professionals', 'Readers Exploring Education Policy'],
+    ] },
+  { key: 'arts', terms: /\b(arts?|museums?|exhibits?|exhibitions?|galler(?:y|ies)|discovery place|science cent(?:er|re)s?|sculptures?|paintings?)\b/g,
+    names: [
+      ['Museum and Gallery Visitors', 'Arts Education Readers', 'Cultural Institution Followers'],
+      ['Readers Planning Museum Visits', 'Readers Exploring Art and Learning', 'Readers Following Arts Funding'],
+      ['Exhibition Discovery Readers', 'Arts Learning Enthusiasts', 'Museum Community Supporters'],
+      ['Gallery and Exhibition Explorers', 'Readers Following Arts Programs', 'Readers Tracking Cultural Investment'],
+    ] },
+  { key: 'entertainment', terms: /\b(entertainment|music|musicians?|concerts?|theat(?:er|re)s?|movies?|films?|festivals?|performers?|performances?|comedy|television)\b/g,
+    names: [
+      ['Culture and Entertainment Fans', 'Readers Planning Cultural Outings', 'Entertainment Industry Readers'],
+      ['Music and Performance Followers', 'Readers Exploring Local Events', 'Readers Following the Creative Economy'],
+      ['Readers Discovering Entertainment', 'Concert and Theater Goers', 'Readers Following Cultural Production'],
+      ['Readers Following Cultural Stories', 'Entertainment Event Planners', 'Creative Industry Observers'],
+    ] },
+  { key: 'business', terms: /\b(businesses|small business(?:es)?|business owners?|compan(?:y|ies)|entrepreneurs?|startups?|employers?|employees?|workplace|workers?|careers?|hiring|layoffs?|jobs?|labor|labour|unions?)\b/g,
+    names: [
+      ['Business Owners and Operators', 'Workers Following Workplace Changes', 'Business Industry Readers'],
+      ['Small Business Decision-Makers', 'Readers Navigating Work and Careers', 'Readers Following Company News'],
+      ['Entrepreneurs Following Business News', 'Employees Seeking Workplace Context', 'Readers Tracking Industry Changes'],
+      ['Readers Managing Business Decisions', 'Job and Career News Followers', 'Readers Exploring Business Trends'],
+    ] },
+  { key: 'economy', terms: /\b(economy|economic|inflation|prices?|cost of living|household budgets?|consumers?|mortgages?|interest rates?|housing|rents?|renters?|wages?|groceries|utility bills?|affordability)\b/g,
+    names: [
+      ['Households Tracking Everyday Costs', 'Consumers Comparing Their Options', 'Economic Policy Readers'],
+      ['Readers Managing Household Budgets', 'Readers Making Consumer Decisions', 'Readers Following Economic Changes'],
+      ['Families Following Cost of Living', 'Readers Comparing Prices and Value', 'Readers Seeking Economic Context'],
+      ['Household Budget Planners', 'Consumers Following Market Changes', 'Readers Tracking the Local Economy'],
+    ] },
   { key: 'community', terms: /\b(local|community|neighborhood|city|town|residents?|volunteers?)\b/g,
     names: [
       ['Local Community Readers', 'Neighborhood Changemakers', 'Readers Seeking Local Context'],
@@ -131,14 +166,53 @@ const generalNames = [
   ['Readers Getting to Know the Subject', 'Readers Following the Bigger Picture', 'Readers Exploring What Comes Next'],
 ];
 
+function plainSourceText(value) {
+  return typeof value === 'string' ? value.normalize('NFKC')
+    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, ' ')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&(?:#\d+|#x[\da-f]+|[a-z]+);/gi, ' ') : '';
+}
+
 function sourceEvidence(sources) {
   // Bound each source separately so a long first article cannot hide later ones.
-  const normalize = value => typeof value === 'string' ? value.normalize('NFKC').replace(/\s+/g, ' ').trim().toLowerCase() : '';
+  const normalize = value => plainSourceText(value).replace(/\s+/g, ' ').trim().toLowerCase();
   return (Array.isArray(sources) ? sources : [])
     .filter(source => source && source.selected !== false && !source.deletedAt)
     .map(source => ({ title: normalize(source.title).slice(0, 500),
+      subject: sourceSubject(source.title) || sourceSubject(source.text || source.description || source.summary),
       body: ['text', 'description', 'summary'].map(key => normalize(source[key]).slice(0, 4000)).join(' ').trim() }))
     .filter(source => source.title || source.body);
+}
+
+// A short, plain-text subject keeps unfamiliar stories connected to their source.
+// These labels are display text, never markup or instructions to another service.
+function sourceSubject(value) {
+  if (typeof value !== 'string') return '';
+  const plain = plainSourceText(value.slice(0, 2000))
+    .replace(/https?:\/\/\S+/gi, ' ')
+    .replace(/^\s*(?:breaking(?: news)?|latest(?: news)?|news|update|watch|photos|video)\s*[:—–-]\s*/i, '')
+    .split(/[:!?\n]|\s[—–]\s/)[0]
+    .replace(/\s+(?:adds?|announces?|approves?|brings?|creates?|draws?|gets?|illuminates?|opens?|reveals?|says?|shows?|will|would|could|can|may|must)\b.*$/i, '');
+  const words = (plain.match(/[\p{L}\p{N}][\p{L}\p{N}'’-]*/gu) || [])
+    .filter(word => word.length <= 24)
+    .filter(word => !/^(a|an|the|this|that|these|those|and|or|of|to|for|in|on|at|with|from|by|about|as|is|are|was|were|be|been|has|have|had|its|it|their|they|you|your|we|our|what|why|how|new|latest|breaking|news|update)$/i.test(word))
+    .slice(0, 5);
+  let subject = '';
+  for (const word of words) {
+    const next = `${subject} ${word}`.trim();
+    if (next.length > 64) break;
+    subject = next;
+  }
+  return subject ? subject[0].toUpperCase() + subject.slice(1) : '';
+}
+
+function subjectNames(subject) {
+  return [
+    [`Readers Exploring ${subject}`, `Readers Following ${subject}`, `Readers Seeking Context on ${subject}`],
+    [`Readers Discovering ${subject}`, `Readers Tracking ${subject}`, `Readers Considering the Impact of ${subject}`],
+    [`Readers Learning About ${subject}`, `Readers Keeping Up with ${subject}`, `Readers Looking Deeper into ${subject}`],
+    [`Readers Curious About ${subject}`, `Readers Watching Developments in ${subject}`, `Readers Examining ${subject}`],
+  ];
 }
 
 function topicNames(topic, context) {
@@ -149,6 +223,48 @@ function topicNames(topic, context) {
     const industry = ['Stadium Business Readers', 'Sports Venue Industry Observers', 'Readers Following Stadium Investment', 'Readers Exploring the Stadium Economy'];
     return topic.names.map((names, index) => [fans[index], names[1],
       /\b(stadiums?|arena)\b/.test(context) ? industry[index] : names[2]]);
+  }
+  if (topic.key === 'education' && /\b(universit(?:y|ies)|colleges?|campus|tuition)\b/.test(context)
+      && !/\b(school district|school board|charlotte-mecklenburg)\b/.test(context)) {
+    return [
+      ['Students Exploring College Options', 'College Faculty and Staff', 'Higher Education Policy Readers'],
+      ['Families Planning for College', 'University Educators', 'Readers Following College Costs'],
+      ['Students Following Campus News', 'Readers Working in Higher Education', 'University Accountability Readers'],
+      ['Prospective College Students', 'Faculty Following Campus Changes', 'Readers Tracking Higher Education Funding'],
+    ];
+  }
+  if (topic.key === 'education' && /\b(schools?|school district|school board|charlotte-mecklenburg|cms parents?)\b/.test(context)) {
+    return [
+      ['Parents Following School News', 'Teachers and School Staff', 'Education Policy Readers'],
+      ['Families Planning for School Changes', 'Educators Following School Decisions', 'Readers Tracking Education Funding'],
+      ['Parents Seeking School Information', 'Classroom Educators', 'School Accountability Readers'],
+      ['Families Following Education News', 'School Staff Following District Changes', 'Readers Exploring School Policy'],
+    ];
+  }
+  if (topic.key === 'education' && /\b(discovery place|science cent(?:er|re)s?|science museum)\b/.test(context)) {
+    return [
+      ['Families Exploring Science Learning', 'Science Educators', 'Readers Following Museum Learning Programs'],
+      ['Parents Seeking Science Activities', 'Educators Planning Museum Visits', 'Museum Education Supporters'],
+      ['Families Following Science Programs', 'Science Learning Program Leaders', 'Readers Tracking Science Learning Opportunities'],
+      ['Families Exploring Hands-On Science', 'Readers Teaching Science', 'Readers Following Science Education'],
+    ];
+  }
+  if (topic.key === 'arts' && /\b(discovery place|science cent(?:er|re)s?|science museum)\b/.test(context)) {
+    const venue = /\bdiscovery place\b/.test(context) ? 'Discovery Place' : 'Science Museum';
+    return [
+      [`${venue} Visitors`, 'Families Exploring Science Exhibits', 'Science Education Supporters'],
+      [`Readers Planning ${venue} Visits`, 'Parents Seeking Science Learning Activities', 'Readers Following Museum Education'],
+      [`${venue} Exhibit Explorers`, 'Families Planning Science Outings', 'Museum Learning Program Followers'],
+      [`Readers Following ${venue}`, 'Parents Exploring Hands-On Science', 'Readers Tracking Science Education Programs'],
+    ];
+  }
+  if (topic.key === 'arts' && /\bmuseums?\b/.test(context)) {
+    return [
+      ['Museum Visitors', 'Museum Education Readers', 'Museum Community Supporters'],
+      ['Readers Planning Museum Visits', 'Readers Exploring Museum Learning', 'Readers Following Museum Funding'],
+      ['Museum Exhibition Explorers', 'Museum Program Followers', 'Readers Tracking Museum Development'],
+      ['Readers Discovering Museums', 'Readers Following Museum Education', 'Cultural Institution Supporters'],
+    ];
   }
   if (topic.key === 'civic' && /\bcharlotte\b/.test(context)) {
     return [
@@ -177,7 +293,11 @@ export function demoAudienceSuggestions(sources, { iteration = 0, previousSugges
       .map(source => `${source.title} ${source.body}`).join(' ');
     return topicNames(topic, context);
   });
-  if (!themes.length) themes.push(generalNames);
+  if (!themes.length) {
+    const subjects = [...new Set(evidence.map(source => source.subject).filter(Boolean))].sort();
+    themes.push(...subjects.slice(0, 3).map(subjectNames));
+    if (!themes.length) themes.push(generalNames);
+  }
   // Include the secondary topic instead of making every audience describe only
   // the largest story. With two themes, the third choice adds a different angle.
   const perspectives = themes.length === 1 ? [[0, 0], [0, 1], [0, 2]]

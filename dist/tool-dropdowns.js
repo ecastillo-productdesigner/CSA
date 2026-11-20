@@ -7,7 +7,7 @@ import { toolFavorites } from './tool-favorites.js?v=20261119-voice-favorites';
 import { bindTabSelection } from './selection-controls.js?v=20261026-drafting-card-size';
 import { createTabPanelTransition } from './tab-panel-transition.js?v=20261026-drafting-card-size';
 
-export function createToolDropdowns({ root = document, favoritesStore = toolFavorites, notify = () => {}, audienceSuggestions = null, createSuggestionAnimation = createAudienceSuggestingAnimation } = {}) {
+export function createToolDropdowns({ root = document, favoritesStore = toolFavorites, notify = () => {}, audienceSuggestions = null, draftOptionsProvider = null, createSuggestionAnimation = createAudienceSuggestingAnimation } = {}) {
   const controls = [...root.querySelectorAll('.composer-field, .results-sort-field, .results-source-field, .feedback-select-field, .editor-style-field, .word-count-field')].map(field => {
     const select = field.querySelector('select');
     const label = field.dataset.label;
@@ -77,6 +77,7 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
     let rows = [];
     let displayedRows = [];
     let optionsSignature = '';
+    let catalogSignature = '';
     let suggestedRows = [];
     let suggestedSignature = '';
     let selectedSuggestedChoice = null;
@@ -142,6 +143,24 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
       available = Boolean(context.available);
       if (!available || select.disabled) readyToReview = false;
     }
+    function syncDraftCatalog() {
+      if (!draftSetting || typeof draftOptionsProvider !== 'function') return;
+      const choices = draftOptionsProvider(key);
+      if (!Array.isArray(choices)) return;
+      const signature = JSON.stringify(choices);
+      if (catalogSignature === signature) return;
+      catalogSignature = signature;
+      const selected = select.value;
+      select.replaceChildren(...choices.map(choice => {
+        const option = document.createElement('option');
+        option.value = choice.value;
+        option.textContent = choice.label;
+        option.title = choice.description || '';
+        option.dataset.contextual = String(Boolean(choice.contextual));
+        return option;
+      }));
+      select.value = choices.some(choice => choice.value === selected) ? selected : '';
+    }
     function syncSuggestionOptions() {
       if (!suggestionProvider) return;
       const known = new Set([...select.options].map(option => option.value));
@@ -171,10 +190,12 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
       else if (!supportsFavorites) button.setAttribute('role', 'option');
       button.tabIndex = supportsFavorites ? 0 : -1;
       button.textContent = option.textContent;
+      if (option.title) button.title = option.title;
       button.append(createIcon('check', 'tool-dropdown-check'));
       bindTapActivation(button, () => {
         if (!transition.expanded || select.disabled || option.disabled) return;
         // Generated choices use the same native change path as catalog choices.
+        if (option.dataset?.contextual === 'true') suggestionProvider?.rememberChoice?.({ value: option.value, label: option.textContent });
         syncSuggestionOptions();
         if (suggestionProvider) selectedSuggestedChoice = groupId ? { value: option.value, groupId } : null;
         if (sourceFilter && option.value !== 'all') {
@@ -196,6 +217,7 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
         favorite.append(createIcon('favorite'));
         bindTapActivation(favorite, () => {
           if (!transition.expanded || select.disabled) return;
+          if (option.dataset?.contextual === 'true') suggestionProvider?.rememberChoice?.({ value: option.value, label: option.textContent });
           const { saved, persisted } = favoritesStore.toggle(key, option.value);
           if (saved && groupId && activeTab === 'suggested') suggestionView.scrollTop = 0;
           if (!persisted) notify('Favorites updated for this session only. Browser storage is unavailable');
@@ -206,12 +228,12 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
     }
     function refreshRows() {
       // Keep all generated options available for saved settings and the selected
-      // trigger label. Only hearted suggestions join the Audiences catalog.
+      // trigger label. Current article suggestions and favorites appear in Audiences.
       const favorites = new Set(favoritesStore.values(key));
       const generatedValues = new Set(suggestionProvider ? descriptors([
         ...suggestionProvider.getOptions(), ...suggestions, ...suggestionGroups.flatMap(group => group.suggestions),
       ]).map(choice => choice.value) : []);
-      const options = [...select.options].filter(option => !suggestionProvider || favorites.has(option.value)
+      const options = [...select.options].filter(option => !suggestionProvider || option.dataset?.contextual === 'true' || favorites.has(option.value)
         || (!generatedValues.has(option.value) && !option.value.startsWith('suggested-audience:')));
       const signature = JSON.stringify(options.map(option => [option.value, option.textContent, option.disabled]));
       if (signature === optionsSignature && options.every((option, index) => rows[index]?.option === option)) return;
@@ -463,6 +485,7 @@ export function createToolDropdowns({ root = document, favoritesStore = toolFavo
       const focusedRows = activeRows();
       const focused = focusedRows.find(choice => choice.row.contains(document.activeElement));
       const focusFavorite = focused && document.activeElement === focused.favorite;
+      syncDraftCatalog();
       syncSuggestionContext();
       syncSuggestionOptions();
       refreshRows();

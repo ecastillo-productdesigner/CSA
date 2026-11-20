@@ -1,6 +1,6 @@
-import { createEditorialPlanReview } from '../editorial-plan-review.js?v=20261119-plan-copy';
-import { buildEditorialPlans, applyEditorialPlan } from '../editorial-plans.js?v=20261117-plan-review';
-import { populateOutputContent } from '../outputs.js?v=20261117-plan-review';
+import { createEditorialPlanReview } from '../editorial-plan-review.js?v=20261119-plan-scroll';
+import { buildEditorialPlans, applyEditorialPlan } from '../editorial-plans.js?v=20261119-trend-hunter';
+import { populateOutputContent } from '../outputs.js?v=20261120-chip-tooltips';
 import { createDraftingAnimation } from '../drafting-animation.js?v=20261111-source-paper-count';
 import { tokenNumber } from './runtime.js?v=20261029-revision-indicator-location';
 
@@ -19,6 +19,9 @@ export function mountEditorialPlanSpecimen(root) {
   const sampleOutputs = () => [
     { id: 'ds-plan-family', title: 'What Neighbors Need to Know', labels: [{ key: 'format', label: 'Standard Format' }, { key: 'audience', label: 'Local Residents' }, { key: 'voice', label: 'Us Weekly' }], toolPreferences: { format: 'standard', audience: 'general', voice: 'us-weekly' }, sourceSnapshots: sources, editorialDirection: 'Explain what this means for local families.' },
     { id: 'ds-plan-context', title: 'Five Questions Behind a Shared Garden', labels: [{ key: 'format', label: 'Listicle' }, { key: 'audience', label: 'Community Volunteers' }, { key: 'voice', label: "Woman's World" }], toolPreferences: { format: 'listicle', audience: 'general', voice: 'womans-world' }, sourceSnapshots: sources, editorialDirection: 'Focus on practical ways to get involved.' },
+    { id: 'ds-plan-watering', title: 'How Volunteers Will Keep the Garden Growing', labels: [{ key: 'format', label: 'Standard Format' }, { key: 'audience', label: 'Community Volunteers' }, { key: 'voice', label: 'Us Weekly' }], toolPreferences: { format: 'standard', audience: 'general', voice: 'us-weekly' }, sourceSnapshots: sources, editorialDirection: 'Focus on maintenance and watering schedules.' },
+    { id: 'ds-plan-starting', title: 'A First-Time Grower’s Guide to Getting Involved', labels: [{ key: 'format', label: 'Listicle' }, { key: 'audience', label: 'First-Time Gardeners' }, { key: 'voice', label: "Woman's World" }], toolPreferences: { format: 'listicle', audience: 'general', voice: 'womans-world' }, sourceSnapshots: sources, editorialDirection: 'Explain the first steps for a new volunteer.' },
+    { id: 'ds-plan-schedule', title: 'What Comes Next for the Neighborhood Garden', labels: [{ key: 'format', label: 'Standard Format' }, { key: 'audience', label: 'Local Residents' }, { key: 'voice', label: 'Us Weekly' }], toolPreferences: { format: 'standard', audience: 'general', voice: 'us-weekly' }, sourceSnapshots: sources, editorialDirection: 'Explain the upcoming decisions and opportunities to participate.' },
   ];
   function startDrafting() {
     if (timer !== null) return false;
@@ -43,7 +46,7 @@ export function mountEditorialPlanSpecimen(root) {
         article.append(title, text);
         preview.append(article);
       }
-      status.textContent = 'Two drafts created in this preview';
+      status.textContent = 'Five drafts created in this preview';
       opener.disabled = false;
       draft.disabled = false;
     }, tokenNumber('component.drafting.processing-duration'));
@@ -58,7 +61,7 @@ export function mountEditorialPlanSpecimen(root) {
     },
     onCancel({ plans }) {
       for (const plan of plans) edits.set(plan.outputId, { angle: plan.angle, focus: plan.focus, structure: plan.structure, tone: plan.tone });
-      status.textContent = 'Two selected drafts';
+      status.textContent = 'Five selected drafts';
     },
   });
   opener.addEventListener('click', () => {

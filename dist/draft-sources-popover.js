@@ -1,7 +1,7 @@
 import { tokenNumber } from './design-system/runtime.js?v=20261026-drafting-card-size';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { draftSourcesFor } from './source-model.js?v=20261106-own-material-source';
-import { outputIsReady } from './outputs.js?v=20261105-filter-settings';
+import { outputIsReady } from './outputs.js?v=20261120-chip-tooltips';
 export { draftSourcesFor };
 
 let nextPopoverId = 0;

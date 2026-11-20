@@ -1,4 +1,6 @@
-import { editorialPlanDraftContent } from './editorial-plans.js?v=20261117-plan-review';
+import { setCompactChipLabel } from './chip-label.js?v=20261120-chip-tooltips';
+import { getEligibleAudienceDrafts } from './audience-similarity.js?v=20261119-multi-comparison';
+import { editorialPlanDraftContent } from './editorial-plans.js?v=20261119-trend-hunter';
 import { applyParagraphListRevision } from './paragraph-list-revision.js?v=20261030-bullet-request-fix';
 import { mentionsElephant, revisionChangeSummary } from './revision-change-summary.js?v=20261030-declined-revision-details';
 import { syncSelection } from './selection-controls.js?v=20261026-drafting-card-size';
@@ -8,7 +10,7 @@ import { countPreviewWords } from './content-preview.js?v=20261026-drafting-card
 import { createContentCardActions, createContentDirectionIndicator } from './content-card-editing.js?v=20261111-direction-badge';
 import { createRevisionAnimation } from './drafting-animation.js?v=20261030-draft-status-and-history';
 import { topicDraftContent } from './topic-draft.js?v=20261026-drafting-card-size';
-import { formatDraftContent } from './draft-format.js?v=20261026-drafting-card-size';
+import { formatDraftContent } from './draft-format.js?v=20261119-trend-hunter';
 const sampleHeadlines = [
   'A Surprise Studio Session Sparks a New Creative Chapter',
   'The Small-Town Café Behind an Unexpected Pop Culture Moment',
@@ -133,11 +135,7 @@ export function createOutputBadges(output, { maxLabelLength = 20, includeSourceC
       const badge = document.createElement('span');
       badge.className = `output-badge output-badge--${label.key}`;
       const displayLabel = label.key === 'voice' && label.label.trim() === 'US Weekly' ? 'Us Weekly' : label.label;
-      const characters = Array.from(displayLabel);
-      badge.textContent = maxLabelLength && characters.length > maxLabelLength ? `${characters.slice(0, maxLabelLength - 1).join('').trimEnd()}…` : displayLabel;
-      badge.title = displayLabel;
-      badge.setAttribute('aria-label', displayLabel);
-      return badge;
+      return setCompactChipLabel(badge, displayLabel, { maxLength: maxLabelLength });
     });
   if (includeWordCount) {
     const words = createOutputWordCountBadge(output);
@@ -407,7 +405,7 @@ export function variantPanelState(project, requestedView) {
   };
 }
 
-export function renderOutputs(project, requestedView) {
+export function renderOutputs(project, requestedView, { comparisonIds = [] } = {}) {
   for (const animation of draftingAnimations) animation.destroy();
   draftingAnimations.clear();
   const state = variantPanelState(project, requestedView);
@@ -418,11 +416,13 @@ export function renderOutputs(project, requestedView) {
   }
   syncSelection(tabs, state.view, { getValue: tab => tab.dataset.outputView });
   document.querySelector('#output-status-content').setAttribute('aria-labelledby', `output-${state.view}-tab`);
-  document.querySelector('.outputs-footer').hidden = state.view !== 'pending';
+  document.querySelector('.outputs-footer').hidden = state.view !== 'pending' || state.outputs.length === 0;
   const processing = Boolean(project?.outputProcessing);
   const processingLabel = project?.outputProcessing?.kind === 'revision' ? 'Revising Draft' : 'Creating Draft';
   const selectedPending = selectedPendingOutputs(project);
   const selectedIds = new Set(selectedOutputs(project).map(output => output.id));
+  const comparisonEligibleIds = new Set(getEligibleAudienceDrafts(project).map(output => output.id));
+  const comparedIds = new Set(comparisonIds);
   const list = document.querySelector('#output-list');
   document.querySelector('.composer-outputs').setAttribute('aria-busy', String(processing));
   const create = document.querySelector('#create-output');
@@ -442,7 +442,7 @@ export function renderOutputs(project, requestedView) {
     const revising = Boolean(project?.outputProcessing?.ids.includes(output.id));
     const active = Boolean(((ready || output.needsRegeneration) && project.selectedOutputId === output.id)
       || (project.viewOriginalDraft && !ready && project.lastPendingOutputId === output.id && selectedIds.has(output.id)));
-    const selected = ready ? active : selectedIds.has(output.id);
+    const selected = ready ? comparedIds.has(output.id) && comparisonEligibleIds.has(output.id) : selectedIds.has(output.id);
     card.className = 'output-card';
     card.dataset.selected = String(selected);
     card.dataset.active = String(active);
@@ -465,11 +465,11 @@ export function renderOutputs(project, requestedView) {
     open.type = 'button';
     open.className = 'output-open';
     open.dataset.outputId = output.id;
-    open.disabled = revising || (!ready && processing);
-    open.setAttribute('aria-label', `${!ready ? 'Select draft' : 'Open draft'}: ${output.title}`);
-    if (!ready) open.setAttribute('aria-pressed', String(selected));
+    open.disabled = revising || (!ready && processing) || (ready && !comparisonEligibleIds.has(output.id));
+    open.setAttribute('aria-label', `${!ready ? 'Select draft' : 'Select draft for comparison'}: ${output.title}`);
+    open.setAttribute('aria-pressed', String(selected));
     if (active) open.setAttribute('aria-current', 'true');
-    open.title = !ready ? 'Select this content to draft' : active ? 'This draft is open in the editor' : 'Open this draft in the editor';
+    open.title = !ready ? 'Select this content to draft' : open.disabled ? 'This draft is not available for comparison' : 'Select this draft for comparison';
     const top = document.createElement('span');
     top.className = 'output-card-top';
     const badges = document.createElement('span');

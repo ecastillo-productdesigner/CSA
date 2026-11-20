@@ -80,6 +80,7 @@ function setup() {
   const project = { id: 'project' };
   const outputViews = new Map([[project.id, 'created']]);
   const renderedViews = [];
+  let comparisonCancellations = 0;
   const renderOutputs = current => {
     assert.equal(current, project);
     const view = outputViews.get(current.id);
@@ -94,9 +95,10 @@ function setup() {
     $: selector => document.querySelector(selector),
     projects: [project], activeProjectId: project.id, outputViews,
     outputTabTransition: { run: render => render() }, renderOutputs,
+    audienceSimilarityLoading: { cancel() { comparisonCancellations++; } },
   });
   runInContext(productionBinding, context);
-  return { document, audienceItems, audiencePanel, contentItems, contentPanel, list, renderedViews, outputViews, audienceView: () => audienceView };
+  return { document, audienceItems, audiencePanel, contentItems, contentPanel, list, renderedViews, outputViews, audienceView: () => audienceView, comparisonCancellations: () => comparisonCancellations };
 }
 
 test('Content clicks switch To Draft and Drafted when Audience tabs precede Content', () => {
@@ -111,6 +113,7 @@ test('Content clicks switch To Draft and Drafted when Audience tabs precede Cont
   assert.equal(ui.list.scrollTop, 0);
   created.emit('click');
   assert.deepEqual(ui.renderedViews, ['pending', 'created']);
+  assert.equal(ui.comparisonCancellations(), 2);
   assert.equal(ui.audienceView(), 'all');
   assert.equal(ui.audienceItems[0].getAttribute('aria-selected'), 'true');
   assert.equal(ui.audiencePanel.getAttribute('aria-labelledby'), 'audience-all');

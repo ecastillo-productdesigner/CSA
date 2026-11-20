@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildEditorialPlans, applyEditorialPlan, editorialPlanDraftContent } from '../dist/editorial-plans.js';
+import { formatDraftContent } from '../dist/draft-format.js';
 
 const output = (id, extra = {}) => ({
   id, title: 'The School Board Discussion',
@@ -38,6 +39,51 @@ test('plans reflect queued draft settings, source titles, and exact Editorial Di
   assert.match(plans[1].tone, /Conversational and lively/);
   assert.notEqual(plans[0].angle, plans[1].angle);
   assert.notEqual(plans[0].structure, plans[1].structure);
+});
+
+test('new format plans describe their draft structure and retain it after review', () => {
+  for (const [format, label, sections] of [
+    ['what-to-know', 'What to Know', ['What to Know', 'Key Details', 'The Context']],
+    ['video-script', 'Video Script', ['Opening', 'Voiceover', 'Closing']],
+  ]) {
+    const draft = output(format, { toolPreferences: { format, audience: 'general', voice: 'trend-hunter-b2c' } });
+    const [plan] = buildEditorialPlans([draft]);
+    assert.equal(plan.format, label);
+    for (const section of sections) assert.ok(plan.structure.includes(section));
+    assert.equal(plan.voice, 'Trend Hunter B2C');
+    assert.doesNotMatch(plan.structure, /numbered|takeaways/);
+    applyEditorialPlan(draft, { ...plan, tone: 'Use concise, short paragraphs.' }, 100);
+    const original = baseContent();
+    original.paragraphs[1] = 'One source detail. A second detail. A third detail.';
+    const planned = editorialPlanDraftContent(draft, original);
+    assert.equal(planned.format, format);
+    assert.deepEqual([...planned.paragraphs].sort(), [...original.paragraphs].sort(), 'formatting retains complete source paragraphs even with a concise tone');
+    const formatted = formatDraftContent(planned.paragraphs, { format: planned.format, headings: planned.sectionHeadings });
+    const ops = formatted.document.ops;
+    assert.deepEqual(ops.flatMap((op, index) => op.attributes?.header === 2 ? [ops[index - 1].insert] : []), sections);
+    assert.equal(ops.map(op => op.insert).join(''), `${formatted.draftText.split('\n\n').join('\n')}\n`);
+  }
+});
+
+test('new voice settings have readable labels and conservative drafting tones', () => {
+  const voices = [
+    ['house-standard', 'House Standard', /McClatchy brand voice, tone, and style preferences/],
+    ['apple-news', 'Apple News', /main point up front/],
+    ['centre-daily-times', 'Centre Daily Times', /Emphasize local perspectives and community relevance/],
+    ['idaho-statesman', 'Idaho Statesman Voice Guide', /local relevance/],
+    ['msn-syndication', 'MSN Syndication', /broad audience/],
+    ['national-team', 'National Team Voice Guide', /broader significance/],
+    ['kansas-city-star', 'The Kansas City Star Voice Guide', /community relevance/],
+    ['news-observer', 'The News & Observer Voice Guide', /community/],
+    ['trend-hunter-b2c', 'Trend Hunter B2C', /consumer relevance/],
+    ['yahoo-news', 'Yahoo News', /careful attribution/],
+  ];
+  for (const [voice, label, tone] of voices) {
+    const [plan] = buildEditorialPlans([output(voice, { toolPreferences: { format: 'standard', audience: 'general', voice } })]);
+    assert.equal(plan.voice, label);
+    assert.match(plan.tone, tone);
+    assert.doesNotMatch(plan.tone, /official|style guide|exclusive/i);
+  }
 });
 
 test('a saved plan survives opening review again and changing selection order', () => {
@@ -127,6 +173,18 @@ test('reviewed structure can request a list or continuous prose; negative list i
   applyEditorialPlan(draft, { ...plan, structure: 'Use continuous prose, with no numbered list.' }, 100);
   assert.equal(editorialPlanDraftContent(draft, baseContent()).format, 'standard');
   assert.equal(editorialPlanDraftContent(draft, { paragraphs: ['Only an opening.'] }).format, 'standard');
+});
+
+test('reviewed structures can select new formats without requiring five paragraphs', () => {
+  const draft = output('a');
+  const [plan] = buildEditorialPlans([draft]);
+  const content = { paragraphs: ['The opening.', 'The source details.'], sectionHeadings: [] };
+  for (const [structure, format] of [['Use a Video Script.', 'video-script'], ['Use What to Know sections.', 'what-to-know']]) {
+    applyEditorialPlan(draft, { ...plan, structure }, 100);
+    assert.equal(editorialPlanDraftContent(draft, content).format, format);
+  }
+  applyEditorialPlan(draft, { ...plan, structure: 'Replace the video script with continuous prose.' }, 100);
+  assert.equal(editorialPlanDraftContent(draft, content).format, 'standard');
 });
 
 test('concise tone uses shorter paragraphs without deleting sentences or changing numbers', () => {

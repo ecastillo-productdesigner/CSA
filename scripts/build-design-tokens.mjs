@@ -118,7 +118,9 @@ async function main() {
   const {css,flat,csv}=compileTokens(source);
   const outputs={'tokens.css':css,'tokens-flat.json':JSON.stringify({version:source.$extensions['com.csa'].version,tokens:flat},null,2)+'\n','tokens.csv':csv};
   for (const [input, output] of [['../../styles/app.css', '../styles.css'], ['../../styles/guide.css', 'guide.css']]) {
-    outputs[output] = compileStyleSheet(await readFile(new URL(input, dir), 'utf8'), source);
+    let stylesheet = await readFile(new URL(input, dir), 'utf8');
+    if (output === '../styles.css') stylesheet += '\n' + await readFile(new URL('../../styles/audience-similarity.css', dir), 'utf8');
+    outputs[output] = compileStyleSheet(stylesheet, source);
   }
   const exportCSS = compileStyleSheet(await readFile(new URL('../../styles/export.css', dir), 'utf8'), source);
   outputs['export-styles.js'] = '// Generated from design-system tokens and styles/export.css.\nexport const documentStyles = ' + JSON.stringify(css + exportCSS) + ';\n';

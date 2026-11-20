@@ -1,14 +1,18 @@
-import { createRailPanelTransition } from '../navigation.js?v=20261029-source-panel-open';
-import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-drafting-card-size';
-import { bindTabSelection, bindRovingSelection } from '../selection-controls.js?v=20261026-drafting-card-size';
-import { createPanelDisclosure } from '../panel-disclosure.js?v=20261026-drafting-card-size';
-import { createDraftingAnimation, createSourceAddingAnimation } from '../drafting-animation.js?v=20261030-draft-status-and-history';
-import { createSourceAlreadyAddedDialog } from '../source-already-added.js?v=20261026-drafting-card-size';
-import { createSourceAdditionLoading } from '../source-addition-loading.js?v=20261026-drafting-card-size';
-import { createIcon } from '../icons.js?v=20261026-drafting-card-size';
-import { tokenNumber } from './runtime.js?v=20261026-drafting-card-size';
-import { draftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261111-audience-name-variation';
-import { createToolDropdowns } from '../tool-dropdowns.js?v=20261119-voice-favorites';
+import { createRailPanelTransition } from '../navigation.js?v=20261119-trend-hunter';
+import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261119-trend-hunter';
+import { bindTabSelection, bindRovingSelection } from '../selection-controls.js?v=20261119-trend-hunter';
+import { createPanelDisclosure } from '../panel-disclosure.js?v=20261119-trend-hunter';
+import { createDraftingAnimation, createSourceAddingAnimation } from '../drafting-animation.js?v=20261119-trend-hunter';
+import { createSourceAlreadyAddedDialog } from '../source-already-added.js?v=20261119-trend-hunter';
+import { createSourceAdditionLoading } from '../source-addition-loading.js?v=20261119-trend-hunter';
+import { createIcon } from '../icons.js?v=20261119-trend-hunter';
+import { tokenNumber } from './runtime.js?v=20261119-trend-hunter';
+import { draftOptions, getDraftOptions, populateDraftOptions, hasDraftSelection } from '../draft-options.js?v=20261119-trend-hunter';
+import { createToolDropdowns } from '../tool-dropdowns.js?v=20261119-trend-hunter';
+import { createAudienceSuggestionLibrary } from '../audience-suggestions.js?v=20261119-trend-hunter';
+import { createProjectAudienceSuggestions } from '../project-audience-suggestions.js?v=20261119-trend-hunter';
+import { createToolFavorites } from '../tool-favorites.js?v=20261119-trend-hunter';
+import { createSavedDrafts } from '../saved-drafts.js?v=20261120-chip-tooltips';
 
 const navigationMounts = new WeakMap();
 const stateMounts = new WeakMap();
@@ -276,10 +280,56 @@ export function mountNavigationSpecimens(root, { onOpenSource } = {}) {
   return mounted;
 }
 
-export function mountStateSpecimens(root, { favoritesStore, library, audienceSuggestions, notify } = {}) {
+export function mountStateSpecimens(root, { notify } = {}) {
   if (!root) return;
   if (stateMounts.has(root)) return stateMounts.get(root);
   root.classList.add('ds-state-specimens');
+  // This catalog is local to this preview. Do not install an app-wide provider
+  // or use the user's saved projects, role, favorites, or audience library.
+  const records = new Map();
+  const storage = () => ({ getItem: key => records.get(key) || null, setItem: (key, value) => records.set(key, value) });
+  const library = createAudienceSuggestionLibrary({ storage });
+  const favoritesStore = createToolFavorites({ storage });
+  const audienceProject = { id: 'ds-trend-hunter-preview', sources: [
+    { id: 'school', title: 'CMS parents question new school boundaries',
+      text: 'Charlotte-Mecklenburg Schools shared new school boundaries. Parents and teachers ask how the school district plan will affect students and classrooms.', selected: true },
+    { id: 'museum', title: 'Discovery Place museum introduces new science exhibits',
+      text: 'Discovery Place invites families to explore hands-on science exhibits and museum learning programs.', selected: false },
+  ] };
+  const audienceSuggestions = createProjectAudienceSuggestions({ getProject: () => audienceProject, library });
+  let previewRole = 'Trend Hunter';
+  let previewArticle = 'school';
+  const catalogContext = () => ({ role: previewRole, sources: audienceProject.sources, library });
+  const draftOptionsProvider = key => getDraftOptions(key, catalogContext());
+  const catalogPreview = element('section', 'ds-state-specimens');
+  catalogPreview.id = 'ds-trend-hunter-catalog';
+  catalogPreview.setAttribute('aria-labelledby', 'ds-trend-hunter-catalog-heading');
+  const catalogHeading = element('h4', '', 'Trend Hunter Draft Settings');
+  catalogHeading.id = 'ds-trend-hunter-catalog-heading';
+  const roleControls = element('div', 'ds-state-switch ds-inline');
+  roleControls.setAttribute('role', 'group');
+  roleControls.setAttribute('aria-label', 'Preview role');
+  const roleButtons = ['Trend Hunter', 'Journalist'].map(role => {
+    const control = button('', role);
+    control.textContent = role;
+    control.dataset.previewRole = role;
+    roleControls.append(control);
+    return control;
+  });
+  const articleControls = element('div', 'ds-state-switch ds-inline');
+  articleControls.setAttribute('role', 'group');
+  articleControls.setAttribute('aria-label', 'Preview article');
+  const articleButtons = [['school', 'School Article'], ['museum', 'Museum Article'], ['none', 'No Article']].map(([value, label]) => {
+    const control = button('', label);
+    control.textContent = label;
+    control.dataset.previewArticle = value;
+    articleControls.append(control);
+    return control;
+  });
+  const articleSummary = element('p', 'ds-caption');
+  articleSummary.setAttribute('role', 'status');
+  catalogPreview.append(catalogHeading, roleControls, articleControls, articleSummary);
+
   const panel = element('section', 'composer-panel composer-tools ds-disclosure-panel');
   const header = element('div', 'composer-tools-header');
   const heading = element('h2');
@@ -309,6 +359,23 @@ export function mountStateSpecimens(root, { favoritesStore, library, audienceSug
     field.append(fieldLabel, select);
     fields.append(field);
   }
+  const savedField = element('div', 'saved-drafts');
+  savedField.id = 'saved-drafts';
+  const savedLabel = element('label', 'composer-field-label', 'Saved Settings');
+  savedLabel.id = 'saved-drafts-field-label';
+  savedLabel.htmlFor = 'saved-drafts-trigger';
+  const savedTrigger = button('saved-drafts-trigger', 'Saved Settings: None Selected');
+  savedTrigger.id = 'saved-drafts-trigger';
+  savedTrigger.setAttribute('aria-haspopup', 'dialog');
+  savedTrigger.setAttribute('aria-expanded', 'false');
+  savedTrigger.setAttribute('aria-controls', 'saved-drafts-menu');
+  savedTrigger.setAttribute('aria-labelledby', 'saved-drafts-field-label saved-drafts-value');
+  const savedValue = element('span', '', 'None Selected');
+  savedValue.id = 'saved-drafts-value';
+  savedValue.dataset.savedDraftsLabel = '';
+  savedTrigger.append(savedValue, createIcon('keyboard_arrow_down'));
+  savedField.append(savedLabel, savedTrigger);
+  body.append(savedField);
   body.append(fields);
   const direction = element('div', 'composer-direction');
   const directionLabel = element('label', '', 'Editorial Direction');
@@ -404,30 +471,65 @@ export function mountStateSpecimens(root, { favoritesStore, library, audienceSug
   const status = element('p', 'ds-specimen-status');
   status.setAttribute('role', 'status');
   let dropdowns;
+  let savedSettings;
   const disclosure = createPanelDisclosure({ body, trigger: toggle, panel, expanded: true });
   function setExpanded(expanded, options) {
     dropdowns?.close();
+    savedSettings?.close();
     disclosure.setExpanded(expanded, options);
   }
   setExpanded(true, { animate: false });
   toggle.addEventListener('click', () => setExpanded(toggle.getAttribute('aria-expanded') !== 'true'));
-  add.addEventListener('click', () => {
-    if (add.disabled) return;
+  function clearDraftSettings() {
     dropdowns.close();
     directionField.value = '';
     for (const select of fields.querySelectorAll('select')) select.value = '';
     dropdowns.refresh();
     updateAdd();
     status.textContent = '';
+  }
+  add.addEventListener('click', () => {
+    if (add.disabled) return;
+    clearDraftSettings();
     fields.querySelector('.tool-dropdown-trigger')?.focus({ preventScroll: true });
   });
-  root.append(panel, guidance, emptyPreview, loading, status);
-  populateDraftOptions(panel, { library });
-  dropdowns = createToolDropdowns({ root: panel, favoritesStore, audienceSuggestions, notify });
-  const updateAdd = () => { add.disabled = !hasDraftSelection(Object.fromEntries([...fields.querySelectorAll('select')].map(select => [select.closest('.composer-field').dataset.label.toLowerCase(), select.value])), { library }); };
+  catalogPreview.append(panel, element('p', 'ds-caption', 'Trend Hunter includes What to Know, Video Script, and Listicle; General Audience plus three perspectives from the selected article; and 12 publication and team voices. Switch articles to compare audiences, or choose Journalist to inspect the existing catalog for other roles. None Selected clears each field. Saved Settings demonstrates the centered empty message. Choices and favorites in this preview stay separate from saved app data.'));
+  root.append(catalogPreview, guidance, emptyPreview, loading, status);
+  populateDraftOptions(panel, catalogContext());
+  dropdowns = createToolDropdowns({ root: panel, favoritesStore, audienceSuggestions, draftOptionsProvider, notify });
+  const updateAdd = () => { add.disabled = !hasDraftSelection(Object.fromEntries([...fields.querySelectorAll('select')].map(select => [select.closest('.composer-field').dataset.label.toLowerCase(), select.value])), catalogContext()); };
+  savedSettings = createSavedDrafts({
+    getEntries: () => [], getSelection: () => null, isDisabled: () => false,
+    onApply() {}, onClear: clearDraftSettings, onRename: () => false, onRemove() {},
+    onBeforeOpen: () => dropdowns.close(),
+  });
+  savedSettings.render();
+  function refreshCatalog() {
+    dropdowns.close();
+    savedSettings.close();
+    dropdowns.refresh();
+    updateAdd();
+    articleSummary.textContent = previewArticle === 'none' ? 'No article selected. Trend Hunter shows General Audience until source content is available.'
+      : `Example article: ${audienceProject.sources.find(source => source.id === previewArticle).title}`;
+  }
+  const roleSelection = bindRovingSelection({ root: roleControls, items: roleButtons,
+    getValue: control => control.dataset.previewRole,
+    onSelect: role => { previewRole = role; roleSelection.sync(role); refreshCatalog(); },
+  });
+  const articleSelection = bindRovingSelection({ root: articleControls, items: articleButtons,
+    getValue: control => control.dataset.previewArticle,
+    onSelect: article => {
+      previewArticle = article;
+      audienceProject.sources.forEach(source => { source.selected = source.id === article; });
+      articleSelection.sync(article);
+      refreshCatalog();
+    },
+  });
+  roleSelection.sync(previewRole);
+  articleSelection.sync(previewArticle);
   fields.addEventListener('change', updateAdd);
-  updateAdd();
-  const mounted = { setExpanded, destroy() { disclosure.destroy(); contentDisclosure.destroy(); emptySelection.destroy(); emptyTransition.destroy(); draftingAnimations.forEach(drafting => drafting.destroy()); sourceAdding.destroy(); dropdowns.close(); stateMounts.delete(root); } };
+  refreshCatalog();
+  const mounted = { setExpanded, destroy() { disclosure.destroy(); contentDisclosure.destroy(); emptySelection.destroy(); emptyTransition.destroy(); roleSelection.destroy(); articleSelection.destroy(); draftingAnimations.forEach(drafting => drafting.destroy()); sourceAdding.destroy(); savedSettings.close(); dropdowns.destroy(); stateMounts.delete(root); } };
   stateMounts.set(root, mounted);
   return mounted;
 }

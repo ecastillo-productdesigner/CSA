@@ -1,4 +1,4 @@
-import { audienceSuggestionLibrary, demoAudienceSuggestions, suggestedAudienceValue } from './audience-suggestions.js?v=20261111-audience-name-variation';
+import { audienceSuggestionLibrary, demoAudienceSuggestions, suggestedAudienceValue } from './audience-suggestions.js?v=20261119-trend-hunter';
 
 const materialIdentityKeys = ['ownMaterialOutputId', 'attachmentId'];
 function materialIdentities(source) {
@@ -202,5 +202,11 @@ export function createProjectAudienceSuggestions({
     try { return await request; }
     finally { if (pending.get(context.key) === request) pending.delete(context.key); }
   }
-  return { prepare: beforeGenerate, getContext, getOptions: () => library.refresh(), generate, selectSources };
+  return { prepare: beforeGenerate, getContext, getOptions: () => library.refresh(), generate, selectSources,
+    rememberChoice(choice) {
+      const result = library.remember([choice]);
+      if (!result.persisted) notify('Audience saved for this session only');
+      return result;
+    },
+  };
 }

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createContext, runInContext } from 'node:vm';
+import { prepareAudienceSimilarities } from '../dist/audience-similarity-summary.js';
 import { INITIAL_DRAFT_WORD_LIMIT, requestedEditorialWordCount } from '../dist/editorial-word-count.js';
 import { projectOutputs, selectedOutputs, selectedPendingOutputs, outputIsReady, outputWordCount } from '../dist/outputs.js';
 import { buildEditorialPlans, applyEditorialPlan } from '../dist/editorial-plans.js';
@@ -28,7 +29,7 @@ function setup({ role = 'Trend Hunter', savedProject, now: initialNow = 1000 } =
   let timerId = 0;
   let saveSucceeds = true;
   const timers = new Map();
-  const calls = { opened: [], saved: [], rendered: [], populated: [], shown: [], notifications: [], timers: [], flushed: 0 };
+  const calls = { opened: [], saved: [], rendered: [], populated: [], shown: [], notifications: [], timers: [], flushed: 0, similarities: [] };
   const button = { addEventListener(name, handler) { assert.equal(name, 'click'); click = handler; }, focus() {} };
   const reviewButton = { hidden: true, disabled: false, addEventListener(name, handler) { assert.equal(name, 'click'); reviewClick = handler; }, focus() {} };
   const draftLabel = { textContent: 'Draft' };
@@ -44,6 +45,7 @@ function setup({ role = 'Trend Hunter', savedProject, now: initialNow = 1000 } =
     },
     document: { querySelector(selector) { assert.equal(selector, 'dialog[open]'); return review.open ? review : null; } },
     projectOutputs, selectedOutputs, selectedPendingOutputs, outputIsReady, outputWordCount,
+    prepareAudienceSimilarities(current) { const result = prepareAudienceSimilarities(current); calls.similarities.push({ result, savedCount: calls.saved.length, shownCount: calls.shown.length, processing: current.outputProcessing }); return result; },
     buildEditorialPlans, applyEditorialPlan, roleSelector,
     INITIAL_DRAFT_WORD_LIMIT, requestedEditorialWordCount,
     editorialPlanReview: {
@@ -156,6 +158,12 @@ test('confirmation saves detached reviewed plans and starts the existing ten-sec
   assert.ok(ui.project.outputs.every(outputIsReady));
   assert.equal(ui.project.outputs[0].wordCountNoticePending, true, 'Completed shorter-draft notices remain compatible');
   assert.equal(ui.project.outputProcessing, undefined);
+  assert.equal(ui.calls.similarities.length, 1);
+  assert.equal(ui.calls.similarities[0].processing, undefined, 'The finished drafts are eligible when scores are prepared');
+  assert.deepEqual(ui.calls.similarities[0].result.drafts.map(draft => draft.id), ['one', 'two']);
+  assert.equal(ui.calls.similarities[0].result.summaries.size, 2);
+  assert.equal(ui.calls.saved.length, ui.calls.similarities[0].savedCount + 1, 'Prepared scores precede completion persistence');
+  assert.equal(ui.calls.similarities[0].shownCount, 0, 'Prepared scores precede the ready editor view');
 });
 
 test('other roles, no role, and one selected pending draft keep direct drafting', () => {
@@ -379,4 +387,26 @@ test('direct Draft ignores empty selection and cannot replace an active job', ()
   assert.equal(ui.project.outputProcessing, job);
   assert.equal(ui.calls.saved.length, 1);
   assert.deepEqual(ui.calls.timers, [10000]);
+});
+
+test('finishing a later draft includes existing ready drafts in the automatically prepared results', async () => {
+  const ready = { id: 'existing', title: 'Earlier orchard story', status: 'ready', draftText: 'Farmers discussed the apple harvest.', toolPreferences: { audience: 'general' } };
+  const pending = { id: 'new', title: 'New school story', status: 'pending', editorialDirection: '', toolPreferences: { audience: 'wellness-enthusiast' } };
+  const savedProject = { id: 'project', selectedOutputIds: ['new'], outputs: [ready, pending] };
+  const first = prepareAudienceSimilarities(savedProject);
+  assert.equal(first.summaries.size, 0);
+  const ui = setup({ savedProject });
+  ui.run();
+  await ui.advance(10000);
+  assert.deepEqual(ui.calls.populated, ['new'], 'Existing ready drafts are not regenerated');
+  const prepared = ui.calls.similarities.at(-1);
+  assert.deepEqual(prepared.result.drafts.map(item => item.id), ['existing', 'new']);
+  assert.notEqual(prepared.result, first);
+  assert.equal(prepared.result.summaries.size, 2);
+  assert.equal(prepared.result.summaries.get('existing').comparisonCount, 2);
+  assert.equal(prepared.result.summaries.get('new').comparisonCount, 2);
+  assert.equal(prepared.result.summaries.get('existing').includesSourceDraft, true);
+  assert.equal(prepared.result.sourceDraft.isSimilaritySource, true);
+  assert.equal(prepared.shownCount, 0);
+  assert.equal(prepared.processing, undefined);
 });

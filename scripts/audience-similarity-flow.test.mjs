@@ -2,8 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createContext, runInContext } from 'node:vm';
-import { currentAudienceComparison, toggleAudienceComparison } from '../dist/audience-comparison-selection.js';
-import { createSimilaritySourceDraft } from '../dist/audience-similarity-source.js';
+import { prepareAudienceSimilarities } from '../dist/audience-similarity-summary.js';
 import { projectOutputs, outputIsReady, selectedPendingOutputs } from '../dist/outputs.js';
 
 const app = await readFile(new URL('../dist/app.js', import.meta.url), 'utf8');
@@ -14,23 +13,29 @@ const selectionEnd = app.indexOf('function openVariantDirection(', selectionStar
 assert.ok(start >= 0 && end > start && selectionStart >= 0 && selectionEnd > selectionStart);
 const production = app.slice(start, end) + app.slice(selectionStart, selectionEnd);
 const draft = (id, audience = 'Parents') => ({ id, title: `Story ${id}`, status: 'ready', draftText: 'Families are discussing the school proposal.', toolPreferences: { audience }, labels: [{ key: 'audience', label: audience }] });
-function setup({ view = 'created', outputs = [draft('one'), draft('two')], selected = [], onFlush = () => {}, mobile = false } = {}) {
+
+function setup({ view = 'created', outputs = [draft('one'), draft('two')], onFlush = () => {}, mobile = false } = {}) {
   const project = { id: 'project', outputs };
-  const footer = { hidden: true };
-  let click;
-  const button = { disabled: true, addEventListener(type, handler) { assert.equal(type, 'click'); click = handler; } };
+  const footer = { hidden: false };
+  const buttonListeners = [];
+  const button = { disabled: false, addEventListener(type, handler) { buttonListeners.push({ type, handler }); } };
   const items = outputs.map(output => ({ tagName: 'LI', dataset: { outputId: output.id } }));
   const controls = outputs.map((output, index) => ({ dataset: { outputId: output.id }, disabled: false, focus() {}, closest: selector => selector === 'li' ? items[index] : null }));
+  const links = outputs.map((output, index) => ({ dataset: { viewSimilarities: output.id }, disabled: false, focus() {}, closest: selector => selector === 'li' ? items[index] : null }));
   const listeners = {};
-  const list = { visible: true, addEventListener(type, handler) { listeners[type] = handler; }, querySelectorAll: () => controls, getClientRects() { return this.visible ? [{}] : []; } };
-  const calls = { flushed: 0, opened: [], notifications: [], rendered: 0, saved: 0, editorOpened: [], batches: [], canceled: 0, contentCollapsed: [], rails: [], mediaQueries: [] };
+  const list = {
+    visible: true,
+    addEventListener(type, handler) { listeners[type] = handler; },
+    querySelectorAll(selector) { return selector === '.output-open' ? controls : links; },
+    getClientRects() { return this.visible ? [{}] : []; },
+  };
+  const calls = { flushed: 0, opened: [], notifications: [], rendered: 0, saved: 0, editorOpened: [], batches: [], prepared: [], canceled: 0, contentCollapsed: [], rails: [], mediaQueries: [] };
   let pending = null;
   const loading = {
     isRunning: false,
     start(batch) {
       if (this.isRunning) return false;
       this.isRunning = true;
-      button.disabled = true;
       pending = batch;
       calls.batches.push(batch);
       return true;
@@ -51,7 +56,8 @@ function setup({ view = 'created', outputs = [draft('one'), draft('two')], selec
   };
   const context = createContext({
     projects: [project], activeProjectId: project.id, outputViews: new Map([[project.id, view]]),
-    audienceComparisonSelections: new Map([[project.id, selected]]), currentAudienceComparison, toggleAudienceComparison, createSimilaritySourceDraft, projectOutputs, outputIsReady, selectedPendingOutputs,
+    prepareAudienceSimilarities(current) { const result = prepareAudienceSimilarities(current); calls.prepared.push(result); return result; },
+    projectOutputs, outputIsReady, selectedPendingOutputs,
     $: selector => ({ '#audience-similarity-footer': footer, '#check-audience-similarity': button, '#output-list': list })[selector],
     document: { activeElement: null },
     window: { matchMedia(query) { calls.mediaQueries.push(query); return { matches: mobile }; } },
@@ -59,7 +65,7 @@ function setup({ view = 'created', outputs = [draft('one'), draft('two')], selec
     setContentCollapsed(value) { calls.contentCollapsed.push(value); },
     railNavigation: { open(name) { calls.rails.push(name); } },
     richEditor: { flush() { calls.flushed++; onFlush(project); } },
-    audienceSimilarityDialog: { open(payload) { calls.opened.push(payload); } },
+    audienceSimilarityDialog: { open(payload) { calls.opened.push(payload); return true; } },
     audienceSimilarityLoading: loading,
     renderOutputs() { loading.cancel(); calls.rendered++; context.updateAudienceSimilarityAction(project); },
     notify(message) { calls.notifications.push(message); },
@@ -68,8 +74,23 @@ function setup({ view = 'created', outputs = [draft('one'), draft('two')], selec
   });
   runInContext(production, context);
   return {
-    project, footer, button, calls, context, loading, items, list, recalculate: request => context.startAudienceSimilarity(request), complete: () => loading.complete(), click: () => click(), refresh: () => context.updateAudienceSimilarityAction(project),
-    selected: () => context.audienceComparisonSelections.get(project.id),
+    project, footer, button, buttonListeners, calls, context, loading, items, list, links,
+    recalculate: request => context.startAudienceSimilarity(request), complete: () => loading.complete(),
+    view: id => context.viewAudienceSimilarities(id, links.find(link => link.dataset.viewSimilarities === id)),
+    refresh: () => context.updateAudienceSimilarityAction(project),
+    clickView(id) {
+      const link = links.find(item => item.dataset.viewSimilarities === id);
+      const control = controls.find(item => item.dataset.outputId === id);
+      // View lives inside the footer and card, so its action must win over both.
+      const ancestors = { '[data-view-similarities]': link, '.output-card-similarity': {}, '.output-card': { querySelector: () => control } };
+      listeners.click({ target: { closest: selector => ancestors[selector] || null } });
+    },
+    clickSimilarityFooter(id, surface) {
+      const control = controls.find(item => item.dataset.outputId === id);
+      const footer = { className: 'output-card-similarity' };
+      const target = { surface, closest: selector => selector === '.output-card-similarity' ? footer : selector === '.output-card' ? { querySelector: () => control } : null };
+      listeners.click({ target });
+    },
     select(id) {
       const control = controls.find(item => item.dataset.outputId === id);
       context.document.activeElement = control;
@@ -79,261 +100,227 @@ function setup({ view = 'created', outputs = [draft('one'), draft('two')], selec
   };
 }
 
-test('Drafted requires at least two explicitly selected cards', () => {
+test('Drafted has no separate Check Similarity action or card selection requirement', () => {
   const ui = setup();
-  ui.refresh();
-  assert.equal(ui.footer.hidden, false);
-  assert.equal(ui.button.disabled, true);
-  ui.click();
-  assert.equal(ui.calls.opened.length, 0);
-  ui.select('one');
-  assert.equal(ui.button.disabled, true);
-  ui.select('two');
-  assert.equal(ui.button.disabled, false);
-  ui.select('one');
-  assert.equal(ui.button.disabled, true);
-});
-
-test('comparison selection is separate from the active editor and pending selection', () => {
-  const ui = setup();
-  ui.project.selectedOutputId = 'one';
-  ui.project.selectedOutputIds = ['pending'];
-  ui.clickCardAction();
-  ui.select('one'); ui.select('two');
-  assert.deepEqual(ui.calls.editorOpened, []);
-  assert.equal(ui.project.selectedOutputId, 'one');
-  assert.deepEqual(ui.project.selectedOutputIds, ['pending']);
-  assert.deepEqual(ui.selected(), ['one', 'two']);
-  ui.context.outputViews.set('project', 'pending');
   ui.refresh();
   assert.equal(ui.footer.hidden, true);
   assert.equal(ui.button.disabled, true);
-  ui.click();
-  assert.equal(ui.calls.opened.length, 0);
+  assert.deepEqual(ui.buttonListeners, []);
+  assert.equal(ui.view('two'), true);
+  assert.equal(ui.calls.opened.length, 1);
+  assert.equal(ui.calls.batches.length, 0);
+  assert.equal(ui.loading.isRunning, false);
 });
 
-test('opens the exact selected pair with current edited text and a separate read-only Source Draft', () => {
-  const ui = setup({ outputs: [draft('one'), draft('two'), draft('three')], selected: ['three', 'one'], onFlush(project) { project.outputs[0].draftText = 'Latest edited body from the current editor.'; } });
+test('View Similarities opens immediately with the clicked draft, all eligible peers, and latest edited text', () => {
+  const ui = setup({ outputs: [draft('one'), draft('two', 'Students'), draft('three', 'Taxpayers')], onFlush(project) { project.outputs[0].draftText = 'Latest edited body from the current editor.'; } });
+  ui.project.selectedOutputId = 'one';
+  ui.project.selectedOutputIds = ['pending'];
   ui.project.sourceDraft = { title: 'Original article', draftText: 'The original article describes the school proposal.' };
   const originalSource = structuredClone(ui.project.sourceDraft);
-  ui.refresh(); ui.click();
+  ui.clickView('three');
   assert.equal(ui.calls.flushed, 1);
-  assert.equal(ui.calls.opened.length, 0);
-  ui.complete();
-  assert.equal(ui.calls.flushed, 2);
   assert.equal(ui.calls.opened.length, 1);
-  assert.deepEqual(ui.calls.opened[0].groups[0].drafts.map(item => item.id), ['three', 'one']);
-  assert.equal(ui.calls.opened[0].groups[0].drafts[1].draftText, 'Latest edited body from the current editor.');
-  assert.equal(ui.calls.opened[0].opener, ui.button);
-  const source = ui.calls.opened[0].sourceDraft;
-  assert.equal(source.isSimilaritySource, true);
-  assert.equal(source.similaritySourceOrigin, 'source-draft');
-  assert.equal(source.draftText, originalSource.draftText);
-  assert.notEqual(source, ui.project.sourceDraft);
-  assert.deepEqual([source, ...ui.calls.opened[0].groups[0].drafts].map(item => item.id), ['similarity-source:project', 'three', 'one']);
-  assert.deepEqual(ui.selected(), ['three', 'one']);
-  assert.deepEqual(ui.project.outputs.map(item => item.id), ['one', 'two', 'three']);
-  assert.equal(ui.calls.opened[0].groups[0].drafts.some(item => item.isSimilaritySource), false);
-  assert.equal(ui.project.outputs.includes(source), false);
+  assert.equal(ui.calls.batches.length, 0);
+  const opened = ui.calls.opened[0];
+  assert.deepEqual(opened.groups[0].drafts.map(item => item.id), ['one', 'two', 'three']);
+  assert.equal(opened.referenceId, 'three');
+  assert.equal(opened.groups[0].drafts[0].draftText, 'Latest edited body from the current editor.');
+  assert.equal(opened.opener, ui.links[2]);
+  assert.equal(opened.comparisonResults, ui.calls.prepared.at(-1).comparisons);
+  assert.equal(opened.sourceDraft, ui.calls.prepared.at(-1).sourceDraft, 'The table uses the same Source Draft as the card average');
+  assert.equal(opened.sourceDraft.isSimilaritySource, true);
+  assert.equal(opened.sourceDraft.similaritySourceOrigin, 'source-draft');
+  assert.equal(opened.sourceDraft.draftText, originalSource.draftText);
+  assert.equal(ui.project.outputs.includes(opened.sourceDraft), false);
   assert.deepEqual(ui.project.sourceDraft, originalSource);
+  assert.equal(ui.project.selectedOutputId, 'one');
+  assert.deepEqual(ui.project.selectedOutputIds, ['pending']);
+  assert.deepEqual(ui.calls.editorOpened, []);
   assert.equal(ui.calls.saved, 0);
   assert.equal(ui.project.outputProcessing, undefined);
 });
 
-test('three selected drafts enable comparison and all selections reach the popup', () => {
-  const ui = setup({ outputs: [draft('one'), draft('two'), draft('three')] });
-  ui.select('one'); ui.select('two'); ui.select('three');
-  assert.deepEqual(ui.selected(), ['one', 'two', 'three']);
-  assert.deepEqual(ui.calls.notifications, []);
-  assert.equal(ui.button.disabled, false);
-  ui.click();
+test('ordinary Drafted card clicks open the editor and nested actions do not', () => {
+  const ui = setup();
+  ui.clickCardAction();
+  assert.deepEqual(ui.calls.editorOpened, []);
+  ui.select('two');
+  assert.deepEqual(ui.calls.editorOpened, ['two']);
   assert.equal(ui.calls.opened.length, 0);
-  ui.complete();
-  assert.deepEqual(ui.calls.opened[0].groups[0].drafts.map(item => item.id), ['one', 'two', 'three']);
-  ui.select('one');
-  assert.deepEqual(ui.selected(), ['two', 'three']);
-  assert.equal(ui.button.disabled, false);
 });
 
-test('different selected audiences enable comparison and open the popup', () => {
-  const ui = setup({ outputs: [draft('one'), draft('two', 'Students')] });
-  ui.select('one'); ui.select('two');
-  assert.deepEqual(ui.selected(), ['one', 'two']);
-  assert.equal(ui.button.disabled, false);
-  assert.deepEqual(ui.calls.notifications, []);
-  ui.click();
-  assert.equal(ui.calls.opened.length, 0);
-  ui.complete();
+test('score, Average similarity label, and empty footer area select their draft instead of opening results', () => {
+  for (const surface of ['score', 'average-label', 'empty-footer']) {
+    const ui = setup();
+    ui.project.selectedOutputId = 'one';
+    ui.clickSimilarityFooter('two', surface);
+    assert.deepEqual(ui.calls.editorOpened, ['two'], surface);
+    assert.equal(ui.calls.opened.length, 0, surface);
+    assert.equal(ui.calls.batches.length, 0, surface);
+  }
+});
+
+test('View inside the same footer opens only similarities and leaves the selected editor unchanged', () => {
+  const ui = setup();
+  ui.project.selectedOutputId = 'one';
+  ui.clickView('two');
+  assert.deepEqual(ui.calls.editorOpened, []);
+  assert.equal(ui.project.selectedOutputId, 'one');
   assert.equal(ui.calls.opened.length, 1);
-  assert.deepEqual(ui.calls.opened[0].groups[0].drafts.map(item => item.id), ['one', 'two']);
+  assert.equal(ui.calls.opened[0].referenceId, 'two');
+  assert.equal(ui.calls.opened[0].opener, ui.links[1]);
+  assert.equal(ui.calls.batches.length, 0);
 });
 
-test('deleting the current body during flush invalidates a previously selected pair', () => {
-  const ui = setup({ selected: ['one', 'two'], onFlush(project) { project.outputs[0].document = { ops: [] }; } });
-  ui.refresh();
-  assert.equal(ui.button.disabled, false);
-  ui.click();
+test('pending card clicks still select content for drafting', () => {
+  const ui = setup({ view: 'pending', outputs: [{ ...draft('one'), status: 'pending' }] });
+  ui.select('one');
+  assert.deepEqual(Array.from(ui.project.selectedOutputIds), ['one']);
+  assert.equal(ui.calls.saved, 1);
+  ui.select('one');
+  assert.deepEqual(Array.from(ui.project.selectedOutputIds), []);
+  assert.deepEqual(ui.calls.editorOpened, []);
   assert.equal(ui.calls.opened.length, 0);
-  assert.equal(ui.button.disabled, true);
-  assert.deepEqual(ui.selected(), ['two']);
 });
 
-test('deleted, archived, and inactive projects cannot open a comparison', () => {
+test('one eligible draft, unknown reference, and a pending view cannot open comparison', () => {
+  for (const ui of [setup({ outputs: [draft('one')] }), setup({ view: 'pending' })]) {
+    ui.view('one');
+    assert.equal(ui.calls.opened.length, 0);
+    assert.equal(ui.calls.batches.length, 0);
+  }
+  const ui = setup();
+  ui.view('missing');
+  assert.equal(ui.calls.opened.length, 0);
+});
+
+test('deleted, archived, and inactive projects cannot open comparison', () => {
   for (const update of [ui => { ui.project.deletedAt = 1; }, ui => { ui.project.archivedAt = 1; }, ui => { ui.context.activeProjectId = 'another'; }]) {
-    const ui = setup({ selected: ['one','two'] }); update(ui); ui.click();
+    const ui = setup(); update(ui); ui.view('one');
     assert.equal(ui.calls.opened.length, 0);
     assert.equal(ui.calls.flushed, 0);
   }
 });
 
-test('processing or removed selected drafts are pruned instead of silently substituting another pair', () => {
-  const ui = setup({ outputs: [draft('one'), draft('two'), draft('three')], selected: ['one','two'] });
-  ui.project.outputProcessing = { kind: 'revision', ids: ['one'] };
-  ui.refresh(); ui.click();
-  assert.equal(ui.button.disabled, true);
-  assert.deepEqual(ui.selected(), ['two']);
+test('a processing project cannot open stale comparison results', () => {
+  const ui = setup({ outputs: [draft('one'), draft('two'), draft('three')] });
+  ui.project.outputProcessing = { kind: 'revision', ids: ['two'] };
+  ui.view('two');
   assert.equal(ui.calls.opened.length, 0);
-  ui.project.outputs = ui.project.outputs.filter(item => item.id !== 'two');
-  ui.refresh();
-  assert.deepEqual(ui.selected(), []);
+  ui.view('one');
+  assert.equal(ui.calls.opened.length, 0);
+  assert.equal(ui.calls.flushed, 0);
+  delete ui.project.outputProcessing;
+  ui.view('one');
+  assert.deepEqual(ui.calls.opened[0].groups[0].drafts.map(item => item.id), ['one', 'two', 'three']);
 });
 
-
-test('pending card clicks still select content for drafting rather than comparison', () => {
-  const ui = setup({ view: 'pending', outputs: [{ ...draft('one'), status: 'pending' }] });
-  ui.select('one');
-  assert.deepEqual(Array.from(ui.project.selectedOutputIds), ['one']);
-  assert.deepEqual(ui.selected(), []);
-  assert.equal(ui.calls.saved, 1);
-  ui.select('one');
-  assert.deepEqual(Array.from(ui.project.selectedOutputIds), []);
+test('flushing an empty body invalidates the reference before opening', () => {
+  const ui = setup({ onFlush(project) { project.outputs[0].document = { ops: [] }; } });
+  ui.view('one');
+  assert.equal(ui.calls.opened.length, 0);
+  assert.equal(ui.calls.batches.length, 0);
 });
 
+for (const mobile of [false, true]) {
+  test(`explicit edit recalculation keeps the panel loading flow on ${mobile ? 'mobile' : 'desktop'}`, () => {
+    const ui = setup({ outputs: [draft('one'), draft('two'), draft('three')], mobile });
+    const sourceDraft = { ...draft('original-source'), isSimilaritySource: true };
+    ui.project.sourceDraft = { title: 'Current source title', draftText: 'Current source body before the edit.' };
+    const request = { draftIds: ['one', 'two', 'three'], sourceDraft, editedDraft: ui.project.outputs[0], referenceId: 'three', focusDraftId: 'one', focusOrigin: 'row', scrollLeft: 140, scrollTop: 180 };
+    ui.recalculate(request);
+    assert.equal(ui.calls.opened.length, 0);
+    assert.equal(ui.loading.isRunning, true);
+    assert.equal(ui.calls.batches.length, 1);
+    assert.deepEqual(Array.from(ui.calls.batches[0].items), ui.items);
+    assert.deepEqual(ui.calls.contentCollapsed, [false]);
+    assert.deepEqual(ui.calls.rails, mobile ? ['variants'] : []);
+    ui.project.sourceDraft.draftText = 'Updated source body when recalculation completes.';
+    ui.complete();
+    assert.equal(ui.calls.opened.length, 1);
+    const restored = ui.calls.opened[0];
+    for (const key of ['editedDraft', 'referenceId', 'focusDraftId', 'focusOrigin', 'scrollLeft', 'scrollTop']) assert.equal(restored[key], request[key], key);
+    assert.deepEqual(restored.groups[0].drafts.map(item => item.id), ['one', 'two', 'three']);
+    assert.equal(restored.comparisonResults, ui.calls.prepared.at(-1).comparisons);
+    assert.equal(restored.sourceDraft, ui.calls.prepared.at(-1).sourceDraft);
+    assert.notEqual(restored.sourceDraft, request.sourceDraft, 'Old popup baselines cannot differ from the refreshed card calculation');
+    assert.equal(restored.sourceDraft.draftText, ui.project.sourceDraft.draftText);
+  });
+}
 
-test('one loading batch includes only the selected cards and blocks duplicate requests until completion', () => {
-  const ui = setup({ outputs: [draft('one'), draft('two'), draft('three')], selected: ['three', 'one'] });
-  ui.refresh();
-  ui.click();
-  assert.equal(ui.calls.opened.length, 0);
-  assert.equal(ui.loading.isRunning, true);
-  assert.equal(ui.calls.batches.length, 1);
-  assert.deepEqual(Array.from(ui.calls.batches[0].items), [ui.items[0], ui.items[2]]);
-  assert.equal(ui.button.disabled, true);
-  ui.refresh();
-  assert.equal(ui.button.disabled, true, 'refreshing eligibility keeps a running check disabled');
-  ui.click();
+test('recalculation rejects incomplete, stale, reordered, and foreign edit requests', () => {
+  const ui = setup({ outputs: [draft('one'), draft('two'), draft('three')] });
+  const valid = { draftIds: ['one', 'two', 'three'], editedDraft: ui.project.outputs[0], referenceId: 'one' };
+  for (const request of [
+    {},
+    { ...valid, draftIds: ['one', 'three'] },
+    { ...valid, draftIds: ['two', 'one', 'three'] },
+    { ...valid, draftIds: ['one', 'two', 'missing'] },
+    { ...valid, editedDraft: draft('one') },
+    { ...valid, referenceId: 'missing' },
+  ]) {
+    ui.recalculate(request);
+    assert.equal(ui.calls.batches.length, 0);
+    assert.equal(ui.calls.opened.length, 0);
+    assert.equal(ui.loading.isRunning, false);
+  }
+});
+
+test('recalculation blocks duplicate requests and uses the final editor flush', () => {
+  let flushCount = 0;
+  const ui = setup({ onFlush(project) { project.outputs[0].draftText = ++flushCount === 1 ? 'Initial editor body.' : 'Final editor body after loading.'; } });
+  const request = { draftIds: ['one', 'two'], editedDraft: ui.project.outputs[0], referenceId: 'one' };
+  ui.recalculate(request);
+  ui.recalculate(request);
   assert.equal(ui.calls.batches.length, 1);
   assert.equal(ui.calls.flushed, 1);
-  assert.deepEqual(ui.selected(), ['three', 'one']);
-  assert.equal(ui.project.outputProcessing, undefined);
-  assert.equal(ui.complete(), true);
-  assert.equal(ui.loading.isRunning, false);
-  assert.equal(ui.button.disabled, false);
-  assert.equal(ui.calls.flushed, 2);
-  assert.equal(ui.calls.opened.length, 1);
-  assert.deepEqual(ui.calls.opened[0].groups[0].drafts.map(item => item.id), ['three', 'one']);
-  assert.equal(ui.complete(), false);
-  assert.equal(ui.calls.opened.length, 1);
-});
-
-test('completion uses the latest editor flush rather than the body from the start of the delay', () => {
-  let flushCount = 0;
-  const ui = setup({ selected: ['one', 'two'], onFlush(project) {
-    flushCount++;
-    project.outputs[0].draftText = flushCount === 1 ? 'The initial editor body.' : 'The final editor body after the loading delay.';
-  } });
-  ui.click();
-  assert.equal(ui.calls.opened.length, 0);
-  assert.equal(ui.project.outputs[0].draftText, 'The initial editor body.');
   ui.complete();
-  assert.equal(ui.calls.opened[0].groups[0].drafts[0].draftText, 'The final editor body after the loading delay.');
-  assert.equal(flushCount, 2);
+  assert.equal(ui.calls.opened.length, 1);
+  assert.equal(ui.calls.opened[0].groups[0].drafts[0].draftText, 'Final editor body after loading.');
+  assert.equal(ui.calls.flushed, 2);
+  assert.equal(ui.complete(), false);
 });
 
-test('a delayed comparison is discarded when its project, view, selection, or draft eligibility changes', () => {
+test('delayed recalculation is discarded after project, view, or eligibility changes', () => {
   const changes = [
     ['inactive project', ui => { ui.context.activeProjectId = 'another'; }],
     ['deleted project', ui => { ui.project.deletedAt = 1; }],
     ['archived project', ui => { ui.project.archivedAt = 1; }],
     ['replacement project object', ui => { ui.context.projects = [{ ...ui.project }]; }],
     ['different view', ui => { ui.context.outputViews.set(ui.project.id, 'pending'); }],
-    ['different selected draft', ui => { ui.context.audienceComparisonSelections.set(ui.project.id, ['one', 'three']); }],
-    ['selection reordered', ui => { ui.context.audienceComparisonSelections.set(ui.project.id, ['two', 'one']); }],
-    ['selection reduced', ui => { ui.context.audienceComparisonSelections.set(ui.project.id, ['one']); }],
     ['draft removed', ui => { ui.project.outputs = ui.project.outputs.filter(output => output.id !== 'two'); }],
     ['draft processing', ui => { ui.project.outputProcessing = { kind: 'revision', ids: ['two'] }; }],
     ['draft body cleared', ui => { ui.project.outputs[1].document = { ops: [] }; }],
+    ['additional draft', ui => { ui.project.outputs.push(draft('three')); }],
   ];
   for (const [reason, change] of changes) {
-    const ui = setup({ outputs: [draft('one'), draft('two'), draft('three')], selected: ['one', 'two'] });
-    ui.click();
+    const ui = setup();
+    ui.recalculate({ draftIds: ['one', 'two'], editedDraft: ui.project.outputs[0], referenceId: 'one' });
     assert.equal(ui.loading.isRunning, true, reason);
-    assert.equal(ui.calls.batches.length, 1, reason);
-    change(ui);
-    ui.complete();
+    change(ui); ui.complete();
     assert.equal(ui.calls.opened.length, 0, reason);
     assert.equal(ui.loading.isRunning, false, reason);
   }
 });
 
-
-for (const mobile of [false, true]) {
-  test(`recalculation uses the shared Content panel loading flow and preserves comparison context on ${mobile ? 'mobile' : 'desktop'}`, () => {
-    const ui = setup({ outputs: [draft('one'), draft('two'), draft('three')], selected: ['three', 'one'], mobile });
-    const sourceDraft = { ...draft('original-source'), isSimilaritySource: true };
-    ui.project.sourceDraft = { title: 'A later source', draftText: 'Later source text must not replace the saved comparison baseline.' };
-    const request = { draftIds: ['three', 'one'], sourceDraft, editedDraft: ui.project.outputs[0], referenceId: 'three', focusDraftId: 'one', focusOrigin: 'row', scrollLeft: 140, scrollTop: 180 };
-    ui.recalculate(request);
-    assert.equal(ui.calls.opened.length, 0);
-    assert.equal(ui.loading.isRunning, true);
-    assert.equal(ui.calls.batches.length, 1);
-    assert.deepEqual(Array.from(ui.calls.batches[0].items), [ui.items[0], ui.items[2]]);
-    assert.deepEqual(ui.calls.contentCollapsed, [false]);
-    assert.deepEqual(ui.calls.rails, mobile ? ['variants'] : []);
-    assert.equal(ui.calls.mediaQueries.length, 1);
-    ui.complete();
-    assert.equal(ui.calls.opened.length, 1);
-    const restored = ui.calls.opened[0];
-    for (const key of ['sourceDraft', 'editedDraft', 'referenceId', 'focusDraftId', 'focusOrigin', 'scrollLeft', 'scrollTop']) assert.equal(restored[key], request[key], key);
-    assert.deepEqual(restored.groups[0].drafts.map(item => item.id), ['three', 'one']);
-    assert.deepEqual(ui.selected(), ['three', 'one']);
-    assert.equal(restored.opener, ui.button);
-  });
-}
-
-test('an initial comparison does not reopen the Content panel or mobile rail', () => {
-  const ui = setup({ selected: ['one', 'two'], mobile: true });
-  ui.click();
-  assert.deepEqual(ui.calls.contentCollapsed, []);
-  assert.deepEqual(ui.calls.rails, []);
-  assert.deepEqual(ui.calls.mediaQueries, []);
-  ui.complete();
-  assert.equal(ui.calls.opened.length, 1);
-});
-
-test('recalculation rejects stale selection IDs and drafts from another project before starting loading', () => {
-  for (const request of [
-    { draftIds: ['one', 'three'] },
-    { draftIds: ['two', 'one'] },
-    { draftIds: ['one'] },
-    { draftIds: ['one', 'two'], editedDraft: draft('one') },
-  ]) {
-    const ui = setup({ outputs: [draft('one'), draft('two'), draft('three')], selected: ['one', 'two'] });
-    ui.recalculate(request);
-    assert.equal(ui.calls.batches.length, 0);
-    assert.equal(ui.calls.opened.length, 0);
-    assert.equal(ui.loading.isRunning, false);
-    assert.deepEqual(ui.calls.contentCollapsed, []);
-    assert.deepEqual(ui.calls.rails, []);
-  }
-});
-
-test('closing the Content panel before loading finishes prevents reopening the comparison popup', () => {
-  const ui = setup({ selected: ['one', 'two'] });
+test('closing the Content panel prevents reopening the recalculated popup', () => {
+  const ui = setup();
   ui.recalculate({ draftIds: ['one', 'two'], editedDraft: ui.project.outputs[0], referenceId: 'two' });
   assert.equal(ui.loading.isRunning, true);
   ui.list.visible = false;
   ui.complete();
   assert.equal(ui.calls.opened.length, 0);
-  assert.equal(ui.loading.isRunning, false);
+});
+
+
+test('clearing the edited draft saves it and explains why comparison is unavailable', () => {
+  for (const outputs of [[draft('one'), draft('two')], [draft('one'), draft('two'), draft('three')]]) {
+    const ui = setup({ outputs });
+    ui.project.outputs[0].document = { ops: [] };
+    ui.recalculate({ draftIds: outputs.map(output => output.id), editedDraft: outputs[0], referenceId: 'one' });
+    assert.equal(ui.calls.batches.length, 0);
+    assert.equal(ui.calls.opened.length, 0);
+    assert.deepEqual(ui.calls.notifications, ['Changes saved. This draft needs body text to compare similarities']);
+  }
 });

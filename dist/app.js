@@ -1,7 +1,6 @@
 import { createAudienceSimilarityLoading } from './audience-similarity-loading.js?v=20261120-panel-recalculation';
-import { createSimilaritySourceDraft } from './audience-similarity-source.js?v=20261120-panel-recalculation';
-import { currentAudienceComparison, toggleAudienceComparison } from './audience-comparison-selection.js?v=20261119-plan-scroll';
-import { createAudienceSimilarityDialog } from './audience-similarity-dialog.js?v=20261120-panel-recalculation';
+import { prepareAudienceSimilarities } from './audience-similarity-summary.js?v=20261123-score-first';
+import { createAudienceSimilarityDialog } from './audience-similarity-dialog.js?v=20261123-score-first';
 import { buildEditorialPlans, applyEditorialPlan } from './editorial-plans.js?v=20261119-trend-hunter';
 import { createEditorialPlanReview } from './editorial-plan-review.js?v=20261119-plan-scroll';
 import { INITIAL_DRAFT_WORD_LIMIT, requestedEditorialWordCount } from './editorial-word-count.js?v=20261111-word-count-notice';
@@ -37,7 +36,7 @@ import { createNewProjectUpload } from './new-project-upload.js?v=20261117-word-
 import { createRailNavigation } from './navigation.js?v=20261105-role-selector';
 import { createProjectSources } from './sources.js?v=20261106-own-material-source';
 import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261120-chip-tooltips';
-import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, outputWordCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261120-chip-tooltips';
+import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, outputWordCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261123-score-first';
 import { createEditorTabs } from './editor-tabs.js?v=20261120-chip-tooltips';
 import { createContentCardEditing } from './content-card-editing.js?v=20261111-direction-badge';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-drafting-card-size';
@@ -108,7 +107,6 @@ const sourceAlreadyAdded = createSourceAlreadyAddedDialog({
 let dashboard = null;
 const outputTimers = new Map();
 const outputViews = new Map();
-const audienceComparisonSelections = new Map();
 populateDraftOptions(document);
 const audienceSuggestions = createProjectAudienceSuggestions({
   getProject: () => projects.find(project => project.id === activeProjectId),
@@ -359,9 +357,7 @@ function renderOutputs(project) {
   $('#show-sources').hidden = project?.kind !== 'draft';
   const view = variantPanelState(project, outputViews.get(project?.id)).view;
   outputViews.set(project?.id, view);
-  const comparison = currentAudienceComparison(project, audienceComparisonSelections.get(project?.id));
-  audienceComparisonSelections.set(project?.id, comparison.ids);
-  renderProjectOutputs(project, view, { comparisonIds: comparison.ids });
+  renderProjectOutputs(project, view);
   updateAudienceSimilarityAction(project, view);
   updateEditorialPlanAction(project);
   contentCardEditing.render(project);
@@ -385,51 +381,63 @@ function renderOutputs(project) {
   labels.hidden = !selectedOutput;
 }
 
-function updateAudienceSimilarityAction(project, view = outputViews.get(project?.id)) {
-  const footer = $('#audience-similarity-footer');
-  const button = $('#check-audience-similarity');
-  const unavailable = !project || Boolean(project.deletedAt || project.archivedAt);
-  footer.hidden = unavailable || view !== 'created';
-  const comparison = currentAudienceComparison(project, audienceComparisonSelections.get(project?.id));
-  audienceComparisonSelections.set(project?.id, comparison.ids);
-  button.disabled = footer.hidden || audienceSimilarityLoading.isRunning || !comparison.group;
+function updateAudienceSimilarityAction() {
+  // Results live on each Drafted card; the retained button only hosts the
+  // explicitly requested edit/recalculation loading state.
+  $('#audience-similarity-footer').hidden = true;
+  $('#check-audience-similarity').disabled = true;
+}
+
+function viewAudienceSimilarities(outputId, opener) {
+  if (audienceSimilarityLoading.isRunning) return false;
+  const project = projects.find(entry => entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
+  if (!project || project.outputProcessing || outputViews.get(project.id) !== 'created') return false;
+  richEditor.flush();
+  const prepared = prepareAudienceSimilarities(project);
+  if (!prepared.group || !prepared.summaries.has(outputId)) return false;
+  const trigger = opener?.isConnected === false
+    ? [...$('#output-list').querySelectorAll('[data-view-similarities]')].find(button => button.dataset.viewSimilarities === outputId)
+    : opener;
+  return audienceSimilarityDialog.open({
+    groups: [prepared.group], comparisonResults: prepared.comparisons,
+    sourceDraft: prepared.sourceDraft,
+    referenceId: outputId, opener: trigger,
+  });
 }
 
 function startAudienceSimilarity(request = {}) {
-  if (audienceSimilarityLoading.isRunning) return;
+  if (audienceSimilarityLoading.isRunning || !request.editedDraft || !Array.isArray(request.draftIds)) return;
   const project = projects.find(entry => entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
-  if (!project || outputViews.get(project.id) !== 'created') return;
-  if (request.editedDraft && !projectOutputs(project).includes(request.editedDraft)) return;
-  // Include the latest editor changes before calculating scores.
+  if (!project || project.outputProcessing || outputViews.get(project.id) !== 'created') return;
+  if (!projectOutputs(project).includes(request.editedDraft)) return;
   richEditor.flush();
-  const comparison = currentAudienceComparison(project, audienceComparisonSelections.get(project.id));
-  updateAudienceSimilarityAction(project);
-  if (!comparison.group) return;
-  const selectedIds = [...comparison.ids];
-  if (request.draftIds && (request.draftIds.length !== selectedIds.length || request.draftIds.some((id, index) => id !== selectedIds[index]))) return;
-  if (request.draftIds) {
-    setContentCollapsed(false);
-    if (window.matchMedia(breakpointQuery()).matches) railNavigation.open('variants');
+  const prepared = prepareAudienceSimilarities(project);
+  const draftIds = prepared.drafts.map(draft => draft.id);
+  if (!draftIds.includes(request.editedDraft.id)) {
+    notify('Changes saved. This draft needs body text to compare similarities');
+    return;
   }
+  if (!prepared.group || !draftIds.includes(request.referenceId)
+    || request.draftIds.length !== draftIds.length || request.draftIds.some((id, index) => id !== draftIds[index])) return;
+  setContentCollapsed(false);
+  if (window.matchMedia(breakpointQuery()).matches) railNavigation.open('variants');
   const items = [...$('#output-list').querySelectorAll('.output-open')]
-    .filter(control => selectedIds.includes(control.dataset.outputId))
+    .filter(control => draftIds.includes(control.dataset.outputId))
     .map(control => control.closest('li'));
   audienceSimilarityLoading.start({ items, onComplete() {
-    // A delayed result belongs only to this project, view, and exact selection.
     const currentProject = projects.find(entry => entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
-    if (currentProject !== project || outputViews.get(project.id) !== 'created') {
-      updateAudienceSimilarityAction(currentProject);
-      return;
-    }
+    if (currentProject !== project || project.outputProcessing || outputViews.get(project.id) !== 'created') return;
     richEditor.flush();
-    const current = currentAudienceComparison(project, audienceComparisonSelections.get(project.id));
-    updateAudienceSimilarityAction(project);
-    if (!current.group || current.ids.length !== selectedIds.length || current.ids.some((id, index) => id !== selectedIds[index])) return;
+    const current = prepareAudienceSimilarities(project);
+    const currentIds = current.drafts.map(draft => draft.id);
+    if (!current.group || currentIds.length !== draftIds.length || currentIds.some((id, index) => id !== draftIds[index])) return;
     if ($('#output-list').getClientRects?.().length === 0) return;
-    audienceSimilarityDialog.open({ ...request, groups: [current.group], sourceDraft: request.sourceDraft || createSimilaritySourceDraft(project, current.group.drafts), opener: $('#check-audience-similarity') });
+    const opener = [...$('#output-list').querySelectorAll('[data-view-similarities]')]
+      .find(button => button.dataset.viewSimilarities === request.referenceId);
+    audienceSimilarityDialog.open({ ...request, groups: [current.group], comparisonResults: current.comparisons,
+      sourceDraft: current.sourceDraft, opener });
   } });
 }
-$('#check-audience-similarity').addEventListener('click', () => startAudienceSimilarity());
 
 function selectOutputView(view) {
   const project = projects.find(entry => entry.id === activeProjectId);
@@ -1185,6 +1193,11 @@ $('.create-variant').addEventListener('click', () => {
 });
 
 $('#output-list').addEventListener('click', event => {
+  const similarity = event.target.closest('[data-view-similarities]');
+  if (similarity) {
+    if (!similarity.disabled) viewAudienceSimilarities(similarity.dataset.viewSimilarities, similarity);
+    return;
+  }
   const project = projects.find(entry => entry.id === activeProjectId);
   if (!project) return;
   const direction = event.target.closest('[data-variant-direction]');
@@ -1226,12 +1239,7 @@ $('#output-list').addEventListener('click', event => {
     return;
   }
   if (outputViews.get(project.id) !== 'created' || project.deletedAt || project.archivedAt) return;
-  const restoreFocus = document.activeElement === card;
-  richEditor.flush();
-  const selection = toggleAudienceComparison(project, audienceComparisonSelections.get(project.id), output.id);
-  audienceComparisonSelections.set(project.id, selection.ids);
-  renderOutputs(project);
-  if (restoreFocus) [...$('#output-list').querySelectorAll('.output-open')].find(button => button.dataset.outputId === output.id)?.focus({ preventScroll: true });
+  openEditorTab(output.id);
 });
 
 function openVariantDirection(button) {
@@ -1376,6 +1384,8 @@ function finishOutputProcessing(project, renderWhenReady = true) {
   if (latestCreated && job.kind !== 'revision') { project.selectedOutputId = latestCreated.id; project.viewOriginalDraft = false; }
   delete project.selectedPendingOutputIds;
   delete project.outputProcessing;
+  // Calculate as part of drafting/revision completion, before the ready UI appears.
+  prepareAudienceSimilarities(project);
   if (job.kind === 'revision') project.updatedAt = Date.now();
   saveProjects();
   if (active && renderWhenReady) {

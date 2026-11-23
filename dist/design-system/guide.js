@@ -1,4 +1,4 @@
-import { mountAudienceSimilaritySpecimen } from './audience-similarity-specimen.js?v=20261120-panel-recalculation';
+import { mountAudienceSimilaritySpecimen } from './audience-similarity-specimen.js?v=20261123-score-first';
 import { mountEditorialPlanSpecimen } from './editorial-plan-specimen.js?v=20261120-chip-tooltips';
 import { mountEditorTabsSpecimen } from './editor-tabs-specimen.js?v=20261120-chip-tooltips';
 import { mountAnimationSpecimens } from './animation-specimens.js?v=20261111-source-paper-count';

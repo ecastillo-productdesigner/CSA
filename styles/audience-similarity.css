@@ -62,6 +62,20 @@ body:has(.audience-similarity-dialog[open]) { overflow: hidden; }
 .audience-similarity-verdict[data-band="medium"] { background: var(--csa-component-audience-similarity-verdict-medium-background); color: var(--csa-component-audience-similarity-verdict-medium-text); }
 .audience-similarity-verdict[data-band="high"] { background: var(--csa-component-audience-similarity-verdict-high-background); color: var(--csa-component-audience-similarity-verdict-high-text); }
 
+/* Ready draft cards expose their prepared average before the results action. */
+.output-card-similarity { display: flex; flex-wrap: wrap; grid-column: 1 / -1; grid-row: 3; align-items: center; justify-content: space-between; gap: var(--csa-foundation-space-8); min-width: 0; margin-inline: var(--csa-foundation-space-10); padding-block: var(--csa-foundation-space-8) var(--csa-foundation-space-10); border-top: var(--csa-foundation-border-width-1) solid var(--csa-semantic-color-border-default); cursor: inherit; }
+.output-card-similarity-summary { display: flex; flex: 1 0 auto; align-items: center; gap: var(--csa-foundation-space-8); min-width: 0; }
+.output-card-similarity-summary .audience-similarity-verdict { flex-shrink: 0; }
+.output-card-similarity-label { min-width: 0; white-space: nowrap; color: var(--csa-semantic-color-text-secondary); font-family: var(--csa-semantic-typography-body-font-family); font-size: var(--csa-foundation-font-size-12); line-height: var(--csa-foundation-line-height-16); font-weight: var(--csa-foundation-font-weight-400); }
+/* A compact Sources-style pill sits inside a full-size pointer target. */
+.output-card-similarity-view { position: relative; isolation: isolate; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; min-width: var(--csa-foundation-space-44); min-height: var(--csa-foundation-space-44); margin-inline-start: auto; padding: var(--csa-foundation-space-4) var(--csa-foundation-space-10); border: 0; border-radius: var(--csa-component-chip-radius); background: transparent; color: var(--csa-semantic-color-action-primary); font-family: var(--csa-semantic-typography-body-font-family); font-size: var(--csa-foundation-font-size-12); line-height: var(--csa-foundation-line-height-20); font-weight: var(--csa-foundation-font-weight-600); white-space: nowrap; text-decoration: none; }
+.output-card-similarity-view::before { content: ""; position: absolute; z-index: -1; inset-inline: 0; top: 50%; height: var(--csa-component-chip-height); border-radius: inherit; background: transparent; transform: translateY(-50%); pointer-events: none; }
+.output-card-similarity-view.tertiary-button:not(:disabled):is(:hover, :active) { background: transparent; text-decoration: none; }
+.output-card-similarity-view:not(:disabled):is(:hover, :active)::before { background: var(--csa-component-icon-hover-background); }
+.output-card-similarity-view:focus-visible { outline: none; }
+.output-card-similarity-view:focus-visible::before { outline: var(--csa-foundation-border-width-2) solid var(--csa-semantic-color-border-focus); outline-offset: calc(-1 * var(--csa-foundation-border-width-2)); }
+.output-card[data-revising="true"] > .output-card-similarity { visibility: hidden; }
+
 /* The card selection and edit action are separate keyboard-accessible buttons. */
 .audience-similarity-draft-select { display: grid; align-content: space-between; gap: var(--csa-foundation-space-16); width: 100%; min-width: 0; min-height: 0; padding: var(--csa-foundation-space-10); border: 0; border-radius: inherit; background: transparent; color: inherit; text-align: left; }
 .audience-similarity-draft-chips { display: flex; align-items: center; gap: var(--csa-foundation-space-8); min-width: 0; max-width: calc(100% - var(--csa-foundation-space-44)); overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; }

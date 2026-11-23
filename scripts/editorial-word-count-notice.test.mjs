@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createContext, runInContext } from 'node:vm';
+import { prepareAudienceSimilarities } from '../dist/audience-similarity-summary.js';
 import { INITIAL_DRAFT_WORD_LIMIT, requestedEditorialWordCount } from '../dist/editorial-word-count.js';
 import { projectOutputs, selectedOutputs, selectedPendingOutputs, outputIsReady, outputWordCount } from '../dist/outputs.js';
 
@@ -42,7 +43,7 @@ function draftFlow({ project: savedProject, now: initialNow = 1000, active = tru
       return control;
     },
     document: { querySelector: selector => { assert.equal(selector, 'dialog[open]'); return dialog.open ? dialog : null; } },
-    projectOutputs, selectedOutputs, selectedPendingOutputs, outputIsReady, outputWordCount,
+    projectOutputs, selectedOutputs, selectedPendingOutputs, outputIsReady, outputWordCount, prepareAudienceSimilarities,
     roleSelector: { value: '' },
     INITIAL_DRAFT_WORD_LIMIT, requestedEditorialWordCount,
     outputTimers: new Map(), outputViews: new Map(),

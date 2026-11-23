@@ -86,7 +86,7 @@ export function getEligibleAudienceDrafts(project) {
   const busy = new Set(Array.isArray(project.outputProcessing?.ids) ? project.outputProcessing.ids : []);
   const seen = new Set();
   return (Array.isArray(project.outputs) ? project.outputs : []).filter(output => {
-    if (!ready(output) || typeof output.title !== 'string' || seen.has(output.id) || busy.has(output.id)
+    if (!ready(output) || output.isSimilaritySource || typeof output.title !== 'string' || seen.has(output.id) || busy.has(output.id)
       || output.id === project.ownMaterialOutputId) return false;
     seen.add(output.id);
     return true;

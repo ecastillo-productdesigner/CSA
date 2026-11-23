@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createAudienceSimilarityDialog, similarityScoreBand } from '../dist/audience-similarity-dialog.js';
+import { prepareAudienceSimilarities, audienceSimilarityPairKey } from '../dist/audience-similarity-summary.js';
 
 class Element {
   constructor(tagName) {
@@ -1130,4 +1131,55 @@ test('invalid restored reference or focus falls back to the first regular draft 
   assert.equal(document.activeElement, ui.dismiss);
   assert.equal(ui.pairs.scrollLeft, 120);
   assert.equal(ui.body.scrollTop, 80);
+});
+
+
+test('opens prepared pair results immediately, computes Source separately, and refreshes edited content', t => {
+  const ui = setup(t);
+  const project = { outputs: [draft('a'), draft('b')] };
+  const prepared = prepareAudienceSimilarities(project);
+  const pair = prepared.comparisons.get(audienceSimilarityPairKey('a', 'b'));
+  // A distinct supplied estimate makes accidental recomputation observable.
+  const deliveredPair = { ...pair, metrics: pair.metrics.map(metric => metric.key === 'body' ? { ...metric, value: 37 } : metric) };
+  const delivered = new Map([[audienceSimilarityPairKey('a', 'b'), deliveredPair]]);
+  const sourceDraft = { ...draft('source'), isSimilaritySource: true };
+  assert.equal(ui.controller.open({ groups: [prepared.group], comparisonResults: delivered, sourceDraft, referenceId: 'a' }), true);
+  assert.deepEqual(ui.selectedIds(), ['a']);
+  assert.deepEqual(ui.comparisons().map(row => row.dataset.comparisonId), ['source', 'b']);
+  assert.equal(cls(ui.metric('body', 'b'), 'audience-similarity-table-value').textContent, '37%');
+  assert.equal(cls(ui.metric('body', 'source'), 'audience-similarity-table-value').textContent, '100%');
+  assert.equal(ui.recalculations.length, 0);
+  ui.field('b').fire('click');
+  assert.equal(cls(ui.metric('body', 'a'), 'audience-similarity-table-value').textContent, '37%', 'Prepared pair scores work in either direction');
+  project.outputs[1].draftText = 'Orchards flourished beside mountains while farmers harvested apples.';
+  ui.field('a').fire('click');
+  assert.equal(cls(ui.metric('body', 'b'), 'audience-similarity-table-value').textContent, '0%', 'Content changes invalidate the cached comparison');
+  assert.equal(deliveredPair.metrics.find(metric => metric.key === 'body').value, 37, 'Rendering does not mutate supplied results');
+});
+
+test('each card average equals the Overall column including the first Source Draft row', t => {
+  const ui = setup(t);
+  const project = {
+    id: 'source-average-project',
+    sourceDraft: { title: 'School funding proposal', draftText: 'The board reviewed school funding.\n\nFamilies are awaiting another meeting.' },
+    outputs: [
+      draft('a', 'general', 'The board reviewed school funding.\n\nFamilies are awaiting another meeting.', 'School funding proposal'),
+      draft('b', 'wellness-enthusiast', 'Families discussed the school proposal.\n\nPublic meetings start next month.', 'Families discuss schools'),
+      draft('c', 'millennial-pop-culture', 'A cinema opens beside the town square.\n\nVisitors celebrated the opening.', 'New cinema opens'),
+      draft('d', 'trend-chasing-fashion-shopper', 'The board reviewed school funding.\n\nNew proposals await a decision.', 'Board reviews new proposals'),
+    ],
+  };
+  const prepared = prepareAudienceSimilarities(project);
+  assert.equal(ui.controller.open({ groups: [prepared.group], sourceDraft: prepared.sourceDraft, comparisonResults: prepared.comparisons }), true);
+  for (const reference of prepared.drafts) {
+    ui.field(reference.id).fire('click');
+    const rows = ui.comparisons();
+    const summary = prepared.summaries.get(reference.id);
+    assert.equal(rows[0].dataset.comparisonId, prepared.sourceDraft.id);
+    assert.equal(rows.some(row => row.dataset.comparisonId === reference.id), false);
+    const displayed = rows.map(row => Number.parseInt(cls(row, 'audience-similarity-verdict').textContent, 10));
+    assert.equal(summary.score, Math.round(displayed.reduce((total, score) => total + score, 0) / displayed.length));
+    assert.equal(summary.comparisonCount, rows.length);
+    assert.equal(summary.includesSourceDraft, true);
+  }
 });

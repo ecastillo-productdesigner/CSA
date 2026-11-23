@@ -2,6 +2,7 @@ import { createSimilarityDraftEditor } from './audience-similarity-editor.js?v=2
 import { setCompactChipLabel } from './chip-label.js?v=20261120-chip-tooltips';
 import { createIcon } from './icons.js?v=20261026-drafting-card-size';
 import { compareAudienceDrafts, draftAudienceLabel, audienceSimilarityVerdict } from './audience-similarity.js?v=20261119-similarity-rings';
+import { audienceSimilarityPairKey, audienceSimilarityDraftSignature } from './audience-similarity-summary.js?v=20261123-score-first';
 
 const text = value => typeof value === 'string' ? value.trim() : '';
 
@@ -59,6 +60,8 @@ export function createAudienceSimilarityDialog({ host = document.body, id = 'aud
   let drafts = [];
   let referenceDraft = null;
   let allowedPairs = new Map();
+  let preparedComparisons = new Map();
+  let preparedDraftSignatures = new Map();
   let cards = [];
   let opener = null;
   let destroyed = false;
@@ -120,6 +123,12 @@ export function createAudienceSimilarityDialog({ host = document.body, id = 'aud
 
   function canCompare(left, right) {
     return Boolean(allowedPairs.get(left.id)?.has(right.id));
+  }
+
+  function comparisonFor(left, right) {
+    const unchanged = preparedDraftSignatures.get(left.id) === audienceSimilarityDraftSignature(left)
+      && preparedDraftSignatures.get(right.id) === audienceSimilarityDraftSignature(right);
+    return (unchanged && preparedComparisons.get(audienceSimilarityPairKey(left.id, right.id))) || compareAudienceDrafts(left, right);
   }
 
   function selectDraft(draft) {
@@ -305,7 +314,7 @@ export function createAudienceSimilarityDialog({ host = document.body, id = 'aud
         }
         heading.append(label);
         row.append(heading);
-        const comparison = compareAudienceDrafts(referenceDraft, draft);
+        const comparison = comparisonFor(referenceDraft, draft);
         const verdict = comparison ? audienceSimilarityVerdict(comparison.metrics) : { score: null, label: 'Not available', band: null };
         const overall = node('td');
         const badge = node('span', 'audience-similarity-verdict', verdict.score === null ? '—' : `${verdict.score}%`);
@@ -370,6 +379,8 @@ export function createAudienceSimilarityDialog({ host = document.body, id = 'aud
     drafts = [];
     referenceDraft = null;
     allowedPairs.clear();
+    preparedComparisons = new Map();
+    preparedDraftSignatures = new Map();
     cards = [];
     pairs.replaceChildren();
     results.replaceChildren();
@@ -381,12 +392,15 @@ export function createAudienceSimilarityDialog({ host = document.body, id = 'aud
   return {
     element: dialog,
     get isOpen() { return Boolean(dialog.open); },
-    open({ groups: sourceGroups, sourceDraft = null, opener: trigger = doc.activeElement, referenceId = null, focusDraftId = null, focusOrigin = null, scrollLeft = 0, scrollTop = 0 } = {}) {
+    open({ groups: sourceGroups, sourceDraft = null, comparisonResults = null, opener: trigger = doc.activeElement, referenceId = null, focusDraftId = null, focusOrigin = null, scrollLeft = 0, scrollTop = 0 } = {}) {
       if (destroyed || dialog.open || pendingRecalculation || !Array.isArray(sourceGroups)) return false;
+      preparedComparisons = comparisonResults instanceof Map ? comparisonResults : new Map();
+      preparedDraftSignatures = new Map([...sourceGroups.flatMap(group => Array.isArray(group?.drafts) ? group.drafts : []), sourceDraft]
+        .filter(draft => draft && text(draft.id)).map(draft => [draft.id, audienceSimilarityDraftSignature(draft)]));
       const valid = sourceGroups.filter(group => group && text(group.key) && text(group.label) && Array.isArray(group.drafts) && group.drafts.length > 1
         && group.drafts.every(draft => draft && !draft.isSimilaritySource && text(draft.id))
         && new Set(group.drafts.map(draft => draft.id)).size === group.drafts.length
-        && group.drafts.slice(1).every(draft => compareAudienceDrafts(group.drafts[0], draft)));
+        && group.drafts.slice(1).every(draft => comparisonFor(group.drafts[0], draft)));
       if (!valid.length) return false;
       closePanels();
       const byId = new Map();
@@ -401,7 +415,7 @@ export function createAudienceSimilarityDialog({ host = document.body, id = 'aud
         }
       }
       drafts = [...byId.values()];
-      if (sourceDraft?.isSimilaritySource && !byId.has(sourceDraft.id) && drafts.every(draft => compareAudienceDrafts(sourceDraft, draft))) {
+      if (sourceDraft?.isSimilaritySource && !byId.has(sourceDraft.id) && drafts.every(draft => comparisonFor(sourceDraft, draft))) {
         allowedPairs.set(sourceDraft.id, new Set(drafts.map(draft => draft.id)));
         for (const draft of drafts) allowedPairs.get(draft.id).add(sourceDraft.id);
         drafts.unshift(sourceDraft);

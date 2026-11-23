@@ -1,8 +1,7 @@
-import { createSimilaritySourceDraft } from '../audience-similarity-source.js?v=20261120-panel-recalculation';
-import { currentAudienceComparison, toggleAudienceComparison } from '../audience-comparison-selection.js?v=20261119-plan-scroll';
-import { createOutputBadges } from '../outputs.js?v=20261120-chip-tooltips';
-import { createAudienceSimilarityDialog } from '../audience-similarity-dialog.js?v=20261120-panel-recalculation';
-import { createAudienceSimilarityLoading } from '../audience-similarity-loading.js?v=20261120-panel-recalculation';
+import { prepareAudienceSimilarities } from '../audience-similarity-summary.js?v=20261123-score-first';
+import { createOutputBadges, createOutputSimilarityFooter } from '../outputs.js?v=20261123-score-first';
+import { createAudienceSimilarityDialog } from '../audience-similarity-dialog.js?v=20261123-score-first';
+import { createAudienceSimilarityLoading } from '../audience-similarity-loading.js?v=20261123-score-first';
 
 // Isolated fictional records. The production model computes these comparisons;
 // the specimen never reads or writes project storage.
@@ -36,7 +35,6 @@ const sampleDrafts = () => [
 export function mountAudienceSimilaritySpecimen(root) {
   if (!root) return;
   const doc = root.ownerDocument || document;
-  const opener = root.querySelector('[data-check-similarity]');
   const status = root.querySelector('[data-similarity-status]');
   const list = root.querySelector('[data-similarity-cards]');
   const controls = [...root.querySelectorAll('[data-similarity-state]')];
@@ -44,11 +42,15 @@ export function mountAudienceSimilaritySpecimen(root) {
   const comparison = createAudienceSimilarityDialog({
     id: 'ds-audience-similarity-dialog',
     onSaveDraft(draft, patch) { Object.assign(draft, patch); render(); return true; },
-    onRecalculate: startComparison,
+    onRecalculate: recalculate,
   });
-  const loading = createAudienceSimilarityLoading({ list, button: opener });
+  let loading = null;
   let state = 'ready';
-  let selectedIds = [];
+  let activeId = project.outputs[0].id;
+  let prepared = null;
+
+  const findViewAction = id => [...list.querySelectorAll('[data-view-similarities]')]
+    .find(button => button.dataset.viewSimilarities === id);
 
   function renderCards() {
     list.replaceChildren(...project.outputs.map(output => {
@@ -56,7 +58,7 @@ export function mountAudienceSimilaritySpecimen(root) {
       const card = doc.createElement('article');
       card.className = 'output-card';
       card.dataset.ready = 'true';
-      card.dataset.selected = String(selectedIds.includes(output.id));
+      card.dataset.selected = String(activeId === output.id);
       const badges = doc.createElement('span');
       badges.className = 'output-badges';
       badges.setAttribute('role', 'group');
@@ -66,82 +68,100 @@ export function mountAudienceSimilaritySpecimen(root) {
       heading.type = 'button';
       heading.className = 'output-open';
       heading.dataset.outputId = output.id;
-      heading.setAttribute('aria-pressed', String(selectedIds.includes(output.id)));
-      heading.setAttribute('aria-label', `Select draft for comparison: ${output.title}`);
+      heading.setAttribute('aria-pressed', String(activeId === output.id));
+      heading.setAttribute('aria-label', `Preview draft: ${output.title}`);
       const title = doc.createElement('strong');
       title.className = 'output-card-title';
       title.textContent = output.title;
       title.title = output.title;
       heading.append(title);
-      card.addEventListener('click', () => {
+      card.addEventListener('click', event => {
+        if (event.target.closest('[data-view-similarities]')) return;
         const restoreFocus = doc.activeElement === heading;
-        const next = toggleAudienceComparison(project, selectedIds, output.id);
-        selectedIds = next.ids;
+        activeId = output.id;
         render();
         if (restoreFocus) [...list.querySelectorAll('[data-output-id]')].find(button => button.dataset.outputId === output.id)?.focus({ preventScroll: true });
       });
       card.append(badges, heading);
+      const summary = prepared.summaries.get(output.id);
+      if (summary) {
+        const footer = createOutputSimilarityFooter(output, summary);
+        const action = footer.querySelector('[data-view-similarities]');
+        action.setAttribute('aria-controls', 'ds-audience-similarity-dialog');
+        action.addEventListener('click', event => {
+          event.stopPropagation();
+          openComparison(output.id, action);
+        });
+        card.append(footer);
+      }
       item.append(card);
       return item;
     }));
   }
 
   function render() {
-    loading.cancel();
-    const selection = currentAudienceComparison(project, selectedIds);
-    selectedIds = selection.ids;
-    opener.disabled = !selection.group;
-    status.textContent = state === 'ready' ? '3 drafts across 3 audiences' : '1 draft for Wellness Enthusiast';
+    loading?.destroy();
+    loading = null;
+    prepared = prepareAudienceSimilarities(project);
+    status.textContent = state === 'ready' ? '3 drafts · Similarities ready' : '1 draft for Wellness Enthusiast';
     for (const control of controls) control.setAttribute('aria-pressed', String(control.dataset.similarityState === state));
     renderCards();
   }
 
   for (const control of controls) {
     control.addEventListener('click', () => {
-      loading.cancel();
+      loading?.destroy();
+      loading = null;
       state = control.dataset.similarityState;
       project.outputs = state === 'ready' ? sampleDrafts() : sampleDrafts().slice(0, 1);
-      selectedIds = [];
+      activeId = project.outputs[0].id;
       render();
     });
   }
-  function startComparison(request = {}) {
-    if (loading.isRunning) return false;
-    const selection = currentAudienceComparison(project, selectedIds);
-    if (!selection.group || (request.editedDraft && !project.outputs.includes(request.editedDraft))) return false;
-    const pendingIds = Array.isArray(request.draftIds) ? [...request.draftIds] : [...selection.ids];
-    if (pendingIds.length !== selection.ids.length
-      || pendingIds.some((id, index) => id !== selection.ids[index])) {
-      render();
-      return false;
-    }
+  function openComparison(referenceId, opener, context = {}) {
+    if (!prepared.group || loading?.isRunning) return false;
+    return comparison.open({
+      ...context, groups: [prepared.group], comparisonResults: prepared.comparisons,
+      sourceDraft: prepared.sourceDraft,
+      referenceId, opener,
+    });
+  }
+
+  // Initial results are already prepared with the drafts. The existing timed
+  // loading treatment is reserved for an explicit recalculation after editing.
+  function recalculate(request = {}) {
+    if (loading?.isRunning || !prepared.group
+      || (request.editedDraft && !project.outputs.includes(request.editedDraft))) return false;
+    const ids = prepared.drafts.map(draft => draft.id);
+    const pendingIds = Array.isArray(request.draftIds) ? [...request.draftIds] : ids;
+    if (pendingIds.length !== ids.length || pendingIds.some((id, index) => id !== ids[index])) return false;
     const context = { ...request, draftIds: pendingIds };
     const itemsById = new Map([...list.querySelectorAll('[data-output-id]')]
       .map(button => [button.dataset.outputId, button.closest('li')]));
     const items = pendingIds.map(id => itemsById.get(id)).filter(Boolean);
-    if (items.length !== pendingIds.length) {
-      render();
-      return false;
-    }
+    const opener = findViewAction(request.referenceId) || findViewAction(ids[0]);
+    if (items.length !== pendingIds.length || !opener) return false;
+    loading = createAudienceSimilarityLoading({ list, button: opener, status });
     return loading.start({
       items,
       onComplete() {
-        const current = currentAudienceComparison(project, selectedIds);
+        const current = prepareAudienceSimilarities(project);
+        const currentIds = current.drafts.map(draft => draft.id);
         if (!current.group || (context.editedDraft && !project.outputs.includes(context.editedDraft))
-          || current.ids.length !== pendingIds.length
-          || current.ids.some((id, index) => id !== pendingIds[index])) {
+          || currentIds.length !== pendingIds.length
+          || currentIds.some((id, index) => id !== pendingIds[index])) {
           render();
           return;
         }
-        comparison.open({ ...context, groups: [current.group], sourceDraft: context.sourceDraft || createSimilaritySourceDraft(project, current.group.drafts), opener });
+        render();
+        openComparison(context.referenceId, findViewAction(context.referenceId) || findViewAction(currentIds[0]), context);
       },
     });
   }
 
-  opener.addEventListener('click', () => startComparison());
   render();
   window.addEventListener('pagehide', () => {
-    loading.destroy();
+    loading?.destroy();
     comparison.destroy();
   }, { once: true });
   return comparison;

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createContext, runInContext } from 'node:vm';
+import { prepareAudienceSimilarities } from '../dist/audience-similarity-summary.js';
 import { randomUUID } from 'node:crypto';
 import { parseSourceLinks, formatSourceLinks, sourceLinkArticles } from '../dist/source-links.js';
 import { classifyProjectSearchInput } from '../dist/project-search-input.js';
@@ -106,7 +107,7 @@ function setup(t, { target = null, active = null, projects = [], dialogOpen = tr
   const context = createContext({
     partitionSourceAdditions, findDuplicateSource, sourceIdentityKey, sourceAlreadyAdded: { open: options => calls.duplicatePopups.push(options) },
     AbortController, setTimeout, crypto: { randomUUID }, document, classifyProjectSearchInput, sampleSearchSources, parseSourceLinks, formatSourceLinks, sourceLinkArticles, projectTitleFromSources, normalizeWordCount,
-    projectOutputs, selectedOutputs, outputIsReady, outputWordCount, populateOutputContent, reviseSampleOutput, clearTimeout,
+    projectOutputs, selectedOutputs, outputIsReady, outputWordCount, populateOutputContent, reviseSampleOutput, clearTimeout, prepareAudienceSimilarities,
     INITIAL_DRAFT_WORD_LIMIT, requestedEditorialWordCount,
     projectSourcesPanel: { waitForAddition: (id, source, count) => { calls.additionWaits.push(id); calls.additionCounts.push(count); assert.equal(calls.sourcePanels.at(-1), 'sources', 'Project Sources must open before its loading animation starts'); return holdAddition ? addition.promise : Promise.resolve(true); } },
     renderProjectSources: (project, options) => { calls.sourceRenders.push(project.id); calls.sourceRenderOptions.push(options); },

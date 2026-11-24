@@ -580,7 +580,7 @@ test('archived and deleted topic searches stay unchanged when a fresh draft work
   assert.deepEqual(ui.calls.shown, [created.id]);
 });
 
-test('an Add Source topic keeps its target and opens transient results without creating a project', async t => {
+test('an Add Source topic routes its query to the captured project without creating a project', async t => {
   const existing = { id: 'target-project', kind: 'draft', sources: [] };
   const ui = setup(t, { projects: [existing], active: existing.id, target: existing.id });
   assert.equal(await ui.submit('  Local school openings  '), true);
@@ -651,17 +651,33 @@ for (const addingSources of [false, true]) {
       return nodes.get(selector);
     };
     let sourcesOpen = true;
+    let drawerOpen = true;
     const closures = [];
     const shown = [];
+    const saved = [];
+    let flushed = 0;
+    const targetProject = { id: 'original-project', title: 'Existing project', kind: 'draft', sources: [], outputs: [] };
     const searchProject = { id: 'topic-search', title: 'School openings', kind: 'search', sources: [{ type: 'search', title: 'School openings' }] };
     const context = createContext({
-      crypto: { randomUUID }, projects: [searchProject], activeProjectId: 'original-project', sourceTargetProjectId: 'original-project',
+      crypto: { randomUUID }, projects: [searchProject, targetProject], activeProjectId: 'original-project', sourceTargetProjectId: 'original-project', sampleSearchSources, sourceIdentityKey,
       document: { body: get('body') }, $: get,
       window: { matchMedia: () => ({ matches: true }), scrollTo() {} },
       closeComposer() {}, closeProfile() {},
+      richEditor: { flush() { flushed++; } },
+      saveProjects() { saved.push(clone(targetProject)); },
+      showEditorProject(project) {
+        assert.equal(sourcesOpen, false, 'Sources must be closed before the existing workspace is shown');
+        assert.equal(drawerOpen, false, 'the left drawer must be closed before the existing workspace is shown');
+        get('body').classList.add('showing-composer');
+        shown.push({ project: clone(project), options: { workspace: true } });
+      },
       railNavigation: {
         // Sources intentionally survives transient-panel cleanup on mobile.
         closeTransient() {},
+        closeDrawer() {
+          assert.equal(sourcesOpen, false, 'close Sources before collapsing the drawer');
+          drawerOpen = false;
+        },
         close(name, restoreFocus, options) {
           closures.push({ name, restoreFocus, options: clone(options) });
           if (name === 'sources') sourcesOpen = false;
@@ -674,16 +690,28 @@ for (const addingSources of [false, true]) {
         },
       },
     });
-    runInContext(productionFunction('function showSourceAdditionResults(', '\nfunction renderSourceStory('), context);
+    runInContext(productionFunction('function setWorkspaceSearchQuery(', '\nfunction startSearch(') + '\n' + productionFunction('function showSourceAdditionResults(', '\nfunction renderSourceStory('), context);
     if (addingSources) context.showSourceAdditionResults('School openings', 'original-project');
     else context.showProject('topic-search');
     assert.deepEqual(closures, [{ name: 'sources', restoreFocus: false, options: { animate: false } }]);
     assert.equal(shown.length, 1);
-    assert.equal(get('body').classList.contains('showing-results'), true);
+    assert.equal(get('body').classList.contains('showing-results'), !addingSources);
     if (addingSources) {
-      assert.equal(shown[0].project.sourceProjectId, 'original-project');
-      assert.equal(shown[0].options.addingSources, true);
-    } else assert.equal(shown[0].project.id, 'topic-search');
+      assert.equal(shown[0].project.id, targetProject.id);
+      assert.equal(shown[0].project.searchQuery, 'School openings');
+      assert.equal(shown[0].project.sourceSearchOpen, true);
+      assert.equal(shown[0].project.viewOriginalDraft, true);
+      assert.equal(shown[0].options.workspace, true);
+      assert.equal(get('body').classList.contains('showing-composer'), true);
+      assert.equal(context.sourceTargetProjectId, null);
+      assert.equal(drawerOpen, false);
+      assert.equal(context.projects.length, 2);
+      assert.deepEqual(saved, [clone(targetProject)]);
+      assert.equal(flushed, 1);
+    } else {
+      assert.equal(shown[0].project.id, 'topic-search');
+      assert.deepEqual(saved, []);
+    }
   });
 }
 

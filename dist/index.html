@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=add_circle,arrow_forward,article,badge,check,chevron_forward,close,delete,description,draw,edit,edit_document,favorite,folder_open,format_bold,format_h2,format_h3,format_italic,format_list_bulleted,format_list_numbered,format_quote,format_underlined,keyboard_arrow_down,keyboard_arrow_up,link,link_2,menu,more_horiz,open_in_new,post_add,redo,right_panel_open,search,send,signpost,thumb_down,thumb_up,undo,unfold_less,upload,view_module,visibility,wand_stars&amp;display=block">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&amp;family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&amp;display=swap">
     <link rel="stylesheet" href="./design-system/tokens.css?v=20261123-score-first">
-    <link rel="stylesheet" href="./styles.css?v=20261123-score-first">
-    <script src="./demo-access.js?v=20261123-score-first" type="module"></script>
+    <link rel="stylesheet" href="./styles.css?v=20261124-cms-secondary">
+    <script src="./demo-access.js?v=20261124-cms-secondary" type="module"></script>
   </head>
   <body>
     <section class="demo-access" id="demo-access" aria-labelledby="demo-access-title" role="main">
@@ -141,8 +141,9 @@
               </div>
               <div id="rich-text-editor"></div>
               <div class="editor-revision-loading" id="editor-revision-loading" hidden></div>
+              <div class="editor-revision-loading editor-similarity-loading" id="editor-similarity-loading" hidden></div>
               </div>
-              <div class="editor-publish-actions"><button class="editor-wordpress-button" id="editor-wordpress" type="button">Send to your CMS</button></div>
+              <div class="editor-publish-actions"><button class="editor-wordpress-button primary-button" id="editor-wordpress" type="button">Send to your CMS</button></div>
               <footer class="editor-footer"><button class="editor-metadata-trigger" id="editor-metadata-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="editor-metadata-popover">Metadata<span class="material-symbols-outlined editor-flyover-chevron" aria-hidden="true">chevron_forward</span></button><span id="editor-word-count">0 words</span><span id="editor-save-status" role="status" hidden></span><span class="editor-created" id="editor-created" hidden>Created: <time id="editor-created-time"></time></span></footer>
             </div>
     <div class="editor-context-panel editor-flyover" id="editor-metadata-popover" role="dialog" aria-labelledby="editor-metadata-heading" tabindex="-1" hidden>
@@ -340,31 +341,33 @@
 
     <dialog class="experience-feedback-dialog" id="experience-feedback-dialog" aria-labelledby="experience-feedback-heading">
       <button class="icon-button experience-feedback-close" id="experience-feedback-close" type="button" data-close="experience-feedback-dialog" aria-label="Close feedback dialog"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
-      <div class="experience-feedback-export" id="experience-feedback-export" hidden><h2>Export Complete</h2><button class="primary-button feedback-wordpress-link" id="feedback-wordpress-link" type="button">Go to WordPress</button></div>
+      <div class="experience-feedback-export" id="experience-feedback-export" hidden><h2>Export Complete</h2><button class="primary-button feedback-wordpress-link" id="feedback-wordpress-link" type="button">Open on your CMS</button></div>
       <h2 class="visually-hidden" id="experience-feedback-heading">Draft Feedback</h2>
       <form id="experience-feedback-form" novalidate>
         <div class="experience-feedback-body">
-          <fieldset class="feedback-rating-field"><legend>How would you rate this draft? <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></legend>
+          <fieldset class="feedback-rating-field"><legend id="feedback-rating-label">How would you rate this draft? <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></legend>
             <div class="experience-feedback-options" id="experience-feedback-options">
-              <button type="button" data-experience-rating="up" aria-label="Good" aria-pressed="false"><span class="material-symbols-outlined" aria-hidden="true">thumb_up</span><span>Good</span></button>
-              <button type="button" data-experience-rating="down" aria-label="Could be better" aria-pressed="false"><span class="material-symbols-outlined" aria-hidden="true">thumb_down</span><span>Could be better</span></button>
+              <button type="button" data-experience-rating="up" aria-controls="feedback-details" aria-expanded="false" aria-label="Good" aria-pressed="false"><span class="material-symbols-outlined" aria-hidden="true">thumb_up</span><span>Good</span></button>
+              <button type="button" data-experience-rating="down" aria-controls="feedback-details" aria-expanded="false" aria-label="Could be better" aria-pressed="false"><span class="material-symbols-outlined" aria-hidden="true">thumb_down</span><span>Could be better</span></button>
             </div>
           </fieldset>
-          <div class="feedback-field-row">
-            <div class="feedback-form-field"><label id="feedback-category-label" for="feedback-category">Category <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label>
-              <div class="feedback-select-field" data-label="Category" data-placeholder="Select a category"><select id="feedback-category" name="category" required aria-labelledby="feedback-category-label" hidden>
-                <option value="">Select a category</option><option>Accuracy</option><option>Content Quality</option><option>Format</option><option>Length</option><option>Missing Data</option><option>Other</option><option>Quotes</option><option>Relevance</option><option>SPEED</option><option>Structure</option><option>Style Guide</option><option>Tone</option><option>UI / UX</option><option>Usability</option><option>Workflow</option>
-              </select></div>
+          <div class="feedback-details" id="feedback-details" hidden>
+            <div class="feedback-field-row">
+              <div class="feedback-form-field"><label id="feedback-category-label" for="feedback-category">Category <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label>
+                <div class="feedback-select-field" data-label="Category" data-placeholder="Select a category"><select id="feedback-category" name="category" required aria-labelledby="feedback-category-label" hidden>
+                  <option value="">Select a category</option><option>Accuracy</option><option>Content Quality</option><option>Format</option><option>Length</option><option>Missing Data</option><option>Other</option><option>Quotes</option><option>Relevance</option><option>SPEED</option><option>Structure</option><option>Style Guide</option><option>Tone</option><option>UI / UX</option><option>Usability</option><option>Workflow</option>
+                </select></div>
+              </div>
+              <div class="feedback-form-field"><label id="feedback-severity-label" for="feedback-severity">Severity <span class="feedback-required" id="feedback-severity-required" aria-hidden="true" hidden>*</span><span class="visually-hidden" id="feedback-severity-required-text" hidden> (required)</span></label>
+                <div class="feedback-select-field" data-label="Severity" data-placeholder="Select a severity"><select id="feedback-severity" name="severity" aria-labelledby="feedback-severity-label" hidden><option value="">Select a severity</option><option>High</option><option>Low</option><option>Medium</option></select></div>
+              </div>
             </div>
-            <div class="feedback-form-field"><label id="feedback-severity-label" for="feedback-severity">Severity <span class="feedback-required" id="feedback-severity-required" aria-hidden="true" hidden>*</span><span class="visually-hidden" id="feedback-severity-required-text" hidden> (required)</span></label>
-              <div class="feedback-select-field" data-label="Severity" data-placeholder="Select a severity"><select id="feedback-severity" name="severity" aria-labelledby="feedback-severity-label" hidden><option value="">Select a severity</option><option>High</option><option>Low</option><option>Medium</option></select></div>
-            </div>
+            <div class="feedback-form-field"><label for="feedback-description">Describe the issue <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label><input id="feedback-description" name="description" type="text" maxlength="500" placeholder="Brief summary of the problem" aria-describedby="feedback-description-count" required><p class="feedback-character-count" id="feedback-description-count">500 characters remaining</p></div>
+            <div class="feedback-form-field"><label for="feedback-comments">Additional comments</label><textarea id="feedback-comments" name="comments" rows="3" placeholder="Any extra context or details (optional)"></textarea></div>
+            <p class="form-error" id="feedback-error" role="alert" hidden>Complete the required fields before submitting.</p>
           </div>
-          <div class="feedback-form-field"><label for="feedback-description">Describe the issue <span class="feedback-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label><input id="feedback-description" name="description" type="text" maxlength="500" placeholder="Brief summary of the problem" aria-describedby="feedback-description-count" required><p class="feedback-character-count" id="feedback-description-count">500 characters remaining</p></div>
-          <div class="feedback-form-field"><label for="feedback-comments">Additional comments</label><textarea id="feedback-comments" name="comments" rows="3" placeholder="Any extra context or details (optional)"></textarea></div>
-          <p class="form-error" id="feedback-error" role="alert" hidden>Complete the required fields before submitting.</p>
         </div>
-        <div class="dialog-footer"><button class="secondary-button" type="button" data-close="experience-feedback-dialog">Close</button><button class="primary-button dialog-action-button" id="feedback-submit" type="submit" disabled>Submit Report</button></div>
+        <div class="dialog-footer" id="feedback-actions" hidden><button class="secondary-button" type="button" data-close="experience-feedback-dialog">Close</button><button class="primary-button dialog-action-button" id="feedback-submit" type="submit" disabled>Submit Report</button></div>
       </form>
       <div class="experience-feedback-complete" id="experience-feedback-complete" hidden><p class="experience-feedback-thanks" id="experience-feedback-thanks" role="status">Thanks for your feedback!</p></div>
     </dialog>

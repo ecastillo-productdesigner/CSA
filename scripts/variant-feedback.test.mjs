@@ -13,6 +13,14 @@ class Control {
     this.disabled = false;
     this.value = '';
     this.textContent = '';
+    this.classList = {
+      contains: name => (this.className || '').split(/\s+/).includes(name),
+      toggle: (name, force) => {
+        const classes = new Set((this.className || '').split(/\s+/).filter(Boolean));
+        if (force ?? !classes.has(name)) classes.add(name); else classes.delete(name);
+        this.className = [...classes].join(' ');
+      },
+    };
   }
   append(...children) { for (const child of children) { child.parent = this; this.children.push(child); } }
   setAttribute(name, value) { this.attributes.set(name, String(value)); }
@@ -49,6 +57,7 @@ function setup(t, saved = null) {
     'feedback-submit', 'feedback-error', 'experience-feedback-complete', 'feedback-description-count',
     'experience-feedback-options', 'experience-feedback-thanks', 'experience-feedback-close',
     'experience-feedback-export', 'feedback-wordpress-link',
+    'feedback-details', 'feedback-actions', 'feedback-rating-label',
   ];
   const nodes = Object.fromEntries(ids.map(id => { const node = new Control(); node.id = id; return [id, node]; }));
   const get = id => nodes[id];
@@ -62,8 +71,10 @@ function setup(t, saved = null) {
   description.maxLength = 500;
   const fields = ['feedback-category', 'feedback-severity', 'feedback-description', 'feedback-comments'].map(get);
   form.reset = () => { fields.forEach(field => { field.value = ''; }); };
-  form.append(body, get('feedback-submit'));
-  body.append(...ids.filter(id => !['experience-feedback-dialog', 'experience-feedback-form', 'experience-feedback-complete', 'experience-feedback-thanks', 'experience-feedback-close', 'feedback-submit', 'experience-feedback-export', 'feedback-wordpress-link'].includes(id)).map(get));
+  form.append(body, get('feedback-actions'));
+  get('feedback-actions').append(get('feedback-submit'));
+  body.append(get('feedback-rating-label'), get('experience-feedback-options'), get('feedback-details'));
+  get('feedback-details').append(...ids.filter(id => !['experience-feedback-dialog', 'experience-feedback-form', 'experience-feedback-complete', 'experience-feedback-thanks', 'experience-feedback-close', 'feedback-submit', 'experience-feedback-export', 'feedback-wordpress-link', 'feedback-details', 'feedback-actions', 'feedback-rating-label', 'experience-feedback-options'].includes(id)).map(get));
   const up = new Control('button');
   const down = new Control('button');
   up.dataset.experienceRating = 'up';
@@ -80,12 +91,13 @@ function setup(t, saved = null) {
   dialog.close = () => { dialog.open = false; dialog.fire('close'); };
   const output = { id: 'draft-a', title: 'First draft', ...(saved ? { experienceFeedback: structuredClone(saved) } : {}) };
   const project = { id: 'project-a', updatedAt: 100, outputs: [output] };
-  const calls = { save: 0, refreshDropdowns: 0, closeDropdowns: 0 };
+  const calls = { save: 0, refreshDropdowns: 0, closeDropdowns: 0, openedCms: [] };
   let saveResult = true;
   const api = createVariantFeedback({
     save() { calls.save++; return saveResult; },
     refreshDropdowns() { calls.refreshDropdowns++; },
     closeDropdowns() { calls.closeDropdowns++; },
+    onOpenCms(project, variant) { calls.openedCms.push({ project, variant }); },
   });
   const pill = createFeedbackPill(output);
   doc.append(pill);
@@ -304,7 +316,7 @@ test('switching drafts resets prior fields and closing drops the save target', t
 });
 
 
-test('post-export opening focuses a demo WordPress button without a live destination', t => {
+test('post-export opening focuses the CMS preview button without a live destination', t => {
   const ui = setup(t);
   const section = ui.get('experience-feedback-export');
   const link = ui.get('feedback-wordpress-link');
@@ -324,7 +336,7 @@ test('post-export opening focuses a demo WordPress button without a live destina
   ui.send();
   assert.equal(ui.calls.save, 1);
   assert.equal(ui.complete.hidden, false);
-  assert.equal(section.hidden, false, 'the WordPress CTA remains available after feedback is submitted');
+  assert.equal(section.hidden, false, 'the CMS CTA remains available after feedback is submitted');
   assert.equal(link.getAttribute('href'), undefined);
   assert.equal(document.activeElement, ui.get('experience-feedback-close'));
 });
@@ -374,4 +386,121 @@ test('unsafe, relative and missing export URLs never create a navigable CTA or r
   assert.equal(section.hidden, true);
   assert.equal(link.getAttribute('href'), undefined);
   assert.equal(ui.calls.save, 0);
+});
+
+
+for (const [rating, label] of [['up', 'Good'], ['down', 'Could be better']]) {
+  test(`post-export feedback reveals its extra options only after selecting ${label}`, t => {
+    const ui = setup(t);
+    const details = ui.get('feedback-details');
+    const actions = ui.get('feedback-actions');
+    const legend = ui.get('feedback-rating-label');
+    ui.api.open(ui.project, ui.output, undefined, { exportUrl: 'https://publisher.example/wp-admin/' });
+    assert.equal(ui.get('experience-feedback-export').hidden, false);
+    assert.equal(ui.form.hidden, false);
+    assert.equal(ui.get('experience-feedback-options').hidden, false);
+    assert.equal(details.hidden, true, 'category, severity and comments begin hidden');
+    assert.equal(actions.hidden, true, 'do not show Close and Submit Report before engagement');
+    assert.equal(legend.classList.contains('visually-hidden'), true, 'only the two rating labels remain visible');
+    assert.equal(ui.dialog.dataset.feedbackExpanded, 'false');
+    assert.equal(ui.submit.disabled, true);
+    assert.equal(ui.calls.save, 0);
+
+    ui.rate(rating === 'up' ? ui.up : ui.down);
+    assert.equal(details.hidden, false);
+    assert.equal(actions.hidden, false);
+    assert.equal(legend.classList.contains('visually-hidden'), false);
+    assert.equal(ui.dialog.dataset.feedbackExpanded, 'true');
+    assert.equal(ui.up.getAttribute('aria-pressed'), String(rating === 'up'));
+    assert.equal(ui.down.getAttribute('aria-pressed'), String(rating === 'down'));
+    assert.equal(ui.severity.required, rating === 'down');
+    assert.equal(ui.submit.disabled, true, 'revealing fields does not skip validation');
+    assert.equal(ui.calls.save, 0, 'a rating choice alone does not submit a report');
+
+    completeRequired(ui);
+    assert.equal(ui.submit.disabled, false);
+    ui.send();
+    assert.equal(ui.output.experienceFeedback.rating, rating);
+    assert.equal(ui.calls.save, 1);
+    assert.equal(ui.complete.hidden, false);
+    assert.equal(ui.get('experience-feedback-export').hidden, false);
+  });
+}
+
+test('saved feedback remains collapsed on each export until a rating is engaged', t => {
+  const saved = { rating: 'up', category: 'content', severity: '', description: 'Keep this report.', comments: 'Saved context', submittedAt: 77 };
+  const ui = setup(t, saved);
+  const openExport = () => ui.api.open(ui.project, ui.output, undefined, { exportUrl: 'https://publisher.example/wp-admin/' });
+  openExport();
+  assert.equal(ui.get('feedback-details').hidden, true);
+  assert.equal(ui.get('feedback-actions').hidden, true);
+  assert.equal(ui.description.value, saved.description, 'preserve saved content for editing after expansion');
+  assert.equal(ui.up.getAttribute('aria-pressed'), 'true');
+  assert.equal(ui.submit.disabled, true);
+  ui.send();
+  assert.equal(ui.calls.save, 0, 'saved feedback is not resubmitted before interaction');
+  assert.deepEqual(ui.output.experienceFeedback, saved);
+
+  ui.rate(ui.up);
+  assert.equal(ui.get('feedback-details').hidden, false);
+  assert.equal(ui.submit.disabled, false);
+  ui.dialog.close();
+  openExport();
+  assert.equal(ui.get('feedback-details').hidden, true, 'expansion does not leak into the next export');
+  assert.equal(ui.get('feedback-actions').hidden, true);
+  assert.equal(ui.submit.disabled, true);
+  assert.deepEqual(ui.output.experienceFeedback, saved);
+});
+
+for (const rating of ['up', 'down']) {
+  test(`a direct editor ${rating} rating already counts as engagement and opens all feedback options`, t => {
+    const ui = setup(t);
+    ui.api.open(ui.project, ui.output, undefined, { exportUrl: 'https://publisher.example/wp-admin/' });
+    ui.dialog.close();
+    ui.api.open(ui.project, ui.output, rating);
+    assert.equal(ui.get('experience-feedback-export').hidden, true);
+    assert.equal(ui.get('feedback-details').hidden, false);
+    assert.equal(ui.get('feedback-actions').hidden, false);
+    assert.equal(ui.get('feedback-rating-label').classList.contains('visually-hidden'), false);
+    assert.equal(ui.dialog.dataset.feedbackExpanded, 'true');
+    assert.equal(ui.up.getAttribute('aria-pressed'), String(rating === 'up'));
+    assert.equal(ui.down.getAttribute('aria-pressed'), String(rating === 'down'));
+    assert.equal(ui.calls.save, 0);
+  });
+}
+
+
+test('CMS preview action uses the post-export draft, remains available after feedback, and clears on close', t => {
+  const ui = setup(t);
+  const button = ui.get('feedback-wordpress-link');
+  ui.api.open(ui.project, ui.output, 'up');
+  button.fire('click');
+  assert.equal(ui.calls.openedCms.length, 0, 'normal editor feedback cannot open a CMS preview');
+  ui.dialog.close();
+
+  ui.api.open(ui.project, ui.output, undefined, { exportUrl: 'https://publisher.example/wp-admin/' });
+  button.fire('click');
+  assert.equal(ui.calls.openedCms.length, 1);
+  assert.equal(ui.calls.openedCms[0].project, ui.project);
+  assert.equal(ui.calls.openedCms[0].variant, ui.output);
+  ui.rate(ui.up);
+  completeRequired(ui);
+  ui.send();
+  button.fire('click');
+  assert.equal(ui.calls.openedCms.length, 2, 'submitting feedback does not lose the exported draft');
+  assert.equal(ui.calls.openedCms[1].variant, ui.output);
+
+  ui.dialog.close();
+  button.fire('click');
+  assert.equal(ui.calls.openedCms.length, 2, 'closing clears the previous CMS target');
+  const next = { id: 'draft-b', title: 'Second draft' };
+  const nextProject = { id: 'project-b', outputs: [next] };
+  ui.api.open(nextProject, next, undefined, { exportUrl: 'https://second.example/wp-admin/' });
+  button.fire('click');
+  assert.equal(ui.calls.openedCms.length, 3);
+  assert.equal(ui.calls.openedCms[2].project, nextProject);
+  assert.equal(ui.calls.openedCms[2].variant, next);
+  ui.api.open(ui.project, ui.output, 'down');
+  button.fire('click');
+  assert.equal(ui.calls.openedCms.length, 3, 'switching to editor feedback cannot reuse an export target');
 });

@@ -1,4 +1,5 @@
-import { createAudienceSimilarityLoading } from './audience-similarity-loading.js?v=20261120-panel-recalculation';
+import { createCmsPreviewRecord, readCmsPreviewRecord, saveCmsPreviewRecord, cmsPreviewUrl } from './cms-preview-model.js?v=20261124-cms-preview';
+import { createAudienceSimilarityLoading } from './audience-similarity-loading.js?v=20261123-editor-shimmer';
 import { prepareAudienceSimilarities } from './audience-similarity-summary.js?v=20261123-score-first';
 import { createAudienceSimilarityDialog } from './audience-similarity-dialog.js?v=20261123-score-first';
 import { buildEditorialPlans, applyEditorialPlan } from './editorial-plans.js?v=20261119-trend-hunter';
@@ -25,7 +26,7 @@ import { createProfile } from './profile.js?v=20261026-drafting-card-size';
 import { createSearchExperience, sampleSearchSources } from './search.js?v=20261106-multi-publications';
 import { classifyProjectSearchInput } from './project-search-input.js?v=20261102-topic-search';
 import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261120-chip-tooltips';
-import { createMaterialEditor } from './editor.js?v=20261120-panel-recalculation';
+import { createMaterialEditor } from './editor.js?v=20261124-cms-secondary';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-drafting-card-size';
 import { removeProjectContent } from './project-deletion.js?v=20261026-drafting-card-size';
 import { createContentPreview } from './content-preview.js?v=20261026-drafting-card-size';
@@ -37,10 +38,10 @@ import { createRailNavigation } from './navigation.js?v=20261105-role-selector';
 import { createProjectSources } from './sources.js?v=20261106-own-material-source';
 import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261120-chip-tooltips';
 import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, outputWordCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261123-score-first';
-import { createEditorTabs } from './editor-tabs.js?v=20261120-chip-tooltips';
+import { createEditorTabs } from './editor-tabs.js?v=20261124-source-search';
 import { createContentCardEditing } from './content-card-editing.js?v=20261111-direction-badge';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-drafting-card-size';
-import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261026-drafting-card-size';
+import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261124-cms-preview';
 import { createRevisionButton, updateRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261110-content-tabs';
 
 const $ = (selector) => document.querySelector(selector);
@@ -117,7 +118,10 @@ const toolDropdowns = createToolDropdowns({ notify, audienceSuggestions, draftOp
 const newDraftDisclosure = createPanelDisclosure({ body: $('#composer-variant-form'), trigger: $('#toggle-new-variant'), panel: $('.composer-tools'), expanded: true });
 const contentDisclosure = createPanelDisclosure({ body: $('#composer-outputs-body'), trigger: $('#toggle-content'), panel: $('#composer-outputs'), label: 'Content', expanded: true });
 const outputTabTransition = createTabPanelTransition($('#output-status-content'));
-const audienceSimilarityLoading = createAudienceSimilarityLoading({ list: $('#output-list'), button: $('#check-audience-similarity'), status: $('#output-processing-status') });
+const audienceSimilarityLoading = createAudienceSimilarityLoading({
+  list: $('#output-list'), button: $('#check-audience-similarity'), status: $('#output-processing-status'),
+  onBusyChange(busy) { richEditor.setSimilarityBusy(busy); },
+});
 const newProjectUpload = createNewProjectUpload({
   isBlocked: () => Boolean(sourceImport),
   onIdle: () => renderDeferredOutput(),
@@ -133,7 +137,7 @@ const newProjectUpload = createNewProjectUpload({
     return true;
   },
 });
-const variantFeedback = createVariantFeedback({ save: saveProjects, refreshDropdowns: toolDropdowns.refresh, closeDropdowns: toolDropdowns.close });
+const variantFeedback = createVariantFeedback({ save: saveProjects, refreshDropdowns: toolDropdowns.refresh, closeDropdowns: toolDropdowns.close, onOpenCms: (project, output) => openVariantInCms(project.id, output.id) });
 const revisionRequests = createRevisionRequests({
   onRevisionRead(project) { saveProjects(); editorTabs.render(project); },
   onSubmit: requestVariantRevision,
@@ -241,6 +245,7 @@ createProfile({
 });
 const richEditor = createMaterialEditor({
   onSendToCms: projectId => sendDestinationDialog.open(projectId),
+  onOpenCms: openVariantInCms,
   onContentChange: updateComposerActions,
   onToolbarChange: toolDropdowns.refresh,
   onDirectionNoticeDismiss: (projectId, outputId) => dismissWordCountNotice(projectId, outputId),
@@ -289,7 +294,7 @@ const sendDestinationDialog = createSendDestinationDialog({
   },
   onSend(target, destination) {
     if (!isSendDestination(destination)) return false;
-    return markVariantSentToCms(target.projectId, target.outputId);
+    return markVariantSentToCms(target.projectId, target.outputId, destination);
   },
   onSent(target, destinationId) {
     const project = projects.find(entry => entry.id === target.projectId && !entry.deletedAt && !entry.archivedAt);
@@ -864,20 +869,19 @@ async function appendProjectSources(sources, projectId = sourceTargetProjectId) 
 }
 
 function showSourceAdditionResults(query, targetProjectId) {
+  const project = projects.find(entry => entry.id === targetProjectId && !entry.deletedAt && !entry.archivedAt);
+  if (!project) return false;
+  richEditor.flush();
   railNavigation.close('sources', false, { animate: false });
-  closeComposer();
-  railNavigation.closeTransient();
-  for (const id of ['home', 'workspace', 'project-start']) $(`#${id}`).hidden = true;
-  document.body.classList.add('showing-results');
-  searchExperience.show({
-    id: `add-source-${crypto.randomUUID()}`,
-    sourceProjectId: targetProjectId,
-    sources: [{ type: 'search', title: query }],
-  }, { addingSources: true });
-  document.title = `Add source — ${query} — CSA`;
-  closeProfile();
-  $('#main').focus({ preventScroll: true });
-  window.scrollTo({ top: 0 });
+  railNavigation.closeDrawer();
+  sourceTargetProjectId = null;
+  setWorkspaceSearchQuery(project, query);
+  project.sourceSearchOpen = true;
+  project.viewOriginalDraft = true;
+  project.updatedAt = Date.now();
+  saveProjects();
+  showEditorProject(project);
+  return true;
 }
 
 function showProject(id) {
@@ -1044,7 +1048,8 @@ function showEditorProject(project) {
   const editableOutputs = projectOutputs(project).filter(output => outputIsReady(output) || output.needsRegeneration);
   const readyOutputs = editableOutputs.filter(outputIsReady).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0));
   const replacingSourceView = Boolean(project.viewOriginalDraft && editableOutputs.length);
-  const selectedOutput = editableOutputs.find(output => output.id === project.selectedOutputId) || readyOutputs[0] || editableOutputs[0];
+  const showingSourceSearch = Boolean(project.sourceSearchOpen && project.searchQuery && project.viewOriginalDraft);
+  const selectedOutput = showingSourceSearch ? null : editableOutputs.find(output => output.id === project.selectedOutputId) || readyOutputs[0] || editableOutputs[0];
   if (selectedOutput) {
     project.selectedOutputId = selectedOutput.id;
     project.viewOriginalDraft = false;
@@ -1981,13 +1986,38 @@ function moveProject(id, destination) {
   });
 }
 
-function markVariantSentToCms(projectId, outputId) {
+function openVariantInCms(projectId, outputId) {
+  const project = projects.find(entry => entry.id === projectId && !entry.deletedAt && !entry.archivedAt);
+  const output = projectOutputs(project).find(entry => entry.id === outputId && outputIsReady(entry));
+  if (!project || !output || !Number.isFinite(output.cmsSentAt) || output.cmsSentAt <= 0) return false;
+  let record = readCmsPreviewRecord(output.cmsDraftId);
+  if (!record || record.projectId !== projectId || record.outputId !== outputId) {
+    const destination = sendDestinations.find(entry => entry.id === output.cmsDestinationId);
+    record = createCmsPreviewRecord(project, output, destination, { useSentSnapshot: true });
+    if (!saveCmsPreviewRecord(record)) { notify('Couldn’t open the CMS preview'); return false; }
+    output.cmsDraftId = record.id;
+    saveProjects();
+  }
+  window.open(cmsPreviewUrl(record.id, window.location.href), '_blank', 'noopener,noreferrer');
+  return true;
+}
+
+
+function markVariantSentToCms(projectId, outputId, destinationId) {
   const project = projects.find(entry => entry.id === projectId);
   const variant = projectOutputs(project).find(output => output.id === project?.selectedOutputId && outputIsReady(output));
   if (!project || activeProjectId !== projectId || project.deletedAt || project.archivedAt || project.viewOriginalDraft
     || project.outputProcessing || !variant || variant.id !== outputId || variant.needsRegeneration) return false;
   if (!richEditor.canSend()) return false;
-  variant.cmsSentAt = Date.now();
+  const destination = sendDestinations.find(entry => entry.id === destinationId);
+  const exportedAt = Date.now();
+  const record = createCmsPreviewRecord(project, { ...variant, cmsSentAt: exportedAt }, destination);
+  const previous = readCmsPreviewRecord(variant.cmsDraftId);
+  if (previous?.projectId === projectId && previous.outputId === outputId) record.createdAt = previous.createdAt;
+  if (!saveCmsPreviewRecord(record)) { notify('Couldn’t prepare the CMS preview'); return false; }
+  variant.cmsDraftId = record.id;
+  variant.cmsDestinationId = destination?.id || '';
+  variant.cmsSentAt = exportedAt;
   variant.cmsSentContent = richEditor.markSent();
   project.updatedAt = variant.cmsSentAt;
   const saved = saveProjects();

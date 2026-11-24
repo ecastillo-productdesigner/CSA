@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CMS Training · CSA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="./design-system/tokens.css">
+  <link rel="stylesheet" href="./cms.css?v=20261124-cms-static">
+  <script type="module" src="./cms-preview.js?v=20261124-cms-static"></script>
+</head>
+<body>
+  <div class="cms-shell" id="cms-shell" hidden>
+    <div class="cms-rail" aria-hidden="true">
+      <span class="cms-rail-link"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 5-7 7 7 7M5 12h14"/></svg></span>
+      <span class="cms-rail-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 3h14v18H5zM8 8h8M8 12h8M8 16h5"/></svg></span>
+      <span class="cms-rail-bottom">CSA</span>
+    </div>
+    <main class="cms-main">
+      <header class="cms-header">
+        <div class="cms-training"><span class="cms-status-dot"></span>Training <span class="cms-preview-label">CMS preview</span></div>
+        <div class="cms-channel"><span class="cms-channel-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 4h18v13H3zM8 21h8M12 17v4"/></svg></span><span id="channel-label">Web channel</span><span class="cms-channel-state">Draft</span></div>
+        <div class="cms-tabs" aria-hidden="true">
+          <span class="cms-tab is-active">Storyline</span>
+          <span class="cms-tab">General</span>
+          <span class="cms-tab">SEO</span>
+          <span class="cms-tab">Share</span>
+        </div>
+      </header>
+      <div class="cms-editor-scroll" id="editor-scroll">
+        <article class="cms-paper" id="storyline">
+          <p class="cms-notes">There are no notes for this article.</p>
+          <div class="cms-field" id="headline-section"><span class="cms-field-label">Headline</span><h1 class="cms-title cms-content" id="cms-title"></h1><span class="cms-field-count" id="title-count"></span></div>
+          <div class="cms-field" id="share"><span class="cms-field-label">Share text</span><div class="cms-share cms-content" id="cms-share"></div><span class="cms-field-count" id="share-count"></span></div>
+          <section class="cms-seo" id="seo"><h2 class="cms-seo-heading"><span aria-hidden="true">▾ </span>SEO</h2><div class="cms-seo-content">
+            <span class="cms-field-label">SEO Title</span><div class="cms-content" id="cms-seo-title"></div><span class="cms-field-count" id="seo-title-count"></span>
+            <span class="cms-field-label">Meta description</span><div class="cms-content" id="cms-description"></div><span class="cms-field-count" id="description-count"></span>
+            <span class="cms-field-label">Keywords</span><div class="cms-content" id="cms-keywords"></div>
+          </div></section>
+          <section class="cms-body-section"><span class="cms-field-label" id="cms-body-label">Body</span><div class="cms-body cms-content" id="cms-body" aria-labelledby="cms-body-label"></div></section>
+        </article>
+      </div>
+    </main>
+    <aside class="cms-info" id="general" aria-label="Article information">
+      <h1>General info</h1>
+      <dl class="cms-info-list">
+        <dt>Home publication</dt><dd id="info-publication"></dd>
+        <dt>State</dt><dd><span class="cms-draft-icon" aria-hidden="true">▦</span> Draft</dd>
+        <dt>Content type</dt><dd>Story</dd>
+        <dt>ID</dt><dd id="info-id"></dd>
+        <dt>Container slug</dt><dd id="info-slug"></dd>
+        <dt>Source</dt><dd>CSA</dd>
+        <dt>Created</dt><dd id="info-created"></dd>
+        <dt>Modified</dt><dd id="info-modified"></dd>
+      </dl>
+      <section class="cms-metrics"><h2>Metrics</h2><table><thead><tr><th scope="col">Sums</th><th scope="col">Characters / Words</th></tr></thead><tbody>
+        <tr><th scope="row">Headline</th><td id="metric-title"></td></tr><tr><th scope="row">Share</th><td id="metric-share"></td></tr><tr><th scope="row">SEO Title</th><td id="metric-seo"></td></tr><tr><th scope="row">Body</th><td id="metric-body"></td></tr><tr><th scope="row">Total</th><td id="metric-total"></td></tr><tr><th scope="row">Est. reading time</th><td id="metric-reading"></td></tr>
+      </tbody></table></section>
+      <section class="cms-schedule"><h2>Schedule</h2><span class="cms-field-label">Publish on</span><div class="cms-schedule-values"><span>No date</span><span>No time</span></div><span class="cms-field-label">Unpublish on</span><div class="cms-schedule-values"><span>No date</span><span>No time</span></div><p class="cms-preview-note">This is a view-only preview.</p></section>
+    </aside>
+    <footer class="cms-footer"><div class="cms-footer-tools" aria-hidden="true"><span class="cms-button">Preview</span><span class="cms-button is-active">Spell check</span><span class="cms-back-link">Back to CSA</span></div><span class="cms-save-status">View-only preview</span><div class="cms-footer-actions" aria-hidden="true"><span class="cms-button cms-button-primary">Save</span><span class="cms-button is-disabled">Publish</span><span class="cms-draft-badge"><span class="cms-draft-icon">▦</span> Draft</span></div></footer>
+  </div>
+  <main class="cms-empty" id="cms-empty" hidden><div class="cms-empty-card"><span class="cms-preview-label">CMS Training</span><h1>This draft preview is unavailable</h1><p>Return to your project and choose “Open on your CMS” on a drafted article to open its preview.</p></div></main>
+</body>
+</html>

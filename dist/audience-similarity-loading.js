@@ -1,7 +1,23 @@
 import { tokenNumber } from './design-system/runtime.js?v=20261026-drafting-card-size';
 
+// Both the compared-card list and the article editor use this DS loading surface.
+export function createAudienceSimilarityLoadingSurface(doc, tagName = 'div') {
+  const element = doc.createElement(tagName);
+  element.className = 'audience-similarity-loading';
+  const shimmer = doc.createElement('span');
+  shimmer.className = 'audience-similarity-loading-shimmer';
+  shimmer.setAttribute('aria-hidden', 'true');
+  const label = doc.createElement('span');
+  label.className = 'audience-similarity-loading-label';
+  label.textContent = 'Calculating Similarities';
+  label.setAttribute('role', 'status');
+  label.setAttribute('aria-live', 'polite');
+  element.append(shimmer, label);
+  return element;
+}
+
 // One timed loading surface replaces the selected cards before comparison opens.
-export function createAudienceSimilarityLoading({ list, button, status = null }) {
+export function createAudienceSimilarityLoading({ list, button, status = null, onBusyChange = () => {} }) {
   const doc = list.ownerDocument || document;
   const view = doc.defaultView || globalThis;
   let active = null;
@@ -20,6 +36,7 @@ export function createAudienceSimilarityLoading({ list, button, status = null })
     else list.setAttribute('aria-busy', job.busy);
     if (status) status.replaceChildren(...job.statusChildren);
     list.scrollTop = job.scrollTop;
+    onBusyChange(false);
   }
 
   function cancel() {
@@ -41,19 +58,9 @@ export function createAudienceSimilarityLoading({ list, button, status = null })
       return Number.isFinite(height) && height > 0 ? height : tokenNumber('component.variant-card.min-height', list);
     });
     const height = heights.reduce((sum, value) => sum + value, 0) + gap * (items.length - 1);
-    const element = doc.createElement('li');
-    element.className = 'audience-similarity-loading';
+    const element = createAudienceSimilarityLoadingSurface(doc, 'li');
     element.dataset.count = String(items.length);
     element.style.setProperty('--similarity-loading-height', `${height}px`);
-    const shimmer = doc.createElement('span');
-    shimmer.className = 'audience-similarity-loading-shimmer';
-    shimmer.setAttribute('aria-hidden', 'true');
-    const label = doc.createElement('span');
-    label.className = 'audience-similarity-loading-label';
-    label.textContent = 'Calculating Similarities';
-    label.setAttribute('role', 'status');
-    label.setAttribute('aria-live', 'polite');
-    element.append(shimmer, label);
     const job = {
       element,
       children: children.map(element => ({ element, hidden: element.hidden, inert: element.inert })),
@@ -74,6 +81,7 @@ export function createAudienceSimilarityLoading({ list, button, status = null })
     button.disabled = true;
     button.textContent = 'Calculating Similarities';
     if (status) status.textContent = 'Calculating Similarities';
+    onBusyChange(true);
     job.timer = view.setTimeout(() => {
       if (active !== job || destroyed) return;
       active = null;

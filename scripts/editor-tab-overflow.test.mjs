@@ -165,7 +165,7 @@ function fixture(t, { width = 600, outputs, activeId, processing } = {}) {
   const reads = [];
   const animations = [];
   const controller = createEditorTabs({
-    onSelect(id) { selections.push(id); project.selectedOutputId = id; controller.render(project); },
+    onSelect(id) { selections.push(id); project.selectedOutputId = id; project.viewOriginalDraft = id === null; controller.render(project); },
     onRevisionRead(project, output) { reads.push([project.id, output.id]); },
     createAnimation(options) {
       const animation = { element: doc.createElement('span'), options, destroy() { this.destroyed = true; } };
@@ -352,4 +352,72 @@ test('active revision acknowledgement restores More focus when its timer closes 
   assert.equal(ui.more.getAttribute('aria-expanded'), 'false');
   assert.equal(ui.doc.activeElement, ui.more);
   assert.equal(activeTab(ui).dataset.editorOutput, 'draft-0');
+});
+
+
+test('add-source search remains available alongside ready drafts and supports switching back', t => {
+  const ui = fixture(t, { width: 1400, outputs: [
+    { id: 'existing-draft', title: 'Saved article', status: 'ready', draftText: 'Existing content' },
+    { id: 'second-draft', title: 'Another article', status: 'ready' },
+  ] });
+  const outputsBefore = structuredClone(ui.project.outputs);
+  Object.assign(ui.project, { sourceSearchOpen: true, searchQuery: 'Community gardens', viewOriginalDraft: true });
+  ui.controller.render(ui.project);
+
+  assert.deepEqual(ids(ui.tabs), ['', 'existing-draft', 'second-draft']);
+  assert.equal(activeTab(ui).textContent, 'Searching Topic');
+  assert.equal(activeTab(ui).getAttribute('aria-label'), 'Searching Topic');
+  assert.equal(ui.panel.getAttribute('aria-labelledby'), activeTab(ui).id);
+
+  ui.tabs.find(tab => tab.dataset.editorOutput === 'existing-draft').emit('click');
+  assert.equal(ui.project.viewOriginalDraft, false);
+  assert.equal(activeTab(ui).dataset.editorOutput, 'existing-draft');
+  assert.deepEqual(ids(ui.tabs), ['', 'existing-draft', 'second-draft']);
+
+  ui.tabs.find(tab => tab.dataset.editorOutput === '').emit('click');
+  assert.equal(ui.project.viewOriginalDraft, true);
+  assert.equal(activeTab(ui).textContent, 'Searching Topic');
+  assert.equal(ui.doc.activeElement, activeTab(ui));
+  assert.deepEqual(ui.selections, ['existing-draft', null]);
+  assert.deepEqual(ui.project.outputs, outputsBefore, 'switching views must preserve saved drafts');
+});
+
+test('source search is recognizable in overflow and can be reopened from a draft', t => {
+  const ui = fixture(t, { width: 330, activeId: 'draft-4' });
+  Object.assign(ui.project, { sourceSearchOpen: true, searchQuery: 'Community gardens', viewOriginalDraft: false });
+  ui.controller.render(ui.project);
+  assert.deepEqual(ids(ui.visible), ['draft-4']);
+
+  openMenu(ui);
+  const searchOption = ui.options.find(option => option.dataset.editorOutput === '');
+  assert.ok(searchOption);
+  assert.equal(searchOption.textContent, 'Searching Topic');
+  assert.equal(searchOption.querySelector('.editor-tab-draft'), null, 'a search workspace is not a drafted article');
+  searchOption.emit('click');
+  assert.equal(ui.project.viewOriginalDraft, true);
+  assert.equal(activeTab(ui).textContent, 'Searching Topic');
+  assert.equal(activeTab(ui).hidden, false);
+  assert.equal(ui.menu.hidden, true);
+  assert.equal(ui.doc.activeElement, activeTab(ui));
+});
+
+test('initial topic search still yields to the first ready draft without add-source mode', t => {
+  const ui = fixture(t, { outputs: [] });
+  Object.assign(ui.project, { searchQuery: 'Community gardens', awaitingOutput: true, viewOriginalDraft: true });
+  ui.controller.render(ui.project);
+  assert.deepEqual(ids(ui.tabs), ['']);
+  assert.equal(activeTab(ui).textContent, 'Searching Topic');
+
+  ui.project.outputs.push({ id: 'first-draft', title: 'New article', status: 'pending' });
+  ui.controller.render(ui.project);
+  assert.deepEqual(ids(ui.tabs), ['']);
+
+  ui.project.outputs[0].status = 'ready';
+  ui.project.selectedOutputId = 'first-draft';
+  ui.project.viewOriginalDraft = false;
+  ui.project.awaitingOutput = false;
+  ui.controller.render(ui.project);
+  assert.deepEqual(ids(ui.tabs), ['first-draft']);
+  assert.equal(activeTab(ui).dataset.editorOutput, 'first-draft');
+  assert.equal(ui.more.hidden, true);
 });

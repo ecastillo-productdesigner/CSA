@@ -45,6 +45,7 @@ function setup() {
     projectTitleFromSources, normalizeProjectTitles, normalizeWordCount, syncOwnMaterialSource,
     storageKey: 'test-projects', localStorage: { getItem: key => storage.get(key), setItem: (key, value) => { storage.set(key, value); calls.saved.push(JSON.parse(value)); } },
     savedDrafts: { render() {} }, dashboard: null, notify() {},
+    openVariantInCms() { assert.fail('Own-material actions must not open a CMS draft'); },
     draftSourcesFor: () => [], draftPreferenceValue: (key, value) => value || '',
     newProjectUpload: { busy: false, isBusy() { return this.busy; }, reset() {} },
     railNavigation: { closeTransient() {}, closeDrawer() {}, close(name) { calls.sourcePanels.push(name); } },

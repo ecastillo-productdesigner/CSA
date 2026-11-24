@@ -55,7 +55,7 @@ class Element {
   getBoundingClientRect() { return { height: this.height }; }
 }
 
-function setup(t, { withStatus = true } = {}) {
+function setup(t, { withStatus = true, onBusyChange } = {}) {
   let now = 0;
   let sequence = 0;
   const timers = new Map();
@@ -81,7 +81,7 @@ function setup(t, { withStatus = true } = {}) {
   button.append(originalLabel);
   const status = withStatus ? doc.createElement('p') : null;
   if (status) status.textContent = 'Three drafts selected';
-  const controller = createAudienceSimilarityLoading({ list, button, status });
+  const controller = createAudienceSimilarityLoading({ list, button, status, onBusyChange });
   t.after(() => controller.destroy());
   function tick(ms) {
     const until = now + ms;
@@ -161,7 +161,8 @@ test('completion restores exact prior child, button, busy and status state befor
 });
 
 test('cancel restores the view, clears the timer and never opens the comparison', t => {
-  const ui = setup(t);
+  const busyChanges = [];
+  const ui = setup(t, { onBusyChange: busy => busyChanges.push(busy) });
   let completed = 0;
   ui.list.scrollTop = 60;
   ui.controller.start({ items: ui.rows.slice(0, 2), onComplete: () => completed++ });
@@ -178,24 +179,30 @@ test('cancel restores the view, clears the timer and never opens the comparison'
   ui.tick(20000);
   assert.equal(completed, 0);
   ui.controller.cancel();
+  assert.deepEqual(busyChanges, [true, false], 'Cancellation clears the main editor exactly once');
 });
 
 test('duplicate starts and malformed selections leave the current job untouched', t => {
-  const ui = setup(t);
+  const busyChanges = [];
+  const ui = setup(t, { onBusyChange: busy => busyChanges.push(busy) });
+  ui.controller.cancel();
   for (const items of [undefined, [], [ui.rows[0]], [ui.rows[0], ui.rows[0]], [ui.rows[0], new Element('li')]]) {
     assert.equal(ui.controller.start({ items }), false);
   }
   assert.deepEqual(ui.list.children, ui.rows);
   assert.equal(ui.timers.size, 0);
+  assert.deepEqual(busyChanges, [], 'Rejected starts do not show the main editor shimmer');
   ui.controller.start({ items: ui.rows.slice(0, 2) });
   const original = ui.placeholder();
   assert.equal(ui.controller.start({ items: ui.rows.slice(1, 3) }), false);
   assert.equal(ui.placeholder(), original);
   assert.equal(ui.timers.size, 1);
+  assert.deepEqual(busyChanges, [true], 'Duplicate starts do not restart the main editor shimmer');
 });
 
 test('stale callbacks cannot complete or erase a newer job after cancellation', t => {
-  const ui = setup(t);
+  const busyChanges = [];
+  const ui = setup(t, { onBusyChange: busy => busyChanges.push(busy) });
   let oldCompleted = 0;
   let newCompleted = 0;
   ui.controller.start({ items: ui.rows.slice(0, 2), onComplete: () => oldCompleted++ });
@@ -208,13 +215,16 @@ test('stale callbacks cannot complete or erase a newer job after cancellation', 
   assert.equal(ui.controller.isRunning, true);
   assert.equal(oldCompleted, 0);
   assert.equal(newCompleted, 0);
+  assert.deepEqual(busyChanges, [true, false, true], 'A stale completion cannot clear the newer main editor shimmer');
   ui.tick(10000);
   assert.equal(oldCompleted, 0);
   assert.equal(newCompleted, 1);
+  assert.deepEqual(busyChanges, [true, false, true, false]);
 });
 
 test('pagehide cancels and destroy unregisters cleanup and prevents future starts', t => {
-  const ui = setup(t);
+  const busyChanges = [];
+  const ui = setup(t, { onBusyChange: busy => busyChanges.push(busy) });
   let completed = 0;
   ui.controller.start({ items: ui.rows.slice(0, 2), onComplete: () => completed++ });
   ui.listeners.get('pagehide')();
@@ -231,6 +241,7 @@ test('pagehide cancels and destroy unregisters cleanup and prevents future start
   ui.tick(10000);
   assert.equal(completed, 0);
   ui.controller.destroy();
+  assert.deepEqual(busyChanges, [true, false, true, false], 'Page hide and destroy both clear the main editor shimmer');
 });
 
 test('uses the DS processing duration and safe measured-height fallback with optional status omitted', t => {
@@ -246,4 +257,37 @@ test('uses the DS processing duration and safe measured-height fallback with opt
   assert.equal(completed, false);
   ui.tick(1);
   assert.equal(completed, true);
+});
+
+
+test('main editor loading follows the visible card shimmer and clears before results reopen', t => {
+  const events = [];
+  const ui = setup(t, { onBusyChange(busy) {
+    events.push(busy);
+    assert.equal(ui.controller.isRunning, busy);
+    if (busy) {
+      assert.ok(ui.placeholder(), 'The card shimmer is inserted before the main editor becomes busy');
+      assert.equal(ui.list.getAttribute('aria-busy'), 'true');
+      assert.equal(ui.button.disabled, true);
+    } else {
+      assert.equal(ui.placeholder(), undefined);
+      assert.deepEqual(ui.list.children, ui.rows);
+      assert.equal(ui.list.getAttribute('aria-busy'), 'false');
+      assert.equal(ui.button.disabled, false);
+      assert.equal(ui.status.textContent, 'Three drafts selected');
+      assert.equal(ui.list.scrollTop, 80);
+    }
+  } });
+  ui.list.setAttribute('aria-busy', 'false');
+  ui.list.scrollTop = 80;
+  ui.controller.start({ items: ui.rows.slice(0, 2), onComplete() {
+    assert.deepEqual(events, [true, false], 'The editor is restored before the comparison popup reopens');
+    events.push('complete');
+  } });
+  assert.deepEqual(events, [true]);
+  ui.tick(9999);
+  assert.deepEqual(events, [true]);
+  ui.list.scrollTop = 0;
+  ui.tick(1);
+  assert.deepEqual(events, [true, false, 'complete']);
 });

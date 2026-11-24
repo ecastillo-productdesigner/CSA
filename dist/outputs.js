@@ -429,8 +429,8 @@ export function createOutputSimilarityFooter(output, summary) {
   view.type = 'button';
   view.className = 'tertiary-button output-card-similarity-view';
   view.dataset.viewSimilarities = output.id;
-  view.textContent = 'View';
-  view.setAttribute('aria-label', `View similarities for ${output.title}`);
+  view.textContent = 'Show Details';
+  view.setAttribute('aria-label', `Show Details for ${output.title}`);
   view.setAttribute('aria-haspopup', 'dialog');
   view.setAttribute('aria-controls', 'audience-similarity-dialog');
   footer.append(scoreSummary, view);

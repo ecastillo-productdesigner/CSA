@@ -70,9 +70,9 @@
 #workspace-app #new-project .material-symbols-outlined { color: var(--csa-component-button-primary-background); }
 #workspace-app #new-project:not(:disabled):hover .material-symbols-outlined { color: var(--csa-component-button-primary-hover); }
 #workspace-app :is(#composer-tools, #composer-outputs) h2 { color: var(--csa-semantic-color-text-primary); }
-#workspace-app :is(.create-variant, .create-output, .draft-button, .editor-wordpress-button):not(:disabled) { background: var(--csa-component-button-primary-background); border-color: var(--csa-component-button-primary-background); }
-#workspace-app :is(.create-variant, .create-output, .draft-button, .editor-wordpress-button):not(:disabled):is(:hover, :active) { background: var(--csa-component-button-primary-hover); border-color: var(--csa-component-button-primary-hover); }
-#workspace-app :is(.create-variant, .create-output, .draft-button, .editor-wordpress-button):disabled { --disabled-button-background: var(--csa-semantic-color-border-default); --disabled-button-label: var(--csa-semantic-color-text-secondary); border-color: var(--csa-semantic-color-border-default); }
+#workspace-app :is(.create-variant, .create-output, .draft-button):not(:disabled) { background: var(--csa-component-button-primary-background); border-color: var(--csa-component-button-primary-background); }
+#workspace-app :is(.create-variant, .create-output, .draft-button):not(:disabled):is(:hover, :active) { background: var(--csa-component-button-primary-hover); border-color: var(--csa-component-button-primary-hover); }
+#workspace-app :is(.create-variant, .create-output, .draft-button):disabled { --disabled-button-background: var(--csa-semantic-color-border-default); --disabled-button-label: var(--csa-semantic-color-text-secondary); border-color: var(--csa-semantic-color-border-default); }
 * { box-sizing: border-box; }
 body { margin: 0; min-width: var(--csa-foundation-size-320); }
 button, input, textarea, select { font: inherit; }
@@ -423,7 +423,7 @@ main:focus { outline: none; }
 .saved-drafts-empty { margin: 0; padding: var(--csa-foundation-space-16); color: var(--csa-semantic-color-text-secondary); font-size: var(--csa-foundation-font-size-14); line-height: var(--csa-foundation-line-height-20); font-weight: var(--csa-foundation-font-weight-400); }
 
 .composer-actions { display: grid; grid-template-columns: minmax(0, 1fr); margin-top: var(--csa-foundation-space-24); }
-.create-variant, .create-output, .editor-wordpress-button { height: var(--button-height); font-size: var(--csa-foundation-font-size-16); font-weight: var(--csa-foundation-font-weight-700); }
+.create-variant, .create-output { height: var(--button-height); font-size: var(--csa-foundation-font-size-16); font-weight: var(--csa-foundation-font-weight-700); }
 .create-variant { display: grid; place-items: center; min-width: 0; border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-16); background: var(--csa-foundation-color-neutral-100); color: var(--muted); }
 .create-variant:not(:disabled) { background: var(--color-button-primary); border-color: var(--line); color: var(--csa-foundation-color-neutral-0); }
 .create-variant:not(:disabled):is(:hover, :active) { background: var(--color-button-primary-interaction); }
@@ -639,9 +639,7 @@ body:has(#new-project-dialog[open]) { overflow: hidden; }
 .editor-metadata-trigger { display: inline-flex; flex-shrink: 0; align-items: center; gap: var(--csa-foundation-space-5); padding: 0; border: 0; background: transparent; color: inherit; font: inherit; font-weight: var(--csa-semantic-typography-metadata-font-weight); }
 .editor-metadata-trigger:hover { color: inherit; }
 .editor-publish-actions { display: flex; flex-shrink: 0; justify-content: center; padding: var(--csa-foundation-space-12) var(--csa-foundation-space-24); }
-.editor-wordpress-button { width: min(var(--csa-foundation-size-300), 100%); padding: 0 var(--csa-foundation-space-24); border: var(--csa-foundation-border-width-1) solid var(--line); border-radius: var(--csa-foundation-radius-8); background: var(--color-button-primary); color: var(--csa-foundation-color-neutral-0); }
-.editor-wordpress-button:not(:disabled):is(:hover, :active) { background: var(--color-button-primary-interaction); border-color: var(--line); }
-.editor-wordpress-button:disabled { background: var(--csa-foundation-color-neutral-100); border-color: var(--line); color: var(--muted); }
+.editor-wordpress-button { width: min(var(--csa-foundation-size-300), 100%); padding-inline: var(--csa-foundation-space-24); }
 .send-destination-dialog { width: min(var(--csa-foundation-size-760), calc(100vw - var(--csa-foundation-space-32))); max-height: calc(100dvh - var(--csa-foundation-space-32)); padding: var(--csa-foundation-space-28); overflow-y: auto; border-radius: var(--csa-component-dialog-radius-desktop); box-shadow: none; }
 .send-destination-header { display: flex; align-items: flex-start; gap: var(--csa-foundation-space-16); margin-bottom: var(--csa-foundation-space-24); }
 .send-destination-header h2 { flex: 1; min-width: 0; margin: 0; color: var(--csa-semantic-color-text-primary); font-family: var(--csa-semantic-typography-dialog-heading-font-family); font-size: var(--csa-semantic-typography-dialog-heading-font-size); font-weight: var(--csa-semantic-typography-dialog-heading-font-weight); letter-spacing: var(--csa-semantic-typography-dialog-heading-letter-spacing); line-height: var(--csa-semantic-typography-dialog-heading-line-height); }
@@ -703,6 +701,8 @@ body:has(.send-destination-dialog[open]) { overflow: hidden; }
 .experience-feedback-dialog .panel-heading .icon-button { margin: calc(-1 * var(--csa-foundation-space-5)) calc(-1 * var(--csa-foundation-space-7)) calc(-1 * var(--csa-foundation-space-5)) 0; }
 #experience-feedback-form { display: flex; flex-direction: column; min-height: 0; }
 .experience-feedback-body { display: grid; gap: var(--csa-foundation-space-22); min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; padding: var(--csa-foundation-space-24) var(--csa-foundation-space-24) var(--csa-foundation-space-24); }
+.feedback-details { display: grid; gap: var(--csa-foundation-space-22); min-width: 0; }
+.experience-feedback-dialog[data-feedback-expanded="false"] .experience-feedback-options { margin-top: 0; }
 .feedback-rating-field { min-width: 0; margin: 0; padding: 0; border: 0; }
 .feedback-rating-field legend, .feedback-form-field > label { padding: 0; font-size: var(--csa-foundation-font-size-14); line-height: var(--csa-foundation-line-height-20); font-weight: var(--csa-foundation-font-weight-600); }
 .feedback-required { color: var(--color-red-700); }
@@ -1178,7 +1178,7 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
 .source-title-tooltip { transform: none; max-width: min(var(--csa-foundation-size-360), calc(100vw - var(--csa-foundation-space-24))); white-space: normal; overflow-wrap: anywhere; line-height: var(--csa-foundation-line-height-20); }
 
 /* Shared primary action measurements: h-[46px] text-base font-bold. */
-.primary-button, .demo-access-submit, .new-project-continue, .create-variant, .create-output, .editor-wordpress-button, .draft-button {
+.primary-button, .demo-access-submit, .new-project-continue, .create-variant, .create-output, .draft-button {
   height: var(--button-height);
   min-height: var(--button-height);
   font-size: var(--button-label-size);
@@ -1187,12 +1187,12 @@ select:focus-visible { outline: var(--csa-foundation-border-width-3) solid var(-
 }
 .primary-button { justify-content: center; }
 
-.primary-button, .demo-access-submit, .new-project-continue, .create-variant, .create-output, .editor-wordpress-button, .draft-button { border-radius: var(--csa-component-button-radius); }
-.primary-button:not(:disabled), .demo-access-submit:not(:disabled), .new-project-continue:not(:disabled), .create-variant:not(:disabled), .create-output:not(:disabled), .editor-wordpress-button:not(:disabled), .draft-button:not(:disabled) { border-color: var(--csa-component-button-primary-background); }
-.primary-button:not(:disabled):is(:hover, :active), .demo-access-submit:not(:disabled):is(:hover, :active), .new-project-continue:not(:disabled):is(:hover, :active), .create-variant:not(:disabled):is(:hover, :active), .create-output:not(:disabled):is(:hover, :active), .editor-wordpress-button:not(:disabled):is(:hover, :active), .draft-button:not(:disabled):is(:hover, :active) { border-color: var(--csa-component-button-primary-hover); }
-.primary-button:disabled, .demo-access-submit:disabled, .new-project-continue:disabled, .create-variant:disabled, .create-output:disabled, .editor-wordpress-button:disabled, .draft-button:disabled { border-color: var(--csa-component-button-primary-disabled-background); }
+.primary-button, .demo-access-submit, .new-project-continue, .create-variant, .create-output, .draft-button { border-radius: var(--csa-component-button-radius); }
+.primary-button:not(:disabled), .demo-access-submit:not(:disabled), .new-project-continue:not(:disabled), .create-variant:not(:disabled), .create-output:not(:disabled), .draft-button:not(:disabled) { border-color: var(--csa-component-button-primary-background); }
+.primary-button:not(:disabled):is(:hover, :active), .demo-access-submit:not(:disabled):is(:hover, :active), .new-project-continue:not(:disabled):is(:hover, :active), .create-variant:not(:disabled):is(:hover, :active), .create-output:not(:disabled):is(:hover, :active), .draft-button:not(:disabled):is(:hover, :active) { border-color: var(--csa-component-button-primary-hover); }
+.primary-button:disabled, .demo-access-submit:disabled, .new-project-continue:disabled, .create-variant:disabled, .create-output:disabled, .draft-button:disabled { border-color: var(--csa-component-button-primary-disabled-background); }
 
-.primary-button, .demo-access-submit, .new-project-continue, .new-project-tile, .create-variant, .create-output, .editor-wordpress-button, .draft-button, .submit-button {
+.primary-button, .demo-access-submit, .new-project-continue, .new-project-tile, .create-variant, .create-output, .draft-button, .submit-button {
   --disabled-button-background: var(--csa-component-button-primary-disabled-background);
   --disabled-button-label: var(--csa-component-button-primary-disabled-label);
 }

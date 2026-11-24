@@ -133,7 +133,7 @@ export function createEditorTabs({ onSelect, onRevisionRead = () => {}, createAn
       item.dataset.editorOutput = entry.id || '';
       item.setAttribute('role', 'menuitem');
       item.tabIndex = -1;
-      item.setAttribute('aria-label', `${entry.title} · ${status}${unread ? ' · Revision complete, unread' : ''}`);
+      item.setAttribute('aria-label', entry.preview ? entry.title : `${entry.title} · ${status}${unread ? ' · Revision complete, unread' : ''}`);
       const badge = document.createElement('span');
       badge.className = 'editor-tab-draft';
       badge.dataset.sent = String(status === 'Sent');
@@ -141,7 +141,8 @@ export function createEditorTabs({ onSelect, onRevisionRead = () => {}, createAn
       const label = document.createElement('span');
       label.className = 'editor-tabs-more-title';
       label.textContent = entry.title;
-      item.append(badge, label);
+      if (!entry.preview) item.append(badge);
+      item.append(label);
       if (unread) {
         const dot = document.createElement('span');
         dot.className = 'editor-tab-revision-dot';
@@ -199,7 +200,8 @@ export function createEditorTabs({ onSelect, onRevisionRead = () => {}, createAn
     render(project) {
       const allOutputs = projectOutputs(project);
       const outputs = allOutputs.filter(output => outputIsReady(output) || output.needsRegeneration);
-      const showCreateTab = !outputs.length && Boolean(project?.searchQuery || project?.linkCards || project?.viewOriginalDraft || project?.awaitingOutput || allOutputs.some(output => output.id === project?.lastPendingOutputId && !outputIsReady(output)));
+      const sourceSearchOpen = Boolean(project?.sourceSearchOpen && project?.searchQuery);
+      const showCreateTab = sourceSearchOpen || !outputs.length && Boolean(project?.searchQuery || project?.linkCards || project?.viewOriginalDraft || project?.awaitingOutput || allOutputs.some(output => output.id === project?.lastPendingOutputId && !outputIsReady(output)));
       const activeId = showCreateTab && project?.viewOriginalDraft ? null : outputs.some(output => output.id === project?.selectedOutputId) ? project.selectedOutputId : outputs[0]?.id ?? null;
       const revisingIds = project?.outputProcessing?.kind === 'revision' ? project.outputProcessing.ids || [] : [];
       syncReadTimer(project, activeId, outputs, revisingIds);
@@ -223,7 +225,7 @@ export function createEditorTabs({ onSelect, onRevisionRead = () => {}, createAn
         panel.removeAttribute('aria-labelledby');
         return;
       }
-      entries = [...(showCreateTab ? [{ id: null, title: 'Project workspace', preview: true }] : []), ...outputs];
+      entries = [...(showCreateTab ? [{ id: null, title: project?.searchQuery ? 'Searching Topic' : 'Project workspace', preview: true }] : []), ...outputs];
       tabs = entries.map(output => {
         const { id, cmsSentAt, preview } = output;
         const title = output.title;

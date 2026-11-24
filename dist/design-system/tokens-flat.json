@@ -5824,9 +5824,9 @@
       "type": "dimension",
       "layer": "component",
       "category": "variant-card",
-      "value": "2px",
-      "reference": "foundation.border.width.2",
-      "description": "Selected variant card solid border and dashed outline thickness.",
+      "value": "1px",
+      "reference": "foundation.border.width.1",
+      "description": "Selected variant card solid border and dashed outline thickness; matches the unselected width to prevent layout shifts.",
       "status": "observed"
     },
     {

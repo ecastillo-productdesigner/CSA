@@ -9,7 +9,7 @@ Guide:
 
 Capitalization
 Capitalize key words in buttons and headings, keep short connecting words such as “to” lowercase, and preserve acronyms. Follow exact approved labels.
-Approved casing: Add to List, SEO Title, Send to your CMS, Creating Draft, and Revising Draft. Other status messages and full sentences use sentence case.
+Approved casing: Add to List, SEO Title, Send to your CMS, Open on your CMS, Creating Draft, and Revising Draft. Other status messages and full sentences use sentence case.
 Yes: Add to List
 Yes: SEO Title
 No: Add To List

@@ -17,9 +17,12 @@ export function createFeedbackPill(output, disabled = false) {
   return pill;
 }
 
-export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }) {
+export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns, onOpenCms = () => {} }) {
   const dialog = document.querySelector('#experience-feedback-dialog');
   const form = document.querySelector('#experience-feedback-form');
+  const details = document.querySelector('#feedback-details');
+  const actions = document.querySelector('#feedback-actions');
+  const ratingLabel = document.querySelector('#feedback-rating-label');
   const category = document.querySelector('#feedback-category');
   const severity = document.querySelector('#feedback-severity');
   const description = document.querySelector('#feedback-description');
@@ -32,6 +35,7 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
   const ratings = [...dialog.querySelectorAll('[data-experience-rating]')];
   let target = null;
   let rating = '';
+  let detailsExpanded = true;
 
   function clearExport() {
     if (exportSection) exportSection.hidden = true;
@@ -45,10 +49,14 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
     try { url = new URL(value); }
     catch { return false; }
     if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) return false;
-    // Prototype action only: never navigate to a live publisher.
+    // The action opens the local CMS preview through the supplied callback.
     exportSection.hidden = false;
     return true;
   }
+
+  wordpressLink?.addEventListener('click', () => {
+    if (target && !exportSection.hidden) onOpenCms(target.project, target.variant);
+  });
 
   const requiresSeverity = () => rating === 'down';
 
@@ -57,12 +65,19 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
   }
 
   function refresh() {
+    details.hidden = !detailsExpanded;
+    actions.hidden = !detailsExpanded;
+    ratingLabel.classList.toggle('visually-hidden', !detailsExpanded);
+    dialog.dataset.feedbackExpanded = String(detailsExpanded);
     severity.required = requiresSeverity();
     document.querySelector('#feedback-severity-required').hidden = !requiresSeverity();
     document.querySelector('#feedback-severity-required-text').hidden = !requiresSeverity();
-    ratings.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.experienceRating === rating)));
+    ratings.forEach(button => {
+      button.setAttribute('aria-pressed', String(button.dataset.experienceRating === rating));
+      button.setAttribute('aria-expanded', String(detailsExpanded));
+    });
     document.querySelector('#feedback-description-count').textContent = `${Math.max(0, description.maxLength - description.value.length)} characters remaining`;
-    submit.disabled = !valid();
+    submit.disabled = !detailsExpanded || !valid();
     if (valid()) error.hidden = true;
   }
 
@@ -70,13 +85,14 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
     const button = event.target.closest('[data-experience-rating]');
     if (!button || !target) return;
     rating = button.dataset.experienceRating;
+    detailsExpanded = true;
     refresh();
   });
   form.addEventListener('input', refresh);
   form.addEventListener('change', refresh);
   form.addEventListener('submit', event => {
     event.preventDefault();
-    if (!target || form.hidden) return;
+    if (!target || form.hidden || !detailsExpanded) return;
     if (!valid()) {
       error.hidden = false;
       (!rating ? ratings[0] : !category.value ? document.querySelector('#feedback-category-trigger') : requiresSeverity() && !severity.value ? document.querySelector('#feedback-severity-trigger') : description).focus();
@@ -110,6 +126,7 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns }
     open(project, variant, initialRating, options = {}) {
       closeDropdowns();
       const hasExport = showExport(options?.exportUrl);
+      detailsExpanded = !hasExport;
       target = { project, variant };
       form.reset();
       const feedback = variant.experienceFeedback || {};

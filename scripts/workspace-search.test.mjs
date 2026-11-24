@@ -136,25 +136,41 @@ function control() {
   };
 }
 
-function editorSetup(project) {
+function editorSetup(project, { addSourceQuery = null } = {}) {
   const nodes = new Map();
   const get = selector => { if (!nodes.has(selector)) nodes.set(selector, control()); return nodes.get(selector); };
-  const calls = { search: [], welcome: [], editor: [], saved: 0 };
+  const calls = { search: [], welcome: [], editor: [], saved: 0, navigation: [], flushed: 0 };
   const context = createContext({
-    document: { body: get('body'), title: '' }, $: get, activeProjectId: null, sampleSearchSources, sourceIdentityKey,
-    closeComposer() {}, railNavigation: { closeTransient() {} },
-    searchExperience: { hide() {}, show(current, options) { calls.search.push({ project: current, options: clone(options) }); } },
+    document: { body: get('body'), title: '' }, $: get, projects: [project], activeProjectId: project.id, sourceTargetProjectId: project.id, sampleSearchSources, sourceIdentityKey, outputViews: new Map(),
+    closeComposer() { get('#composer').classList.remove('has-editor', 'has-output', 'has-link-cards', 'has-search-results'); get('body').classList.remove('showing-composer', 'editing-material'); },
+    railNavigation: {
+      closeTransient() {},
+      close(name, restoreFocus, options) { calls.navigation.push({ action: 'close', name, restoreFocus, options: clone(options || {}) }); },
+      closeDrawer() { calls.navigation.push({ action: 'closeDrawer' }); },
+    },
+    searchExperience: { hide() {}, show(current, options) {
+      if (addSourceQuery !== null) assert.deepEqual(calls.navigation.slice(0, 2), [
+        { action: 'close', name: 'sources', restoreFocus: false, options: { animate: false } },
+        { action: 'closeDrawer' },
+      ], 'close Sources and its drawer before rendering the Add Source search');
+      calls.search.push({ project: current, options: clone(options) });
+    } },
     resumeOutputProcessing() {}, showPendingWordCountNotice() {}, projectOutputs, outputIsReady, selectedPendingOutputs, syncOwnMaterialSource,
     populateOutputContent() {}, saveProjects() { calls.saved++; },
     renderSourceStory(current) { calls.welcome.push(current); },
     draftPreferenceValue: (key, value) => value || '',
-    richEditor: { open(current) { calls.editor.push(current); } },
+    richEditor: { flush() { calls.flushed++; }, open(current) { calls.editor.push(current); } },
     normalizeWordCount, populateDraftOptions() {}, toolDropdowns: { refresh() {} }, updateComposerActions() {}, renderOutputs() {}, renderProjectSources() {},
     requestAnimationFrame(callback) { callback(); }, setNewVariantCollapsed() {}, setContentCollapsed() {}, closeProfile() {},
     sessionStorage: { setItem() {} }, window: { scrollTo() {} },
   });
-  runInContext(helpers + '\n' + productionSection('function showEditorProject(', '\nfunction closeProfile('), context);
-  context.showEditorProject(project);
+  runInContext([helpers,
+    productionSection('function showSourceAdditionResults(', '\nfunction showProject('),
+    productionSection('function showEditorProject(', '\nfunction closeProfile('),
+    productionSection('function openEditorTab(', '\nfunction loadProjects('),
+  ].join('\n'), context);
+  if (addSourceQuery !== null) context.showSourceAdditionResults(addSourceQuery, project.id);
+  else context.showEditorProject(project);
   return { nodes, get, calls, context };
 }
 
@@ -405,4 +421,81 @@ test('legacy cleanup preserves source positions used by drafts without captured 
   ui.setQuery(topic);
   assert.equal(state.sources, sources);
   assert.equal(state.sources[4].searchArticleId, 'article-5');
+});
+
+
+test('Add New Source search opens the target project canvas while preserving its finished draft and existing material', () => {
+  const source = { type: 'text', title: 'Original reporting', text: 'Preserve this reporting', selected: true };
+  const output = { id: 'finished', title: 'Finished story', status: 'ready', draftText: 'Preserve the edited article', sourceSnapshots: [clone(source)], revisionUnread: false };
+  const project = {
+    id: 'existing-project', title: 'My existing project', kind: 'draft', sources: [source], outputs: [output], selectedOutputId: output.id,
+    toolPreferences: { format: 'standard', audience: '', voice: '' }, editorialDirection: 'Keep this project direction',
+  };
+  const before = clone(project);
+  const ui = editorSetup(project, { addSourceQuery: 'Community gardens' });
+  assert.equal(ui.context.projects.length, 1);
+  assert.equal(ui.context.projects[0], project);
+  assert.equal(ui.context.activeProjectId, project.id);
+  assert.equal(project.searchQuery, 'Community gardens');
+  assert.equal(project.sourceSearchOpen, true);
+  assert.equal(project.viewOriginalDraft, true);
+  assert.equal(project.title, before.title);
+  assert.deepEqual(project.sources, before.sources);
+  assert.deepEqual(project.outputs, before.outputs);
+  assert.deepEqual(project.toolPreferences, before.toolPreferences);
+  assert.equal(project.editorialDirection, before.editorialDirection);
+  assert.equal(ui.get('#composer').hidden, false);
+  assert.equal(ui.get('#composer').classList.contains('has-search-results'), true);
+  assert.equal(ui.get('body').classList.contains('showing-composer'), true);
+  assert.equal(ui.get('body').classList.contains('showing-results'), false);
+  assert.deepEqual(ui.calls.search.map(call => call.project.id), [project.id]);
+  assert.equal(ui.calls.search[0].options.workspace, true);
+  assert.deepEqual(ui.calls.editor, []);
+  assert.deepEqual(ui.calls.welcome, []);
+  assert.deepEqual(ui.calls.navigation.slice(0, 2), [
+    { action: 'close', name: 'sources', restoreFocus: false, options: { animate: false } },
+    { action: 'closeDrawer' },
+  ]);
+  assert.ok(ui.calls.saved > 0, 'the search context is saved in the existing project');
+});
+
+test('Add New Source search on an empty project keeps Sources empty and opens workspace results immediately', () => {
+  const project = { id: 'empty-project', title: 'Existing empty project', kind: 'draft', sources: [], outputs: [] };
+  const ui = editorSetup(project, { addSourceQuery: topic });
+  assert.equal(ui.context.projects.length, 1);
+  assert.equal(ui.context.activeProjectId, project.id);
+  assert.deepEqual(project.sources, []);
+  assert.equal(project.searchQuery, topic);
+  assert.equal(project.sourceSearchOpen, true);
+  assert.equal(project.viewOriginalDraft, true);
+  assert.equal(ui.calls.search.length, 1);
+  assert.equal(ui.calls.search[0].project, project);
+  assert.equal(ui.calls.search[0].options.workspace, true);
+  assert.deepEqual(ui.calls.editor, []);
+});
+
+test('an explicitly opened source search can switch to a finished draft and back without losing either view', () => {
+  const source = { type: 'text', title: 'Saved source', text: 'Keep this source', selected: true };
+  const output = { id: 'finished', title: 'Finished story', status: 'ready', draftText: 'Keep my edits', sourceSnapshots: [clone(source)], revisionUnread: false };
+  const project = { id: 'existing-project', title: 'My project', kind: 'draft', sources: [source], outputs: [output], selectedOutputId: output.id };
+  const snapshot = clone(output.sourceSnapshots);
+  const ui = editorSetup(project, { addSourceQuery: topic });
+  ui.context.openEditorTab(output.id);
+  assert.equal(project.sourceSearchOpen, true, 'keep the source-search tab available');
+  assert.equal(project.viewOriginalDraft, false);
+  assert.equal(project.selectedOutputId, output.id);
+  assert.equal(ui.calls.editor.length, 1);
+  assert.equal(ui.calls.editor[0].draftText, output.draftText);
+  assert.equal(ui.get('#composer').classList.contains('has-search-results'), false);
+  ui.context.openEditorTab(null);
+  assert.equal(project.viewOriginalDraft, true);
+  assert.equal(project.sourceSearchOpen, true);
+  assert.equal(ui.calls.search.length, 2);
+  assert.equal(ui.calls.search.at(-1).project, project);
+  assert.equal(ui.calls.search.at(-1).options.workspace, true);
+  assert.equal(ui.get('#composer').classList.contains('has-search-results'), true);
+  assert.equal(ui.get('#composer').classList.contains('has-editor'), false);
+  assert.equal(project.searchQuery, topic);
+  assert.equal(output.draftText, 'Keep my edits');
+  assert.deepEqual(output.sourceSnapshots, snapshot);
 });

@@ -30,9 +30,9 @@ test('Score first footer shows percentage, meaning, and a distinct native viewin
   assert.equal(label.textContent, 'Average similarity');
   assert.equal(action.tagName, 'button');
   assert.equal(action.type, 'button');
-  assert.equal(action.textContent, 'View');
+  assert.equal(action.textContent, 'Show Details');
   assert.equal(action.dataset.viewSimilarities, draft.id);
-  assert.equal(action.getAttribute('aria-label'), `View similarities for ${draft.title}`);
+  assert.equal(action.getAttribute('aria-label'), `Show Details for ${draft.title}`);
   assert.equal(action.getAttribute('aria-haspopup'), 'dialog');
   assert.equal(action.getAttribute('aria-controls'), 'audience-similarity-dialog');
   assert.equal(summary.children.some(child => child.tagName === 'button'), false);
@@ -66,7 +66,7 @@ test('draft identity reaches only the viewing action without rendering its title
   const footer = createOutputSimilarityFooter(hostile, { score: 50, band: 'low', comparisonCount: 1 });
   const action = footer.children[1];
   assert.equal(action.dataset.viewSimilarities, hostile.id);
-  assert.equal(action.getAttribute('aria-label'), `View similarities for ${hostile.title}`);
+  assert.equal(action.getAttribute('aria-label'), `Show Details for ${hostile.title}`);
   assert.deepEqual(action.children, []);
   assert.equal(action.innerHTML, undefined);
 });

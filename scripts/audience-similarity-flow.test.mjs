@@ -6,12 +6,16 @@ import { prepareAudienceSimilarities } from '../dist/audience-similarity-summary
 import { projectOutputs, outputIsReady, selectedPendingOutputs } from '../dist/outputs.js';
 
 const app = await readFile(new URL('../dist/app.js', import.meta.url), 'utf8');
+const loadingStart = app.indexOf('const audienceSimilarityLoading = ');
+const loadingEnd = app.indexOf('const newProjectUpload = ', loadingStart);
+assert.ok(loadingStart >= 0 && loadingEnd > loadingStart);
+const loadingInitialization = app.slice(loadingStart, loadingEnd);
 const start = app.indexOf('function updateAudienceSimilarityAction(');
 const end = app.indexOf('function selectOutputView(', start);
 const selectionStart = app.indexOf("$('#output-list').addEventListener('click'");
 const selectionEnd = app.indexOf('function openVariantDirection(', selectionStart);
 assert.ok(start >= 0 && end > start && selectionStart >= 0 && selectionEnd > selectionStart);
-const production = app.slice(start, end) + app.slice(selectionStart, selectionEnd);
+const production = loadingInitialization + app.slice(start, end) + app.slice(selectionStart, selectionEnd);
 const draft = (id, audience = 'Parents') => ({ id, title: `Story ${id}`, status: 'ready', draftText: 'Families are discussing the school proposal.', toolPreferences: { audience }, labels: [{ key: 'audience', label: audience }] });
 
 function setup({ view = 'created', outputs = [draft('one'), draft('two')], onFlush = () => {}, mobile = false } = {}) {
@@ -29,8 +33,9 @@ function setup({ view = 'created', outputs = [draft('one'), draft('two')], onFlu
     querySelectorAll(selector) { return selector === '.output-open' ? controls : links; },
     getClientRects() { return this.visible ? [{}] : []; },
   };
-  const calls = { flushed: 0, opened: [], notifications: [], rendered: 0, saved: 0, editorOpened: [], batches: [], prepared: [], canceled: 0, contentCollapsed: [], rails: [], mediaQueries: [] };
+  const calls = { flushed: 0, opened: [], notifications: [], rendered: 0, saved: 0, editorOpened: [], batches: [], prepared: [], canceled: 0, contentCollapsed: [], rails: [], mediaQueries: [], editorBusy: [] };
   let pending = null;
+  let onLoadingBusyChange = () => {};
   const loading = {
     isRunning: false,
     start(batch) {
@@ -38,18 +43,22 @@ function setup({ view = 'created', outputs = [draft('one'), draft('two')], onFlu
       this.isRunning = true;
       pending = batch;
       calls.batches.push(batch);
+      onLoadingBusyChange(true);
       return true;
     },
     cancel() {
-      if (this.isRunning) calls.canceled++;
+      if (!this.isRunning) return;
+      calls.canceled++;
       this.isRunning = false;
       pending = null;
+      onLoadingBusyChange(false);
     },
     complete() {
       if (!pending) return false;
       const batch = pending;
       pending = null;
       this.isRunning = false;
+      onLoadingBusyChange(false);
       batch.onComplete();
       return true;
     },
@@ -64,9 +73,19 @@ function setup({ view = 'created', outputs = [draft('one'), draft('two')], onFlu
     breakpointQuery: () => '(max-width: 48rem)',
     setContentCollapsed(value) { calls.contentCollapsed.push(value); },
     railNavigation: { open(name) { calls.rails.push(name); } },
-    richEditor: { flush() { calls.flushed++; onFlush(project); } },
-    audienceSimilarityDialog: { open(payload) { calls.opened.push(payload); return true; } },
-    audienceSimilarityLoading: loading,
+    richEditor: {
+      flush() { calls.flushed++; onFlush(project); },
+      setSimilarityBusy(busy) { calls.editorBusy.push(busy); },
+    },
+    audienceSimilarityDialog: { open(payload) {
+      assert.notEqual(calls.editorBusy.at(-1), true, 'The main editor shimmer clears before comparison opens');
+      calls.opened.push(payload);
+      return true;
+    } },
+    createAudienceSimilarityLoading({ onBusyChange }) {
+      onLoadingBusyChange = onBusyChange || (() => {});
+      return loading;
+    },
     renderOutputs() { loading.cancel(); calls.rendered++; context.updateAudienceSimilarityAction(project); },
     notify(message) { calls.notifications.push(message); },
     saveProjects() { calls.saved++; return true; },
@@ -110,6 +129,7 @@ test('Drafted has no separate Check Similarity action or card selection requirem
   assert.equal(ui.calls.opened.length, 1);
   assert.equal(ui.calls.batches.length, 0);
   assert.equal(ui.loading.isRunning, false);
+  assert.deepEqual(ui.calls.editorBusy, [], 'Viewing prepared results does not shimmer the main editor');
 });
 
 test('View Similarities opens immediately with the clicked draft, all eligible peers, and latest edited text', () => {
@@ -232,6 +252,7 @@ for (const mobile of [false, true]) {
     ui.recalculate(request);
     assert.equal(ui.calls.opened.length, 0);
     assert.equal(ui.loading.isRunning, true);
+    assert.deepEqual(ui.calls.editorBusy, [true]);
     assert.equal(ui.calls.batches.length, 1);
     assert.deepEqual(Array.from(ui.calls.batches[0].items), ui.items);
     assert.deepEqual(ui.calls.contentCollapsed, [false]);
@@ -239,6 +260,7 @@ for (const mobile of [false, true]) {
     ui.project.sourceDraft.draftText = 'Updated source body when recalculation completes.';
     ui.complete();
     assert.equal(ui.calls.opened.length, 1);
+    assert.deepEqual(ui.calls.editorBusy, [true, false]);
     const restored = ui.calls.opened[0];
     for (const key of ['editedDraft', 'referenceId', 'focusDraftId', 'focusOrigin', 'scrollLeft', 'scrollTop']) assert.equal(restored[key], request[key], key);
     assert.deepEqual(restored.groups[0].drafts.map(item => item.id), ['one', 'two', 'three']);
@@ -264,6 +286,7 @@ test('recalculation rejects incomplete, stale, reordered, and foreign edit reque
     assert.equal(ui.calls.batches.length, 0);
     assert.equal(ui.calls.opened.length, 0);
     assert.equal(ui.loading.isRunning, false);
+    assert.deepEqual(ui.calls.editorBusy, [], 'Rejected recalculation does not shimmer the main editor');
   }
 });
 
@@ -275,6 +298,7 @@ test('recalculation blocks duplicate requests and uses the final editor flush', 
   ui.recalculate(request);
   assert.equal(ui.calls.batches.length, 1);
   assert.equal(ui.calls.flushed, 1);
+  assert.deepEqual(ui.calls.editorBusy, [true]);
   ui.complete();
   assert.equal(ui.calls.opened.length, 1);
   assert.equal(ui.calls.opened[0].groups[0].drafts[0].draftText, 'Final editor body after loading.');
@@ -301,6 +325,7 @@ test('delayed recalculation is discarded after project, view, or eligibility cha
     change(ui); ui.complete();
     assert.equal(ui.calls.opened.length, 0, reason);
     assert.equal(ui.loading.isRunning, false, reason);
+    assert.deepEqual(ui.calls.editorBusy, [true, false], reason);
   }
 });
 
@@ -323,4 +348,16 @@ test('clearing the edited draft saves it and explains why comparison is unavaila
     assert.equal(ui.calls.opened.length, 0);
     assert.deepEqual(ui.calls.notifications, ['Changes saved. This draft needs body text to compare similarities']);
   }
+});
+
+
+test('rerendering the Content panel clears the main editor shimmer and cancels popup reopening', () => {
+  const ui = setup();
+  ui.recalculate({ draftIds: ['one', 'two'], editedDraft: ui.project.outputs[0], referenceId: 'one' });
+  assert.deepEqual(ui.calls.editorBusy, [true]);
+  ui.context.renderOutputs(ui.project);
+  assert.equal(ui.loading.isRunning, false);
+  assert.deepEqual(ui.calls.editorBusy, [true, false]);
+  assert.equal(ui.complete(), false);
+  assert.equal(ui.calls.opened.length, 0);
 });

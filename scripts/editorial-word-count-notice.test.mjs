@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { openEditorOutputs, reopenEditorOutput, closeEditorOutput } from '../dist/editor-tab-state.js';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createContext, runInContext } from 'node:vm';
@@ -418,7 +419,7 @@ function noticeFlow(savedProject) {
   };
   const context = createContext({
     projects: [project], activeProjectId: project.id,
-    $, projectOutputs, selectedPendingOutputs, outputIsReady,
+    $, openEditorOutputs, reopenEditorOutput, closeEditorOutput, projectOutputs, selectedPendingOutputs, outputIsReady,
     document: { body: get('body'), querySelector: selector => { assert.equal(selector, 'dialog[open]'); return dialogOpen ? {} : null; } },
     sourceImport: null, newProjectUpload: { isBusy: () => false }, deferredOutputProjectId: null,
     requestAnimationFrame(callback) { frames.push(callback); },
@@ -643,4 +644,41 @@ test('close cleanup can navigate, hide, delete, or archive a project without the
     assert.deepEqual(ui.shown, []);
     assert.equal(ui.context.deferredOutputProjectId, null);
   }
+});
+
+test('regenerating a closed draft reopens only the newly created draft tab', async () => {
+  const ui = draftFlow();
+  ui.project.outputs[0].needsRegeneration = true;
+  ui.project.outputs[1].status = 'ready';
+  ui.project.closedEditorOutputIds = ['one', 'two'];
+  ui.project.selectedOutputId = null;
+  ui.project.selectedOutputIds = ['one'];
+  ui.run();
+  assert.deepEqual(openEditorOutputs(ui.project), [], 'the draft remains closed while processing');
+  await ui.advance(10000);
+  assert.equal(ui.project.outputs[0].status, 'ready');
+  assert.equal(ui.project.outputs[0].needsRegeneration, undefined);
+  assert.deepEqual(Array.from(ui.project.closedEditorOutputIds), ['two']);
+  assert.deepEqual(openEditorOutputs(ui.project).map(output => output.id), ['one']);
+  assert.equal(ui.project.selectedOutputId, 'one');
+  assert.equal(ui.project.outputs.length, 2);
+  assert.deepEqual(ui.calls.saved.at(-1).closedEditorOutputIds, ['two']);
+});
+
+test('finishing a revision preserves a closed tab and the currently selected open draft', async () => {
+  const ui = draftFlow();
+  for (const output of ui.project.outputs) output.status = 'ready';
+  ui.project.closedEditorOutputIds = ['one'];
+  ui.project.selectedOutputId = 'two';
+  ui.project.outputProcessing = {
+    kind: 'revision', ids: ['one'], openOutputId: 'one',
+    instructions: 'Shorten the opening', requestedAt: 1000, readyAt: 11000,
+  };
+  ui.resume();
+  await ui.advance(10000);
+  assert.deepEqual(ui.calls.revised, [{ id: 'one', instructions: 'Shorten the opening', requestedAt: 1000 }]);
+  assert.deepEqual(Array.from(ui.project.closedEditorOutputIds), ['one']);
+  assert.deepEqual(openEditorOutputs(ui.project).map(output => output.id), ['two']);
+  assert.equal(ui.project.selectedOutputId, 'two');
+  assert.deepEqual(ui.calls.saved.at(-1).closedEditorOutputIds, ['one']);
 });

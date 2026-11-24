@@ -57,7 +57,7 @@ function setup(t, saved = null) {
     'feedback-submit', 'feedback-error', 'experience-feedback-complete', 'feedback-description-count',
     'experience-feedback-options', 'experience-feedback-thanks', 'experience-feedback-close',
     'experience-feedback-export', 'feedback-wordpress-link',
-    'feedback-details', 'feedback-actions', 'feedback-rating-label',
+    'feedback-details', 'feedback-actions', 'feedback-rating-label', 'feedback-rating-question', 'feedback-rating-required',
   ];
   const nodes = Object.fromEntries(ids.map(id => { const node = new Control(); node.id = id; return [id, node]; }));
   const get = id => nodes[id];
@@ -74,7 +74,8 @@ function setup(t, saved = null) {
   form.append(body, get('feedback-actions'));
   get('feedback-actions').append(get('feedback-submit'));
   body.append(get('feedback-rating-label'), get('experience-feedback-options'), get('feedback-details'));
-  get('feedback-details').append(...ids.filter(id => !['experience-feedback-dialog', 'experience-feedback-form', 'experience-feedback-complete', 'experience-feedback-thanks', 'experience-feedback-close', 'feedback-submit', 'experience-feedback-export', 'feedback-wordpress-link', 'feedback-details', 'feedback-actions', 'feedback-rating-label', 'experience-feedback-options'].includes(id)).map(get));
+  get('feedback-rating-label').append(get('feedback-rating-question'), get('feedback-rating-required'));
+  get('feedback-details').append(...ids.filter(id => !['experience-feedback-dialog', 'experience-feedback-form', 'experience-feedback-complete', 'experience-feedback-thanks', 'experience-feedback-close', 'feedback-submit', 'experience-feedback-export', 'feedback-wordpress-link', 'feedback-details', 'feedback-actions', 'feedback-rating-label', 'feedback-rating-question', 'feedback-rating-required', 'experience-feedback-options'].includes(id)).map(get));
   const up = new Control('button');
   const down = new Control('button');
   up.dataset.experienceRating = 'up';
@@ -401,7 +402,9 @@ for (const [rating, label] of [['up', 'Good'], ['down', 'Could be better']]) {
     assert.equal(ui.get('experience-feedback-options').hidden, false);
     assert.equal(details.hidden, true, 'category, severity and comments begin hidden');
     assert.equal(actions.hidden, true, 'do not show Close and Submit Report before engagement');
-    assert.equal(legend.classList.contains('visually-hidden'), true, 'only the two rating labels remain visible');
+    assert.equal(legend.classList.contains('visually-hidden'), false, 'the experience question appears above the ratings');
+    assert.equal(ui.get('feedback-rating-question').textContent, 'How was your experience?');
+    assert.equal(ui.get('feedback-rating-required').hidden, true);
     assert.equal(ui.dialog.dataset.feedbackExpanded, 'false');
     assert.equal(ui.submit.disabled, true);
     assert.equal(ui.calls.save, 0);
@@ -410,6 +413,8 @@ for (const [rating, label] of [['up', 'Good'], ['down', 'Could be better']]) {
     assert.equal(details.hidden, false);
     assert.equal(actions.hidden, false);
     assert.equal(legend.classList.contains('visually-hidden'), false);
+    assert.equal(ui.get('feedback-rating-question').textContent, 'How was your experience?');
+    assert.equal(ui.get('feedback-rating-required').hidden, false);
     assert.equal(ui.dialog.dataset.feedbackExpanded, 'true');
     assert.equal(ui.up.getAttribute('aria-pressed'), String(rating === 'up'));
     assert.equal(ui.down.getAttribute('aria-pressed'), String(rating === 'down'));
@@ -462,6 +467,8 @@ for (const rating of ['up', 'down']) {
     assert.equal(ui.get('feedback-details').hidden, false);
     assert.equal(ui.get('feedback-actions').hidden, false);
     assert.equal(ui.get('feedback-rating-label').classList.contains('visually-hidden'), false);
+    assert.equal(ui.get('feedback-rating-question').textContent, 'How would you rate this draft?');
+    assert.equal(ui.get('feedback-rating-required').hidden, false);
     assert.equal(ui.dialog.dataset.feedbackExpanded, 'true');
     assert.equal(ui.up.getAttribute('aria-pressed'), String(rating === 'up'));
     assert.equal(ui.down.getAttribute('aria-pressed'), String(rating === 'down'));

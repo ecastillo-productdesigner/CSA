@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { openEditorOutputs, reopenEditorOutput, closeEditorOutput } from '../dist/editor-tab-state.js';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createContext, runInContext } from 'node:vm';
@@ -132,14 +133,16 @@ function control() {
     hidden: false, value: '', textContent: '', scrollTop: 0,
     classList: { add: (...names) => names.forEach(name => classes.add(name)), remove: (...names) => names.forEach(name => classes.delete(name)), contains: name => classes.has(name), toggle(name, force) { if (force ?? !classes.has(name)) classes.add(name); else classes.delete(name); } },
     getAttribute: name => attributes.get(name), setAttribute: (name, value) => attributes.set(name, value),
-    focus() {}, querySelector: () => null,
+    focus() { this.focused = true; }, querySelector: () => null,
+    replaceChildren(...children) { this.children = children; this.textContent = children.map(child => child.textContent).join(''); },
   };
 }
 
 function editorSetup(project, { addSourceQuery = null } = {}) {
   const nodes = new Map();
   const get = selector => { if (!nodes.has(selector)) nodes.set(selector, control()); return nodes.get(selector); };
-  const calls = { search: [], welcome: [], editor: [], saved: 0, navigation: [], flushed: 0 };
+  const calls = { search: [], welcome: [], editor: [], saved: 0, persisted: [], rendered: [], tabs: [], navigation: [], flushed: 0 };
+  const element = (tag, className, text) => Object.assign(control(), { tagName: tag.toUpperCase(), className, textContent: text });
   const context = createContext({
     document: { body: get('body'), title: '' }, $: get, projects: [project], activeProjectId: project.id, sourceTargetProjectId: project.id, sampleSearchSources, sourceIdentityKey, outputViews: new Map(),
     closeComposer() { get('#composer').classList.remove('has-editor', 'has-output', 'has-link-cards', 'has-search-results'); get('body').classList.remove('showing-composer', 'editing-material'); },
@@ -155,12 +158,13 @@ function editorSetup(project, { addSourceQuery = null } = {}) {
       ], 'close Sources and its drawer before rendering the Add Source search');
       calls.search.push({ project: current, options: clone(options) });
     } },
-    resumeOutputProcessing() {}, showPendingWordCountNotice() {}, projectOutputs, outputIsReady, selectedPendingOutputs, syncOwnMaterialSource,
-    populateOutputContent() {}, saveProjects() { calls.saved++; },
+    resumeOutputProcessing() {}, showPendingWordCountNotice() {}, openEditorOutputs, reopenEditorOutput, closeEditorOutput, projectOutputs, outputIsReady, selectedPendingOutputs, syncOwnMaterialSource,
+    populateOutputContent() {}, saveProjects() { calls.saved++; calls.persisted.push(clone(project)); },
+    contentPreview: { hide() {} }, element, editorTabs: { render(current) { calls.tabs.push(current); } },
     renderSourceStory(current) { calls.welcome.push(current); },
     draftPreferenceValue: (key, value) => value || '',
-    richEditor: { flush() { calls.flushed++; }, open(current) { calls.editor.push(current); } },
-    normalizeWordCount, populateDraftOptions() {}, toolDropdowns: { refresh() {} }, updateComposerActions() {}, renderOutputs() {}, renderProjectSources() {},
+    richEditor: { flush() { calls.flushed++; }, close() {}, open(current) { calls.editor.push(current); } },
+    normalizeWordCount, populateDraftOptions() {}, toolDropdowns: { refresh() {} }, updateComposerActions() {}, renderOutputs(current) { calls.rendered.push(projectOutputs(current).filter(outputIsReady).map(output => output.id)); }, renderProjectSources() {},
     requestAnimationFrame(callback) { callback(); }, setNewVariantCollapsed() {}, setContentCollapsed() {}, closeProfile() {},
     sessionStorage: { setItem() {} }, window: { scrollTo() {} },
   });
@@ -498,4 +502,133 @@ test('an explicitly opened source search can switch to a finished draft and back
   assert.equal(project.searchQuery, topic);
   assert.equal(output.draftText, 'Keep my edits');
   assert.deepEqual(output.sourceSnapshots, snapshot);
+});
+
+
+test('closing and reopening an editor tab flushes its edits and keeps every Drafted card', () => {
+  const project = {
+    id: 'closable-project', title: 'School project', sources: [], selectedOutputId: 'first',
+    outputs: [
+      { id: 'first', title: 'First article', status: 'ready', draftText: 'First saved content' },
+      { id: 'second', title: 'Second article', status: 'ready', draftText: 'Second saved content', cmsSentAt: 1000 },
+      { id: 'third', title: 'Third article', status: 'ready', draftText: 'Third saved content' },
+    ],
+  };
+  const ui = editorSetup(project);
+  const flushSelections = [];
+  ui.context.richEditor.flush = () => {
+    flushSelections.push(project.selectedOutputId);
+    if (project.selectedOutputId === 'first') project.outputs[0].draftText = 'Latest typing before the X click';
+  };
+  ui.context.closeEditorTab('first');
+  assert.deepEqual(flushSelections, ['first'], 'flush before selecting the neighboring draft');
+  assert.equal(project.selectedOutputId, 'second');
+  assert.equal(ui.calls.editor.at(-1).directionOutputId, 'second');
+  assert.equal(ui.calls.persisted.at(-1).outputs[0].draftText, 'Latest typing before the X click');
+  assert.deepEqual(ui.calls.rendered.at(-1), ['first', 'second', 'third']);
+  const openingCount = ui.calls.editor.length;
+  ui.context.closeEditorTab('third');
+  assert.equal(project.selectedOutputId, 'second');
+  assert.equal(ui.calls.editor.length, openingCount, 'closing an inactive tab must not reset the current editor');
+  assert.equal(ui.calls.tabs.at(-1), project);
+  ui.context.openEditorTab('first');
+  assert.equal(project.selectedOutputId, 'first');
+  assert.equal(ui.calls.editor.at(-1).draftText, 'Latest typing before the X click');
+  assert.deepEqual(openEditorOutputs(project).map(output => output.id), ['first', 'second']);
+  assert.equal(project.outputs[1].cmsSentAt, 1000);
+  assert.deepEqual(ui.calls.rendered.at(-1), ['first', 'second', 'third']);
+});
+
+test('all closed drafts remain closed after reopening a project and clicking a card restores only that tab', () => {
+  const project = {
+    id: 'closed-project', title: 'Search project', sources: [], awaitingOutput: true,
+    searchQuery: 'Community gardens', linkCards: true, selectedOutputId: 'first',
+    outputs: [
+      { id: 'first', title: 'First article', status: 'ready', draftText: 'First saved content' },
+      { id: 'second', title: 'Second article', status: 'ready', draftText: 'Second saved content' },
+    ],
+  };
+  const originalOutputs = clone(project.outputs);
+  const ui = editorSetup(project);
+  ui.context.closeEditorTab('first');
+  ui.context.closeEditorTab('second');
+  assert.equal(project.selectedOutputId, null);
+  assert.deepEqual(openEditorOutputs(project), []);
+  assert.equal(ui.get('#source-story-title').textContent, 'No open drafts');
+  assert.equal(ui.get('#source-story-title').hidden, true);
+  assert.equal(ui.get('#source-story-body').textContent, 'No open drafts. Select a card in Drafted to reopen one.');
+  assert.equal(ui.get('#output-placeholder').hidden, false);
+  assert.equal(ui.get('#main').focused, true);
+  assert.deepEqual(ui.calls.search, [], 'an old search query must not replace the closed-tabs empty state');
+  assert.deepEqual(ui.calls.rendered.at(-1), ['first', 'second']);
+  assert.deepEqual(project.outputs, originalOutputs);
+
+  const restored = clone(ui.calls.persisted.at(-1));
+  const reloaded = editorSetup(restored);
+  assert.equal(restored.selectedOutputId, null);
+  assert.deepEqual(reloaded.calls.editor, [], 'opening the project must not auto-reopen a closed draft');
+  assert.equal(reloaded.get('#source-story-title').textContent, 'No open drafts');
+  assert.deepEqual(reloaded.calls.rendered.at(-1), ['first', 'second']);
+  reloaded.context.openEditorTab('second');
+  assert.equal(restored.selectedOutputId, 'second');
+  assert.deepEqual(openEditorOutputs(restored).map(output => output.id), ['second']);
+  assert.equal(reloaded.calls.editor.at(-1).draftText, 'Second saved content');
+  assert.deepEqual(restored.outputs.map(({ revisionUnread, ...output }) => output), originalOutputs);
+  assert.equal(restored.outputs[1].revisionUnread, false, 'opening the restored card keeps normal unread acknowledgement');
+});
+
+test('closing the final draft returns to an explicitly open source-search tab', () => {
+  const output = { id: 'finished', title: 'Finished article', status: 'ready', draftText: 'Keep the saved article' };
+  const project = {
+    id: 'project-with-search', title: 'Community gardens', kind: 'draft', sources: [], outputs: [output],
+    selectedOutputId: output.id, selectedOutputIds: [output.id],
+    sourceSearchOpen: true, searchQuery: 'Community gardens', viewOriginalDraft: false,
+  };
+  const ui = editorSetup(project);
+  assert.equal(ui.calls.editor.at(-1).directionOutputId, output.id);
+  ui.context.closeEditorTab(output.id);
+  assert.equal(project.selectedOutputId, null);
+  assert.equal(project.viewOriginalDraft, true);
+  assert.equal(project.sourceSearchOpen, true);
+  assert.equal(ui.get('#composer').classList.contains('has-search-results'), true);
+  assert.equal(ui.get('#composer').classList.contains('has-editor'), false);
+  assert.equal(ui.calls.search.at(-1).project, project);
+  assert.equal(ui.calls.search.at(-1).options.workspace, true);
+  assert.notEqual(ui.get('#source-story-title').textContent, 'No open drafts');
+  assert.deepEqual(openEditorOutputs(project), []);
+  assert.deepEqual(ui.calls.rendered.at(-1), ['finished']);
+  assert.equal(project.outputs[0].draftText, 'Keep the saved article');
+  assert.equal(ui.calls.persisted.at(-1).viewOriginalDraft, true);
+
+  ui.context.openEditorTab(output.id);
+  assert.equal(project.viewOriginalDraft, false);
+  assert.equal(project.selectedOutputId, output.id);
+  assert.equal(project.sourceSearchOpen, true, 'reopening the draft keeps Searching Topic available');
+  assert.deepEqual(openEditorOutputs(project).map(draft => draft.id), ['finished']);
+});
+
+
+test('an active editor save retry during close still targets the closing draft', () => {
+  const project = {
+    id: 'retry-project', title: 'Drafts', sources: [], selectedOutputId: 'first',
+    outputs: [
+      { id: 'first', title: 'First article', status: 'ready', draftText: 'Original first content' },
+      { id: 'second', title: 'Second article', status: 'ready', draftText: 'Keep second content' },
+    ],
+  };
+  const ui = editorSetup(project);
+  const saveTargets = [];
+  const pendingContent = 'Typing that still needs a successful save';
+  ui.context.richEditor.flush = () => {
+    saveTargets.push(project.selectedOutputId);
+    project.outputs.find(output => output.id === project.selectedOutputId).draftText = pendingContent;
+    return saveTargets.length > 1;
+  };
+  ui.context.richEditor.close = () => ui.context.richEditor.flush();
+  ui.context.closeEditorTab('first');
+  assert.deepEqual(saveTargets, ['first', 'first'], 'the close retry must run before selection changes');
+  assert.equal(project.selectedOutputId, 'second');
+  assert.equal(project.outputs[0].draftText, pendingContent);
+  assert.equal(project.outputs[1].draftText, 'Keep second content');
+  assert.equal(ui.calls.editor.at(-1).draftText, 'Keep second content');
 });

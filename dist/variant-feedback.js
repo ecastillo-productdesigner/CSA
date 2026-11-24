@@ -22,7 +22,8 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns, 
   const form = document.querySelector('#experience-feedback-form');
   const details = document.querySelector('#feedback-details');
   const actions = document.querySelector('#feedback-actions');
-  const ratingLabel = document.querySelector('#feedback-rating-label');
+  const ratingQuestion = document.querySelector('#feedback-rating-question');
+  const ratingRequired = document.querySelector('#feedback-rating-required');
   const category = document.querySelector('#feedback-category');
   const severity = document.querySelector('#feedback-severity');
   const description = document.querySelector('#feedback-description');
@@ -67,7 +68,7 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns, 
   function refresh() {
     details.hidden = !detailsExpanded;
     actions.hidden = !detailsExpanded;
-    ratingLabel.classList.toggle('visually-hidden', !detailsExpanded);
+    ratingRequired.hidden = !detailsExpanded;
     dialog.dataset.feedbackExpanded = String(detailsExpanded);
     severity.required = requiresSeverity();
     document.querySelector('#feedback-severity-required').hidden = !requiresSeverity();
@@ -127,6 +128,7 @@ export function createVariantFeedback({ save, refreshDropdowns, closeDropdowns, 
       closeDropdowns();
       const hasExport = showExport(options?.exportUrl);
       detailsExpanded = !hasExport;
+      ratingQuestion.textContent = hasExport ? 'How was your experience?' : 'How would you rate this draft?';
       target = { project, variant };
       form.reset();
       const feedback = variant.experienceFeedback || {};

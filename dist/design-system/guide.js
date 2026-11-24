@@ -1,6 +1,6 @@
 import { mountAudienceSimilaritySpecimen } from './audience-similarity-specimen.js?v=20261123-score-first';
 import { mountEditorialPlanSpecimen } from './editorial-plan-specimen.js?v=20261120-chip-tooltips';
-import { mountEditorTabsSpecimen } from './editor-tabs-specimen.js?v=20261120-chip-tooltips';
+import { mountEditorTabsSpecimen } from './editor-tabs-specimen.js?v=20261124-closable-tabs-empty';
 import { mountAnimationSpecimens } from './animation-specimens.js?v=20261111-source-paper-count';
 import { createContentDirectionIndicator } from '../content-card-editing.js?v=20261111-direction-badge';
 import { createEditorPopover } from '../editor-popover.js?v=20261111-direction-badge';
@@ -8,7 +8,7 @@ import { mountWordCountSpecimen } from './word-count-specimen.js?v=20261117-word
 import { createToast } from '../toast.js?v=20261027-toast-timing';
 import { createTabPanelTransition } from '../tab-panel-transition.js?v=20261026-drafting-card-size';
 import { bindTabSelection } from '../selection-controls.js?v=20261026-drafting-card-size';
-import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261124-cms-secondary';
+import { mountFeedbackSpecimens } from './feedback-specimens.js?v=20261124-experience-copy';
 import { mountProjectSpecimens } from './project-specimens.js?v=20261120-chip-tooltips';
 import { mountFormSpecimens } from './form-specimens.js?v=20261026-drafting-card-size';
 import { mountNavigationSpecimens, mountStateSpecimens } from './navigation-specimens.js?v=20261120-chip-tooltips';

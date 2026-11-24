@@ -28,7 +28,7 @@ function showError(message, invalidPassword = false) {
 }
 
 async function openWorkspace() {
-  await import('./app.js?v=20261124-cms-secondary');
+  await import('./app.js?v=20261124-closable-tabs-empty');
   workspace.hidden = false;
   workspace.inert = false;
   gate.hidden = true;

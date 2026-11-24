@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { openEditorOutputs, reopenEditorOutput, closeEditorOutput } from '../dist/editor-tab-state.js';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
@@ -420,11 +421,11 @@ test('leaving the editor suspends acknowledgement and returning starts a fresh i
 test('opening an inactive editor tab acknowledges its tab dot and preserves its Request Revision dot', () => {
   const app = readFileSync(new URL('../dist/app.js', import.meta.url), 'utf8');
   const source = app.slice(app.indexOf('function openEditorTab('), app.indexOf('\nfunction loadProjects('));
-  const output = { id: 'revised', status: 'ready', revisionUnread: true };
+  const output = { id: 'revised', title: 'Revised draft', status: 'ready', revisionUnread: true };
   const project = { id: 'project', outputs: [output], selectedOutputId: 'other' };
   let saved = 0;
   let shown = null;
-  const context = { projects: [project], activeProjectId: project.id, richEditor: { flush() {} }, projectOutputs: project => project.outputs, outputIsReady: output => output.status === 'ready', outputViews: new Map(), saveProjects() { saved++; }, showEditorProject(project) { shown = project; } };
+  const context = { openEditorOutputs, reopenEditorOutput, closeEditorOutput, projects: [project], activeProjectId: project.id, richEditor: { flush() {} }, projectOutputs: project => project.outputs, outputIsReady: output => output.status === 'ready', outputViews: new Map(), saveProjects() { saved++; }, showEditorProject(project) { shown = project; } };
   runInNewContext(source, context);
   context.openEditorTab(output.id);
   assert.equal(project.selectedOutputId, output.id);

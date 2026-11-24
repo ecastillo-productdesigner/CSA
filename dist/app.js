@@ -26,7 +26,7 @@ import { createProfile } from './profile.js?v=20261026-drafting-card-size';
 import { createSearchExperience, sampleSearchSources } from './search.js?v=20261106-multi-publications';
 import { classifyProjectSearchInput } from './project-search-input.js?v=20261102-topic-search';
 import { createDashboard, normalizeProjectTitles, projectTitleFromSources } from './dashboard.js?v=20261120-chip-tooltips';
-import { createMaterialEditor } from './editor.js?v=20261124-cms-secondary';
+import { createMaterialEditor } from './editor.js?v=20261124-cms-action-icon';
 import { saveDocuments, downloadDocument, deleteDocuments } from './documents.js?v=20261026-drafting-card-size';
 import { removeProjectContent } from './project-deletion.js?v=20261026-drafting-card-size';
 import { createContentPreview } from './content-preview.js?v=20261026-drafting-card-size';
@@ -38,10 +38,11 @@ import { createRailNavigation } from './navigation.js?v=20261105-role-selector';
 import { createProjectSources } from './sources.js?v=20261106-own-material-source';
 import { createDraftSourcesPopover, draftSourcesFor } from './draft-sources-popover.js?v=20261120-chip-tooltips';
 import { outputLoadingSelectionKeys, projectOutputs, hasSelectedSources, customVariantName, initializeVariantNames, sampleVariant, outputIsReady, outputSourceCount, outputWordCount, selectedOutputs, selectedPendingOutputs, populateOutputContent, createOutputBadges, reviseSampleOutput, variantPanelState, renderOutputs as renderProjectOutputs } from './outputs.js?v=20261123-score-first';
-import { createEditorTabs } from './editor-tabs.js?v=20261124-source-search';
+import { createEditorTabs } from './editor-tabs.js?v=20261124-closable-tabs';
+import { openEditorOutputs, reopenEditorOutput, closeEditorOutput } from './editor-tab-state.js?v=20261124-closable-tabs';
 import { createContentCardEditing } from './content-card-editing.js?v=20261111-direction-badge';
 import { createSendDestinationDialog, isSendDestination, sendDestinations } from './send-destination.js?v=20261026-drafting-card-size';
-import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261124-cms-preview';
+import { createVariantFeedback, createFeedbackPill } from './variant-feedback.js?v=20261124-experience-copy';
 import { createRevisionButton, updateRevisionButton, createRevisionRequests } from './revision-requests.js?v=20261110-content-tabs';
 
 const $ = (selector) => document.querySelector(selector);
@@ -154,7 +155,7 @@ const contentPreview = createContentPreview({
     updateComposerActions();
   },
 });
-const editorTabs = createEditorTabs({ onSelect: openEditorTab, onRevisionRead(project, output) {
+const editorTabs = createEditorTabs({ onSelect: openEditorTab, onClose: closeEditorTab, onRevisionRead(project, output) {
   saveProjects();
   const trigger = $('#editor-revision-tools').querySelector('[data-request-revision]');
   if (activeProjectId === project.id && trigger?.dataset.requestRevision === output.id) updateRevisionButton(trigger, output);
@@ -591,6 +592,7 @@ function openEditorTab(outputId) {
   }
   const output = projectOutputs(project).find(output => output.id === outputId && (outputIsReady(output) || output.needsRegeneration));
   if (!project || !output) return;
+  reopenEditorOutput(project, outputId);
   if (output.revisionUnread && output.revisionRequestUnread == null) output.revisionRequestUnread = true;
   output.revisionUnread = false;
   if (project.selectedOutputId !== outputId || project.viewOriginalDraft || !outputViews.has(project.id)) {
@@ -602,6 +604,30 @@ function openEditorTab(outputId) {
   project.viewOriginalDraft = false;
   saveProjects();
   showEditorProject(project);
+}
+
+function closeEditorTab(outputId) {
+  const project = projects.find(entry => entry.id === activeProjectId && !entry.deletedAt && !entry.archivedAt);
+  if (!project || !openEditorOutputs(project).some(output => output.id === outputId)) return;
+  // Flush against the current draft before changing which draft receives edits.
+  richEditor.flush();
+  const wasActive = project.selectedOutputId === outputId && !project.viewOriginalDraft;
+  // Close while saves still target this draft, including a retry after storage failure.
+  if (wasActive) richEditor.close();
+  closeEditorOutput(project, outputId);
+  if (wasActive) {
+    const next = openEditorOutputs(project).find(output => output.id === project.selectedOutputId);
+    project.selectedOutputIds = next && outputIsReady(next)
+      ? [next.id]
+      : [...new Set([...selectedPendingOutputs(project).filter(output => output.id !== outputId).map(output => output.id), ...(next ? [next.id] : [])])];
+    project.viewOriginalDraft = Boolean(!next && project.sourceSearchOpen && project.searchQuery);
+  }
+  saveProjects();
+  if (wasActive) showEditorProject(project);
+  else editorTabs.render(project);
+  if (!openEditorOutputs(project).length && !project.viewOriginalDraft) {
+    $('#main').focus({ preventScroll: true });
+  }
 }
 
 function loadProjects() {
@@ -1045,7 +1071,8 @@ function showEditorProject(project) {
   for (const section of ['home', 'workspace', 'project-start']) $(`#${section}`).hidden = true;
   $('#composer').hidden = false;
   resumeOutputProcessing(project, false);
-  const editableOutputs = projectOutputs(project).filter(output => outputIsReady(output) || output.needsRegeneration);
+  const allEditableOutputs = projectOutputs(project).filter(output => outputIsReady(output) || output.needsRegeneration);
+  const editableOutputs = openEditorOutputs(project);
   const readyOutputs = editableOutputs.filter(outputIsReady).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0));
   const replacingSourceView = Boolean(project.viewOriginalDraft && editableOutputs.length);
   const showingSourceSearch = Boolean(project.sourceSearchOpen && project.searchQuery && project.viewOriginalDraft);
@@ -1058,7 +1085,20 @@ function showEditorProject(project) {
     syncOwnMaterialSource(project, selectedOutput);
     saveProjects();
   }
-  if (project.viewOriginalDraft || (project.awaitingOutput && !selectedOutput)) {
+  const allDraftTabsClosed = allEditableOutputs.length > 0 && !editableOutputs.length && !project.viewOriginalDraft;
+  if (allDraftTabsClosed) {
+    project.selectedOutputId = null;
+    contentPreview.hide();
+    $('#composer').classList.add('has-output');
+    $('#composer-heading').textContent = 'Story workspace';
+    $('#output-placeholder').classList.add('has-project-welcome');
+    $('#source-story-content').classList.add('project-welcome');
+    $('#source-story-title').hidden = true;
+    $('#source-story-title').textContent = 'No open drafts';
+    $('#source-story-body').replaceChildren(element('p', '', 'No open drafts. Select a card in Drafted to reopen one.'));
+    $('#output-placeholder').hidden = false;
+    $('#output-placeholder').scrollTop = 0;
+  } else if (project.viewOriginalDraft || (project.awaitingOutput && !selectedOutput)) {
     $('#composer').classList.add('has-output');
     $('#composer-heading').textContent = 'Story workspace';
     if (project.searchQuery) {
@@ -1383,6 +1423,9 @@ function finishOutputProcessing(project, renderWhenReady = true) {
         }
       }
     }
+  }
+  if (job.kind !== 'revision' && Array.isArray(project.closedEditorOutputIds)) {
+    project.closedEditorOutputIds = project.closedEditorOutputIds.filter(id => !ids.has(id));
   }
   const latestCreated = projectOutputs(project).find(output => output.id === job.openOutputId && outputIsReady(output)) || projectOutputs(project).filter(output => ids.has(output.id) && outputIsReady(output)).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))[0];
   if (latestCreated) outputViews.set(project.id, 'created');

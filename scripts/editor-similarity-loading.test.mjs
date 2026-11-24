@@ -234,7 +234,7 @@ test('the similarity label stays centered in the visible part of a long article 
 test('an unsent draft sends, then its exported version opens in the CMS without sending again', () => {
   const ui = setup();
   const action = ui.get('#editor-wordpress');
-  assert.equal(action.textContent, 'Send to your CMS');
+  assert.equal(ui.get('#editor-wordpress-label').textContent, 'Send to your CMS');
   assert.equal(action.disabled, false);
   action.dispatch('click');
   assert.deepEqual(ui.sentTargets, ['project']);
@@ -242,7 +242,7 @@ test('an unsent draft sends, then its exported version opens in the CMS without 
 
   const signature = ui.editor.markSent();
   assert.equal(typeof signature, 'string');
-  assert.equal(action.textContent, 'Open on your CMS');
+  assert.equal(ui.get('#editor-wordpress-label').textContent, 'Open in Your CMS');
   assert.equal(action.disabled, false);
   assert.equal(ui.editor.canSend(), false);
   action.dispatch('click');
@@ -261,14 +261,14 @@ test('editing an exported headline, subhead, or body restores Send until that ve
       input.value = field === 'headline' ? 'Updated headline' : 'Updated subhead';
       input.dispatch('input');
     }
-    assert.equal(action.textContent, 'Send to your CMS', field);
+    assert.equal(ui.get('#editor-wordpress-label').textContent, 'Send to your CMS', field);
     assert.equal(action.disabled, false, field);
     assert.equal(ui.editor.canSend(), true, field);
     action.dispatch('click');
     assert.deepEqual(ui.sentTargets, ['project'], field);
     assert.deepEqual(ui.opened, [], field);
     ui.editor.markSent();
-    assert.equal(action.textContent, 'Open on your CMS', field);
+    assert.equal(ui.get('#editor-wordpress-label').textContent, 'Open in Your CMS', field);
     action.dispatch('click');
     assert.deepEqual(ui.opened, [{ projectId: 'project', outputId: 'draft' }], field);
   }
@@ -280,13 +280,13 @@ test('reopening a saved exported draft restores Open, and switching to an unsent
   ui.editor.close();
   ui.editor.open({ ...ui.draft, cmsSentAt: 100, cmsSentContent: signature });
   const action = ui.get('#editor-wordpress');
-  assert.equal(action.textContent, 'Open on your CMS');
+  assert.equal(ui.get('#editor-wordpress-label').textContent, 'Open in Your CMS');
   assert.equal(action.disabled, false);
   action.dispatch('click');
   assert.deepEqual(ui.opened, [{ projectId: 'project', outputId: 'draft' }]);
 
   ui.editor.open({ ...ui.draft, selectedOutputId: 'new-draft', title: 'Unsent draft' });
-  assert.equal(action.textContent, 'Send to your CMS');
+  assert.equal(ui.get('#editor-wordpress-label').textContent, 'Send to your CMS');
   assert.equal(action.disabled, false);
   action.dispatch('click');
   assert.equal(ui.sent, 1);
@@ -297,7 +297,7 @@ test('legacy sent drafts without a stored signature can open their CMS page', ()
   const ui = setup();
   ui.editor.open({ ...ui.draft, cmsSentAt: 100 });
   const action = ui.get('#editor-wordpress');
-  assert.equal(action.textContent, 'Open on your CMS');
+  assert.equal(ui.get('#editor-wordpress-label').textContent, 'Open in Your CMS');
   assert.equal(action.disabled, false);
   action.dispatch('click');
   assert.deepEqual(ui.opened, [{ projectId: 'project', outputId: 'draft' }]);
@@ -310,13 +310,13 @@ test('revision and similarity loading disable opening an exported draft without 
     const action = ui.get('#editor-wordpress');
     ui.editor.markSent();
     ui.editor[busy](true);
-    assert.equal(action.textContent, 'Open on your CMS', busy);
+    assert.equal(ui.get('#editor-wordpress-label').textContent, 'Open in Your CMS', busy);
     assert.equal(action.disabled, true, busy);
     action.dispatch('click');
     assert.deepEqual(ui.opened, [], busy);
     assert.equal(ui.sent, 0, busy);
     ui.editor[busy](false);
-    assert.equal(action.textContent, 'Open on your CMS', busy);
+    assert.equal(ui.get('#editor-wordpress-label').textContent, 'Open in Your CMS', busy);
     assert.equal(action.disabled, false, busy);
     action.dispatch('click');
     assert.deepEqual(ui.opened, [{ projectId: 'project', outputId: 'draft' }], busy);

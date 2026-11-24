@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createEditorTabs, editorTabLayout } from '../dist/editor-tabs.js';
+import { closeEditorOutput, reopenEditorOutput } from '../dist/editor-tab-state.js';
 
 const layout = options => editorTabLayout({ tabWidth: 260, moreWidth: 64, gap: 4, ...options });
 
@@ -118,7 +119,7 @@ class Element extends Events {
   focus() { this.ownerDocument.activeElement = this; this.emit('focusin'); }
 }
 
-function fixture(t, { width = 600, outputs, activeId, processing } = {}) {
+function fixture(t, { width = 600, outputs, activeId, processing, closable = false, closedIds = [], ownMaterialOutputId } = {}) {
   const names = ['document', 'ResizeObserver', 'requestAnimationFrame', 'cancelAnimationFrame', 'getComputedStyle', 'setTimeout', 'clearTimeout'];
   const previous = Object.fromEntries(names.map(name => [name, globalThis[name]]));
   const tokens = JSON.parse(readFileSync(new URL('../dist/design-system/tokens.json', import.meta.url), 'utf8'));
@@ -159,13 +160,15 @@ function fixture(t, { width = 600, outputs, activeId, processing } = {}) {
     setTimeout: (callback, delay) => { const id = ++sequence; timers.set(id, { at: now + delay, callback }); return id; },
     clearTimeout: id => timers.delete(id),
   });
-  const project = { id: 'project', outputs: outputs || Array.from({ length: 5 }, (_, i) => ({ id: `draft-${i}`, title: `Draft ${i}`, status: 'ready' })), outputProcessing: processing };
+  const project = { id: 'project', ownMaterialOutputId, closedEditorOutputIds: closedIds, outputs: outputs || Array.from({ length: 5 }, (_, i) => ({ id: `draft-${i}`, title: `Draft ${i}`, status: 'ready' })), outputProcessing: processing };
   project.selectedOutputId = activeId ?? project.outputs[0]?.id;
   const selections = [];
+  const closures = [];
   const reads = [];
   const animations = [];
   const controller = createEditorTabs({
-    onSelect(id) { selections.push(id); project.selectedOutputId = id; project.viewOriginalDraft = id === null; controller.render(project); },
+    onClose: closable ? id => { closures.push(id); closeEditorOutput(project, id); controller.render(project); } : undefined,
+    onSelect(id) { selections.push(id); if (id) reopenEditorOutput(project, id); project.selectedOutputId = id; project.viewOriginalDraft = id === null; controller.render(project); },
     onRevisionRead(project, output) { reads.push([project.id, output.id]); },
     createAnimation(options) {
       const animation = { element: doc.createElement('span'), options, destroy() { this.destroyed = true; } };
@@ -182,7 +185,7 @@ function fixture(t, { width = 600, outputs, activeId, processing } = {}) {
     }
   });
   return {
-    controller, root, panel, doc, project, selections, reads, animations, timers, observers,
+    controller, root, panel, doc, project, selections, closures, reads, animations, timers, observers,
     get tabs() { return root.querySelectorAll('[role="tab"]'); },
     get visible() { return this.tabs.filter(tab => !tab.hidden); },
     get more() { return root.querySelector('.editor-tabs-more'); },
@@ -420,4 +423,118 @@ test('initial topic search still yields to the first ready draft without add-sou
   assert.deepEqual(ids(ui.tabs), ['first-draft']);
   assert.equal(activeTab(ui).dataset.editorOutput, 'first-draft');
   assert.equal(ui.more.hidden, true);
+});
+
+
+test('each closable draft has a separate accessible X without nesting buttons', t => {
+  const ui = fixture(t, { closable: true });
+  for (const tab of ui.tabs) {
+    const close = tab.parentElement.querySelector('[data-close-editor-output]');
+    assert.ok(close, `Missing close action for ${tab.dataset.editorOutput}`);
+    assert.equal(close.tagName, 'BUTTON');
+    assert.equal(close.getAttribute('aria-label'), `Close tab: ${ui.project.outputs.find(output => output.id === tab.dataset.editorOutput).title}`);
+    assert.equal(close.dataset.closeEditorOutput, tab.dataset.editorOutput);
+    assert.equal(tab.contains(close), false, 'close action must be a sibling, not a nested button');
+    assert.equal(close.querySelector('.material-symbols-outlined').getAttribute('aria-hidden'), 'true');
+    assert.equal(tab.parentElement.hidden, tab.hidden, 'hidden tabs cannot leave a visible X behind');
+  }
+});
+
+test('closing an inactive tab never selects it or removes its drafted content', t => {
+  const ui = fixture(t, { closable: true });
+  const originals = structuredClone(ui.project.outputs);
+  ui.tabs.find(tab => tab.dataset.editorOutput === 'draft-1').parentElement.querySelector('[data-close-editor-output]').emit('click');
+  assert.deepEqual(ui.closures, ['draft-1']);
+  assert.deepEqual(ui.selections, []);
+  assert.equal(ui.project.selectedOutputId, 'draft-0');
+  assert.equal(ids(ui.tabs).includes('draft-1'), false);
+  assert.deepEqual(ui.project.outputs, originals);
+  assert.equal(ui.doc.activeElement, activeTab(ui));
+});
+
+test('Delete closes an active draft, follows its next tab, and keeps focus usable', t => {
+  const ui = fixture(t, { closable: true, activeId: 'draft-1' });
+  const event = activeTab(ui).emit('keydown', { key: 'Delete' });
+  assert.equal(event.defaultPrevented, true);
+  assert.deepEqual(ui.closures, ['draft-1']);
+  assert.equal(ui.project.selectedOutputId, 'draft-2');
+  assert.equal(activeTab(ui).dataset.editorOutput, 'draft-2');
+  assert.equal(activeTab(ui).hidden, false);
+  assert.equal(ui.doc.activeElement, activeTab(ui));
+});
+
+test('overflow close actions close only their draft and update the hidden count', t => {
+  const ui = fixture(t, { closable: true });
+  openMenu(ui);
+  const close = ui.menu.querySelector('[data-close-editor-output="draft-4"]');
+  assert.ok(close);
+  close.emit('click');
+  assert.deepEqual(ui.closures, ['draft-4']);
+  assert.deepEqual(ui.selections, []);
+  assert.equal(ui.project.selectedOutputId, 'draft-0');
+  assert.equal(ui.menu.hidden, true);
+  assert.equal(ui.more.getAttribute('aria-label'), '2 more drafts');
+  assert.equal(ui.project.outputs.length, 5);
+  openMenu(ui);
+  assert.equal(ui.menu.querySelector('[data-close-editor-output="draft-4"]'), null);
+});
+
+test('closing every draft removes the tab row and reopening a card restores it', t => {
+  const ui = fixture(t, { closable: true });
+  Object.assign(ui.project, { awaitingOutput: true, linkCards: true, searchQuery: 'Old query' });
+  const originals = structuredClone(ui.project.outputs);
+  while (ui.tabs.length) activeTab(ui).emit('keydown', { key: 'Delete' });
+  assert.equal(ui.root.hidden, true);
+  assert.equal(ui.more.hidden, true);
+  assert.equal(ui.project.selectedOutputId, null);
+  assert.equal(ui.panel.getAttribute('role'), null);
+  assert.equal(ui.panel.getAttribute('aria-labelledby'), null);
+  assert.deepEqual(ui.project.outputs, originals);
+  assert.equal(reopenEditorOutput(ui.project, 'draft-3'), true);
+  ui.project.selectedOutputId = 'draft-3';
+  ui.controller.render(ui.project);
+  assert.equal(ui.root.hidden, false);
+  assert.deepEqual(ids(ui.tabs), ['draft-3']);
+  assert.equal(activeTab(ui).dataset.editorOutput, 'draft-3');
+  assert.equal(ui.panel.getAttribute('aria-labelledby'), activeTab(ui).id);
+});
+
+test('closing an unread tab cancels its acknowledgement timer and preserves the unread revision', t => {
+  const ui = fixture(t, { closable: true, outputs: [
+    { id: 'one', title: 'Unread draft', status: 'ready', revisionUnread: true },
+    { id: 'two', title: 'Another draft', status: 'ready' },
+  ] });
+  ui.tick(5000);
+  activeTab(ui).parentElement.querySelector('[data-close-editor-output]').emit('click');
+  ui.tick(10000);
+  assert.equal(ui.project.outputs[0].revisionUnread, true);
+  assert.deepEqual(ui.reads, []);
+});
+
+test('source search preview has no X and Delete cannot close it', t => {
+  const ui = fixture(t, { closable: true, width: 1400 });
+  Object.assign(ui.project, { sourceSearchOpen: true, searchQuery: 'Community gardens', viewOriginalDraft: true });
+  ui.controller.render(ui.project);
+  const sourceTab = ui.tabs.find(tab => tab.dataset.editorOutput === '');
+  assert.ok(sourceTab);
+  assert.equal(sourceTab.parentElement.querySelector('[data-close-editor-output]'), null);
+  sourceTab.emit('keydown', { key: 'Delete' });
+  assert.deepEqual(ui.closures, []);
+  assert.equal(ui.project.viewOriginalDraft, true);
+});
+
+
+test('own-material source tabs cannot be closed because they have no Drafted card to reopen from', t => {
+  const ui = fixture(t, { closable: true, width: 1400, ownMaterialOutputId: 'legacy', outputs: [
+    { id: 'own', title: 'Source material', status: 'ready', ownMaterial: true },
+    { id: 'legacy', title: 'Legacy original material', status: 'ready' },
+    { id: 'generated', title: 'Generated draft', status: 'ready' },
+  ] });
+  for (const id of ['own', 'legacy']) {
+    const tab = ui.tabs.find(tab => tab.dataset.editorOutput === id);
+    assert.equal(tab.parentElement.querySelector('[data-close-editor-output]'), null);
+    tab.emit('keydown', { key: 'Delete' });
+  }
+  assert.deepEqual(ui.closures, []);
+  assert.ok(ui.tabs.find(tab => tab.dataset.editorOutput === 'generated').parentElement.querySelector('[data-close-editor-output]'));
 });

@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { openEditorOutputs, reopenEditorOutput, closeEditorOutput } from '../dist/editor-tab-state.js';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createContext, runInContext } from 'node:vm';
@@ -41,7 +42,7 @@ function setup() {
   const context = createContext({
     projects: [], activeProjectId: null, sourceTargetProjectId: null,
     outputViews: new Map(), crypto: { randomUUID }, $, document: { body: $('body'), title: '' },
-    projectOutputs, outputIsReady, outputSourceCount, initializeVariantNames, selectedPendingOutputs, populateOutputContent,
+    openEditorOutputs, reopenEditorOutput, closeEditorOutput, projectOutputs, outputIsReady, outputSourceCount, initializeVariantNames, selectedPendingOutputs, populateOutputContent,
     projectTitleFromSources, normalizeProjectTitles, normalizeWordCount, syncOwnMaterialSource,
     storageKey: 'test-projects', localStorage: { getItem: key => storage.get(key), setItem: (key, value) => { storage.set(key, value); calls.saved.push(JSON.parse(value)); } },
     savedDrafts: { render() {} }, dashboard: null, notify() {},

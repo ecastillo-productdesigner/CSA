@@ -179,7 +179,7 @@ export function createMaterialEditor({ onSave, onSendToCms, onOpenCms = () => {}
   function updateSendButton() {
     const button = $('#editor-wordpress');
     const sent = isCurrentVersionSent();
-    button.textContent = sent ? 'Open on your CMS' : 'Send to your CMS';
+    $('#editor-wordpress-label').textContent = sent ? 'Open in Your CMS' : 'Send to your CMS';
     button.classList.toggle('primary-button', !sent);
     button.classList.toggle('secondary-button', sent);
     button.disabled = !canSend() && !canOpenCms();
